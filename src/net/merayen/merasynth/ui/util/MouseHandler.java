@@ -55,7 +55,6 @@ public class MouseHandler {
 			net.merayen.merasynth.ui.Point p_relative = uiobject.getPointFromPixel(x, y);
 			net.merayen.merasynth.ui.Point p_absolute = uiobject.getAbsolutePointFromPixel(x, y);
 			
-			//System.out.printf("x=%f, y=%f, hitbox: x=%f, y=%f, w=%f, h=%f\n", p_absolute.x, p_absolute.y, hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 			boolean hit = ( // TODO we do need to check on which UIObject is foremost... hmmm... Send an event to everyone maybe? Read them at next frame and see if we are topmost?
 				p_relative.x >= hitbox.x &&
 				p_relative.y >= hitbox.y &&
