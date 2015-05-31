@@ -1,9 +1,10 @@
 package net.merayen.merasynth.ui;
 
 import net.merayen.merasynth.ui.event.MouseEvent;
+import net.merayen.merasynth.ui.event.MouseWheelEvent;
 import java.util.ArrayList;
 
-public abstract class Surface extends javax.swing.JPanel implements java.awt.event.MouseListener, java.awt.event.MouseMotionListener {
+public abstract class Surface extends javax.swing.JPanel implements java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener {
 
 	protected int width = 100;
 	protected int height = 100;
@@ -24,6 +25,7 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 		
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
+		this.addMouseWheelListener(this);
 	}
 	
 	protected void draw(java.awt.Graphics2D g) {
@@ -88,5 +90,10 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
     
     public void mouseDragged(java.awt.event.MouseEvent e) {
     	events_queue.add(new MouseEvent(e, MouseEvent.action_type.MOVE));
+    }
+    
+    @Override
+    public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
+    	events_queue.add(new MouseWheelEvent(e));
     }
 }

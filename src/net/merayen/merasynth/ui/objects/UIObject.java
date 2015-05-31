@@ -70,7 +70,6 @@ public abstract class UIObject {
 		 * Get our internal (relative) position from absolute window pixel position.
 		 */
 		TranslationData td = draw_context.translation.getCurrentTranslationData();
-		System.out.println(td.scale_x);
 		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x) - td.x, ((float)y / (draw_context.height * td.scale_y) - td.y));
 	}
 	
