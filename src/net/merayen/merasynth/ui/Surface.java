@@ -20,8 +20,8 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 		node.width = 0.1f;
 		node.height = 0.1f;
 		top_ui_object.add(node);
-		top_ui_object.translation.scale_x = 4.0f;
-		top_ui_object.translation.scale_y = 4.0f;
+		top_ui_object.translation.scale_x = 1.0f;
+		top_ui_object.translation.scale_y = 1.0f;
 		
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
@@ -38,7 +38,7 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 		
 		net.merayen.merasynth.ui.DrawContext dc = new net.merayen.merasynth.ui.DrawContext(g, current_events, getWidth(), getHeight());
 		
-		top_ui_object.draw(dc);
+		top_ui_object.update(dc);
 	}
 	
 	public void setDimensions(int width, int height) {

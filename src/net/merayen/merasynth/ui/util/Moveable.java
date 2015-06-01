@@ -37,6 +37,8 @@ public class Moveable extends MouseHandler {
 				if(original_position != null) {
 					handler_class.onDrop();
 					
+					handler_class.onDrop();
+					
 					original_position = null;
 				}
 			}
@@ -72,6 +74,7 @@ public class Moveable extends MouseHandler {
 				if(original_position != null) {
 					moveable.translation.x = global_position.x - original_position.x;
 					moveable.translation.y = global_position.y - original_position.y;
+					handler_class.onMove();
 					//System.out.printf("Global: x=%f, y=%f\n", global_position.x, global_position.y);
 				}
 			}
@@ -80,6 +83,7 @@ public class Moveable extends MouseHandler {
 			public void onMouseDown(Point position) {
 				Point p = moveable.getAbsolutePosition();
 				original_position = new Point(p.x + position.x - moveable.translation.x, p.y + position.y - moveable.translation.y);
+				handler_class.onGrab();
 				System.out.printf("Down: Global: %f, %f\n", p.x, p.y);
 			}
 		});
