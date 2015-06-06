@@ -10,15 +10,17 @@ public class Node extends Group {
 	public float height = 0.5f;
 	
 	private Titlebar titlebar;
-	private ArrayList<Port> ports = new ArrayList<Port>();
+	protected ArrayList<Port> ports = new ArrayList<Port>();
 	
 	protected void onCreate() {
 		titlebar = new Titlebar();
 		add(titlebar);
 		
-		Port port = new Port();
+		/*Port port = new Port();
+		port.translation.x = 0;
+		port.translation.y = 0.02f;
 		add(port);
-		ports.add(new Port());
+		ports.add(new Port());*/
 	}
 	
 	@Override
@@ -41,5 +43,10 @@ public class Node extends Group {
 		titlebar.width = width;
 		
 		super.onDraw(g);
+	}
+	
+	protected void addPort(Port port) {
+		add(port);
+		ports.add(port);
 	}
 }

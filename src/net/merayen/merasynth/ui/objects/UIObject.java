@@ -7,6 +7,10 @@ import net.merayen.merasynth.ui.util.Draw;
 public abstract class UIObject {
 	public UIObject parent;
 	
+	// These helps to figure out if we should draw or not TODO
+	public float width = 0;
+	public float height = 0;
+	
 	public TranslationData translation = new TranslationData();
 	
 	protected net.merayen.merasynth.ui.DrawContext draw_context;
