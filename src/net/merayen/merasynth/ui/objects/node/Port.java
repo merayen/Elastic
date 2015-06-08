@@ -16,7 +16,7 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	private MouseHandler port_drag;
 	public String title = "";
 	
-	private Port temp_port; // Used when dragging a line from this port
+	private UIObject temp_port; // Used when dragging a line from this port
 	
 	protected void onCreate() {
 		/*port_drag = new PortDrag();
@@ -26,13 +26,14 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 			
 			@Override
 			public void onMouseUp(Point position) {
-				// TODO Auto-generated method stub
-				
+				// Check with the Net-UIObject to see if a line is being drawn
+				UIObject port = getNetObject().getDraggingPort(); // Retrieving the port
+				if(port == null) return; // Not dragging a line from a port
+				dropDraggingPort(port);
 			}
 			
 			@Override
 			public void onMouseOver() {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -97,9 +98,10 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	}
 	
 	private void createTempPort() {
-		temp_port = new Port();
+		temp_port = new PortDrag();
 		add(temp_port);
 		getNetObject().addLine(this, temp_port);
+		getNetObject().setDraggingPort(this);
 		
 	}
 	
@@ -111,6 +113,17 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	private void removeTempPort() {
 		removeChild(temp_port);
 		getNetObject().removeLine(this, temp_port);
+		getNetObject().setDraggingPort(null);
 		temp_port = null;
+	}
+	
+	private void dropDraggingPort(UIObject port) {
+		if((UIObject)port == (UIObject)temp_port) return;
+		if((UIObject)port == (UIObject)this) return;
+		
+		getNetObject().addLine(this, port); // Connect the ports together
+		
+		
+		System.out.println("Yes");
 	}
 }

@@ -5,13 +5,16 @@ import net.merayen.merasynth.ui.event.IEvent;
 
 public class DrawContext {
 	/*
-	 * Stupid class containing the current drawing context.
+	 * Session-like class for the current drawing.
+	 * Class is thrown away for between every repainting.
 	 * Object is thrown between all the UIObject()s
 	 */
 	
 	public final java.awt.Graphics2D graphics2d; 
 	public final int width;
 	public final int height;
+	
+	private int z_counter = 0;
 	
 	public ArrayList<IEvent> incoming_events;
 	public ArrayList<IEvent> outgoing_events = new ArrayList<IEvent>(); // Events that are sent out (and will be sent back in again in next redraw)
@@ -30,5 +33,13 @@ public class DrawContext {
 		 * Queue event for next redraw
 		 */
 		outgoing_events.add(event);
+	}
+	
+	public int pushZCounter() {
+		/*
+		 * Increments the z_counter.
+		 * Do this for every UIObject that is being drawn. 
+		 */
+		return ++z_counter;
 	}
 }

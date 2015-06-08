@@ -3,7 +3,6 @@ package net.merayen.merasynth.ui.objects;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.util.Draw;
-import net.merayen.merasynth.ui.util.Search;
 
 public abstract class UIObject {
 	public UIObject parent;
@@ -13,6 +12,8 @@ public abstract class UIObject {
 	public float draw_y = 0;
 	public float draw_width = 0;
 	public float draw_height = 0;
+	
+	public int current_z_index; // The current *drawn* Z index of this UIObject
 	
 	public TranslationData translation = new TranslationData();
 	public TranslationData absolute_translation;
@@ -44,6 +45,7 @@ public abstract class UIObject {
 		draw_context.translation.push(translation);
 		
 		absolute_translation = draw_context.translation.getCurrentTranslationData(); // Caching for outside use
+		current_z_index = draw_context.pushZCounter();
 		
 		for(IEvent event : draw_context.incoming_events)
 			receiveEvent(event);

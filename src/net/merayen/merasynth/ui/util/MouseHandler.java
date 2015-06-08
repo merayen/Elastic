@@ -9,6 +9,7 @@ public class MouseHandler {
 	/*
 	 * Helper class to make an UIObject moveable.
 	 * Tightly coupled to UIObjects
+	 * TODO implement depth testing of UIObject().current_z_index!
 	 */
 	
 	public interface IMouseHandler {
@@ -67,13 +68,14 @@ public class MouseHandler {
 				drag_start = new net.merayen.merasynth.ui.Point(p_relative.x, p_relative.y);
 				handler_class.onMouseDrag(p_relative, drag_start);
 			}
-			else if(e.action == MouseEvent.action_type.UP && mouse_down) {
-				mouse_down = false;
-				handler_class.onMouseUp(p_relative);
-				if(mouse_dragging) {
+			else if(e.action == MouseEvent.action_type.UP) {
+				if(hit)
+					handler_class.onMouseUp(p_relative);
+				if(mouse_dragging && mouse_down) {
 					mouse_dragging = false;
 					handler_class.onMouseDrop(p_relative, new net.merayen.merasynth.ui.Point(p_relative.x - drag_start.x, p_relative.y - drag_start.y));
 				}
+				mouse_down = false;
 			}
 			else if(e.action == MouseEvent.action_type.MOVE) {
 				handler_class.onGlobalMouseMove(p_absolute);
