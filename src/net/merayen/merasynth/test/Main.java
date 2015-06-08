@@ -7,7 +7,7 @@ public class Main extends javax.swing.JFrame {
 	
 	public class Surface extends net.merayen.merasynth.ui.Surface implements java.awt.event.ActionListener {
 
-		public final javax.swing.Timer timer = new javax.swing.Timer(1000/30, this);
+		public final javax.swing.Timer timer = new javax.swing.Timer(1000/60, this);
 		
 		public Surface() {
 			timer.start();

@@ -24,7 +24,6 @@ public class MouseHandler {
 	
 	private IMouseHandler handler_class;
 	protected UIObject uiobject;
-	private Rect hitbox;
 	
 	private net.merayen.merasynth.ui.Point drag_start;
 	
@@ -40,10 +39,6 @@ public class MouseHandler {
 		this.handler_class = cls;
 	}
 	
-	public void setHitBox(net.merayen.merasynth.ui.Rect rect) {
-		hitbox = rect;
-	}
-	
 	public void handle(IEvent event) {
 		/*
 		 * Call this from your UIObject to handle event
@@ -55,11 +50,14 @@ public class MouseHandler {
 			net.merayen.merasynth.ui.Point p_relative = uiobject.getPointFromPixel(x, y);
 			net.merayen.merasynth.ui.Point p_absolute = uiobject.getAbsolutePointFromPixel(x, y);
 			
+			//if(uiobject instanceof net.merayen.merasynth.ui.objects.node.Port)
+			//	System.out.printf("%s - %f, %f, %f, %f\n", p_relative, uiobject.draw_x, uiobject.draw_y, uiobject.draw_width, uiobject.draw_height);
+			
 			boolean hit = ( // TODO we do need to check on which UIObject is foremost... hmmm... Send an event to everyone maybe? Read them at next frame and see if we are topmost?
-				p_relative.x >= hitbox.x &&
-				p_relative.y >= hitbox.y &&
-				p_relative.x < hitbox.x + hitbox.width &&
-				p_relative.y < hitbox.y + hitbox.height
+				p_relative.x >= uiobject.draw_x &&
+				p_relative.y >= uiobject.draw_y &&
+				p_relative.x < uiobject.draw_x + uiobject.draw_width &&
+				p_relative.y < uiobject.draw_y + uiobject.draw_height
 			);
 			
 			if(e.action == MouseEvent.action_type.DOWN && hit) {
@@ -101,6 +99,4 @@ public class MouseHandler {
 			}
 		}
 	}
-	
-	
 }

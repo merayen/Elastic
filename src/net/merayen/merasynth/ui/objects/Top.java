@@ -4,6 +4,13 @@ import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
 
 public class Top extends Group {
+	Net net;
+	
+	protected void onCreate() {
+		net = new Net();
+		add(net, true); // Add the net topmost
+	}
+	
 	protected void onDraw(java.awt.Graphics2D g) {
 		
 		g.setPaint(new java.awt.Color(80,80,80));

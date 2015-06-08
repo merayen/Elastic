@@ -2,20 +2,19 @@ package net.merayen.merasynth.ui.objects;
 
 import java.util.ArrayList;
 
+import net.merayen.merasynth.ui.util.Search;
+
 public class Group extends UIObject {
 	/*
 	 * Main inneholder flere komponenter.
 	 */
-	static int hei = 0;
-	private int id = 1337;
-	
 	private ArrayList<UIObject> children = new ArrayList<UIObject>();
-	private java.awt.Point noe = new java.awt.Point(1,2);
+	protected Search search;
 
 	public Group() {
 		super();
 		children = new ArrayList<UIObject>();
-		id = hei++;
+		search = new Search(this);
 	}
 	
 	protected void onDraw(java.awt.Graphics2D g) {
@@ -23,10 +22,26 @@ public class Group extends UIObject {
 			this.drawObject(x);
 	}
 	
-	public void add(UIObject obj) {
+	public void add(UIObject obj, boolean top) {
 		assert obj.parent != null : "Object can not be a child of anything when adding to a group";
-		children.add(obj);
+		if(top)
+			children.add(0, obj);
+		else
+			children.add(obj);
+		
 		obj.parent = this;
+	}
+	
+	public void add(UIObject obj) {
+		add(obj, false);
+	}
+	
+	public void removeChild(UIObject obj) {
+		//assert children.remove(obj) : "Could not remove child";
+		for(int i = children.size() - 1; i > -1; i-- ) {
+			if(children.get(i) == obj)
+				children.remove(i);
+		}
 	}
 	
 	public ArrayList<UIObject> getChildren() {
