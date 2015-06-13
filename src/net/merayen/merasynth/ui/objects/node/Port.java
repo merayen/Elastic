@@ -12,7 +12,6 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	/*
 	 * Connectable port
 	 */
-	
 	private MouseHandler port_drag;
 	public String title = "";
 	
@@ -102,7 +101,6 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		add(temp_port);
 		getNetObject().addLine(this, temp_port);
 		getNetObject().setDraggingPort(this);
-		
 	}
 	
 	private void moveTempPort(Point position) { // Relative coordinates
@@ -122,8 +120,5 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		if((UIObject)port == (UIObject)this) return;
 		
 		getNetObject().addLine(this, port); // Connect the ports together
-		
-		
-		System.out.println("Yes");
 	}
 }
