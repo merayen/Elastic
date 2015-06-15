@@ -21,8 +21,8 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 			node.width = 10f;
 			node.height = 10f;
 			top_ui_object.add(node);
-			top_ui_object.translation.scale_x = .01f;
-			top_ui_object.translation.scale_y = .01f;
+			top_ui_object.translation.scale_x = .1f;
+			top_ui_object.translation.scale_y = .1f;
 		}
 		
 		this.addMouseListener(this);

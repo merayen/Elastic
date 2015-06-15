@@ -42,12 +42,10 @@ public class CircularSlider extends UIObject {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
 				setValue(drag_value - offset.y/10f);
-				System.out.println(offset.y);
 			}
 			
 			@Override
 			public void onMouseDown(Point position) {
-				System.out.println("Mouse down");
 				drag_value = value;
 			}
 			

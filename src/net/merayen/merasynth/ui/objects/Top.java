@@ -37,13 +37,23 @@ public class Top extends Group {
 				return;
 			}
 			
-			translation.scale_x = Math.max(Math.min(translation.scale_x, 10f), .005f);
-			translation.scale_y = Math.max(Math.min(translation.scale_y, 10f), .005f);
+			translation.scale_x = Math.min(Math.max(translation.scale_x, 0.01f), .1f);
+			translation.scale_y = Math.min(Math.max(translation.scale_y, 0.01f), .1f);
 			
-			/*translation.scroll_x += (translation.scale_x - p_x)*10;
-			translation.scroll_y += (translation.scale_y - p_y)*10;
+			// TODO also scroll when zooming in
 			
-			System.out.printf("Scroll X=%f, scroll Y=%f\n", translation.scroll_x, translation.scroll_y);*/
+			/*translation.scroll_x += (translation.scale_x - p_x)*translation.scale_x;
+			translation.scroll_y += (translation.scale_y - p_y)*translation.scale_y;*/
+			
+			//translation.scroll_x += (1/((this.draw_context.width * translation.scale_x) * (translation.scale_x - p_x)))/100;
+			if(Math.abs(translation.scale_x - p_x) > 0.001) {
+				//translation.scroll_x += (1/(translation.scale_x - p_x)) / this.draw_context.width;
+			
+				System.out.printf("Scroll X=%f, scroll Y=%f\n",
+					translation.scale_x,
+					translation.scale_y
+				);
+			}
 		}
 	}
 }
