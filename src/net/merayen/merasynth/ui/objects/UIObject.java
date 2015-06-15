@@ -23,14 +23,13 @@ public abstract class UIObject {
 	
 	boolean created = false;
 	
-	protected void onCreate() {
-		/*
-		 * Overload this one to initialize when graphic is created.
-		 * No drawing is performed here, only initialization of eventually children UIObject()s +++
-		 */
-	}
-	
-	protected abstract void onDraw(java.awt.Graphics2D g);
+	/*
+	 * Overload this one to initialize when graphic is created.
+	 * No drawing is performed here, only initialization of eventually children UIObject()s +++
+	 */
+	protected void onCreate() {} 
+	protected void onDraw(java.awt.Graphics2D g) {}
+	protected void onEvent(IEvent e) {}
 	
 	public final void update(net.merayen.merasynth.ui.DrawContext dc) {
 		if(!created) {
@@ -65,15 +64,15 @@ public abstract class UIObject {
 		obj.update(draw_context);
 	}
 	
-	public java.awt.Point getAbsolutePixelPoint(float offset_x, float offset_y) { // Absolute position
+	public java.awt.Point getAbsolutePixelPoint(float offset_x, float offset_y) { // Absolute position incl scrolling
 		TranslationData td = absolute_translation;
-		return new java.awt.Point((int)((draw_context.width * td.scale_x) * (td.x + offset_x)), (int)((draw_context.height * td.scale_y) * (td.y + offset_y)));
+		return new java.awt.Point((int)((draw_context.width * td.scale_x) * (td.x + offset_x - td.scroll_x)), (int)((draw_context.height * td.scale_y) * (td.y + offset_y - td.scroll_y)));
 	}
 	
 	public net.merayen.merasynth.ui.Point getAbsolutePosition() {
 		/*
 		 * Returns the absolute position of the node.
-		 * Does not include any scrolling that happens when we are moving
+		 * Does not include any scrolling!
 		 */
 		TranslationData td = absolute_translation;
 		return new net.merayen.merasynth.ui.Point(td.x, td.y);
@@ -84,7 +83,7 @@ public abstract class UIObject {
 		 * Convert pixel coordinates to our coordinate system
 		 */
 		TranslationData td = absolute_translation;
-		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x), (float)y / (draw_context.height * td.scale_y));
+		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x) + td.scroll_x, (float)y / (draw_context.height * td.scale_y) + td.scroll_y);
 	}
 	
 	public net.merayen.merasynth.ui.Point getPointFromPixel(int x, int y) {
@@ -92,7 +91,7 @@ public abstract class UIObject {
 		 * Get our internal (relative) position from absolute window pixel position.
 		 */
 		TranslationData td = absolute_translation;
-		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x) - td.x, ((float)y / (draw_context.height * td.scale_y) - td.y));
+		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x) - td.x + td.scroll_x, (float)y / (draw_context.height * td.scale_y) - td.y + td.scroll_y);
 	}
 
 	public java.awt.Dimension getPixelDimension(float width, float height) {
@@ -108,10 +107,6 @@ public abstract class UIObject {
 		TranslationData td = absolute_translation;
 		float resolution = Math.min(draw_context.width, draw_context.height);
 		return (int)(a * resolution * ((td.scale_x + td.scale_y) / 2f));
-	}
-	
-	protected void onEvent(IEvent e) {
-		// Override me, I'm worth nothing in this world! :D
 	}
 	
 	protected void sendEvent(IEvent event) {

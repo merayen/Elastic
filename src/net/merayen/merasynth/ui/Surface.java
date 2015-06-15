@@ -33,9 +33,6 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 	protected void draw(java.awt.Graphics2D g) {
 		ArrayList<net.merayen.merasynth.ui.event.IEvent> current_events;
 		
-		top_ui_object.translation.scroll_x += 0.01;
-		top_ui_object.translation.scroll_y += 0.005;
-		
 		synchronized (events_queue) {
 			current_events = new ArrayList<net.merayen.merasynth.ui.event.IEvent>(events_queue);
 			events_queue.clear();

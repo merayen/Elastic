@@ -30,11 +30,13 @@ public class PulseGenerator extends Node {
 		// UI
 		frequency_slider = new CircularSlider();
 		add(frequency_slider);
-		frequency_slider.translation.x = 0.1f;
-		frequency_slider.translation.y = 0.1f;
+		frequency_slider.translation.x = 5f;
+		frequency_slider.translation.y = 5f;
 	}
 	
 	public void onDraw(Graphics2D g) {
 		super.onDraw(g);
+		/*frequency_slider.value += 0.01f;
+		frequency_slider.value %= 1f;*/
 	}
 }

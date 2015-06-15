@@ -40,8 +40,8 @@ public class Top extends Group {
 			translation.scale_x = Math.max(Math.min(translation.scale_x, 10f), .005f);
 			translation.scale_y = Math.max(Math.min(translation.scale_y, 10f), .005f);
 			
-			/*translation.scroll_x -= (translation.scale_x - p_x)*100;
-			translation.scroll_y -= (translation.scale_y - p_y)*100;
+			/*translation.scroll_x += (translation.scale_x - p_x)*10;
+			translation.scroll_y += (translation.scale_y - p_y)*10;
 			
 			System.out.printf("Scroll X=%f, scroll Y=%f\n", translation.scroll_x, translation.scroll_y);*/
 		}

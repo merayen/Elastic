@@ -66,7 +66,7 @@ public class MouseHandler {
 				handler_class.onMouseDown(p_relative);
 				
 				drag_start = new net.merayen.merasynth.ui.Point(p_relative.x, p_relative.y);
-				handler_class.onMouseDrag(p_relative, drag_start);
+				handler_class.onMouseDrag(p_relative, new net.merayen.merasynth.ui.Point(0, 0));
 			}
 			else if(e.action == MouseEvent.action_type.UP) {
 				if(hit)

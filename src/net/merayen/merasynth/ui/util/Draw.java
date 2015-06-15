@@ -92,6 +92,17 @@ public class Draw {
 		g2d.fillOval(point.x, point.y, dimension.width, dimension.height);
 	}
 	
+	public void oval(float x, float y, float width, float height, float lineWidth) {
+		// TODO implement lineWidth
+		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
+		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
+		reg(
+				x, y, width, height,
+				point.x, point.y, dimension.width, dimension.height
+		);
+		g2d.drawOval(point.x, point.y, dimension.width, dimension.height);
+	}
+	
 	public void text(String text, float x, float y) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		// TODO calculate the outline box, reg(...)
