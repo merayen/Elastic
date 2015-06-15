@@ -8,12 +8,14 @@ public abstract class UIObject {
 	public UIObject parent;
 	
 	// Outline of the box this UIObject has drawn on. Used to figure out mouse capture
+	// Set by the Draw()-class
 	public float draw_x = 0;
 	public float draw_y = 0;
+	
+	public int draw_z; // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()
+	
 	public float draw_width = 0;
 	public float draw_height = 0;
-	
-	public int current_z_index; // The current *drawn* Z index of this UIObject
 	
 	public TranslationData translation = new TranslationData();
 	public TranslationData absolute_translation;
@@ -44,7 +46,7 @@ public abstract class UIObject {
 		draw_context.translation.push(translation);
 		
 		absolute_translation = draw_context.translation.getCurrentTranslationData(); // Caching for outside use
-		current_z_index = draw_context.pushZCounter();
+		draw_z = draw_context.pushZCounter(); // Set the z-index we are drawing on
 		
 		for(IEvent event : draw_context.incoming_events)
 			receiveEvent(event);

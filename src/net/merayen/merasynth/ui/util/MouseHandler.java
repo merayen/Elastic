@@ -1,6 +1,5 @@
 package net.merayen.merasynth.ui.util;
 
-import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseEvent;
 import net.merayen.merasynth.ui.objects.UIObject;
@@ -20,7 +19,7 @@ public class MouseHandler {
 		public void onMouseMove(net.merayen.merasynth.ui.Point position); // Mouse moves over the hitbox
 		public void onMouseDrag(net.merayen.merasynth.ui.Point start_point, net.merayen.merasynth.ui.Point offset); // Mouse down on hitbox and is now moving
 		public void onMouseDrop(net.merayen.merasynth.ui.Point start_point, net.merayen.merasynth.ui.Point offset); // Mouse has dragged item but now drops it
-		public void onGlobalMouseMove(net.merayen.merasynth.ui.Point global_position); // Mouse has been moved anywhere
+		public void onGlobalMouseMove(net.merayen.merasynth.ui.Point global_position); // Mouse has been moved anywhere. TODO add others too? Like click
 	}
 	
 	private IMouseHandler handler_class;

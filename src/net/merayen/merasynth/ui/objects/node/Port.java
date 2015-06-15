@@ -32,20 +32,13 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 			}
 			
 			@Override
-			public void onMouseOver() {
-				
-			}
+			public void onMouseOver() {}
 			
 			@Override
-			public void onMouseOut() {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onMouseOut() {}
 			
 			@Override
-			public void onMouseMove(Point position) {
-				
-			}
+			public void onMouseMove(Point position) {}
 			
 			@Override
 			public void onMouseDrop(Point start_point, Point offset) {
@@ -61,14 +54,10 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 			public void onMouseDown(Point position) {
 				// Create a new port and notifies the net
 				createTempPort();
-				System.out.println("Hei");
 			}
 			
 			@Override
-			public void onGlobalMouseMove(Point global_position) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onGlobalMouseMove(Point global_position) {}
 		});
 	}
 	

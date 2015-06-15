@@ -40,14 +40,8 @@ public class Top extends Group {
 			translation.scale_x = Math.min(Math.max(translation.scale_x, 10f), 500f);
 			translation.scale_y = Math.min(Math.max(translation.scale_y, 10f), 500f);
 
-			// TODO also scroll when zooming in
 			translation.scroll_x -= (translation.scale_x - p_x)/2;
 			translation.scroll_y -= (translation.scale_y - p_y)/2;
-
-			System.out.printf("Scroll X=%f, scroll Y=%f\n",
-				translation.scale_x,
-				translation.scale_y
-			);
 		}
 	}
 }

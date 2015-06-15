@@ -22,7 +22,6 @@ public class TranslationDataStack {
 		for(TranslationData td : stack) {
 			r.x += td.x;
 			r.y += td.y;
-			r.z += td.z;
 			r.scroll_x += td.scroll_x;
 			r.scroll_y += td.scroll_y;
 			r.scale_x *= td.scale_x;

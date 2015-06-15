@@ -13,7 +13,6 @@ public class Draw {
 	 * making it easier to draw stuff, and abstracting away the underlaying painting system.
 	 * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
 	 */
-	
 	private java.awt.Graphics2D g2d;
 	private UIObject uiobject;
 	
@@ -33,8 +32,6 @@ public class Draw {
 			float x, float y, float width, float height,
 			int a_x, int a_y, int a_width, int a_height
 	) {
-		//if(uiobject instanceof net.merayen.merasynth.ui.objects.node.Titlebar)
-		//	System.out.printf("%f, %f, %f, %f\n", x, y, width, height);
 		draw_outline.x = Math.min(x, draw_outline.x);
 		draw_outline.y = Math.min(y, draw_outline.y);
 		draw_outline.width = Math.max(width, draw_outline.width);
