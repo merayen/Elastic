@@ -14,16 +14,17 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 	net.merayen.merasynth.ui.objects.Group top_ui_object = new net.merayen.merasynth.ui.objects.Top(); // Topmost object containing everything
 	
 	public Surface() {
-		for(int i = 0; i < 2; i++) {
+		for(int i = 0; i < 1; i++) {
 			net.merayen.merasynth.ui.objects.node.Node node = new net.merayen.merasynth.ui.objects.client.PulseGenerator();
-			node.translation.x = 1f + i;
-			node.translation.y = 1f + i;
+			node.translation.x = 0f + i;
+			node.translation.y = 0f + i;
 			node.width = 10f;
 			node.height = 10f;
 			top_ui_object.add(node);
-			top_ui_object.translation.scale_x = .1f;
-			top_ui_object.translation.scale_y = .1f;
 		}
+		
+		top_ui_object.translation.scale_x = 10f;
+		top_ui_object.translation.scale_y = 10f;
 		
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);

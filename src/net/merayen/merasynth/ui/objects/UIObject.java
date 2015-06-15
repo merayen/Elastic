@@ -66,7 +66,7 @@ public abstract class UIObject {
 	
 	public java.awt.Point getAbsolutePixelPoint(float offset_x, float offset_y) { // Absolute position incl scrolling
 		TranslationData td = absolute_translation;
-		return new java.awt.Point((int)((draw_context.width * td.scale_x) * (td.x + offset_x - td.scroll_x)), (int)((draw_context.height * td.scale_y) * (td.y + offset_y - td.scroll_y)));
+		return new java.awt.Point((int)((draw_context.width / td.scale_x) * (td.x + offset_x - td.scroll_x)), (int)((draw_context.height / td.scale_y) * (td.y + offset_y - td.scroll_y)));
 	}
 	
 	public net.merayen.merasynth.ui.Point getAbsolutePosition() {
@@ -83,7 +83,7 @@ public abstract class UIObject {
 		 * Convert pixel coordinates to our coordinate system
 		 */
 		TranslationData td = absolute_translation;
-		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x) + td.scroll_x, (float)y / (draw_context.height * td.scale_y) + td.scroll_y);
+		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width / td.scale_x) + td.scroll_x, (float)y / (draw_context.height / td.scale_y) + td.scroll_y);
 	}
 	
 	public net.merayen.merasynth.ui.Point getPointFromPixel(int x, int y) {
@@ -91,12 +91,12 @@ public abstract class UIObject {
 		 * Get our internal (relative) position from absolute window pixel position.
 		 */
 		TranslationData td = absolute_translation;
-		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width * td.scale_x) - td.x + td.scroll_x, (float)y / (draw_context.height * td.scale_y) - td.y + td.scroll_y);
+		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width / td.scale_x) - td.x + td.scroll_x, (float)y / (draw_context.height / td.scale_y) - td.y + td.scroll_y);
 	}
 
 	public java.awt.Dimension getPixelDimension(float width, float height) {
 		TranslationData td = absolute_translation;
-		return new java.awt.Dimension((int)(draw_context.width * td.scale_x * width), (int)(draw_context.height * td.scale_y * height));
+		return new java.awt.Dimension((int)((draw_context.width / td.scale_x) * width), (int)((draw_context.height / td.scale_y) * height));
 	}
 	
 	public int convertUnitToPixel(float a) {
@@ -106,7 +106,7 @@ public abstract class UIObject {
 		 */
 		TranslationData td = absolute_translation;
 		float resolution = Math.min(draw_context.width, draw_context.height);
-		return (int)(a * resolution * ((td.scale_x + td.scale_y) / 2f));
+		return (int)(a * resolution / ((td.scale_x + td.scale_y) / 2f));
 	}
 	
 	protected void sendEvent(IEvent event) {

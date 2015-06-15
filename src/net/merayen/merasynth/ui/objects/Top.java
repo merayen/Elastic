@@ -26,34 +26,28 @@ public class Top extends Group {
 			float p_x = translation.scale_x;
 			float p_y = translation.scale_y;
 			
-			if(e.getOffsetY() > 0) {
+			if(e.getOffsetY() < 0) {
 				translation.scale_x /= 1.1;
 				translation.scale_y /= 1.1;
 			}
-			else if(e.getOffsetY() < 0) {
+			else if(e.getOffsetY() > 0) {
 				translation.scale_x *= 1.1;
 				translation.scale_y *= 1.1;
 			} else {
 				return;
 			}
 			
-			translation.scale_x = Math.min(Math.max(translation.scale_x, 0.01f), .1f);
-			translation.scale_y = Math.min(Math.max(translation.scale_y, 0.01f), .1f);
-			
+			translation.scale_x = Math.min(Math.max(translation.scale_x, 10f), 500f);
+			translation.scale_y = Math.min(Math.max(translation.scale_y, 10f), 500f);
+
 			// TODO also scroll when zooming in
-			
-			/*translation.scroll_x += (translation.scale_x - p_x)*translation.scale_x;
-			translation.scroll_y += (translation.scale_y - p_y)*translation.scale_y;*/
-			
-			//translation.scroll_x += (1/((this.draw_context.width * translation.scale_x) * (translation.scale_x - p_x)))/100;
-			if(Math.abs(translation.scale_x - p_x) > 0.001) {
-				//translation.scroll_x += (1/(translation.scale_x - p_x)) / this.draw_context.width;
-			
-				System.out.printf("Scroll X=%f, scroll Y=%f\n",
-					translation.scale_x,
-					translation.scale_y
-				);
-			}
+			translation.scroll_x -= (translation.scale_x - p_x)/2;
+			translation.scroll_y -= (translation.scale_y - p_y)/2;
+
+			System.out.printf("Scroll X=%f, scroll Y=%f\n",
+				translation.scale_x,
+				translation.scale_y
+			);
 		}
 	}
 }

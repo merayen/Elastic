@@ -1,5 +1,6 @@
 package net.merayen.merasynth.ui.objects.client;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import net.merayen.merasynth.ui.objects.components.CircularSlider;
@@ -38,5 +39,9 @@ public class PulseGenerator extends Node {
 		super.onDraw(g);
 		/*frequency_slider.value += 0.01f;
 		frequency_slider.value %= 1f;*/
+		
+		// Test middle point
+		g.setColor(new Color(0,0,0));
+		draw.fillOval(4.95f, 4.95f, 0.1f, 0.1f);
 	}
 }
