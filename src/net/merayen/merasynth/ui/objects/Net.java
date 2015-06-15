@@ -29,9 +29,9 @@ public class Net extends net.merayen.merasynth.ui.objects.Group {
 			Point p2 = c.b.getAbsolutePosition();
 			
 			g.setColor(new Color(150,150,150));
-			draw.setStroke(0.005f);
+			draw.setStroke(0.5f);
 			draw.line(p1.x, p1.y, p2.x, p2.y);
-			draw.setStroke(0.003f);
+			draw.setStroke(0.3f);
 			g.setColor(new Color(0,0,0));
 			draw.line(p1.x, p1.y, p2.x, p2.y);
 		}

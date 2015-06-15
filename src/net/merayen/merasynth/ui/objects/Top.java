@@ -22,6 +22,10 @@ public class Top extends Group {
 	protected void onEvent(IEvent event) {
 		if(event instanceof MouseWheelEvent) {
 			MouseWheelEvent e = (MouseWheelEvent)event;
+			
+			float p_x = translation.scale_x;
+			float p_y = translation.scale_y;
+			
 			if(e.getOffsetY() > 0) {
 				translation.scale_x /= 1.1;
 				translation.scale_y /= 1.1;
@@ -29,15 +33,17 @@ public class Top extends Group {
 			else if(e.getOffsetY() < 0) {
 				translation.scale_x *= 1.1;
 				translation.scale_y *= 1.1;
+			} else {
+				return;
 			}
 			
-			if(translation.scale_x < 0.1f)
-				translation.scale_x = 0.1f;
-			if(translation.scale_y < 0.1f)
-				translation.scale_y = 0.1f;
+			translation.scale_x = Math.max(Math.min(translation.scale_x, 10f), .005f);
+			translation.scale_y = Math.max(Math.min(translation.scale_y, 10f), .005f);
 			
-			translation.scale_x = Math.max(Math.min(translation.scale_x, 10f), 0.1f);
-			translation.scale_y = Math.max(Math.min(translation.scale_y, 10f), 0.1f);
+			/*translation.scroll_x -= (translation.scale_x - p_x)*100;
+			translation.scroll_y -= (translation.scale_y - p_y)*100;
+			
+			System.out.printf("Scroll X=%f, scroll Y=%f\n", translation.scroll_x, translation.scroll_y);*/
 		}
 	}
 }

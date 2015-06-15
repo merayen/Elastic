@@ -6,7 +6,7 @@ import net.merayen.merasynth.ui.util.Moveable;
 
 public class Titlebar extends Group {
 	public float width;
-	public final float height = 0.01f;
+	public final float height = 1f;
 	private boolean over = false;
 	
 	private Moveable moveable = null;
@@ -32,7 +32,7 @@ public class Titlebar extends Group {
 		else
 			g.setPaint(new java.awt.Color(200,200,255));
 		
-		draw.fillRect(0.002f, 0.002f, width - 0.004f, height);
+		draw.fillRect(0.2f, 0.2f, width - 0.4f, height);
 		
 		super.onDraw(g);
 	}

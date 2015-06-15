@@ -16,13 +16,13 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 	public Surface() {
 		for(int i = 0; i < 2; i++) {
 			net.merayen.merasynth.ui.objects.node.Node node = new net.merayen.merasynth.ui.objects.client.PulseGenerator();
-			node.translation.x = 0.1f + i/10f;
-			node.translation.y = 0.1f + i/10f;
-			node.width = 0.1f;
-			node.height = 0.1f;
+			node.translation.x = 1f + i;
+			node.translation.y = 1f + i;
+			node.width = 10f;
+			node.height = 10f;
 			top_ui_object.add(node);
-			top_ui_object.translation.scale_x = 1.0f;
-			top_ui_object.translation.scale_y = 1.0f;
+			top_ui_object.translation.scale_x = .01f;
+			top_ui_object.translation.scale_y = .01f;
 		}
 		
 		this.addMouseListener(this);
@@ -32,6 +32,9 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 	
 	protected void draw(java.awt.Graphics2D g) {
 		ArrayList<net.merayen.merasynth.ui.event.IEvent> current_events;
+		
+		top_ui_object.translation.scroll_x += 0.01;
+		top_ui_object.translation.scroll_y += 0.005;
 		
 		synchronized (events_queue) {
 			current_events = new ArrayList<net.merayen.merasynth.ui.event.IEvent>(events_queue);

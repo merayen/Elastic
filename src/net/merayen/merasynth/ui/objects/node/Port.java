@@ -74,11 +74,11 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	
 	protected void onDraw(java.awt.Graphics2D g) {
 		g.setPaint(new java.awt.Color(50,200,50));
-		draw.fillOval(-0.005f, -0.005f, 0.01f, 0.01f);
+		draw.fillOval(-0.5f, -0.5f, 1f, 1f);
 		
 		g.setColor(new java.awt.Color(0,0,0));
-		draw.setFont("SansSerif", 0.015f);
-		draw.text(title, 0.01f, 0.005f);
+		draw.setFont("SansSerif", 1.5f);
+		draw.text(title, 1f, 0.5f);
 		
 		super.onDraw(g);
 	}
