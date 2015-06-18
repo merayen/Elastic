@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
 /*
- * TODO Remove support of dumpp/restore
+ * TODO Remove support of dump/restore?
  * It might be best to let the glue nodes restore everything.
- * Less complexity? 
+ * Less complexity? Hmm... 
  */
 
 public class Supervisor {

@@ -9,6 +9,8 @@ import net.merayen.merasynth.ui.util.Draw;
 
 public abstract class UIObject {
 	public UIObject parent;
+
+	private int id = java.util.UUID.randomUUID().hashCode();
 	
 	// Outline of the box this UIObject has drawn on. Used to figure out mouse capture
 	// Set by the Draw()-class
@@ -123,5 +125,13 @@ public abstract class UIObject {
 	
 	public void receiveEvent(IEvent e) {
 		onEvent(e);
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
+	public void setID(int id) {
+		this.id = id;
 	}
 }

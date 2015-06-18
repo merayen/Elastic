@@ -47,7 +47,7 @@ public abstract class Node extends NetListObject {
 		 */
 		Port port = getPort(port_name);
 		
-		assert port != null : "Port by name" + port_name + " does not exist on this node";
+		assert port != null : "Port by name " + port_name + " does not exist on this node";
 		
 		port.send(data);
 	}

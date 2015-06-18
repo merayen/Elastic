@@ -1,17 +1,17 @@
 package net.merayen.merasynth.netlist;
 
+import java.util.UUID;
+
 public class NetListObject {
 	/*
 	 * Absolutt alle i en netlist må inheritere denne.
 	 */
-	private static int id_counter = 0;
-	private int id;
 	
 	protected Supervisor supervisor;
+	protected int id = UUID.randomUUID().hashCode();
 	
 	public NetListObject(Supervisor supervisor) {
 		this.supervisor = supervisor;
-		id = ++id_counter;
 	}
 	
 	public int getID() {
@@ -20,10 +20,8 @@ public class NetListObject {
 	
 	public void setID(int id) {
 		/*
-		 * Every object gets an ID. This exists due to dumping to JSON.
+		 * Every object gets an ID. This exists due to restoring from JSON.
 		 */
 		this.id = id;
-		if(id > id_counter)
-			id_counter = id;
 	}
 }
