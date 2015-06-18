@@ -1,10 +1,10 @@
-package net.merayen.merasynth_;
+package net.merayen.merasynth;
 
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.nodes.*;
 
 public class Main {
-	public static void _main(String dfkljdsfs[]) {
+	public static void main(String dfkljdsfs[]) {
 		Supervisor supervisor = new Supervisor();
 		Node sine_node = new SineGenerator(supervisor);
 		Node console_node = new Console(supervisor);

@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.objects.node.Port;
 
+/*
+ * TODO Restore all lines from the actual netlist!
+ * Do note that all the nodes must have been initialized and created their ports, first!
+ * (Maybe launch our reconnect job on the first onDraw()? After onInit(), onRestore()?
+ */
+
 public class Net extends net.merayen.merasynth.ui.objects.Group {
 	/* 
 	 * Draws the net behind all of the nodes. Must be drawn first.

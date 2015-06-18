@@ -1,5 +1,8 @@
 package net.merayen.merasynth.ui.objects;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.util.Draw;
@@ -29,13 +32,13 @@ public abstract class UIObject {
 	 * Overload this one to initialize when graphic is created.
 	 * No drawing is performed here, only initialization of eventually children UIObject()s +++
 	 */
-	protected void onCreate() {} 
+	protected void onInit() {} 
 	protected void onDraw(java.awt.Graphics2D g) {}
 	protected void onEvent(IEvent e) {}
 	
 	public final void update(net.merayen.merasynth.ui.DrawContext dc) {
 		if(!created) {
-			onCreate();
+			onInit();
 			created = true;
 		}
 		

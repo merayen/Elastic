@@ -1,4 +1,4 @@
-package net.merayen.merasynth.glue;
+package net.merayen.merasynth.glue.nodes;
 
 import org.json.simple.JSONObject;
 

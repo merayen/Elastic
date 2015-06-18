@@ -20,8 +20,8 @@ public class PulseGenerator extends Node {
 	// UI
 	private CircularSlider frequency_slider;
 	
-	public void onCreate() {
-		super.onCreate();
+	public void onInit() {
+		super.onInit();
 		input_frequency = new Port();
 		input_frequency.translation.x = 0;
 		input_frequency.translation.y = 2f;
@@ -37,8 +37,6 @@ public class PulseGenerator extends Node {
 	
 	public void onDraw(Graphics2D g) {
 		super.onDraw(g);
-		/*frequency_slider.value += 0.01f;
-		frequency_slider.value %= 1f;*/
 		
 		// Test middle point
 		g.setColor(new Color(0,0,0));

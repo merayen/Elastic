@@ -20,7 +20,7 @@ public class CircularSlider extends UIObject {
 	private MouseHandler mousehandler;
 	private float drag_value;
 
-	protected void onCreate() {
+	protected void onInit() {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.IMouseHandler() {
 			

@@ -17,7 +17,9 @@ public class Draw {
 	private UIObject uiobject;
 	
 	public Rect draw_outline = new Rect(Float.MAX_VALUE, Float.MAX_VALUE, 0, 0); // Calculated size of the drawn area.
-	public java.awt.Rectangle draw_outline_absolute = new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Absolute in pixels!
+	
+	// No idea what I thought with the below code?
+	//public java.awt.Rectangle draw_outline_absolute = new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Absolute in pixels!
 	
 	public Draw(UIObject obj, java.awt.Graphics2D g) {
 		uiobject = obj;
@@ -29,26 +31,26 @@ public class Draw {
 	}
 	
 	private void reg(
-			float x, float y, float width, float height,
-			int a_x, int a_y, int a_width, int a_height
+			float x, float y, float width, float height/*,
+			int a_x, int a_y, int a_width, int a_height*/
 	) {
 		draw_outline.x = Math.min(x, draw_outline.x);
 		draw_outline.y = Math.min(y, draw_outline.y);
 		draw_outline.width = Math.max(width, draw_outline.width);
 		draw_outline.height = Math.max(height, draw_outline.height);
 		
-		draw_outline_absolute.x = Math.min(a_x, draw_outline_absolute.x);
+		/*draw_outline_absolute.x = Math.min(a_x, draw_outline_absolute.x);
 		draw_outline_absolute.y = Math.min(a_y, draw_outline_absolute.y);
 		draw_outline_absolute.width = Math.max(a_width, draw_outline_absolute.width);
-		draw_outline_absolute.height = Math.max(a_height, draw_outline_absolute.height);
+		draw_outline_absolute.height = Math.max(a_height, draw_outline_absolute.height);*/
 	}
 	
 	public void fillRect(float x, float y, float width, float height) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
 		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
+				x, y, width, height/*,
+				point.x, point.y, dimension.width, dimension.height*/
 		);
 		g2d.fillRect(point.x, point.y, dimension.width, dimension.height);
 	}
@@ -69,12 +71,12 @@ public class Draw {
 				Math.min(x1, x2),
 				Math.min(y1, y2),
 				Math.abs(x2-x1),
-				Math.abs(y2-y1),
+				Math.abs(y2-y1)/*,
 				
 				Math.min(point1.x, point2.x),
 				Math.min(point1.y, point2.y),
 				Math.abs(point2.x - point1.x),
-				Math.abs(point2.y - point1.y)
+				Math.abs(point2.y - point1.y)*/
 		);
 		g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
 	}
@@ -83,8 +85,8 @@ public class Draw {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
 		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
+				x, y, width, height/*,
+				point.x, point.y, dimension.width, dimension.height*/
 		);
 		g2d.fillOval(point.x, point.y, dimension.width, dimension.height);
 	}
@@ -94,8 +96,8 @@ public class Draw {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
 		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
+				x, y, width, height/*,
+				point.x, point.y, dimension.width, dimension.height*/
 		);
 		g2d.drawOval(point.x, point.y, dimension.width, dimension.height);
 	}
@@ -104,5 +106,13 @@ public class Draw {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		// TODO calculate the outline box, reg(...)
 		g2d.drawString(text, point.x, point.y);
+	}
+	
+	public void empty(float x, float y, float width, float height) {
+		/*
+		 * Draw nothing, but increase the draw area. E.g to catch mouse clicks
+		 * outside the drawn area.
+		 */
+		this.reg(x, y, width, height/*, a_x, a_y, a_width, a_height*/);
 	}
 }

@@ -12,7 +12,7 @@ public class Node extends Group {
 	private Titlebar titlebar;
 	protected ArrayList<Port> ports = new ArrayList<Port>();
 	
-	protected void onCreate() {
+	protected void onInit() {
 		titlebar = new Titlebar();
 		add(titlebar);
 	}

@@ -17,7 +17,7 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	
 	private UIObject temp_port; // Used when dragging a line from this port
 	
-	protected void onCreate() {
+	protected void onInit() {
 		/*port_drag = new PortDrag();
 		add(port_drag);*/
 		port_drag = new MouseHandler(this);

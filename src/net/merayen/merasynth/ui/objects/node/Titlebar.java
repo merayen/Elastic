@@ -11,7 +11,7 @@ public class Titlebar extends Group {
 	
 	private Moveable moveable = null;
 	
-	protected void onCreate() {
+	protected void onInit() {
 		moveable = new Moveable(this.parent, this);
 		moveable.setHandler(new Moveable.IMoveable() {
 

@@ -1,6 +1,5 @@
 package net.merayen.merasynth.glue.nodes;
 
-import net.merayen.merasynth.glue.GlueNode;
 import net.merayen.merasynth.netlist.Node;
 
 public class PulseGenerator extends GlueNode {

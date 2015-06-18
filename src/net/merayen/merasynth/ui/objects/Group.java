@@ -2,6 +2,9 @@ package net.merayen.merasynth.ui.objects;
 
 import java.util.ArrayList;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import net.merayen.merasynth.ui.util.Search;
 
 public class Group extends UIObject {

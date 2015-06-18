@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
+/*
+ * TODO Remove support of dumpp/restore
+ * It might be best to let the glue nodes restore everything.
+ * Less complexity? 
+ */
+
 public class Supervisor {
 	/*
 	 * Supervisor containing the whole net.
