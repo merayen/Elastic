@@ -1,6 +1,7 @@
 package net.merayen.merasynth.netlist;
 
 import java.util.ArrayList;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -8,6 +9,12 @@ public abstract class Node extends NetListObject {
 	/*
 	 * Alle noder må inheritere fra denne.
 	 */
+	
+	public static class PortExists extends RuntimeException {
+		public PortExists(Node node, String port_name) {
+			super(String.format("Port '%s' already exists on node '%s'", node.getClass().getName(), port_name));
+		}
+	}
 	
 	// Returner denne i update() for å fortelle Supervisoren at vi ikke trenger mer oppmerksomhet
 	protected final double DONE = 1000000.0;
@@ -17,20 +24,33 @@ public abstract class Node extends NetListObject {
 	
 	public Node(Supervisor supervisor) {
 		super(supervisor);
+		onCreate();
 	}
 	
-	//public abstract String getName();
+	protected void onCreate() {
+		
+	}
 	
-	protected void addPort(Port port) {
+	protected void onRestore() {
+		
+	}
+	
+	protected void onDump(JSONObject state) {
+		
+	}
+	
+	protected void addPort(String port_name) {
 		/*
 		 * Noden kaller på denne for å legge til en port
 		 */
-		assert getPort(port.name) != null : "Port already exists";
-		ports.add(port);
+		if(getPort(port_name) != null)
+			throw new PortExists(this, port_name);
+
+		ports.add(new Port(this, port_name));
 	}
 	
 	public ArrayList<Port> getPorts() {
-		return (ArrayList<Port>)ports.clone();
+		return new ArrayList<Port>(ports);
 	}
 	
 	public Port getPort(String name) {
@@ -60,8 +80,6 @@ public abstract class Node extends NetListObject {
 	 */
 	public abstract double update();
 	
-	protected abstract void freezeState(JSONObject state);
-	
 	public void doUpdate() {
 		/*
 		 * Kalles av supervisoren.
@@ -86,7 +104,7 @@ public abstract class Node extends NetListObject {
 		JSONObject result = new JSONObject();
 		
 		result.put("id", this.getID());
-		result.put("name", this.getClass().toString());
+		result.put("class", this.getClass().getName());
 		
 		JSONArray ports = new JSONArray();
 		for(Port p : getPorts())
@@ -95,9 +113,27 @@ public abstract class Node extends NetListObject {
 		result.put("ports", ports);
 		
 		JSONObject state = new JSONObject();
-		freezeState(state);
+		onDump(state);
 		result.put("state", state);
 		
 		return result;
+	}
+	
+	public void restore(JSONObject obj) {
+		this.setID((String)obj.get("id"));
+		
+		// Create/make sure port exists
+		JSONArray dump_ports = (JSONArray)obj.get("ports");
+		for(int i = 0; i < dump_ports.size(); i++) {
+			JSONObject dump_port = (JSONObject)dump_ports.get(i);
+			String port_name = (String)dump_port.get("name");
+			if(getPort(port_name) == null)
+				addPort(port_name);
+			
+			Port port = getPort(port_name);
+			// TODO connect us
+		}
+		
+		this.onRestore((JSONObject)obj.get("state"));
 	}
 }

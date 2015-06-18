@@ -1,4 +1,4 @@
-package net.merayen.merasynth.nodes;
+package net.merayen.merasynth.netlist.nodes;
 
 import net.merayen.merasynth.netlist.*;
 
@@ -10,7 +10,7 @@ public class Console extends Node {
 	 */
 	public Console(Supervisor supervisor) {
 		super(supervisor);
-		addPort(new Port(this, "input"));
+		addPort("input");
 	}
 	
 	protected void freezeState(JSONObject state) {

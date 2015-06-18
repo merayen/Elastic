@@ -1,21 +1,28 @@
-package net.merayen.merasynth.nodes;
+package net.merayen.merasynth.netlist.nodes;
 
 import net.merayen.merasynth.netlist.*;
 
 import org.json.simple.JSONObject;
 
-public class SineGenerator extends Node {
+public class PulseGenerator extends Node {
 	/*
 	 * Genererer sinuslyd
 	 */
 	
-	public SineGenerator(Supervisor supervisor) {
+	public PulseGenerator(Supervisor supervisor) {
 		super(supervisor);
-		addPort(new Port(this, "output"));
 	}
 	
-	protected void freezeState(JSONObject state) {
+	protected void onCreate() {
+		addPort("output");
+	}
+	
+	protected void onDump(JSONObject state) {
 		state.put("test", 1337);
+	}
+	
+	protected void onRestore(JSONObject state) {
+		
 	}
 	
 	public double update() {

@@ -1,4 +1,4 @@
-package net.merayen.merasynth.nodes.datatypes;
+package net.merayen.merasynth.netlist.nodes.datatypes;
 
 import net.merayen.merasynth.netlist.DataPacket;
 import net.merayen.merasynth.types.AudioClip;

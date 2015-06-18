@@ -12,7 +12,7 @@ public class PulseGenerator extends GlueNode {
 	}
 
 	public void onCreate() {
-		net_node = new net.merayen.merasynth.nodes.SineGenerator(context.supervisor);
+		net_node = new net.merayen.merasynth.netlist.nodes.PulseGenerator(context.supervisor);
 		ui_node = new net.merayen.merasynth.ui.objects.client.PulseGenerator();
 	}
 	
@@ -22,5 +22,6 @@ public class PulseGenerator extends GlueNode {
 	
 	protected void onRestore(JSONObject state) {
 		System.out.printf("PulseGenerator is getting restored! My freq: %f\n", ((Double)state.get("frequency")).floatValue());
+		
 	}
 }

@@ -1,6 +1,8 @@
 package net.merayen.merasynth.netlist;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -27,7 +29,7 @@ public class Supervisor {
 		 * eller via timeout.
 		 */
 		
-		// TODO distribute data between nodes
+		// TODO distribute data between nodes. Already done ??
 		
 		for(Node n : getNodesNeedingUpdate())
 			n.doUpdate();
@@ -58,7 +60,7 @@ public class Supervisor {
 	public JSONObject dump() {
 		/*
 		 * Dumps the nodes and the netlist.
-		 * TODO
+		 * TODO Dump the lines the port are connected to, too!
 		 */
 		JSONObject result = new JSONObject();
 		
@@ -71,10 +73,31 @@ public class Supervisor {
 		return result;
 	}
 	
-	public void restore() {
-		/*
-		 * Restores the nodes and the netlist.
-		 * TODO
+	public void restore(JSONObject obj) {
+		/* 
+		 * Restore the lines. If the other node doesn't exist yet,
+		 * the other node will successfully restore the connection?
 		 */
+		JSONArray nodes = (JSONArray)obj.get("nodes");
+		
+		for(int i = 0; i < nodes.size(); i++ ) {
+			JSONObject x = (JSONObject)nodes.get(i);
+			String class_name = (String)x.get("class");
+			Node node;
+			
+			try {
+				node = (Node)Class.forName(class_name).getConstructor(Supervisor.class).newInstance(this);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Could not instantiate class: " + e.toString());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Could not find class: " + class_name);
+			}
+			
+			node.restore((JSONObject)x);
+			
+			this.nodes.add(node);
+		}
 	}
 }
