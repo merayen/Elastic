@@ -1,9 +1,7 @@
 package net.merayen.merasynth.glue.nodes;
 
 import org.json.simple.JSONObject;
-
 import net.merayen.merasynth.glue.Context;
-import net.merayen.merasynth.netlist.Node;
 
 public class PulseGenerator extends GlueNode {
 
@@ -12,8 +10,7 @@ public class PulseGenerator extends GlueNode {
 	}
 
 	public void onCreate() {
-		net_node = new net.merayen.merasynth.netlist.nodes.PulseGenerator(context.supervisor);
-		ui_node = new net.merayen.merasynth.ui.objects.client.PulseGenerator();
+		
 	}
 	
 	protected void onDump(JSONObject state) {

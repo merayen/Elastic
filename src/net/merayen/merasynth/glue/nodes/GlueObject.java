@@ -5,7 +5,7 @@ import net.merayen.merasynth.netlist.Supervisor;
 
 import org.json.simple.JSONObject;
 
-public abstract class GlueNode {
+public abstract class GlueObject {
 	/*
 	 * Glue nodes that contains a netlist Node and an UI Node. These nodes are
 	 * responsible for controlling both types and glue them together. Currently
@@ -17,20 +17,7 @@ public abstract class GlueNode {
 	
 	private int id = java.util.UUID.randomUUID().hashCode();
 	
-	protected net.merayen.merasynth.netlist.Node net_node;
-	protected net.merayen.merasynth.ui.objects.node.Node ui_node;
-	
-	public GlueNode(
-		Context context/*,
-		Class<? extends net.merayen.merasynth.netlist.Node> net_node,
-		Class<? extends net.merayen.merasynth.ui.objects.node.Node> ui_node*/
-	) {
-		try {
-			/*this.net_node = net_node.getClass().getConstructor(Supervisor.class).newInstance(context.supervisor);
-			this.ui_node = ui_node.getClass().getConstructor().newInstance();*/
-		} catch (Exception e) {
-			throw new RuntimeException("Failed creating GlueNode: " + e.toString());
-		}
+	public GlueObject(Context context) {
 		this.context = context;
 		onCreate();
 	}
@@ -41,7 +28,7 @@ public abstract class GlueNode {
 	
 	protected void onCreate() {
 		/*
-		 * Called when created for the first time
+		 * Called when created for the first time. Nope
 		 */
 	}
 	
@@ -63,18 +50,20 @@ public abstract class GlueNode {
 		 */
 	}
 	
-	public void restore(JSONObject state) {
-		this.id = ((Long)state.get("id")).intValue();
-		onRestore(state);
+	public void restore(JSONObject dump) {
+		this.id = ((Long)dump.get("id")).intValue();
+		onRestore((JSONObject)dump.get("state"));
 	}
 	
 	public JSONObject dump() {
-		JSONObject state = new JSONObject();
-		state.put("id", id);
-		state.put("class", this.getClass().getName());
+		JSONObject result = new JSONObject();
+		result.put("id", id);
+		result.put("class", this.getClass().getName());
+		result.put("state", new JSONObject());
 		
-		onDump(state);
 		
-		return state;
+		onDump((JSONObject)result.get("state"));
+		
+		return result;
 	}
 }

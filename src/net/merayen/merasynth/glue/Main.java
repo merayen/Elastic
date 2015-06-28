@@ -13,7 +13,7 @@ public class Main {
 		Top top = new Top(context);
 		
 		if(dump == null)
-			top.addNode(new PulseGenerator(context));
+			top.addObject(new PulseGenerator(context));
 		else {
 			JSONObject dumpo;
 			try {

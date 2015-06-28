@@ -1,8 +1,5 @@
 package net.merayen.merasynth.ui.objects;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.util.Draw;
@@ -10,7 +7,7 @@ import net.merayen.merasynth.ui.util.Draw;
 public abstract class UIObject {
 	public UIObject parent;
 
-	private int id = java.util.UUID.randomUUID().hashCode();
+	private String id = new Integer(java.util.UUID.randomUUID().hashCode()).toString();
 	
 	// Outline of the box this UIObject has drawn on. Used to figure out mouse capture
 	// Set by the Draw()-class
@@ -127,11 +124,11 @@ public abstract class UIObject {
 		onEvent(e);
 	}
 	
-	public int getID() {
+	public String getID() {
 		return id;
 	}
 	
-	public void setID(int id) {
+	public void setID(String id) {
 		this.id = id;
 	}
 }
