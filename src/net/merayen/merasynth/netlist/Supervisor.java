@@ -139,9 +139,7 @@ public class Supervisor {
 			Port node_port_a = node_a.getPort((String)port_a.get("name"));
 			Port node_port_b = node_b.getPort((String)port_b.get("name"));
 			
-			//Line line = new Line(this, , null);
-			
-			//connect();
+			connect(node_port_a, node_port_b);
 		}
 	}
 }

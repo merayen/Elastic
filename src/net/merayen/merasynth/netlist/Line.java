@@ -33,15 +33,15 @@ public class Line extends NetListObject {
 	public JSONObject dump() {
 		JSONObject obj = new JSONObject();
 		
-		obj.put("id", this.getID());
+		//obj.put("id", this.getID()); We don't bother. No idea what to use it for
 		
 		JSONObject port_a = new JSONObject();
-		port_a.put("node", a.getID());
+		port_a.put("node", a.node.getID());
 		port_a.put("name", a.name);
 		obj.put("port_a", port_a);
 		
 		JSONObject port_b = new JSONObject();
-		port_b.put("node", b.getID());
+		port_b.put("node", b.node.getID());
 		port_b.put("name", b.name);
 		obj.put("port_b", port_b);
 		

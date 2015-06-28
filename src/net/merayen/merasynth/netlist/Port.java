@@ -7,7 +7,7 @@ import org.json.simple.JSONArray;
 
 public class Port extends NetListObject {
 	private java.util.ArrayList<Line> lines = new ArrayList<Line>(); // Lines connected to us
-	private Node node; // The node containing this node
+	public final Node node; // The node containing this node
 	private Supervisor supervisor;
 	private ArrayList<DataPacket> incoming = new ArrayList<DataPacket>();
 	
