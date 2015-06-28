@@ -1,5 +1,7 @@
 package net.merayen.merasynth.netlist;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.merasynth.netlist.Port;
 
 public class Line extends NetListObject {
@@ -26,5 +28,23 @@ public class Line extends NetListObject {
 			a.push(data);
 		else
 			throw new RuntimeException("This line is not connected to this port");
+	}
+	
+	public JSONObject dump() {
+		JSONObject obj = new JSONObject();
+		
+		obj.put("id", this.getID());
+		
+		JSONObject port_a = new JSONObject();
+		port_a.put("node", a.getID());
+		port_a.put("name", a.name);
+		obj.put("port_a", port_a);
+		
+		JSONObject port_b = new JSONObject();
+		port_b.put("node", b.getID());
+		port_b.put("name", b.name);
+		obj.put("port_b", port_b);
+		
+		return obj;
 	}
 }

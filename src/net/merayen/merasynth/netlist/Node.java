@@ -131,7 +131,9 @@ public abstract class Node extends NetListObject {
 				addPort(port_name);
 			
 			Port port = getPort(port_name);
-			// TODO connect us
+			port.setID((String)dump_port.get("id"));
+			
+			// The Supervisor() connects the port afterwards
 		}
 		
 		this.onRestore((JSONObject)obj.get("state"));

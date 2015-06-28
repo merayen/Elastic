@@ -55,17 +55,14 @@ public class Port extends NetListObject {
 		lines.remove(line);
 	}
 	
+	public ArrayList<Line> getLines() {
+		return new ArrayList<Line>(lines);
+	}
+	
 	public JSONObject dump() {
 		JSONObject result = new JSONObject();
 		result.put("name", name);
 		result.put("id", this.getID());
-		
-		JSONArray lines = new JSONArray();
-		
-		for(Line l : this.lines)
-			lines.add(l.getID());
-		
-		result.put("lines", lines);
 		
 		return result;
 	}

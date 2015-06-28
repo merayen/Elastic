@@ -2,6 +2,7 @@ package net.merayen.merasynth.netlist;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
@@ -48,6 +49,14 @@ public class Supervisor {
 		return getNodesNeedingUpdate().size() > 0;
 	}
 	
+	public Node getNodeByID(String id) {
+		for(Node node : nodes)
+			if(node.getID().equals(id))
+				return node;
+		
+		return null;
+	}
+	
 	public void connect(Port a, Port b) {
 		/*
 		 * Hjelpefunksjon.
@@ -64,10 +73,24 @@ public class Supervisor {
 		 */
 		JSONObject result = new JSONObject();
 		
+		// Dump of nodes
 		JSONArray nodes = new JSONArray();
 		for(Node n : this.nodes)
 			nodes.add(n.dump());
 		
+		
+		// Dump of net
+		HashSet lines_dumped = new HashSet<String>(); // To not store all lines twice
+		JSONArray lines = new JSONArray();
+		for(Node node : this.nodes)
+			for(Port port : node.getPorts())
+				for(Line line : port.getLines())
+					if(!lines_dumped.contains(line.getID())) {
+						lines.add(line.dump());
+						lines_dumped.add(line.getID());
+					}
+		
+		result.put("lines", lines);	
 		result.put("nodes", nodes);
 		
 		return result;
@@ -79,7 +102,9 @@ public class Supervisor {
 		 * the other node will successfully restore the connection?
 		 */
 		JSONArray nodes = (JSONArray)obj.get("nodes");
+		JSONArray lines = (JSONArray)obj.get("lines");
 		
+		// Creation of nodes and their ports
 		for(int i = 0; i < nodes.size(); i++ ) {
 			JSONObject x = (JSONObject)nodes.get(i);
 			String class_name = (String)x.get("class");
@@ -98,6 +123,25 @@ public class Supervisor {
 			node.restore((JSONObject)x);
 			
 			this.nodes.add(node);
+		}
+		
+		// Connecting the ports with lines
+		for(int i = 0; i < lines.size(); i++ ) {
+			JSONObject line = (JSONObject)lines.get(i);
+			JSONObject port_a = (JSONObject)line.get("port_a");
+			JSONObject port_b = (JSONObject)line.get("port_b");
+			
+			Node node_a = getNodeByID((String)port_a.get("node"));
+			Node node_b = getNodeByID((String)port_b.get("node"));
+			assert node_a != null;
+			assert node_b != null;
+			
+			Port node_port_a = node_a.getPort((String)port_a.get("name"));
+			Port node_port_b = node_b.getPort((String)port_b.get("name"));
+			
+			//Line line = new Line(this, , null);
+			
+			//connect();
 		}
 	}
 }
