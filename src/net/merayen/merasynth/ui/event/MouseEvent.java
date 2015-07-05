@@ -3,8 +3,8 @@ package net.merayen.merasynth.ui.event;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import net.merayen.merasynth.ui.objects.Top;
 import net.merayen.merasynth.ui.objects.UIObject;
+import net.merayen.merasynth.ui.objects.top.Top;
 
 public class MouseEvent implements IEvent {
 	/*
