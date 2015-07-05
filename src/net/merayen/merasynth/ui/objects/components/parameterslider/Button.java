@@ -9,7 +9,7 @@ public class Button extends UIObject {
 	public float height = 1.5f;
 
 	protected void onDraw() {
-		draw.setColor(100, 100, 100);
+		draw.setColor(50, 50, 50);
 		draw.fillRect(0, 0, width, height);
 
 		draw.setColor(120, 120, 120);

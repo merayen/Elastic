@@ -25,7 +25,7 @@ public class Titlebar extends Group {
 	}
 
 	protected void onDraw() {
-		draw.setColor(80, 80, 80);
+		draw.setColor(30, 30, 30);
 		draw.fillRect(0.2f, 0.2f, width - 0.4f, 1f);
 
 		draw.setColor(200, 200, 200);

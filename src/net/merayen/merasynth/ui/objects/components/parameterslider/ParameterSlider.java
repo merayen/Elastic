@@ -23,7 +23,7 @@ public class ParameterSlider extends Group {
 	}
 
 	protected void onDraw() {
-		draw.setColor(100, 100, 100);
+		draw.setColor(50, 50, 50);
 		draw.fillRect(1, 0, width - 2f, 1.5f);
 
 		draw.setColor(150, 150, 150);

@@ -19,15 +19,18 @@ public class Node extends Group {
 	
 	@Override
 	protected void onDraw() {
-		draw.setColor(100, 100, 100);
+		draw.setColor(80, 80, 80);
 		draw.fillRect(-0.1f, -0.1f, width + 0.2f, height + 0.2f);
 		
-		draw.setColor(50, 50, 50);
+		draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
 		
 		draw.setColor(180, 180, 180);
+		draw.fillRect(0.1f, 0.1f, width - 0.2f, height - 0.2f);
+
+		draw.setColor(100, 100, 100);
 		draw.fillRect(0.2f, 0.2f, width - 0.4f, height - 0.4f);
-		
+
 		titlebar.width = width;
 		
 		super.onDraw();
