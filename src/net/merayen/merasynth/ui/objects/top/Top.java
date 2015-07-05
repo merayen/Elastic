@@ -59,12 +59,11 @@ public class Top extends Group {
 		});
 	}
 	
-	protected void onDraw(java.awt.Graphics2D g) {
-		
-		g.setPaint(new Color(50,50,50));
+	protected void onDraw() {
+		draw.setColor(50, 50, 50);
 		draw.fillRect(-draw_context.width/2, -draw_context.height/2, draw_context.width, draw_context.height); // XXX Ikke bruk draw_context, men meh
-		
-		super.onDraw(g);
+
+		super.onDraw();
 	}
 	
 	protected void onEvent(IEvent event) {

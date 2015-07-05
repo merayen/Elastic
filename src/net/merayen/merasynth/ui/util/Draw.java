@@ -1,6 +1,7 @@
 package net.merayen.merasynth.ui.util;
 
 import java.awt.Font;
+import java.awt.FontMetrics;
 
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.objects.UIObject;
@@ -24,12 +25,14 @@ public class Draw {
 	
 	private RectArea outline = null;//new RectArea(, Float.MAX_VALUE, 0, 0); // Calculated size of the drawn area.
 	private RectArea outline_abs = null;//new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Calculated size of the drawn area, pixels absolute
-	
+
+	private String font_name = "Geneva";
+	private float font_size = 1f;
+
 	boolean skip_outline = false;
-	
-	// No idea what I thought with the below code?
-	//public java.awt.Rectangle draw_outline_absolute = new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Absolute in pixels!
-	
+
+	FontMetrics font_metrics;
+
 	public Draw(UIObject obj, java.awt.Graphics2D g) {
 		uiobject = obj;
 		g2d = g;
@@ -42,11 +45,11 @@ public class Draw {
 	public Rect getRelativeOutline() {
 		return outline == null ? null : new Rect(outline.x1, outline.y1, outline.x2 - outline.x1, outline.y2 - outline.y1);
 	}
-	
+
 	public Rect getAbsoluteOutline() {
 		return outline_abs == null ? null : new Rect(outline_abs.x1, outline_abs.y1, outline_abs.x2 - outline_abs.x1, outline_abs.y2 - outline_abs.y1);
 	}
-	
+
 	private void reg(
 			float x, float y, float width, float height,
 			int a_x, int a_y, int a_width, int a_height
@@ -69,7 +72,11 @@ public class Draw {
 		outline_abs.x2 = Math.max(a_x + a_width, outline_abs.x2);
 		outline_abs.y2 = Math.max(a_y + a_height, outline_abs.y2);
 	}
-	
+
+	public void setColor(int r, int g, int b) {
+		g2d.setColor(new java.awt.Color(r, g, b));
+	}
+
 	public void fillRect(float x, float y, float width, float height) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
@@ -79,16 +86,21 @@ public class Draw {
 		);
 		g2d.fillRect(point.x, point.y, dimension.width, dimension.height);
 	}
-	
+
 	public void setStroke(float width) {
 		g2d.setStroke(new java.awt.BasicStroke(uiobject.convertUnitToPixel(width)));
 	}
-	
-	public void setFont(String font_name, float size) {
-		Font font = new Font(font_name, 0, (int)uiobject.convertUnitToPixel(size));
+
+	public void setFont(String font_name, float font_size) {
+		this.font_name = font_name;
+		this.font_size = font_size;
+	}
+
+	private void setFont() {
+		Font font = new Font(font_name, 0, (int)uiobject.convertUnitToPixel(font_size));
 		g2d.setFont(font);
 	}
-	
+
 	public void line(float x1, float y1, float x2, float y2) {
 		java.awt.Point point1 = uiobject.getAbsolutePixelPoint(x1, y1);
 		java.awt.Point point2 = uiobject.getAbsolutePixelPoint(x2, y2);
@@ -105,7 +117,7 @@ public class Draw {
 		);
 		g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
 	}
-	
+
 	public void fillOval(float x, float y, float width, float height) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
@@ -115,7 +127,7 @@ public class Draw {
 		);
 		g2d.fillOval(point.x, point.y, dimension.width, dimension.height);
 	}
-	
+
 	public void oval(float x, float y, float width, float height, float lineWidth) {
 		// TODO implement lineWidth
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
@@ -126,13 +138,18 @@ public class Draw {
 		);
 		g2d.drawOval(point.x, point.y, dimension.width, dimension.height);
 	}
-	
+
 	public void text(String text, float x, float y) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		// TODO calculate the outline box, reg(...)
+		setFont();
 		g2d.drawString(text, point.x, point.y);
 	}
-	
+
+	public float getTextWidth(String text) {
+		return uiobject.convertPixelToUnit(g2d.getFontMetrics().stringWidth(text));
+	}
+
 	public void empty(float x, float y, float width, float height) {
 		/*
 		 * Draw nothing, but increase the draw area. E.g to catch mouse clicks
@@ -145,11 +162,11 @@ public class Draw {
 			point.x, point.y, dimension.width, dimension.height
 		);
 	}
-	
+
 	public void disableOutline() {
 		skip_outline = true;
 	}
-	
+
 	public void enableOutline() {
 		skip_outline = false;
 	}

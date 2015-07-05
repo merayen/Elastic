@@ -29,28 +29,28 @@ public abstract class UIObject {
 	 * No drawing is performed here, only initialization of eventually children UIObject()s +++
 	 */
 	protected void onInit() {} 
-	protected void onDraw(java.awt.Graphics2D g) {}
+	protected void onDraw() {}
 	protected void onEvent(IEvent e) {}
-	
+
 	public final void update(net.merayen.merasynth.ui.DrawContext dc) {
 		if(!created) {
 			onInit();
 			created = true;
 		}
-		
+
 		this.draw_context = dc;
-		
+
 		this.draw = new Draw(this, dc.graphics2d);
-		
+
 		draw_context.translation.push(translation);
-		
+
 		absolute_translation = draw_context.translation.getCurrentTranslationData(); // Caching for outside use
 		draw_z = draw_context.pushZCounter(); // Set the z-index we are drawing on
 		
 		for(IEvent event : draw_context.incoming_events)
 			receiveEvent(event);
 
-		onDraw(dc.graphics2d);
+		onDraw();
 
 		// Copy drawn outline box. For caching, drawing, mouse events etc
 		this.outline = draw.getRelativeOutline();
@@ -97,7 +97,7 @@ public abstract class UIObject {
 		TranslationData td = absolute_translation;
 		return new java.awt.Dimension((int)((draw_context.width / td.scale_x) * width), (int)((draw_context.height / td.scale_y) * height));
 	}
-	
+
 	public int convertUnitToPixel(float a) {
 		/*
 		 * Converts a single unit.
@@ -107,7 +107,17 @@ public abstract class UIObject {
 		float resolution = Math.min(draw_context.width, draw_context.height);
 		return (int)(a * resolution / ((td.scale_x + td.scale_y) / 2f));
 	}
-	
+
+	public float convertPixelToUnit(int a) {
+		/*
+		 * Converts a single unit.
+		 * Uses both scale_x and scale_y to figure out the resulting value.
+		 */
+		TranslationData td = absolute_translation;
+		float resolution = Math.min(draw_context.width, draw_context.height); // Doing it the silly way
+		return (float)a / (resolution / ((td.scale_x + td.scale_y) / 2f));
+	}
+
 	protected void sendEvent(IEvent event) {
 		/*
 		 * An uiobject can send an event to other uiobjects/outside. 

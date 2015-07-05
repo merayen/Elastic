@@ -20,8 +20,8 @@ public class Group extends UIObject {
 		search = new Search(this);
 	}
 
-	protected void onDraw(java.awt.Graphics2D g) {
-		for(UIObject x : children)
+	protected void onDraw() {
+		for(UIObject x : new ArrayList<UIObject>(children)) // XXX Yuck, copying many times through a frame, is that okay?
 			this.drawObject(x);
 	}
 

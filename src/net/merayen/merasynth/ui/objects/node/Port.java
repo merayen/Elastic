@@ -62,19 +62,21 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		});
 	}
 
-	protected void onDraw(java.awt.Graphics2D g) {
-		g.setColor(new java.awt.Color(50,60,50));
+	protected void onDraw() {
+		draw.setColor(50, 60, 50);
 		draw.fillOval(-0.55f, -0.55f, 1.1f, 1.1f);
-		g.setColor(new java.awt.Color(100,100,100));
+
+		draw.setColor(100, 100, 100);
 		draw.fillOval(-0.5f, -0.5f, 1f, 1f);
-		g.setColor(new java.awt.Color(150,200,150));
+
+		draw.setColor(150, 200, 150);
 		draw.fillOval(-0.4f, -0.4f, 0.8f, 0.8f);
 
-		g.setColor(new java.awt.Color(0,0,0));
+		draw.setColor(0, 0, 0);
 		draw.setFont("SansSerif", 1.0f);
 		draw.text(title, 1f, 0.5f);
 
-		super.onDraw(g);
+		super.onDraw();
 	}
 
 	protected void onEvent(net.merayen.merasynth.ui.event.IEvent event) {

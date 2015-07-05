@@ -9,7 +9,7 @@ public class Node extends Group {
 	public float width = 50f;
 	public float height = 50f;
 	
-	private Titlebar titlebar;
+	protected Titlebar titlebar;
 	protected ArrayList<Port> ports = new ArrayList<Port>();
 	
 	protected void onInit() {
@@ -18,19 +18,19 @@ public class Node extends Group {
 	}
 	
 	@Override
-	protected void onDraw(java.awt.Graphics2D g) {
-		g.setPaint(new java.awt.Color(100, 100, 100));
+	protected void onDraw() {
+		draw.setColor(100, 100, 100);
 		draw.fillRect(-0.1f, -0.1f, width + 0.2f, height + 0.2f);
 		
-		g.setPaint(new java.awt.Color(50, 50, 50));
+		draw.setColor(50, 50, 50);
 		draw.fillRect(0, 0, width, height);
 		
-		g.setPaint(new java.awt.Color(180, 180, 180));
+		draw.setColor(180, 180, 180);
 		draw.fillRect(0.2f, 0.2f, width - 0.4f, height - 0.4f);
 		
 		titlebar.width = width;
 		
-		super.onDraw(g);
+		super.onDraw();
 	}
 	
 	protected void addPort(Port port) {
