@@ -2,6 +2,8 @@ package net.merayen.merasynth.ui;
 
 import net.merayen.merasynth.ui.event.MouseEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
+
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 
 public abstract class Surface extends javax.swing.JPanel implements java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener {
@@ -11,7 +13,7 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 	
 	ArrayList<net.merayen.merasynth.ui.event.IEvent> events_queue = new ArrayList<net.merayen.merasynth.ui.event.IEvent>();
 	
-	net.merayen.merasynth.ui.objects.Group top_ui_object = new net.merayen.merasynth.ui.objects.Top(); // Topmost object containing everything
+	net.merayen.merasynth.ui.objects.Top top_ui_object = new net.merayen.merasynth.ui.objects.Top(); // Topmost object containing everything
 	
 	public Surface() {
 		for(int i = 0; i < 1; i++) {
@@ -51,6 +53,8 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 	
 	@Override
 	public void paintComponent(java.awt.Graphics g) {
+		RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+		((java.awt.Graphics2D)g).setRenderingHints(rh);
 		super.paintComponent(g);
 		draw((java.awt.Graphics2D)g);
 	}
@@ -67,36 +71,34 @@ public abstract class Surface extends javax.swing.JPanel implements java.awt.eve
 		return (int)(y*this.height);
 	}
 	
-	public void mouseClicked(java.awt.event.MouseEvent e) {
-		//events_queue.add(new MouseEvent(e, MouseEvent.action_type.CLICKED));
-	}
-	
 	public void mousePressed(java.awt.event.MouseEvent e) {
-		events_queue.add(new MouseEvent(e, MouseEvent.action_type.DOWN));
+		createMouseEvent(e, MouseEvent.action_type.DOWN);
 	}
 	
     public void mouseReleased(java.awt.event.MouseEvent e) {
-    	events_queue.add(new MouseEvent(e, MouseEvent.action_type.UP));
+    	createMouseEvent(e, MouseEvent.action_type.UP);
     }
     
-    public void mouseEntered(java.awt.event.MouseEvent e) {
-    	//events_queue.add(new MouseEvent(e, MouseEvent.action_type.OVER));
-    }
-    
-    public void mouseExited(java.awt.event.MouseEvent e) {
-    	//events_queue.add(new MouseEvent(e, MouseEvent.action_type.OUT));
-    }
+    public void mouseEntered(java.awt.event.MouseEvent e) {}
+    public void mouseExited(java.awt.event.MouseEvent e) {}
+    public void mouseClicked(java.awt.event.MouseEvent e) {}
     
     public void mouseMoved(java.awt.event.MouseEvent e) {
-    	events_queue.add(new MouseEvent(e, MouseEvent.action_type.MOVE));
+    	createMouseEvent(e, MouseEvent.action_type.MOVE);
     }
     
     public void mouseDragged(java.awt.event.MouseEvent e) {
-    	events_queue.add(new MouseEvent(e, MouseEvent.action_type.MOVE));
+    	createMouseEvent(e, MouseEvent.action_type.MOVE);
     }
     
     @Override
     public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
-    	events_queue.add(new MouseWheelEvent(e));
+    	events_queue.add(new MouseWheelEvent(e)); // Do collision testing and stuff here too, like MouseEvent!
+    }
+    
+    private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.action_type ac) {
+    	MouseEvent me = new MouseEvent(e, ac);
+    	me.calcHit(top_ui_object); // Calculates what UIObject got hit
+    	events_queue.add(me);
     }
 }

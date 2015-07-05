@@ -19,10 +19,10 @@ public class Node extends Group {
 	
 	@Override
 	protected void onDraw(java.awt.Graphics2D g) {
-		g.setPaint(new java.awt.Color(50, 50, 50));
-		draw.fillRect(0.002f, 0.002f, width, height);
+		g.setPaint(new java.awt.Color(100, 100, 100));
+		draw.fillRect(-0.1f, -0.1f, width + 0.2f, height + 0.2f);
 		
-		g.setPaint(new java.awt.Color(120, 120, 120));
+		g.setPaint(new java.awt.Color(50, 50, 50));
 		draw.fillRect(0, 0, width, height);
 		
 		g.setPaint(new java.awt.Color(180, 180, 180));

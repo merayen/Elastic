@@ -61,12 +61,12 @@ public class CircularSlider extends UIObject {
 		g.setColor(new Color(200, 200, 200));
 		draw.fillOval(0.1f, 0.1f, size - 0.2f, size - 0.2f);
 		
-		g.setColor(new Color(100, 100, 100));
-		drawLine(value, 0);
-		
 		g.setColor(new Color(150, 150, 150));
 		drawLine(0, 0.5f);
 		drawLine(1, 0.5f);
+		
+		g.setColor(new Color(100, 100, 100));
+		drawLine(value, 0);
 	}
 	
 	@Override

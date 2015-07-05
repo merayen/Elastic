@@ -70,7 +70,7 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		draw.fillOval(-0.4f, -0.4f, 0.8f, 0.8f);
 		
 		g.setColor(new java.awt.Color(0,0,0));
-		draw.setFont("SansSerif", 1.5f);
+		draw.setFont("SansSerif", 1.0f);
 		draw.text(title, 1f, 0.5f);
 		
 		super.onDraw(g);

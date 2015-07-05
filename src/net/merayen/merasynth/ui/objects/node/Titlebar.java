@@ -27,10 +27,7 @@ public class Titlebar extends Group {
 	}
 	
 	protected void onDraw(java.awt.Graphics2D g) {
-		if(over)
-			g.setPaint(new java.awt.Color(100,100,200));
-		else
-			g.setPaint(new java.awt.Color(200,200,255));
+		g.setPaint(new java.awt.Color(80, 80, 80));
 		
 		draw.fillRect(0.2f, 0.2f, width - 0.4f, height);
 		
