@@ -44,10 +44,8 @@ public class Top extends Group {
 
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
-				// TODO Auto-generated method stub
 				top_node_container.translation.scroll_x = (start_scroll_x - offset.x);
 				top_node_container.translation.scroll_y = (start_scroll_y - offset.y);
-				System.out.printf("Top scroll: %s, %s\n", start_point, offset);
 			}
 
 			@Override

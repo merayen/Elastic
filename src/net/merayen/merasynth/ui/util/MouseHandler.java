@@ -13,7 +13,7 @@ public class MouseHandler {
 
 	public interface IMouseHandler {
 		public void onMouseDown(net.merayen.merasynth.ui.Point position); // Mouse down on the hitbox
-		public void onMouseUp(net.merayen.merasynth.ui.Point position); // Mouse up on the hitbox
+		public void onMouseUp(net.merayen.merasynth.ui.Point position); // Mouse up (can be outside the hitbox)
 		public void onMouseOver(); // Mouse enters the hitbox
 		public void onMouseOut(); // Mouse leaves the hitbox
 		public void onMouseMove(net.merayen.merasynth.ui.Point position); // Mouse moves over the hitbox

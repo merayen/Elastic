@@ -25,6 +25,8 @@ public class Draw {
 	private RectArea outline = null;//new RectArea(, Float.MAX_VALUE, 0, 0); // Calculated size of the drawn area.
 	private RectArea outline_abs = null;//new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Calculated size of the drawn area, pixels absolute
 	
+	boolean skip_outline = false;
+	
 	// No idea what I thought with the below code?
 	//public java.awt.Rectangle draw_outline_absolute = new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Absolute in pixels!
 	
@@ -49,6 +51,9 @@ public class Draw {
 			float x, float y, float width, float height,
 			int a_x, int a_y, int a_width, int a_height
 	) {
+		if(skip_outline)
+			return;
+
 		if(outline == null) {
 			outline = new RectArea();
 			outline_abs = new RectArea();
@@ -139,5 +144,13 @@ public class Draw {
 			x, y, width, height,
 			point.x, point.y, dimension.width, dimension.height
 		);
+	}
+	
+	public void disableOutline() {
+		skip_outline = true;
+	}
+	
+	public void enableOutline() {
+		skip_outline = false;
 	}
 }

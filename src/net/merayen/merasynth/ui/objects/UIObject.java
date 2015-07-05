@@ -8,22 +8,22 @@ public abstract class UIObject {
 	public UIObject parent;
 
 	private String id = new Integer(java.util.UUID.randomUUID().hashCode()).toString();
-	
+
 	// Outline of the box this UIObject has drawn on. Used to figure out mouse capture
 	// Set by the Draw()-class
 	public net.merayen.merasynth.ui.Rect outline; // Relative, in our internal coordinate system
 	public net.merayen.merasynth.ui.Rect outline_abs; // Absolute, in screen pixels
-	
+
 	public int draw_z; // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()
-	
+
 	public TranslationData translation = new TranslationData();
 	public TranslationData absolute_translation;
-	
+
 	protected net.merayen.merasynth.ui.DrawContext draw_context;
 	protected Draw draw; // Helper class to draw stuff
-	
+
 	boolean created = false;
-	
+
 	/*
 	 * Overload this one to initialize when graphic is created.
 	 * No drawing is performed here, only initialization of eventually children UIObject()s +++
@@ -49,20 +49,20 @@ public abstract class UIObject {
 		
 		for(IEvent event : draw_context.incoming_events)
 			receiveEvent(event);
-		
+
 		onDraw(dc.graphics2d);
-		
+
 		// Copy drawn outline box. For caching, drawing, mouse events etc
 		this.outline = draw.getRelativeOutline();
 		this.outline_abs = draw.getAbsoluteOutline();
-		
+
 		draw_context.translation.pop();
 	}
-	
+
 	protected void drawObject(UIObject obj) {
 		obj.update(draw_context);
 	}
-	
+
 	public java.awt.Point getAbsolutePixelPoint(float offset_x, float offset_y) { // Absolute position incl scrolling
 		TranslationData td = absolute_translation;
 		return new java.awt.Point((int)((draw_context.width / td.scale_x) * (td.x + offset_x - td.scroll_x)), (int)((draw_context.height / td.scale_y) * (td.y + offset_y - td.scroll_y)));
