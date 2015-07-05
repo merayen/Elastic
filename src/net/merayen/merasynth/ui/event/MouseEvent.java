@@ -38,7 +38,10 @@ public class MouseEvent implements IEvent {
 		int x = mouse_event.getX();
 		int y = mouse_event.getY();
 
-		for(UIObject o : top.getAllChildren())
+		ArrayList<UIObject> objs = top.getAllChildren();
+		objs.add(top);
+
+		for(UIObject o : objs)
 			if(
 				o.outline_abs != null &&
 				x >= o.outline_abs.x &&
