@@ -113,7 +113,7 @@ public class ParameterSlider extends Group {
 
 		if(label != null) {
 			draw.setFont("Verdana", 1f);
-			draw.setColor(100, 100, 100); // Shadow
+			draw.setColor(50, 50, 50); // Shadow
 			float text_width = draw.getTextWidth(label);
 			draw.text(label, width/2 - text_width/2 + 0.05f, 1.05f);
 
