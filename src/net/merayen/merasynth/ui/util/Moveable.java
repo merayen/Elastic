@@ -86,6 +86,12 @@ public class Moveable extends MouseHandler {
 				handler_class.onGrab();
 				System.out.printf("Down: Global: %f, %f\n", p.x, p.y);
 			}
+
+			@Override
+			public void onGlobalMouseUp(Point global_position) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 	}
 }

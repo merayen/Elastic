@@ -56,6 +56,12 @@ public class Top extends Group {
 
 			@Override
 			public void onGlobalMouseMove(Point global_position) {}
+
+			@Override
+			public void onGlobalMouseUp(Point global_position) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 	}
 	

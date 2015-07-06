@@ -14,21 +14,37 @@ public class PulseGenerator extends Node {
 		SQUARE
 	}
 
-	private Port input_frequency; // Frequency
-
 	// UI
 	private CircularSlider frequency_slider;
 	private ParameterSlider parameter_freq;
-	private PortParameterSlider node_parameter_slider;
+	private PortParameterSlider port_parameter_slider;
+	private int frequency = 440;
 
 	public void onInit() {
 		super.onInit();
 
 		titlebar.title = "Wave";
 
-		node_parameter_slider = new PortParameterSlider();
-		add(node_parameter_slider);
-		node_parameter_slider.translation.y = 2f;
+		port_parameter_slider = new PortParameterSlider();
+		add(port_parameter_slider);
+		port_parameter_slider.translation.y = 2f;
+
+		port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {
+			@Override
+			public void onChange(double value) {
+				frequency = Math.round((float)Math.pow(value, 2) * 19999 + 1);
+				port_parameter_slider.setLabel(String.format("%d Hz", frequency));
+			}
+
+			@Override
+			public void onButton(int offset) {
+				frequency += offset*10;
+				port_parameter_slider.setValue(Math.pow(frequency / 19999.0, 0.5) );
+			}
+		});
+
+		port_parameter_slider.setValue(0);
+		port_parameter_slider.setStep(0.1f);
 
 		/*input_frequency = new Port();
 		input_frequency.translation.x = 0;
