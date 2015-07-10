@@ -1,7 +1,7 @@
 package net.merayen.merasynth.ui.objects.node;
 
 import net.merayen.merasynth.ui.objects.Group;
-import net.merayen.merasynth.ui.objects.components.parameterslider.ParameterSlider;
+import net.merayen.merasynth.ui.objects.components.ParameterSlider;
 
 public class PortParameterSlider extends Group {
 	/*

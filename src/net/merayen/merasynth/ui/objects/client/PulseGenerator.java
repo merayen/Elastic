@@ -1,7 +1,7 @@
 package net.merayen.merasynth.ui.objects.client;
 
 import net.merayen.merasynth.ui.objects.components.CircularSlider;
-import net.merayen.merasynth.ui.objects.components.parameterslider.ParameterSlider;
+import net.merayen.merasynth.ui.objects.components.ParameterSlider;
 import net.merayen.merasynth.ui.objects.node.Node;
 import net.merayen.merasynth.ui.objects.node.Port;
 import net.merayen.merasynth.ui.objects.node.PortParameterSlider;
@@ -18,7 +18,15 @@ public class PulseGenerator extends Node {
 	private CircularSlider frequency_slider;
 	private ParameterSlider parameter_freq;
 	private PortParameterSlider port_parameter_slider;
-	private int frequency = 440;
+	private float frequency = 440;
+
+	public static String getNodeName() {
+		return "Wave";
+	}
+
+	public static String getNodeDescription() {
+		return "Generates audio waves.";
+	}
 
 	public void onInit() {
 		super.onInit();
@@ -32,14 +40,14 @@ public class PulseGenerator extends Node {
 		port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {
 			@Override
 			public void onChange(double value) {
-				frequency = (int)Math.round(value * 20000.0);
-				port_parameter_slider.setLabel(String.format("%d Hz", frequency));
+				frequency = Math.round(value * 8000.0 * 10) / 10;
+				port_parameter_slider.setLabel(String.format("%.2f Hz", frequency));
 			}
 
 			@Override
 			public void onButton(int offset) {
-				frequency += offset*10;
-				port_parameter_slider.setValue(frequency / 20000.0 );
+				frequency += offset*1;
+				port_parameter_slider.setValue(frequency / 8000.0 );
 			}
 		});
 

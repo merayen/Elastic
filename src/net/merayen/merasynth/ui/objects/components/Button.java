@@ -1,4 +1,4 @@
-package net.merayen.merasynth.ui.objects.components.parameterslider;
+package net.merayen.merasynth.ui.objects.components;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;

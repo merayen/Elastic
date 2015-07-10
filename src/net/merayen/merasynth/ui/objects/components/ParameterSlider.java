@@ -1,8 +1,9 @@
-package net.merayen.merasynth.ui.objects.components.parameterslider;
+package net.merayen.merasynth.ui.objects.components;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.components.Button.IHandler;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
 public class ParameterSlider extends Group {
@@ -17,6 +18,7 @@ public class ParameterSlider extends Group {
 	private MouseHandler mousehandler;
 	private double value = 0f;
 	private double drag_value;
+	private boolean inited;
 	private IHandler handler;
 
 	public interface IHandler {
@@ -133,6 +135,10 @@ public class ParameterSlider extends Group {
 			value = Math.max(Math.min(v, 1), 0);
 		else
 			value = v;
+		if(!inited) {
+			handler.onChange(value);
+			inited = true;
+		}
 	}
 
 	public double getValue() {
