@@ -1,7 +1,9 @@
-package net.merayen.merasynth.glue.nodes;
+package net.merayen.merasynth.glue.client;
 
 import org.json.simple.JSONObject;
+
 import net.merayen.merasynth.glue.Context;
+import net.merayen.merasynth.glue.nodes.GlueNode;
 
 public class PulseGenerator extends GlueNode {
 

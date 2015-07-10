@@ -2,6 +2,10 @@ package net.merayen.merasynth;
 
 import java.util.ArrayList;
 
+import org.json.simple.JSONObject;
+
+import net.merayen.merasynth.glue.nodes.GlueNode;
+import net.merayen.merasynth.system.Restoration;
 import net.merayen.merasynth.ui.DrawContext;
 import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.event.MouseEvent;
@@ -19,7 +23,7 @@ public class NodeSystem {
 	 */
 
 	// GlueNodes
-	
+	private net.merayen.merasynth.glue.Context glue_node_context;
 
 	// NetList nodes
 	
@@ -30,6 +34,20 @@ public class NodeSystem {
 	private Surface surface;
 
 	public NodeSystem() {
+		initGlueNodeSystem();
+		initNetNodeSystem();
+		initUINodeSystem();
+	}
+
+	public void initGlueNodeSystem() {
+		glue_node_context = new net.merayen.merasynth.glue.Context();
+	}
+
+	public void initNetNodeSystem() {
+		
+	}
+
+	public void initUINodeSystem() {
 		surface = new Swing(new Swing.Handler() { // TODO Instantiate Fake() when not topmost nodesystem
 
 			@Override
@@ -62,7 +80,7 @@ public class NodeSystem {
 			}
 		});
 
-		top_ui_object.translation.scale_x = 100f;
+		top_ui_object.translation.scale_x = 100f; // TODO Update by aspect ratio of current window size
 		top_ui_object.translation.scale_y = 100f;
 
 		for(int i = 0; i < 1; i++) { // TODO Remove
@@ -79,5 +97,21 @@ public class NodeSystem {
 		for(net.merayen.merasynth.ui.event.IEvent e : events)
 			if(e instanceof DelayEvent)
 				((DelayEvent) e).run();
+	}
+
+	public void addNode(Class<? extends GlueNode> node) {
+		// TODO
+		// This adds a GlueNode, a Netlist node and a UI node (?)
+	}
+
+	public void restore(JSONObject dump) {
+		// TODO restore from dump (and initialize all nodes of all 3 systems)
+		// Probably create new class for restoring
+		new Restoration(this, dump);
+	}
+
+	public JSONObject dump() {
+		// TODO dump the whole system, all 3 node types
+		return null;
 	}
 }

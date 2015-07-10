@@ -3,7 +3,7 @@ package net.merayen.merasynth.glue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import net.merayen.merasynth.glue.nodes.PulseGenerator;
+import net.merayen.merasynth.glue.client.PulseGenerator;
 import net.merayen.merasynth.glue.nodes.Top;
 
 public class Main {
