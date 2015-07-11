@@ -39,7 +39,7 @@ public class Group extends UIObject {
 		add(obj, false);
 	}
 
-	public void removeChild(UIObject obj) {
+	public void remove(UIObject obj) {
 		for(int i = children.size() - 1; i > -1; i-- )
 			if(children.get(i) == obj)
 				children.remove(i);

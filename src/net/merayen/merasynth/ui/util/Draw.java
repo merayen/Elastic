@@ -38,10 +38,6 @@ public class Draw {
 		g2d = g;
 	}
 	
-	public void setObject(UIObject obj) {
-		this.uiobject = obj;
-	}
-	
 	public Rect getRelativeOutline() {
 		return outline == null ? null : new Rect(outline.x1, outline.y1, outline.x2 - outline.x1, outline.y2 - outline.y1);
 	}
@@ -92,7 +88,8 @@ public class Draw {
 	}
 
 	public void setFont(String font_name, float font_size) {
-		this.font_name = font_name;
+		if(font_name != null && font_name.length() > 0 )
+			this.font_name = font_name;
 		this.font_size = font_size;
 	}
 
@@ -147,6 +144,7 @@ public class Draw {
 	}
 
 	public float getTextWidth(String text) {
+		setFont();
 		return uiobject.convertPixelToUnit(g2d.getFontMetrics().stringWidth(text));
 	}
 

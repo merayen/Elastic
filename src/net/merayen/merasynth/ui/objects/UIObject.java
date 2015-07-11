@@ -56,6 +56,9 @@ public abstract class UIObject {
 		this.outline = draw.getRelativeOutline();
 		this.outline_abs = draw.getAbsoluteOutline();
 
+		// Remove draw object, since we do not allow drawing outside of the onDraw-function
+		this.draw = null;
+
 		draw_context.translation.pop();
 	}
 

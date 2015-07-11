@@ -13,16 +13,16 @@ public class GlueNode extends GlueObject {
 	public net.merayen.merasynth.netlist.Node getNetNode() {
 		return context.supervisor.getNodeByID(net_node_id);
 	}
+
+	public net.merayen.merasynth.netlist.Node getUINode() {
+		return null; // TODO
+	}
 	
 	public void setNetNode(net.merayen.merasynth.netlist.Node net_node) {
 		if(net_node_id != null)
 			throw new RuntimeException("UI node is already set");
 		
 		net_node_id = net_node.getID();
-	}
-	
-	public net.merayen.merasynth.netlist.Node getUINode() {
-		return null; // TODO
 	}
 	
 	public void setUINode(net.merayen.merasynth.ui.objects.node.Node ui_node) {

@@ -1,6 +1,6 @@
 package net.merayen.merasynth;
 
-public class main {
+public class Main {
 	public static void main(String jhgjhg[]) {
 		new NodeSystem();
 	}

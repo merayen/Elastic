@@ -4,6 +4,9 @@ import net.merayen.merasynth.ui.objects.Group;
 import net.merayen.merasynth.ui.objects.Net;
 
 public class TopNodeContainer extends Group {
+	/*
+	 * Contains all the UINodes
+	 */
 	private Net net;
 	
 	protected void onInit() {

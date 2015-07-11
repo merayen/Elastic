@@ -23,4 +23,11 @@ public class TranslationData {
 		//width = t.width;
 		//height = t.height;
 	}
+
+	public String toString() {
+		return String.format(
+			"X=%f, Y=%f, scale_x=%f, scale_y=%f, scroll_x=%f, scroll_y=%f",
+			x, y, scale_x, scale_y, scroll_x, scroll_y
+		);
+	}
 }

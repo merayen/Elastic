@@ -23,8 +23,8 @@ public class Button extends UIObject {
 
 	protected void onInit() {
 		mousehandler = new MouseHandler(this);
-		mousehandler.setHandler(new MouseHandler.IMouseHandler() {
-			
+		mousehandler.setHandler(new MouseHandler.Handler() {
+
 			@Override
 			public void onMouseUp(Point position) {
 				if(mouse_down && handler != null)
@@ -32,34 +32,22 @@ public class Button extends UIObject {
 
 				mouse_down = false;
 			}
-			
+
 			@Override
 			public void onMouseOver() {
 				mouse_over = true;
 			}
-			
+
 			@Override
 			public void onMouseOut() {
 				mouse_over = false;
 			}
-			
-			@Override
-			public void onMouseMove(Point position) {}
-			
-			@Override
-			public void onMouseDrop(Point start_point, Point offset) {}
-			
-			@Override
-			public void onMouseDrag(Point start_point, Point offset) {}
-			
+
 			@Override
 			public void onMouseDown(Point position) {
 				mouse_down = true;
 			}
-			
-			@Override
-			public void onGlobalMouseMove(Point global_position) {}
-			
+
 			@Override
 			public void onGlobalMouseUp(Point global_position) {
 				mouse_down = false;

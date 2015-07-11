@@ -62,23 +62,7 @@ public class ParameterSlider extends Group {
 		});
 
 		mousehandler = new MouseHandler(this);
-		mousehandler.setHandler(new MouseHandler.IMouseHandler() {
-
-			@Override
-			public void onMouseUp(Point position) {}
-
-			@Override
-			public void onMouseOver() {}
-
-			@Override
-			public void onMouseOut() {}
-
-			@Override
-			public void onMouseMove(Point position) {}
-
-			@Override
-			public void onMouseDrop(Point start_point, Point offset) {}
-
+		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
 				setValue(drag_value + (offset.x / width) * step);
@@ -89,15 +73,6 @@ public class ParameterSlider extends Group {
 			@Override
 			public void onMouseDown(Point position) {
 				drag_value = value;
-			}
-
-			@Override
-			public void onGlobalMouseMove(Point global_position) {}
-
-			@Override
-			public void onGlobalMouseUp(Point global_position) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}
