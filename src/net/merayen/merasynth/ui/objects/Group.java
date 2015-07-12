@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.util.Search;
 
 public class Group extends UIObject {
@@ -20,9 +21,20 @@ public class Group extends UIObject {
 		search = new Search(this);
 	}
 
-	protected void onDraw() {
+	@Override
+	protected void onUpdateDraw() {
+		super.onUpdateDraw();
+
 		for(UIObject x : new ArrayList<UIObject>(children)) // XXX Yuck, copying many times through a frame, is that okay?
-			this.drawObject(x);
+			x.updateDraw(draw_context);
+	}
+
+	@Override
+	protected void onUpdateEvents() {
+		super.onUpdateEvents();
+
+		for(UIObject x : new ArrayList<UIObject>(children)) // XXX Yuck, copying many times through a frame, is that okay?
+			x.updateEvents(draw_context);
 	}
 
 	public void add(UIObject obj, boolean top) {

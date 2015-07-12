@@ -1,5 +1,6 @@
 package net.merayen.merasynth.ui.objects;
 
+import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.util.Draw;
@@ -32,45 +33,61 @@ public abstract class UIObject {
 	protected void onDraw() {}
 	protected void onEvent(IEvent e) {}
 
-	public final void update(net.merayen.merasynth.ui.DrawContext dc) {
-		if(!created) {
+	public void updateDraw(net.merayen.merasynth.ui.DrawContext dc) {
+		if(!created)
 			onInit();
-			created = true;
-		}
 
-		this.draw_context = dc;
+		this.draw_context = dc; // TODO remove?
 
 		this.draw = new Draw(this, dc.graphics2d);
 
-		draw_context.translation.push(translation);
+		dc.translation_stack.push(translation);
 
-		absolute_translation = draw_context.translation.getCurrentTranslationData(); // Caching for outside use
-		draw_z = draw_context.pushZCounter(); // Set the z-index we are drawing on
-		
-		for(IEvent event : draw_context.incoming_events)
-			receiveEvent(event);
+		absolute_translation = dc.translation_stack.getCurrentTranslationData(); // Caching for outside use
+		draw_z = dc.pushZCounter(); // Set the z-index we are drawing on
 
-		onDraw();
+		if(absolute_translation.visible) {
+			onUpdateDraw();
 
-		// Copy drawn outline box. For caching, drawing, mouse events etc
-		this.outline = draw.getRelativeOutline();
-		this.outline_abs = draw.getAbsoluteOutline();
+			// Copy drawn outline box. For caching, drawing, mouse events etc
+			this.outline = draw.getRelativeOutline();
+			this.outline_abs = draw.getAbsoluteOutline();
+		} else {
+			this.outline = new Rect();
+			this.outline_abs = new Rect();
+		}
 
 		// Remove draw object, since we do not allow drawing outside of the onDraw-function
 		this.draw = null;
 
-		draw_context.translation.pop();
+		draw_context.translation_stack.pop();
+
+		created = true;
 	}
 
-	protected void drawObject(UIObject obj) {
-		obj.update(draw_context);
+	public final void updateEvents(net.merayen.merasynth.ui.DrawContext dc) {
+		if(!created)
+			return;
+
+		this.draw_context = dc;
+		onUpdateEvents();
+	}
+
+	protected void onUpdateDraw() {
+		onDraw();
+	}
+
+	protected void onUpdateEvents() {
+		if(draw_context != null)
+			for(IEvent event : draw_context.incoming_events)
+				onEvent(event);
 	}
 
 	public java.awt.Point getAbsolutePixelPoint(float offset_x, float offset_y) { // Absolute position incl scrolling
 		TranslationData td = absolute_translation;
 		return new java.awt.Point((int)((draw_context.width / td.scale_x) * (td.x + offset_x - td.scroll_x)), (int)((draw_context.height / td.scale_y) * (td.y + offset_y - td.scroll_y)));
 	}
-	
+
 	public net.merayen.merasynth.ui.Point getAbsolutePosition() {
 		/*
 		 * Returns the absolute position of the node.
@@ -79,7 +96,7 @@ public abstract class UIObject {
 		TranslationData td = absolute_translation;
 		return new net.merayen.merasynth.ui.Point(td.x, td.y);
 	}
-	
+
 	public net.merayen.merasynth.ui.Point getAbsolutePointFromPixel(int x, int y) { // TODO implement scaling
 		/*
 		 * Convert pixel coordinates to our coordinate system
@@ -87,7 +104,7 @@ public abstract class UIObject {
 		TranslationData td = absolute_translation;
 		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width / td.scale_x) + td.scroll_x, (float)y / (draw_context.height / td.scale_y) + td.scroll_y);
 	}
-	
+
 	public net.merayen.merasynth.ui.Point getPointFromPixel(int x, int y) {
 		/*
 		 * Get our internal (relative) position from absolute window pixel position.
@@ -127,15 +144,21 @@ public abstract class UIObject {
 		 */
 		draw_context.outgoing_events.add(event);
 	}
-	
-	public void receiveEvent(IEvent e) {
-		onEvent(e);
+
+	public boolean isReady() {
+		/*
+		 * Evaluates to true if this object has been drawn once or more, so that translation
+		 * and other initializing has been done.
+		 * You need to check this before calling functions like getPixelDimension etc, as they are
+		 * not available until the object has been drawn (and initialized).
+		 */
+		return created;
 	}
-	
+
 	public String getID() {
 		return id;
 	}
-	
+
 	public void setID(String id) {
 		this.id = id;
 	}

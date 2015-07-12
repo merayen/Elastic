@@ -23,13 +23,15 @@ public class MenuBarItem extends Group {
 	private MouseHandler mouse_handler;
 	private boolean over = false;
 	private long allow_closing;
-	private long menu_hide_delay;
 
 	protected void onInit() {
+		add(menu_list);
+		menu_list.translation.visible = false; // Not drawn until we get clicked on
 		menu_list.translation.y = 2f;
 		menu_list.setHandler(new MenuList.Handler() {
 			@Override
 			public void onOutsideClick() {
+				System.out.println("Outside clicked");
 				if(System.currentTimeMillis() > allow_closing) 
 					hideMenu();
 			}
@@ -90,27 +92,13 @@ public class MenuBarItem extends Group {
 	}
 
 	public void showMenu() {
-		if(!menu_shown)
-			add(menu_list);
-		allow_closing = System.currentTimeMillis() + 500;
-		menu_shown = true;
+		menu_list.translation.visible = true;
+		allow_closing = System.currentTimeMillis() + 200;
 	}
 
 	public void hideMenu() {
-		this.sendEvent(new DelayEvent(new Runnable() {
-
-			@Override
-			public void run() {
-				innerHideMenu();
-			}
-			
-		}));
-	}
-
-	private void innerHideMenu() {
-		if(menu_shown)
-			remove(menu_list);
-		menu_shown = false;
+		System.out.println("Menu hidden");
+		menu_list.translation.visible = false;
 	}
 
 	public void setHandler(Handler handler) {

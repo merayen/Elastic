@@ -58,7 +58,7 @@ public class MenuListItem extends Group {
 	}
 
 	protected void onEvent(IEvent e) {
-		mouse_handler.handle(e);;
+		mouse_handler.handle(e);
 	}
 
 	public float getMenuItemWidth() {

@@ -5,6 +5,7 @@ public class TranslationData {
 	public float scroll_x = 0, scroll_y = 0; // Offset position for the elements inside
 	public float scale_x = 1, scale_y = 1; // 
 	public float rot_x = 0, rot_y = 0;
+	public boolean visible = true;
 	
 	public TranslationData() {
 		
@@ -20,6 +21,7 @@ public class TranslationData {
 		scale_y = t.scale_y;
 		rot_x = t.rot_x;
 		rot_y = t.rot_y;
+		visible = t.visible;
 		//width = t.width;
 		//height = t.height;
 	}

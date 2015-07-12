@@ -6,7 +6,6 @@ import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.system.Restoration;
-import net.merayen.merasynth.ui.DrawContext;
 import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.event.MouseEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
@@ -72,7 +71,9 @@ public class NodeSystem {
 
 				net.merayen.merasynth.ui.DrawContext dc = new net.merayen.merasynth.ui.DrawContext(graphics2d, current_events, surface.getWidth(), surface.getHeight());				
 
-				top_ui_object.update(dc);
+				top_ui_object.updateDraw(dc);
+
+				top_ui_object.updateEvents(dc);
 
 				executeDelayEvents(dc.outgoing_events);
 

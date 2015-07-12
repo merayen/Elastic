@@ -29,16 +29,18 @@ public class Net extends net.merayen.merasynth.ui.objects.Group {
 
 	protected void onDraw() {
 		for(Connection c : connections) {
-			Point p1 = c.a.getAbsolutePosition();
-			Point p2 = c.b.getAbsolutePosition();
+			if(c.a.isReady() && c.b.isReady()) {
+				Point p1 = c.a.getAbsolutePosition(); // TODO not available yet... delay somehow?
+				Point p2 = c.b.getAbsolutePosition();
 
-			draw.setColor(150, 150, 150);
-			draw.setStroke(0.5f);
-			draw.line(p1.x, p1.y, p2.x, p2.y);
-			draw.setStroke(0.3f);
+				draw.setColor(150, 150, 150);
+				draw.setStroke(0.5f);
+				draw.line(p1.x, p1.y, p2.x, p2.y);
+				draw.setStroke(0.3f);
 
-			draw.setColor(0,0,0);
-			draw.line(p1.x, p1.y, p2.x, p2.y);
+				draw.setColor(0,0,0);
+				draw.line(p1.x, p1.y, p2.x, p2.y);
+			}
 		}
 
 		super.onDraw();

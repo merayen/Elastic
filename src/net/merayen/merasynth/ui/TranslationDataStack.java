@@ -28,9 +28,7 @@ public class TranslationDataStack {
 			r.scale_y *= td.scale_y;
 			r.rot_x += td.rot_x;
 			r.rot_y += td.rot_y;
-			// TODO calculate width and height, containing all the elements, and do also scale them
-			//r.width = ;
-			//r.height = ;
+			r.visible = td.visible;
 		}
 
 		return r;
