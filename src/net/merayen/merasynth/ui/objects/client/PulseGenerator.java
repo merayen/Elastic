@@ -31,6 +31,9 @@ public class PulseGenerator extends Node {
 	public void onInit() {
 		super.onInit();
 
+		width = 10f;
+		height = 10f;
+
 		titlebar.title = "Wave";
 
 		port_parameter_slider = new PortParameterSlider();

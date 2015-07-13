@@ -1,12 +1,14 @@
 package net.merayen.merasynth.ui.objects;
 
+import java.util.ArrayList;
+
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.util.Draw;
 
 public abstract class UIObject {
-	public UIObject parent;
+	public Group parent;
 
 	private String id = new Integer(java.util.UUID.randomUUID().hashCode()).toString();
 
@@ -23,7 +25,8 @@ public abstract class UIObject {
 	protected net.merayen.merasynth.ui.DrawContext draw_context;
 	protected Draw draw; // Helper class to draw stuff
 
-	boolean created = false;
+	private boolean created = false;
+	private ArrayList<Runnable> when_ready_funcs = new ArrayList<Runnable>();
 
 	/*
 	 * Overload this one to initialize when graphic is created.
@@ -63,6 +66,10 @@ public abstract class UIObject {
 		draw_context.translation_stack.pop();
 
 		created = true;
+		
+		// Run any functions that are waiting for this object to be created
+		while(when_ready_funcs.size() > 0)
+			when_ready_funcs.remove(0).run();
 	}
 
 	public final void updateEvents(net.merayen.merasynth.ui.DrawContext dc) {
@@ -153,6 +160,13 @@ public abstract class UIObject {
 		 * not available until the object has been drawn (and initialized).
 		 */
 		return created;
+	}
+
+	public void whenReady(Runnable func) {
+		/*
+		 * Add your function here to run it after this object has been drawn for the first time
+		 */
+		when_ready_funcs.add(func);
 	}
 
 	public String getID() {

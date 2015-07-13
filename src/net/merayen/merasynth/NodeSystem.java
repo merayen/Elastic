@@ -1,10 +1,12 @@
 package net.merayen.merasynth;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
+import net.merayen.merasynth.netlist.Supervisor;
 import net.merayen.merasynth.system.Restoration;
 import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.event.MouseEvent;
@@ -16,16 +18,16 @@ public class NodeSystem {
 	/*
 	 * This class is supposed to contain UINode, NetList and GlueNodes.
 	 * This will also be the topmost class for the node system!
-	 * TODO Give it another name, for Mr Christ's sake (Japanese sake, yes)
 	 * Note that nodes that group other notes will contain another NodeSystem() and will
 	 * handle all the in and out communication and events.
 	 */
 
 	// GlueNodes
-	private net.merayen.merasynth.glue.Context glue_node_context;
+	private net.merayen.merasynth.glue.Context glue_context;
+	private net.merayen.merasynth.glue.nodes.Top glue_top;
 
 	// NetList nodes
-	
+	Supervisor net_supervisor;
 
 	// UI Nodes
 	ArrayList<net.merayen.merasynth.ui.event.IEvent> events_queue = new ArrayList<net.merayen.merasynth.ui.event.IEvent>();
@@ -39,11 +41,12 @@ public class NodeSystem {
 	}
 
 	public void initGlueNodeSystem() {
-		glue_node_context = new net.merayen.merasynth.glue.Context();
+		glue_context = new net.merayen.merasynth.glue.Context();
+		glue_top = new net.merayen.merasynth.glue.nodes.Top(glue_context);
 	}
 
 	public void initNetNodeSystem() {
-		
+		net_supervisor = new Supervisor();
 	}
 
 	public void initUINodeSystem() {
@@ -83,15 +86,6 @@ public class NodeSystem {
 
 		top_ui_object.translation.scale_x = 100f; // TODO Update by aspect ratio of current window size
 		top_ui_object.translation.scale_y = 100f;
-
-		for(int i = 0; i < 1; i++) { // TODO Remove
-			net.merayen.merasynth.ui.objects.node.Node node = new net.merayen.merasynth.ui.objects.client.PulseGenerator();
-			node.translation.x = 0f + i;
-			node.translation.y = 0f + i;
-			node.width = 10f;
-			node.height = 10f;
-			top_ui_object.addNode(node);
-		}
 	}
 
 	private void executeDelayEvents(ArrayList<net.merayen.merasynth.ui.event.IEvent>events) {
@@ -101,8 +95,21 @@ public class NodeSystem {
 	}
 
 	public void addNode(Class<? extends GlueNode> node) {
-		// TODO
-		// This adds a GlueNode, a Netlist node and a UI node (?)
+		GlueNode glue_node_instance;
+		try {
+			glue_node_instance = node.getConstructor(net.merayen.merasynth.glue.Context.class).newInstance(glue_context);
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Could not load GlueNode"); // TODO Show error message in the UI instead
+		}
+		net.merayen.merasynth.ui.objects.node.Node ui_node = createUINode(glue_node_instance);
+		net.merayen.merasynth.netlist.Node net_node = createNetNode(glue_node_instance);
+
+		glue_node_instance.setUINode(ui_node);
+		glue_node_instance.setNetNode(net_node);
+
+		top_ui_object.addNode(ui_node);
+		glue_top.addObject(glue_node_instance);
 	}
 
 	public void restore(JSONObject dump) {
@@ -114,5 +121,34 @@ public class NodeSystem {
 	public JSONObject dump() {
 		// TODO dump the whole system, all 3 node types
 		return null;
+	}
+
+	private net.merayen.merasynth.ui.objects.node.Node createUINode(GlueNode node) {
+		net.merayen.merasynth.ui.objects.node.Node uinode;
+
+		try {
+			uinode = ((Class<net.merayen.merasynth.ui.objects.node.Node>)Class.forName(node.getUINodePath())).newInstance();
+		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Could not create UINode");
+		}
+
+		return uinode;
+	}
+
+	private net.merayen.merasynth.netlist.Node createNetNode(GlueNode node) {
+		net.merayen.merasynth.netlist.Node netnode;
+
+		try {
+			netnode =  ((Class<net.merayen.merasynth.netlist.Node>)Class
+				.forName(node.getNetNodePath()))
+				.getConstructor(net.merayen.merasynth.netlist.Supervisor.class)
+				.newInstance(net_supervisor);
+		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Could not create NetNode");
+		}
+
+		return netnode;
 	}
 }

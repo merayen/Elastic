@@ -9,7 +9,7 @@ public class MenuListItem extends Group {
 	public static abstract class Handler {
 		public void onClick() {}
 	}
-	
+
 	public String label = "";
 	public float width = 1f; // Set by MenuList()
 	private float label_width;

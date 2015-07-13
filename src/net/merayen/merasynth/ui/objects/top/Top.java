@@ -5,6 +5,7 @@ import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
 import net.merayen.merasynth.ui.objects.Group;
 import net.merayen.merasynth.ui.objects.components.Label;
+import net.merayen.merasynth.ui.objects.dialogs.AboutDialog;
 import net.merayen.merasynth.ui.objects.node.Node;
 import net.merayen.merasynth.ui.objects.top.menu.Bar;
 import net.merayen.merasynth.ui.objects.top.menu.MenuBarItem;
@@ -118,9 +119,15 @@ public class Top extends Group {
 		hilfe.label = "Hilfe";
 		menu.addMenuBarItem(hilfe);
 
-		MenuListItem hilfeitem = new MenuListItem();
-		hilfeitem.label = "Quit";
-		hilfe.menu_list.addMenuItem(hilfeitem);
+		MenuListItem about = new MenuListItem();
+		about.label = "About MeraSynth";
+		hilfe.menu_list.addMenuItem(about);
+		about.setHandler(new MenuListItem.Handler() {
+			@Override
+			public void onClick() {
+				showAbout();
+			}
+		});
 
 		Label logo = new Label();
 		logo.label = "MeraSynth";
@@ -128,5 +135,9 @@ public class Top extends Group {
 		logo.translation.x = 1f;
 		logo.translation.y = 98f;
 		add(logo);
+	}
+
+	private void showAbout() {
+		add(new AboutDialog());
 	}
 }

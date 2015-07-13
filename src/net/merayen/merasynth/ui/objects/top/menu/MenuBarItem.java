@@ -1,7 +1,6 @@
 package net.merayen.merasynth.ui.objects.top.menu;
 
 import net.merayen.merasynth.ui.Point;
-import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.objects.Group;
 import net.merayen.merasynth.ui.util.MouseHandler;
@@ -31,7 +30,6 @@ public class MenuBarItem extends Group {
 		menu_list.setHandler(new MenuList.Handler() {
 			@Override
 			public void onOutsideClick() {
-				System.out.println("Outside clicked");
 				if(System.currentTimeMillis() > allow_closing) 
 					hideMenu();
 			}
@@ -97,7 +95,6 @@ public class MenuBarItem extends Group {
 	}
 
 	public void hideMenu() {
-		System.out.println("Menu hidden");
 		menu_list.translation.visible = false;
 	}
 
