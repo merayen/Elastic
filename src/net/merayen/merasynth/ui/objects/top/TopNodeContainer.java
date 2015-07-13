@@ -23,7 +23,7 @@ public class TopNodeContainer extends Group {
 	}
 
 	public Node addNode(String class_path) {
-		Node node = createUINode(class_path);
+		Node node = Node.createFromClassPath(class_path);
 		nodes.add(node);
 		add(node);
 		return node;
@@ -36,8 +36,12 @@ public class TopNodeContainer extends Group {
 	public void restore(JSONObject obj) {
 		assert nodes.size() == 0;
 		JSONArray node_dumps = (JSONArray)obj.get("nodes");
-		for(int i = 0; i < node_dumps.size(); i++)
-			; // TODO
+
+		for(int i = 0; i < node_dumps.size(); i++) {
+			JSONObject node_dump = (JSONObject)node_dumps.get(i);
+			Node node = addNode((String)node_dump.get("class"));
+			node.restore(node_dump);
+		}
 	}
 
 	public JSONObject dump() {
@@ -48,8 +52,7 @@ public class TopNodeContainer extends Group {
 		return result;
 	}
 
-	private JSONObject dumpUINodes() {
-		JSONObject result = new JSONObject();
+	private JSONArray dumpUINodes() {
 		JSONArray node_dumps = new JSONArray();
 
 		for(Node x : nodes) {
@@ -58,21 +61,6 @@ public class TopNodeContainer extends Group {
 				node_dumps.add(node_dump);
 		}
 
-		result.put("nodes", node_dumps);
-
-		return result;
-	}
-
-	private net.merayen.merasynth.ui.objects.node.Node createUINode(String class_path) {
-		net.merayen.merasynth.ui.objects.node.Node uinode;
-
-		try {
-			uinode = ((Class<net.merayen.merasynth.ui.objects.node.Node>)Class.forName(class_path)).newInstance();
-		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Could not create UINode");
-		}
-
-		return uinode;
+		return node_dumps;
 	}
 }

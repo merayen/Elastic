@@ -1,9 +1,9 @@
 package net.merayen.merasynth;
 
+import java.io.FileReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
@@ -11,17 +11,21 @@ import net.merayen.merasynth.netlist.Supervisor;
 import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.event.MouseEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
-import net.merayen.merasynth.ui.objects.node.Node;
 import net.merayen.merasynth.ui.surface.Surface;
 import net.merayen.merasynth.ui.surface.Swing;
 
+/*
+ * This class is supposed to contain UINode, NetList and GlueNodes.
+ * This will also be the topmost class for the node system!
+ * Note that nodes that group other notes will contain another NodeSystem() and will
+ * handle all the in and out communication and events.
+ */
 public class NodeSystem {
-	/*
-	 * This class is supposed to contain UINode, NetList and GlueNodes.
-	 * This will also be the topmost class for the node system!
-	 * Note that nodes that group other notes will contain another NodeSystem() and will
-	 * handle all the in and out communication and events.
-	 */
+	public static abstract class Handler {
+		public void onClose() {}
+	}
+
+	private final int DUMP_VERSION = 1;
 
 	// GlueNodes
 	private net.merayen.merasynth.glue.Context glue_context;
@@ -31,28 +35,46 @@ public class NodeSystem {
 	Supervisor net_supervisor;
 
 	// UI Nodes
-	ArrayList<net.merayen.merasynth.ui.event.IEvent> events_queue = new ArrayList<net.merayen.merasynth.ui.event.IEvent>();
-	private net.merayen.merasynth.ui.objects.top.Top top_ui_object = new net.merayen.merasynth.ui.objects.top.Top(); // Topmost object containing everything
+	ArrayList<net.merayen.merasynth.ui.event.IEvent> events_queue;
+	private net.merayen.merasynth.ui.objects.top.Top top_ui_object; // Topmost object containing everything
 	private Surface surface;
 
+	private Handler handler;
 	private String current_project_path;
+	private boolean inited = false;
 
 	public NodeSystem() {
+		init();
+	}
+
+	private void init() {
+		initGlueNodeSystem();
+		initNetNodeSystem();
+		initSurface();
+		initUINodeSystem();
+		inited = false;
+		current_project_path = null;
+	}
+
+	private void reinit() {
+		// Reinit from this nodesystem
 		initGlueNodeSystem();
 		initNetNodeSystem();
 		initUINodeSystem();
+		inited = false;
+		current_project_path = null;
 	}
 
-	public void initGlueNodeSystem() {
+	private void initGlueNodeSystem() {
 		glue_context = new net.merayen.merasynth.glue.Context();
 		glue_top = new net.merayen.merasynth.glue.nodes.Top(glue_context);
 	}
 
-	public void initNetNodeSystem() {
+	private void initNetNodeSystem() {
 		net_supervisor = new Supervisor();
 	}
 
-	public void initUINodeSystem() {
+	private void initSurface() {
 		surface = new Swing(new Swing.Handler() { // TODO Instantiate Fake() when not topmost nodesystem
 
 			@Override
@@ -86,19 +108,45 @@ public class NodeSystem {
 				// TODO Route outgoing events, if we are contained by container node
 			}
 		});
+	}
+
+	private void initUINodeSystem() {
+		top_ui_object = new net.merayen.merasynth.ui.objects.top.Top();
+		events_queue = new ArrayList<net.merayen.merasynth.ui.event.IEvent>();
 
 		top_ui_object.translation.scale_x = 100f; // TODO Update by aspect ratio of current window size
 		top_ui_object.translation.scale_y = 100f;
 
 		top_ui_object.setHandler(new net.merayen.merasynth.ui.objects.top.Top.Handler() {
 			@Override
-			public void onOpenProject(String path) {
-				System.out.println(path);
+			public void onOpenProject(String project_path) {
+				System.out.println("About to open: " + project_path);
+
+				FileReader fr;
+				JSONObject dump_obj;
+				try {
+					fr = new FileReader(project_path);
+					dump_obj = (JSONObject)new org.json.simple.parser.JSONParser().parse(fr);
+				} catch(java.io.IOException | org.json.simple.parser.ParseException e) {
+					e.printStackTrace();
+					return;
+				}
+
+				reinit();
+				inited = true; // Makes us dirty again (not able to restore)
+				restore(dump_obj);
 			}
 
 			@Override
 			public void onSaveProject() {
 				saveProject();
+			}
+
+			@Override
+			public void onClose() {
+				end();
+				if(handler != null)
+					handler.onClose();
 			}
 		});
 	}
@@ -113,6 +161,7 @@ public class NodeSystem {
 		/*
 		 * Adds a node to the system. Automatically creates for net, ui and gluenode system.
 		 */
+		inited = true;
 		GlueNode glue_node_instance;
 		try {
 			glue_node_instance = node.getConstructor(net.merayen.merasynth.glue.Context.class).newInstance(glue_context);
@@ -132,17 +181,32 @@ public class NodeSystem {
 		// TODO dump the whole system, all 3 node types
 		JSONObject result = new JSONObject();
 		result.put("version", Info.version);
+		result.put("dump_version", DUMP_VERSION);
 		result.put("netnodes", net_supervisor.dump());
 		result.put("gluenodes", glue_top.dump());
-		result.put("uinodes", dumpUINodes());
+		result.put("uinodes", top_ui_object.dump());
 		return result;
 	}
 
 	public void restore(JSONObject obj) {
-		
+		// TODO handle different dump versions
+		assert inited : "Dumps can only be restored when in a clean state";
+		inited = true;
+		top_ui_object.restore((JSONObject)obj.get("uinodes"));
 	}
 
-	public JSONObject dumpUINodes() {
+	public void setHandler(Handler handler) {
+		this.handler = handler;
+	}
+
+	public void end() {
+		/*
+		 * Stop this nodesystem.
+		 */
+		surface.end();
+	}
+
+	/*private JSONObject dumpUINodes() {
 		JSONObject result = new JSONObject();
 		JSONArray node_dumps = new JSONArray();
 
@@ -155,7 +219,7 @@ public class NodeSystem {
 		result.put("nodes", node_dumps);
 
 		return result;
-	}
+	}*/
 
 	private net.merayen.merasynth.netlist.Node createNetNode(GlueNode node) { // TODO Move to netnode-system?
 		net.merayen.merasynth.netlist.Node netnode;

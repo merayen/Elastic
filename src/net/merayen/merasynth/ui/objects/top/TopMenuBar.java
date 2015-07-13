@@ -1,5 +1,6 @@
 package net.merayen.merasynth.ui.objects.top;
 
+import net.merayen.merasynth.exceptions.Quit;
 import net.merayen.merasynth.ui.objects.Group;
 import net.merayen.merasynth.ui.objects.components.Label;
 import net.merayen.merasynth.ui.objects.dialogs.AboutDialog;
@@ -12,6 +13,7 @@ public class TopMenuBar extends Group {
 		public void onOpenProject(String path) {}
 		public void onSaveProject() {}
 		public void onSaveProjectAs() {}
+		public void onClose() {}
 	}
 
 	private Bar menu = new Bar(); // The menu always displayed at top
@@ -64,15 +66,16 @@ public class TopMenuBar extends Group {
 		save_as.label = "Save as...";
 		file.menu_list.addMenuItem(save_as);
 
-		MenuListItem quit = new MenuListItem();
-		quit.label = "Quit";
-		quit.setHandler(new MenuListItem.Handler() {
+		MenuListItem close = new MenuListItem();
+		close.label = "Close project";
+		close.setHandler(new MenuListItem.Handler() {
 			@Override
 			public void onClick() {
-				System.out.println("Rage quitting");
+				if(handler != null)
+					handler.onClose();
 			}
 		});
-		file.menu_list.addMenuItem(quit);
+		file.menu_list.addMenuItem(close);
 
 
 		MenuBarItem edit = new MenuBarItem();

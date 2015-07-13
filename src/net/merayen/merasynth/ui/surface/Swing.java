@@ -1,13 +1,10 @@
 package net.merayen.merasynth.ui.surface;
 
-import net.merayen.merasynth.ui.DrawContext;
-import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.event.MouseEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
 
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 
 public class Swing implements Surface {
 	/*
@@ -41,7 +38,7 @@ public class Swing implements Surface {
 		}
 	}
 
-	public class LolPanel extends javax.swing.JPanel implements Surface, java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener {
+	public class LolPanel extends javax.swing.JPanel implements java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener {
 		public LolPanel() {
 			this.addMouseListener(this);
 			this.addMouseMotionListener(this);
@@ -127,5 +124,13 @@ public class Swing implements Surface {
 
 		MouseEvent me = new MouseEvent(e, ac);
 		handler.onMouseEvent(me);
+	}
+
+	@Override
+	public void end() {
+		frame.setVisible(false);
+		frame.dispose();
+		frame = null;
+		panel = null;
 	}
 }

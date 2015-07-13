@@ -2,8 +2,6 @@ package net.merayen.merasynth.ui.objects;
 
 import java.util.ArrayList;
 
-import org.json.simple.JSONObject;
-
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;

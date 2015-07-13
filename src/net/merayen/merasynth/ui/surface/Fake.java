@@ -11,4 +11,8 @@ public class Fake implements Surface {
 	public int getHeight() {
 		return 0; // Retrieve this from the node containing us?
 	}
+
+	public void end() {
+		// Nothing to close...
+	}
 }

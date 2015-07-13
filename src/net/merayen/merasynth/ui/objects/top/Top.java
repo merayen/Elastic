@@ -19,6 +19,7 @@ public class Top extends Group {
 		public void onOpenProject(String file_path) {}
 		public void onSaveProject() {}
 		public void onSaveProjectAs() {}
+		public void onClose() {}
 	}
 	private Handler handler;
 	private MouseHandler mousehandler;
@@ -73,6 +74,12 @@ public class Top extends Group {
 			public void onSaveProjectAs() {
 				if(handler != null)
 					handler.onSaveProjectAs();
+			}
+
+			@Override
+			public void onClose() {
+				if(handler != null)
+					handler.onClose();
 			}
 		});
 	}

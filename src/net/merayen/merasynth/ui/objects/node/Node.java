@@ -62,8 +62,23 @@ public class Node extends Group {
 	}
 
 	public void restore(JSONObject obj) {
+		assert obj.get("class").equals(this.getClass().getName());
+
 		onRestore((JSONObject)obj.get("state"));
-		translation.x = (Float)obj.get("x");
-		translation.y = (Float)obj.get("y");
+		translation.x = ((Double)obj.get("x")).floatValue();
+		translation.y = ((Double)obj.get("y")).floatValue();
+	}
+
+	public static Node createFromClassPath(String class_path) {
+		net.merayen.merasynth.ui.objects.node.Node uinode;
+
+		try {
+			uinode = ((Class<net.merayen.merasynth.ui.objects.node.Node>)Class.forName(class_path)).newInstance();
+		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Could not create UINode");
+		}
+
+		return uinode;
 	}
 }
