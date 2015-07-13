@@ -1,5 +1,7 @@
 package net.merayen.merasynth.ui;
 
+import org.json.simple.JSONObject;
+
 public class TranslationData {
 	public float x = 0, y = 0; // Object's origin (relative to parent)
 	public float scroll_x = 0, scroll_y = 0; // Offset position for the elements inside
@@ -14,7 +16,6 @@ public class TranslationData {
 	public TranslationData(TranslationData t) {
 		x = t.x;
 		y = t.y;
-		//z = t.z;
 		scroll_x = t.scroll_x;
 		scroll_y = t.scroll_y;
 		scale_x = t.scale_x;
@@ -22,8 +23,6 @@ public class TranslationData {
 		rot_x = t.rot_x;
 		rot_y = t.rot_y;
 		visible = t.visible;
-		//width = t.width;
-		//height = t.height;
 	}
 
 	public String toString() {

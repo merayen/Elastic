@@ -1,5 +1,9 @@
 package net.merayen.merasynth.ui.objects.top;
 
+import java.util.ArrayList;
+
+import org.json.simple.JSONObject;
+
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
@@ -11,6 +15,12 @@ public class Top extends Group {
 	/*
 	 * The topmost object, of 'em all
 	 */
+	public static abstract class Handler {
+		public void onOpenProject(String file_path) {}
+		public void onSaveProject() {}
+		public void onSaveProjectAs() {}
+	}
+	private Handler handler;
 	private MouseHandler mousehandler;
 
 	// Scrolling, when dragging the background
@@ -40,8 +50,31 @@ public class Top extends Group {
 			}
 		});
 
+		initMenuBar();
+	}
+	
+	private void initMenuBar() {
 		top_menu_bar = new TopMenuBar();
 		add(top_menu_bar);
+		top_menu_bar.setHandler(new TopMenuBar.Handler() {
+			@Override
+			public void onOpenProject(String path) {
+				if(handler != null)
+					handler.onOpenProject(path);
+			}
+
+			@Override
+			public void onSaveProject() {
+				if(handler != null)
+					handler.onSaveProject();
+			}
+
+			@Override
+			public void onSaveProjectAs() {
+				if(handler != null)
+					handler.onSaveProjectAs();
+			}
+		});
 	}
 
 	protected void onDraw() {
@@ -79,7 +112,23 @@ public class Top extends Group {
 		}
 	}
 
-	public void addNode(Node node) {
-		top_node_container.add(node);
+	public Node addNode(String class_path) {
+		return top_node_container.addNode(class_path);
+	}
+
+	public ArrayList<Node> getNodes() {
+		return top_node_container.getNodes();
+	}
+
+	public void setHandler(Handler handler) {
+		this.handler = handler;
+	}
+
+	public JSONObject dump() {
+		return top_node_container.dump();
+	}
+
+	public void restore(JSONObject obj) {
+		top_node_container.restore(obj);
 	}
 }

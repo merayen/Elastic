@@ -2,6 +2,8 @@ package net.merayen.merasynth.ui.objects;
 
 import java.util.ArrayList;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
@@ -11,6 +13,7 @@ public abstract class UIObject {
 	public Group parent;
 
 	private String id = new Integer(java.util.UUID.randomUUID().hashCode()).toString();
+	protected boolean serializable = false; // Set to true in your class to enable dumping and restoration of it
 
 	// Outline of the box this UIObject has drawn on. Used to figure out mouse capture
 	// Set by the Draw()-class
@@ -34,6 +37,8 @@ public abstract class UIObject {
 	 */
 	protected void onInit() {} 
 	protected void onDraw() {}
+	/*protected void onDump(JSONObject state) {}
+	protected void onRestore(JSONObject state) {}*/
 	protected void onEvent(IEvent e) {}
 
 	public void updateDraw(net.merayen.merasynth.ui.DrawContext dc) {
@@ -168,6 +173,23 @@ public abstract class UIObject {
 		 */
 		when_ready_funcs.add(func);
 	}
+
+	/*public void restore(JSONObject dump) {
+		if(serializable)
+			onRestore((JSONObject)dump.get("state"));
+	}*/
+
+	/*public JSONObject dump() {
+		if(!serializable)
+			return null;
+
+		JSONObject result = new JSONObject();
+		JSONObject state = new JSONObject();
+		onDump(state);
+		result.put("id", id);
+		result.put("state", state);
+		return result;
+	}*/
 
 	public String getID() {
 		return id;

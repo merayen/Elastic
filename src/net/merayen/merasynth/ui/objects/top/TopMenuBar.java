@@ -8,7 +8,14 @@ import net.merayen.merasynth.ui.objects.top.menu.MenuBarItem;
 import net.merayen.merasynth.ui.objects.top.menu.MenuListItem;
 
 public class TopMenuBar extends Group {
+	public static abstract class Handler {
+		public void onOpenProject(String path) {}
+		public void onSaveProject() {}
+		public void onSaveProjectAs() {}
+	}
+
 	private Bar menu = new Bar(); // The menu always displayed at top
+	private Handler handler;
 
 	protected void onInit() {
 		add(menu);
@@ -25,9 +32,33 @@ public class TopMenuBar extends Group {
 		new_project.label = "New project";
 		file.menu_list.addMenuItem(new_project);
 
+		MenuListItem open = new MenuListItem();
+		open.label = "Open...";
+		file.menu_list.addMenuItem(open);
+		open.setHandler(new MenuListItem.Handler() {
+			@Override
+			public void onClick() {
+				java.awt.FileDialog fd = new java.awt.FileDialog((java.awt.Frame) null);
+				fd.setMode(java.awt.FileDialog.LOAD);
+				fd.setTitle("Choose a project");
+				fd.setVisible(true);
+				if(fd.getFile() != null && handler != null) {
+					String path = fd.getDirectory() + fd.getFile();
+					handler.onOpenProject(path);
+				}
+			}
+		});
+
 		MenuListItem save = new MenuListItem();
 		save.label = "Save";
 		file.menu_list.addMenuItem(save);
+		save.setHandler(new MenuListItem.Handler() {
+			@Override
+			public void onClick() {
+				if(handler != null)
+					handler.onSaveProject();
+			}
+		});
 
 		MenuListItem save_as = new MenuListItem();
 		save_as.label = "Save as...";
@@ -72,5 +103,9 @@ public class TopMenuBar extends Group {
 		logo.translation.x = 1f;
 		logo.translation.y = 98f;
 		add(logo);
+	}
+
+	public void setHandler(Handler handler) {
+		this.handler = handler;
 	}
 }
