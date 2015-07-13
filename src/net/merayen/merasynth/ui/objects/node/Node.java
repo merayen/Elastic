@@ -12,7 +12,7 @@ public class Node extends Group {
 	public float height = 50f;
 
 	protected Titlebar titlebar;
-	protected ArrayList<Port> ports = new ArrayList<Port>();
+	protected ArrayList<NodePort> ports = new ArrayList<NodePort>();
 
 	protected void onDump(JSONObject state) {}
 	protected void onRestore(JSONObject state) {}
@@ -41,9 +41,14 @@ public class Node extends Group {
 		super.onDraw();
 	}
 
-	protected void addPort(Port port) {
+	public void addInputPort(Port port) {
 		add(port);
-		ports.add(port);
+		ports.add(new NodePort(port, false));
+	}
+
+	public void addOutputPort(Port port) {
+		add(port);
+		ports.add(new NodePort(port, true));
 	}
 
 	public JSONObject dump() {

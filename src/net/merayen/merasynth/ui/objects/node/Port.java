@@ -13,6 +13,12 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	/*
 	 * Connectable port
 	 */
+	public static abstract class Handler {
+		public void onConnect() {} // Port has been connected
+		public void onDisconnect() {} // A line has been removed from the port
+	}
+	private Handler handler;
+
 	private MouseHandler port_drag;
 	public String title = "";
 

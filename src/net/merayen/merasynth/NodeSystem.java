@@ -142,7 +142,7 @@ public class NodeSystem {
 				((DelayEvent) e).run();
 	}
 
-	public void addNode(Class<? extends GlueNode> node) {
+	public GlueNode addNode(Class<? extends GlueNode> node) {
 		/*
 		 * Adds a node to the system. Automatically creates for net, ui and gluenode system.
 		 */
@@ -160,6 +160,8 @@ public class NodeSystem {
 
 		glue_node_instance.setUINode(glue_context.top_ui_object.addNode(glue_node_instance.getUINodePath()));
 		glue_context.glue_top.addObject(glue_node_instance);
+
+		return glue_node_instance;
 	}
 
 	public JSONObject dump() {

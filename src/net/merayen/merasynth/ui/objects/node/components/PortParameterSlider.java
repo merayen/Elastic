@@ -1,7 +1,9 @@
-package net.merayen.merasynth.ui.objects.node;
+package net.merayen.merasynth.ui.objects.node.components;
 
 import net.merayen.merasynth.ui.objects.Group;
 import net.merayen.merasynth.ui.objects.components.ParameterSlider;
+import net.merayen.merasynth.ui.objects.node.Node;
+import net.merayen.merasynth.ui.objects.node.Port;
 
 public class PortParameterSlider extends Group {
 	/*
@@ -28,7 +30,7 @@ public class PortParameterSlider extends Group {
 
 		port = new Port();
 		Node node = (Node)this.parent;
-		node.addPort(port);
+		node.addInputPort(port);
 
 		parameter_slider = new ParameterSlider();
 		add(parameter_slider);
