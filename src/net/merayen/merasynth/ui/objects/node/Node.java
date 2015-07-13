@@ -64,9 +64,11 @@ public class Node extends Group {
 	public void restore(JSONObject obj) {
 		assert obj.get("class").equals(this.getClass().getName());
 
-		onRestore((JSONObject)obj.get("state"));
+		this.setID((String)obj.get("id")); 
 		translation.x = ((Double)obj.get("x")).floatValue();
 		translation.y = ((Double)obj.get("y")).floatValue();
+
+		onRestore((JSONObject)obj.get("state"));
 	}
 
 	public static Node createFromClassPath(String class_path) {

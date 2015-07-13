@@ -33,6 +33,13 @@ public class TopNodeContainer extends Group {
 		return new ArrayList<Node>(nodes);
 	}
 
+	public Node getNode(String id) {
+		for(Node x : nodes)
+			if(x.getID().equals(id))
+				return x;
+		return null;
+	}
+
 	public void restore(JSONObject obj) {
 		assert nodes.size() == 0;
 		JSONArray node_dumps = (JSONArray)obj.get("nodes");

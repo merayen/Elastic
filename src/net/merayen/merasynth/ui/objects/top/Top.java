@@ -127,6 +127,10 @@ public class Top extends Group {
 		return top_node_container.getNodes();
 	}
 
+	public Node getNode(String id) {
+		return top_node_container.getNode(id);
+	}
+
 	public void setHandler(Handler handler) {
 		this.handler = handler;
 	}

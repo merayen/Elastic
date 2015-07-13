@@ -6,6 +6,7 @@ import net.merayen.merasynth.glue.Context;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 
 public class PulseGenerator extends GlueNode {
+	private float frequency;
 
 	public PulseGenerator(Context context) {
 		super(context);
@@ -41,6 +42,10 @@ public class PulseGenerator extends GlueNode {
 	}
 
 	protected void onRestore(JSONObject state) {
-		System.out.printf("PulseGenerator is getting restored! My freq: %f\n", ((Double)state.get("frequency")).floatValue());
+		frequency = ((Double)state.get("frequency")).floatValue();
+		System.out.printf("PulseGenerator is getting restored! My freq: %f\n", frequency);
+		
+		net.merayen.merasynth.ui.objects.client.PulseGenerator uinode = ((net.merayen.merasynth.ui.objects.client.PulseGenerator)this.getUINode());
+		uinode.whenReady( () -> uinode.setFrequency(frequency));
 	}
 }

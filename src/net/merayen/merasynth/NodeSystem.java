@@ -29,14 +29,9 @@ public class NodeSystem {
 
 	// GlueNodes
 	private net.merayen.merasynth.glue.Context glue_context;
-	private net.merayen.merasynth.glue.nodes.Top glue_top;
-
-	// NetList nodes
-	Supervisor net_supervisor;
 
 	// UI Nodes
 	ArrayList<net.merayen.merasynth.ui.event.IEvent> events_queue;
-	private net.merayen.merasynth.ui.objects.top.Top top_ui_object; // Topmost object containing everything
 	private Surface surface;
 
 	private Handler handler;
@@ -49,29 +44,20 @@ public class NodeSystem {
 
 	private void init() {
 		initGlueNodeSystem();
-		initNetNodeSystem();
 		initSurface();
 		initUINodeSystem();
-		inited = false;
-		current_project_path = null;
 	}
 
 	private void reinit() {
-		// Reinit from this nodesystem
+		// Reinit from current nodesystem, using the same frame and panel
 		initGlueNodeSystem();
-		initNetNodeSystem();
 		initUINodeSystem();
-		inited = false;
-		current_project_path = null;
 	}
 
 	private void initGlueNodeSystem() {
 		glue_context = new net.merayen.merasynth.glue.Context();
-		glue_top = new net.merayen.merasynth.glue.nodes.Top(glue_context);
-	}
-
-	private void initNetNodeSystem() {
-		net_supervisor = new Supervisor();
+		inited = false;
+		current_project_path = null;
 	}
 
 	private void initSurface() {
@@ -84,7 +70,7 @@ public class NodeSystem {
 
 			@Override
 			public void onMouseEvent(MouseEvent mouse_event) {
-				mouse_event.calcHit(top_ui_object);
+				mouse_event.calcHit(glue_context.top_ui_object);
 				events_queue.add(mouse_event);
 			}
 
@@ -99,9 +85,9 @@ public class NodeSystem {
 
 				net.merayen.merasynth.ui.DrawContext dc = new net.merayen.merasynth.ui.DrawContext(graphics2d, current_events, surface.getWidth(), surface.getHeight());				
 
-				top_ui_object.updateDraw(dc);
+				glue_context.top_ui_object.updateDraw(dc);
 
-				top_ui_object.updateEvents(dc);
+				glue_context.top_ui_object.updateEvents(dc);
 
 				executeDelayEvents(dc.outgoing_events);
 
@@ -111,13 +97,12 @@ public class NodeSystem {
 	}
 
 	private void initUINodeSystem() {
-		top_ui_object = new net.merayen.merasynth.ui.objects.top.Top();
 		events_queue = new ArrayList<net.merayen.merasynth.ui.event.IEvent>();
 
-		top_ui_object.translation.scale_x = 100f; // TODO Update by aspect ratio of current window size
-		top_ui_object.translation.scale_y = 100f;
+		glue_context.top_ui_object.translation.scale_x = 100f; // TODO Update by aspect ratio of current window size
+		glue_context.top_ui_object.translation.scale_y = 100f;
 
-		top_ui_object.setHandler(new net.merayen.merasynth.ui.objects.top.Top.Handler() {
+		glue_context.top_ui_object.setHandler(new net.merayen.merasynth.ui.objects.top.Top.Handler() {
 			@Override
 			public void onOpenProject(String project_path) {
 				System.out.println("About to open: " + project_path);
@@ -173,8 +158,8 @@ public class NodeSystem {
 
 		glue_node_instance.setNetNode(net_node);
 
-		glue_node_instance.setUINode(top_ui_object.addNode(glue_node_instance.getUINodePath()));
-		glue_top.addObject(glue_node_instance);
+		glue_node_instance.setUINode(glue_context.top_ui_object.addNode(glue_node_instance.getUINodePath()));
+		glue_context.glue_top.addObject(glue_node_instance);
 	}
 
 	public JSONObject dump() {
@@ -182,9 +167,9 @@ public class NodeSystem {
 		JSONObject result = new JSONObject();
 		result.put("version", Info.version);
 		result.put("dump_version", DUMP_VERSION);
-		result.put("netnodes", net_supervisor.dump());
-		result.put("gluenodes", glue_top.dump());
-		result.put("uinodes", top_ui_object.dump());
+		result.put("netnodes", glue_context.net_supervisor.dump());
+		result.put("gluenodes", glue_context.glue_top.dump());
+		result.put("uinodes", glue_context.top_ui_object.dump());
 		return result;
 	}
 
@@ -192,7 +177,9 @@ public class NodeSystem {
 		// TODO handle different dump versions
 		assert inited : "Dumps can only be restored when in a clean state";
 		inited = true;
-		top_ui_object.restore((JSONObject)obj.get("uinodes"));
+		glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
+		glue_context.net_supervisor.restore((JSONObject)obj.get("netnodes"));
+		glue_context.glue_top.restore((JSONObject)obj.get("gluenodes"));
 	}
 
 	public void setHandler(Handler handler) {
@@ -228,7 +215,7 @@ public class NodeSystem {
 			netnode =  ((Class<net.merayen.merasynth.netlist.Node>)Class
 				.forName(node.getNetNodePath()))
 				.getConstructor(net.merayen.merasynth.netlist.Supervisor.class)
-				.newInstance(net_supervisor);
+				.newInstance(glue_context.net_supervisor);
 		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not create NetNode");

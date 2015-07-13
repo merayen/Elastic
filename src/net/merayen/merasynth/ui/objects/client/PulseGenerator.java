@@ -74,4 +74,9 @@ public class PulseGenerator extends Node {
 		frequency_slider.translation.x = 5f;
 		frequency_slider.translation.y = 5f;
 	}
+
+	public void setFrequency(float frequency) {
+		this.frequency = frequency;
+		port_parameter_slider.setValue(frequency / 8000.0);
+	}
 }
