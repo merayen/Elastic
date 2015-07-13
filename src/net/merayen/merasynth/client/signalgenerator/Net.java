@@ -1,15 +1,15 @@
-package net.merayen.merasynth.netlist.nodes;
+package net.merayen.merasynth.client.signalgenerator;
 
 import net.merayen.merasynth.netlist.*;
 
 import org.json.simple.JSONObject;
 
-public class PulseGenerator extends Node {
+public class Net extends Node {
 	/*
 	 * Genererer sinuslyd
 	 */
 	
-	public PulseGenerator(Supervisor supervisor) {
+	public Net(Supervisor supervisor) {
 		super(supervisor);
 	}
 	

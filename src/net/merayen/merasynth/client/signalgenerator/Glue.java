@@ -1,25 +1,20 @@
-package net.merayen.merasynth.glue.client;
+package net.merayen.merasynth.client.signalgenerator;
 
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.Context;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 
-public class PulseGenerator extends GlueNode {
+public class Glue extends GlueNode {
 	private float frequency;
 
-	public PulseGenerator(Context context) {
+	public Glue(Context context) {
 		super(context);
 	}
 
 	@Override
-	public String getUINodePath() {
-		return "net.merayen.merasynth.ui.objects.client.PulseGenerator";
-	}
-
-	@Override
-	public String getNetNodePath() {
-		return "net.merayen.merasynth.netlist.nodes.PulseGenerator";
+	public String getClassPath() {
+		return "net.merayen.merasynth.client.signalgenerator";
 	}
 
 	@Override
@@ -45,7 +40,7 @@ public class PulseGenerator extends GlueNode {
 		frequency = ((Double)state.get("frequency")).floatValue();
 		System.out.printf("PulseGenerator is getting restored! My freq: %f\n", frequency);
 		
-		net.merayen.merasynth.ui.objects.client.PulseGenerator uinode = ((net.merayen.merasynth.ui.objects.client.PulseGenerator)this.getUINode());
+		net.merayen.merasynth.client.signalgenerator.UI uinode = ((net.merayen.merasynth.client.signalgenerator.UI)this.getUINode());
 		uinode.whenReady( () -> uinode.setFrequency(frequency));
 	}
 }

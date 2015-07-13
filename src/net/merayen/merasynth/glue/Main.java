@@ -3,7 +3,7 @@ package net.merayen.merasynth.glue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import net.merayen.merasynth.glue.client.PulseGenerator;
+import net.merayen.merasynth.client.signalgenerator.Glue;
 import net.merayen.merasynth.glue.nodes.Top;
 
 public class Main {
@@ -13,7 +13,7 @@ public class Main {
 		Top top = new Top(context);
 		
 		if(dump == null)
-			top.addObject(new PulseGenerator(context));
+			top.addObject(new Glue(context));
 		else {
 			JSONObject dumpo;
 			try {

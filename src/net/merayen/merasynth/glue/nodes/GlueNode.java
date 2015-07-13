@@ -12,10 +12,17 @@ public abstract class GlueNode extends GlueObject {
 		super(context);
 	}
 
-	public abstract String getUINodePath();
-	public abstract String getNetNodePath();
+	public abstract String getClassPath();
 	public abstract String getFriendlyName();
 	public abstract String getDescription();
+
+	public String getUINodePath() {
+		return getClassPath() + ".UI";
+	}
+
+	public String getNetNodePath() {
+		return getClassPath() + ".Net";
+	}
 
 	public net.merayen.merasynth.netlist.Node getNetNode() {
 		assert net_node_id != null;

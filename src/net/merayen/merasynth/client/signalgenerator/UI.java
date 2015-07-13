@@ -1,4 +1,4 @@
-package net.merayen.merasynth.ui.objects.client;
+package net.merayen.merasynth.client.signalgenerator;
 
 import net.merayen.merasynth.ui.objects.components.CircularSlider;
 import net.merayen.merasynth.ui.objects.components.ParameterSlider;
@@ -6,7 +6,7 @@ import net.merayen.merasynth.ui.objects.node.Node;
 import net.merayen.merasynth.ui.objects.node.Port;
 import net.merayen.merasynth.ui.objects.node.PortParameterSlider;
 
-public class PulseGenerator extends Node {
+public class UI extends Node {
 
 	private enum mode {
 		SINE,
