@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
 import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.objects.node.Node;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
@@ -23,6 +25,7 @@ public class Top extends Group {
 	}
 	private Handler handler;
 	private MouseHandler mousehandler;
+	private net.merayen.merasynth.glue.Context glue_context;
 
 	// Scrolling, when dragging the background
 	float start_scroll_x;
@@ -30,6 +33,10 @@ public class Top extends Group {
 
 	private TopNodeContainer top_node_container = new TopNodeContainer();
 	private TopMenuBar top_menu_bar;
+
+	public Top(net.merayen.merasynth.glue.Context glue_context) {
+		this.glue_context = glue_context;
+	}
 
 	protected void onInit() {
 		add(top_node_container);
@@ -53,7 +60,7 @@ public class Top extends Group {
 
 		initMenuBar();
 	}
-	
+
 	private void initMenuBar() {
 		top_menu_bar = new TopMenuBar();
 		add(top_menu_bar);
@@ -129,6 +136,13 @@ public class Top extends Group {
 
 	public Node getNode(String id) {
 		return top_node_container.getNode(id);
+	}
+
+	public GlueNode getGlueNode(Node uinode) {
+		/*
+		 * Get the GlueNode that represents the uinode.
+		 */
+		return glue_context.glue_top.getNode(uinode.getID());
 	}
 
 	public void setHandler(Handler handler) {

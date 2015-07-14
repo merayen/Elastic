@@ -20,16 +20,6 @@ public abstract class GlueObject {
 		this.context = context;
 	}
 
-	public void doInit() {
-		onInit();
-	}
-
-	protected void onInit() {
-		/*
-		 * Called when initialized
-		 */
-	}
-
 	protected void onRestore(JSONObject state) {
 		/*
 		 * Called when restored from JSON.

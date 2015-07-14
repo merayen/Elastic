@@ -14,9 +14,9 @@ public class PortParameterSlider extends Group {
 	public Port port;
 	public ParameterSlider parameter_slider;
 	public boolean auto_position = true;
+	public String name;
 	private double value;
 	private float step = 1f;
-	private float button_step = 0.01f;
 
 	private IHandler handler;
 
@@ -26,11 +26,12 @@ public class PortParameterSlider extends Group {
 	}
 
 	protected void onInit() {
-		assert this.parent instanceof Node;
+		assert parent instanceof Node;
+		assert name != null && name.length() > 0 : ".name-attribute must be set on creation";
 
 		port = new Port();
 		Node node = (Node)this.parent;
-		node.addInputPort(port);
+		node.addInputPort(name, port);
 
 		parameter_slider = new ParameterSlider();
 		add(parameter_slider);

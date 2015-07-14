@@ -161,6 +161,8 @@ public class NodeSystem {
 		glue_node_instance.setUINode(glue_context.top_ui_object.addNode(glue_node_instance.getUINodePath()));
 		glue_context.glue_top.addObject(glue_node_instance);
 
+		glue_node_instance.doInit();
+
 		return glue_node_instance;
 	}
 
@@ -177,7 +179,7 @@ public class NodeSystem {
 
 	public void restore(JSONObject obj) {
 		// TODO handle different dump versions
-		assert inited : "Dumps can only be restored when in a clean state";
+		assert !inited : "Dumps can only be restored when in a clean state";
 		inited = true;
 		glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
 		glue_context.net_supervisor.restore((JSONObject)obj.get("netnodes"));
@@ -194,21 +196,6 @@ public class NodeSystem {
 		 */
 		surface.end();
 	}
-
-	/*private JSONObject dumpUINodes() {
-		JSONObject result = new JSONObject();
-		JSONArray node_dumps = new JSONArray();
-
-		for(Node x : top_ui_object.getNodes()) {
-			JSONObject node_dump = x.dump();
-			if(node_dump != null)
-				node_dumps.add(node_dump);
-		}
-
-		result.put("nodes", node_dumps);
-
-		return result;
-	}*/
 
 	private net.merayen.merasynth.netlist.Node createNetNode(GlueNode node) { // TODO Move to netnode-system?
 		net.merayen.merasynth.netlist.Node netnode;

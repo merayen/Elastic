@@ -35,15 +35,13 @@ public abstract class UIObject {
 	 */
 	protected void onInit() {} 
 	protected void onDraw() {}
-	/*protected void onDump(JSONObject state) {}
-	protected void onRestore(JSONObject state) {}*/
 	protected void onEvent(IEvent e) {}
 
 	public void updateDraw(net.merayen.merasynth.ui.DrawContext dc) {
 		if(!created)
 			onInit();
 
-		this.draw_context = dc; // TODO remove?
+		this.draw_context = dc;
 
 		this.draw = new Draw(this, dc.graphics2d);
 
@@ -69,7 +67,7 @@ public abstract class UIObject {
 		draw_context.translation_stack.pop();
 
 		created = true;
-		
+
 		// Run any functions that are waiting for this object to be created
 		while(when_ready_funcs.size() > 0)
 			when_ready_funcs.remove(0).run();
@@ -171,23 +169,6 @@ public abstract class UIObject {
 		 */
 		when_ready_funcs.add(func);
 	}
-
-	/*public void restore(JSONObject dump) {
-		if(serializable)
-			onRestore((JSONObject)dump.get("state"));
-	}*/
-
-	/*public JSONObject dump() {
-		if(!serializable)
-			return null;
-
-		JSONObject result = new JSONObject();
-		JSONObject state = new JSONObject();
-		onDump(state);
-		result.put("id", id);
-		result.put("state", state);
-		return result;
-	}*/
 
 	public String getID() {
 		return id;

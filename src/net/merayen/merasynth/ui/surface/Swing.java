@@ -11,7 +11,7 @@ public class Swing implements Surface {
 	 * A surface to draw on for the Java Swing GUI. 
 	 */	
 	public class LolFrame extends javax.swing.JFrame implements java.awt.event.ActionListener {
-		public final javax.swing.Timer timer = new javax.swing.Timer(1000/60, this);
+		public final javax.swing.Timer timer = new javax.swing.Timer(1000/30, this);
 
 		public LolFrame() {
 			initUI();
@@ -48,7 +48,7 @@ public class Swing implements Surface {
 		@Override
 		public void paintComponent(java.awt.Graphics g) {
 			RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-			((java.awt.Graphics2D)g).setRenderingHints(rh);
+			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			super.paintComponent(g);
 
 			if(handler != null)

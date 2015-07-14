@@ -29,16 +29,16 @@ public class Net extends net.merayen.merasynth.ui.objects.Group {
 
 	protected void onDraw() {
 		for(Connection c : connections) {
-			if(c.a.isReady() && c.b.isReady()) {
-				Point p1 = c.a.getAbsolutePosition(); // TODO not available yet... delay somehow?
+			if(c.a.isReady() && c.b.isReady()) { // We need to see if they are ready, otherwise translation isn't available
+				Point p1 = c.a.getAbsolutePosition();
 				Point p2 = c.b.getAbsolutePosition();
 
 				draw.setColor(150, 150, 150);
 				draw.setStroke(0.5f);
 				draw.line(p1.x, p1.y, p2.x, p2.y);
-				draw.setStroke(0.3f);
 
-				draw.setColor(0,0,0);
+				draw.setColor(200, 200, 200);
+				draw.setStroke(0.3f);
 				draw.line(p1.x, p1.y, p2.x, p2.y);
 			}
 		}
@@ -75,5 +75,13 @@ public class Net extends net.merayen.merasynth.ui.objects.Group {
 
 	public UIObject getDraggingPort() {
 		return dragging_port;
+	}
+
+	public void updateConnectionsFromNet() {
+		/*
+		 * Updates our lines and connections from the netnode-system.
+		 * TODO assert that all the netnodes and uinodes has the same ports available,
+		 * so we might need to wait for all the UINodes to be ready.
+		 */
 	}
 }

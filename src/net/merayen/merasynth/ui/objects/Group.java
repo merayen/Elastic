@@ -2,9 +2,6 @@ package net.merayen.merasynth.ui.objects;
 
 import java.util.ArrayList;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import net.merayen.merasynth.ui.util.Search;
 
 public class Group extends UIObject {
@@ -71,13 +68,4 @@ public class Group extends UIObject {
 
 		return result;
 	}
-
-	/*@Override
-	public JSONObject dump() {
-		JSONObject result = super.dump();
-		for(UIObject x : children)
-			result.put(x.getID(), x.dump());
-
-		return result;
-	}*/
 }

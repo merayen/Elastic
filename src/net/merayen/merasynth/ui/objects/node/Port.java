@@ -13,7 +13,7 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	/*
 	 * Connectable port
 	 */
-	public static abstract class Handler {
+	public static abstract class Handler { // Only to be used by ui Node()!
 		public void onConnect() {} // Port has been connected
 		public void onDisconnect() {} // A line has been removed from the port
 	}
@@ -76,6 +76,10 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 	}
 
 	private Net getNetObject() {
+		/*
+		 * Gets the Net object that draws all the lines.
+		 * TODO Remove and just mangle directly with netnode lines?
+		 */
 		Search s = new Search(search.getTopmost(), 1);
 		ArrayList<UIObject> m = s.searchByType(net.merayen.merasynth.ui.objects.Net.class);
 		assert m.size() == 1 : "Need exactly 1 net uiobject!";
@@ -115,5 +119,9 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		if((UIObject)port == (UIObject)this) return;
 
 		getNetObject().addLine(this, port); // Connect the ports together
+		//getGlueNode()
+
+		/*if(handler != null)x
+			handler.onConnect();*/
 	}
 }
