@@ -2,11 +2,11 @@ package net.merayen.merasynth.ui.objects.components;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.components.Button.IHandler;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
-public class ParameterSlider extends Group {
+public class ParameterSlider extends UIGroup {
 	float width = 8f;
 	public float step = 1f;
 	/*public float max_value = 1f;

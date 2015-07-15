@@ -1,9 +1,9 @@
 package net.merayen.merasynth.ui.objects.window;
 
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 
-public class Window extends Group {
-	private static class Content extends Group {
+public class Window extends UIGroup {
+	private static class Content extends UIGroup {
 		/*
 		 * Main content where the calling class can draw.
 		 */
@@ -40,7 +40,7 @@ public class Window extends Group {
 		super.onDraw();
 	}
 
-	public Group getContentPane() {
+	public UIGroup getContentPane() {
 		return content;
 	}
 }

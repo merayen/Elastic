@@ -3,6 +3,8 @@ package net.merayen.merasynth.glue.nodes;
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.Context;
+import net.merayen.merasynth.netlist.Node;
+import net.merayen.merasynth.ui.objects.node.UINode;
 
 public abstract class GlueNode extends GlueObject {
 
@@ -53,13 +55,14 @@ public abstract class GlueNode extends GlueObject {
 	}
 
 	public net.merayen.merasynth.netlist.Node getNetNode() {
-		assert net_node_id != null;
+		if(net_node_id == null)
+			throw new RuntimeException("Net node is not set yet");
 		return context.net_supervisor.getNodeByID(net_node_id);
 	}
 
-	public net.merayen.merasynth.ui.objects.node.Node getUINode() {
+	public net.merayen.merasynth.ui.objects.node.UINode getUINode() {
 		if(ui_node_id == null)
-			throw new RuntimeException("Probably too early too call");
+			throw new RuntimeException("UI node is not set yet");
 
 		return context.top_ui_object.getNode(ui_node_id);
 	}
@@ -71,7 +74,7 @@ public abstract class GlueNode extends GlueObject {
 		net_node_id = net_node.getID();
 	}
 
-	public void setUINode(net.merayen.merasynth.ui.objects.node.Node ui_node) {
+	public void setUINode(net.merayen.merasynth.ui.objects.node.UINode ui_node) {
 		if(ui_node_id != null)
 			throw new RuntimeException("UI-node is already set");
 
@@ -87,7 +90,13 @@ public abstract class GlueNode extends GlueObject {
 	}
 
 	protected void createPort(String name) {
-		net.merayen.merasynth.ui.objects.node.Node ui = this.getUINode();
+		// Create port on Netnode
+		Node node = this.getNetNode();
+		if(node.getPort(name) == null)
+			node.addPort(name);
+
+		// Create port on UINode
+		UINode ui = this.getUINode();
 
 		ui.whenReady( () -> {
 			if(ui.hasPort(name))
@@ -109,5 +118,7 @@ public abstract class GlueNode extends GlueObject {
 		ui_node_id = (String)obj.get("ui_node_id");
 		net_node_id = (String)obj.get("net_node_id");
 		super.restore(obj);
+		
+		// TODO restore ports from netnode-net!
 	}
 }

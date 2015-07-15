@@ -2,10 +2,10 @@ package net.merayen.merasynth.ui.objects.top.menu;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
-public class MenuListItem extends Group {
+public class MenuListItem extends UIGroup {
 	public static abstract class Handler {
 		public void onClick() {}
 	}

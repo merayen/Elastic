@@ -53,7 +53,7 @@ public class Supervisor {
 			if(node.getID().equals(id))
 				return node;
 
-		return null;
+		throw new RuntimeException(String.format("Node by id %s was not found", id));
 	}
 
 	public void connect(Port a, Port b) {
@@ -61,8 +61,15 @@ public class Supervisor {
 		 * Hjelpefunksjon.
 		 * Kobler til to porter sammen.
 		 */
-		assert a != b : "Port kan ikke kobles til seg selv";
+		if(a == b)
+			throw new RuntimeException("Port can not be connected to itself");
 		Line line = new Line(this, a, b);
+	}
+
+	public void disconnect(Port a, Port b) {
+		if(a == b)
+			throw new RuntimeException("Invalid operation");
+		// TODO
 	}
 
 	public JSONObject dump() {
@@ -95,10 +102,6 @@ public class Supervisor {
 	}
 
 	public void restore(JSONObject obj) {
-		/* 
-		 * Restore the lines. If the other node doesn't exist yet,
-		 * the other node will successfully restore the connection?
-		 */
 		JSONArray nodes = (JSONArray)obj.get("nodes");
 		JSONArray lines = (JSONArray)obj.get("lines");
 

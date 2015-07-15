@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
+import net.merayen.merasynth.netlist.Supervisor;
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UIObject;
-import net.merayen.merasynth.ui.objects.node.Node;
+import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
-public class Top extends Group {
+public class Top extends UIGroup {
 	/*
 	 * The topmost object, of 'em all
 	 */
@@ -126,23 +127,27 @@ public class Top extends Group {
 		}
 	}
 
-	public Node addNode(String class_path) {
+	public UINode addNode(String class_path) {
 		return top_node_container.addNode(class_path);
 	}
 
-	public ArrayList<Node> getNodes() {
+	public ArrayList<UINode> getNodes() {
 		return top_node_container.getNodes();
 	}
 
-	public Node getNode(String id) {
+	public UINode getNode(String id) {
 		return top_node_container.getNode(id);
 	}
 
-	public GlueNode getGlueNode(Node uinode) {
+	public GlueNode getGlueNode(UINode uinode) {
 		/*
 		 * Get the GlueNode that represents the uinode.
 		 */
 		return glue_context.glue_top.getNode(uinode.getID());
+	}
+
+	public Supervisor getSupervisor() {
+		return glue_context.net_supervisor;
 	}
 
 	public void setHandler(Handler handler) {

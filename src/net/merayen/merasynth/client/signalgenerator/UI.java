@@ -1,14 +1,14 @@
 package net.merayen.merasynth.client.signalgenerator;
 
 import net.merayen.merasynth.ui.objects.components.CircularSlider;
-import net.merayen.merasynth.ui.objects.node.Node;
-import net.merayen.merasynth.ui.objects.node.Port;
+import net.merayen.merasynth.ui.objects.node.UINode;
+import net.merayen.merasynth.ui.objects.node.UIPort;
 import net.merayen.merasynth.ui.objects.node.components.PortParameterSlider;
 
-public class UI extends Node {
+public class UI extends UINode {
 	private CircularSlider frequency_slider;
 	private PortParameterSlider port_parameter_slider;
-	private Port output_port;
+	private UIPort output_port;
 	private float frequency = 440;
 
 	public static String getNodeName() {
@@ -66,7 +66,7 @@ public class UI extends Node {
 		}
 
 		if(name.equals("output")) {
-			output_port = new Port("output", true);
+			output_port = new UIPort("output", true);
 			output_port.translation.x = width;
 			output_port.translation.y = 2f;
 			addOutputPort("output", output_port);

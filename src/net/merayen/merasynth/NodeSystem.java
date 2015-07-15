@@ -157,6 +157,7 @@ public class NodeSystem {
 		net.merayen.merasynth.netlist.Node net_node = createNetNode(glue_node_instance);
 
 		glue_node_instance.setNetNode(net_node);
+		glue_context.net_supervisor.addNode(net_node);
 
 		glue_node_instance.setUINode(glue_context.top_ui_object.addNode(glue_node_instance.getUINodePath()));
 		glue_context.glue_top.addObject(glue_node_instance);

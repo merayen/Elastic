@@ -1,9 +1,9 @@
 package net.merayen.merasynth.ui.objects.node;
 
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.util.Moveable;
 
-public class Titlebar extends Group {
+public class Titlebar extends UIGroup {
 	public float width;
 	public String title = "";
 

@@ -2,7 +2,7 @@ package net.merayen.merasynth.ui.util;
 
 import java.util.ArrayList;
 
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UIObject;
 
 public class Search {
@@ -51,8 +51,8 @@ public class Search {
 	public ArrayList<UIObject> children() {
 		ArrayList<UIObject> result = new ArrayList<UIObject>();
 		
-		if(obj instanceof Group) {
-			ArrayList<UIObject> children = ((Group)obj).getChildren();
+		if(obj instanceof UIGroup) {
+			ArrayList<UIObject> children = ((UIGroup)obj).getChildren();
 			result.addAll(children);
 			for(UIObject c : children)
 				result.addAll(new Search(c, depth - 1).children());

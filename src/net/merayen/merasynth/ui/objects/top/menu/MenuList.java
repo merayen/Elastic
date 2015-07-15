@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
-public class MenuList extends Group {
+public class MenuList extends UIGroup {
 	public static abstract class Handler {
 		public void onOutsideClick() {}
 	}

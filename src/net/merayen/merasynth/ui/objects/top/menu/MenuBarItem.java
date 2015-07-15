@@ -2,10 +2,10 @@ package net.merayen.merasynth.ui.objects.top.menu;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
-public class MenuBarItem extends Group {
+public class MenuBarItem extends UIGroup {
 	/*
 	 * You know what this is, so no need to write anything in the description here. TODO Remove description
 	 */

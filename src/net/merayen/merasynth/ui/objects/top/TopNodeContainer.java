@@ -6,35 +6,35 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
-import net.merayen.merasynth.ui.objects.Group;
-import net.merayen.merasynth.ui.objects.Net;
-import net.merayen.merasynth.ui.objects.node.Node;
+import net.merayen.merasynth.ui.objects.UIGroup;
+import net.merayen.merasynth.ui.objects.UINet;
+import net.merayen.merasynth.ui.objects.node.UINode;
 
-public class TopNodeContainer extends Group {
+public class TopNodeContainer extends UIGroup {
 	/*
 	 * Contains all the UINodes
 	 */
-	private Net net;
-	private ArrayList<Node> nodes = new ArrayList<Node>();
+	private UINet net;
+	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 
 	protected void onInit() {
-		net = new Net();
+		net = new UINet();
 		add(net, true); // Add the net first (also, drawn behind everything)
 	}
 
-	public Node addNode(String class_path) {
-		Node node = Node.createFromClassPath(class_path);
+	public UINode addNode(String class_path) {
+		UINode node = UINode.createFromClassPath(class_path);
 		nodes.add(node);
 		add(node);
 		return node;
 	}
 
-	public ArrayList<Node> getNodes() {
-		return new ArrayList<Node>(nodes);
+	public ArrayList<UINode> getNodes() {
+		return new ArrayList<UINode>(nodes);
 	}
 
-	public Node getNode(String id) {
-		for(Node x : nodes)
+	public UINode getNode(String id) {
+		for(UINode x : nodes)
 			if(x.getID().equals(id))
 				return x;
 		return null;
@@ -46,7 +46,7 @@ public class TopNodeContainer extends Group {
 
 		for(int i = 0; i < node_dumps.size(); i++) {
 			JSONObject node_dump = (JSONObject)node_dumps.get(i);
-			Node node = addNode((String)node_dump.get("class"));
+			UINode node = addNode((String)node_dump.get("class"));
 			node.restore(node_dump);
 		}
 	}
@@ -62,7 +62,7 @@ public class TopNodeContainer extends Group {
 	private JSONArray dumpUINodes() {
 		JSONArray node_dumps = new JSONArray();
 
-		for(Node x : nodes) {
+		for(UINode x : nodes) {
 			JSONObject node_dump = x.dump();
 			if(node_dump != null)
 				node_dumps.add(node_dump);

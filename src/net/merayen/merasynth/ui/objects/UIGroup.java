@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import net.merayen.merasynth.ui.util.Search;
 
-public class Group extends UIObject {
+public class UIGroup extends UIObject {
 	/*
 	 * Inneholder flere komponenter.
 	 */
 	private ArrayList<UIObject> children = new ArrayList<UIObject>();
 	protected Search search;
 
-	public Group() {
+	public UIGroup() {
 		super();
 		children = new ArrayList<UIObject>();
 		search = new Search(this);
@@ -62,8 +62,8 @@ public class Group extends UIObject {
 
 		for(UIObject x : children) {
 			result.add(x);
-			if(x instanceof Group)
-				result.addAll(((Group) x).getAllChildren());
+			if(x instanceof UIGroup)
+				result.addAll(((UIGroup) x).getAllChildren());
 		}
 
 		return result;

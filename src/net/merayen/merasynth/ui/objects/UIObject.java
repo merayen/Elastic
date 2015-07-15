@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.event.IEvent;
+import net.merayen.merasynth.ui.objects.top.Top;
 import net.merayen.merasynth.ui.util.Draw;
 
 public abstract class UIObject {
-	public Group parent;
+	public UIGroup parent;
 
 	private String id = new Integer(java.util.UUID.randomUUID().hashCode()).toString();
 	protected boolean serializable = false; // Set to true in your class to enable dumping and restoration of it
@@ -168,6 +169,17 @@ public abstract class UIObject {
 		 * Add your function here to run it after this object has been drawn for the first time
 		 */
 		when_ready_funcs.add(func);
+	}
+
+	public Top getTopObject() {
+		UIObject x = this;
+		while(x.parent != null)
+			x = x.parent;
+
+		if(!(x instanceof Top))
+			throw new RuntimeException("Topmost uiobject is not Top()");
+
+		return (Top)x;
 	}
 
 	public String getID() {

@@ -1,7 +1,7 @@
 package net.merayen.merasynth.ui.objects.node;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.objects.node.Titlebar;
 import net.merayen.merasynth.ui.objects.top.Top;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
-public abstract class Node extends Group {
+public abstract class UINode extends UIGroup {
 	protected class Action {
 
 		/*
@@ -63,19 +63,21 @@ public abstract class Node extends Group {
 
 	@Override
 	public void add(UIObject obj) {
-		if(obj instanceof Port)
+		if(obj instanceof UIPort)
 			throw new RuntimeException("Add ports with addInputPort() or addOutputPort()");
 
 		super.add(obj);
 	}
 
-	public void addInputPort(String name, Port port) {
+	public void addInputPort(String name, UIPort port) {
 		super.add(port);
 		ports.add(new NodePort(name, port, false));
-		port.node_setHandler(new Port.Handler() {
+		port.node_setHandler(new UIPort.Handler() {
 			@Override
-			public void onConnect() {
-				// TODO Make this update the netlist, and update ui net from it afterwards
+			public boolean onConnect(UIPort port) {
+				// TODO Notify the GlueNode
+				System.out.printf("Connecting port %s\n", name);
+				return true;
 			}
 
 			@Override
@@ -85,7 +87,7 @@ public abstract class Node extends Group {
 		});
 	}
 
-	public void addOutputPort(String name, Port port) {
+	public void addOutputPort(String name, UIPort port) {
 		super.add(port);
 		ports.add(new NodePort(name, port, true));
 	}
@@ -116,7 +118,7 @@ public abstract class Node extends Group {
 		onRestore((JSONObject)obj.get("state"));
 	}
 
-	protected GlueNode getGlueNode() {
+	public GlueNode getGlueNode() {
 		GlueNode result = cache_glue_node.get();
 		if(result == null) {
 			result = getTopObject().getGlueNode(this);
@@ -125,17 +127,6 @@ public abstract class Node extends Group {
 			cache_glue_node = new SoftReference<GlueNode>(result);
 		}
 		return result;
-	}
-
-	private Top getTopObject() {
-		Group x = this;
-		while(x.parent != null)
-			x = x.parent;
-
-		if(!(x instanceof Top))
-			throw new RuntimeException("Topmost uiobject is not Top()");
-
-		return (Top)x;
 	}
 
 	public ArrayList<NodePort> getPorts() {
@@ -150,11 +141,11 @@ public abstract class Node extends Group {
 		return false;
 	}
 
-	public static Node createFromClassPath(String class_path) {
-		net.merayen.merasynth.ui.objects.node.Node uinode;
+	public static UINode createFromClassPath(String class_path) {
+		net.merayen.merasynth.ui.objects.node.UINode uinode;
 
 		try {
-			uinode = ((Class<net.merayen.merasynth.ui.objects.node.Node>)Class.forName(class_path)).newInstance();
+			uinode = ((Class<net.merayen.merasynth.ui.objects.node.UINode>)Class.forName(class_path)).newInstance();
 		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not create UINode");

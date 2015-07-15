@@ -2,10 +2,10 @@ package net.merayen.merasynth.ui.objects.top.menu;
 
 import java.util.ArrayList;
 
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UIObject;
 
-public class Bar extends Group {
+public class Bar extends UIGroup {
 	public ArrayList<MenuBarItem> items = new ArrayList<MenuBarItem>();
 	public float width = 100f;
 	private final float height = 2f;

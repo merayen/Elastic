@@ -1,14 +1,14 @@
 package net.merayen.merasynth.ui.objects.top;
 
 import net.merayen.merasynth.exceptions.Quit;
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.components.Label;
 import net.merayen.merasynth.ui.objects.dialogs.AboutDialog;
 import net.merayen.merasynth.ui.objects.top.menu.Bar;
 import net.merayen.merasynth.ui.objects.top.menu.MenuBarItem;
 import net.merayen.merasynth.ui.objects.top.menu.MenuListItem;
 
-public class TopMenuBar extends Group {
+public class TopMenuBar extends UIGroup {
 	public static abstract class Handler {
 		public void onOpenProject(String path) {}
 		public void onSaveProject() {}

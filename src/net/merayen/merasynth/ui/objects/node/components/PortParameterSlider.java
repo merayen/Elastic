@@ -1,17 +1,17 @@
 package net.merayen.merasynth.ui.objects.node.components;
 
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.components.ParameterSlider;
-import net.merayen.merasynth.ui.objects.node.Node;
-import net.merayen.merasynth.ui.objects.node.Port;
+import net.merayen.merasynth.ui.objects.node.UINode;
+import net.merayen.merasynth.ui.objects.node.UIPort;
 
-public class PortParameterSlider extends Group {
+public class PortParameterSlider extends UIGroup {
 	/*
 	 * Convenient class that creates a port and a slider.
 	 * Shows the slider when the port isn't connected.  
 	 * Only a node can directly contain this class.
 	 */
-	public Port port;
+	public UIPort port;
 	public ParameterSlider parameter_slider;
 	public boolean auto_position = true;
 	public final String name;
@@ -30,10 +30,10 @@ public class PortParameterSlider extends Group {
 		this.name = name;
 	}
 	protected void onInit() {
-		assert parent instanceof Node;
+		assert parent instanceof UINode;
 
-		port = new Port(name, false);
-		Node node = (Node)this.parent;
+		port = new UIPort(name, false);
+		UINode node = (UINode)this.parent;
 		node.addInputPort(name, port);
 
 		parameter_slider = new ParameterSlider();

@@ -6,7 +6,7 @@ import net.merayen.merasynth.ui.event.IEvent;
 public class DrawContext {
 	/*
 	 * Session-like class for the current drawing.
-	 * Class is thrown away for between every repainting.
+	 * Class is thrown away between every repainting.
 	 * Object is thrown between all the UIObject()s
 	 */
 	public final java.awt.Graphics2D graphics2d; 

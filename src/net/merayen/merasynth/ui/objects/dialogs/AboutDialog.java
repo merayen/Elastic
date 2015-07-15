@@ -1,11 +1,11 @@
 package net.merayen.merasynth.ui.objects.dialogs;
 
-import net.merayen.merasynth.ui.objects.Group;
+import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.components.Button;
 import net.merayen.merasynth.ui.objects.window.Window;
 
-public class AboutDialog extends Group {
-	private static class AboutDialogContent extends Group {
+public class AboutDialog extends UIGroup {
+	private static class AboutDialogContent extends UIGroup {
 		protected void onDraw() {
 			draw.setColor(200, 200, 200);
 			draw.setFont("Geneva", 2f);
@@ -23,7 +23,7 @@ public class AboutDialog extends Group {
 		window.width = 60f;
 		window.height = 60f;
 		window.whenReady( () -> {
-			Group pane = window.getContentPane();
+			UIGroup pane = window.getContentPane();
 			pane.add(new AboutDialogContent());
 
 			Button button = new Button();
