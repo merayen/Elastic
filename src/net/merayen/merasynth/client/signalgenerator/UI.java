@@ -43,7 +43,7 @@ public class UI extends Node {
 	@Override
 	public void onCreatePort(String name) {
 		if(name.equals("frequency")) {
-			port_parameter_slider = new PortParameterSlider();
+			port_parameter_slider = new PortParameterSlider("frequency");
 			port_parameter_slider.translation.y = 2f;
 			add(port_parameter_slider);
 
@@ -66,7 +66,7 @@ public class UI extends Node {
 		}
 
 		if(name.equals("output")) {
-			output_port = new Port();
+			output_port = new Port("output", true);
 			output_port.translation.x = width;
 			output_port.translation.y = 2f;
 			addOutputPort("output", output_port);

@@ -21,8 +21,16 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 
 	private MouseHandler port_drag;
 	public String title = "";
+	public final String name;
+	public final boolean output;
 
 	private UIObject temp_port; // Used when dragging a line from this port
+
+	public Port(String name, boolean output) {
+		super();
+		this.name = name;
+		this.output = output;
+	}
 
 	protected void onInit() {
 		port_drag = new MouseHandler(this);
@@ -49,6 +57,7 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 			@Override
 			public void onMouseDown(Point position) {
 				// Create a new port and notifies the net
+				// TODO If a port is connected, disconnect it, and drag a new one from the existing port
 				createTempPort();
 			}
 		});
@@ -75,6 +84,13 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		port_drag.handle(event);
 	}
 
+	public void node_setHandler(Handler handler) {
+		/*
+		 * Only to be set by Node()
+		 */
+		this.handler = handler;
+	}
+
 	private Net getNetObject() {
 		/*
 		 * Gets the Net object that draws all the lines.
@@ -82,7 +98,8 @@ public class Port extends net.merayen.merasynth.ui.objects.Group {
 		 */
 		Search s = new Search(search.getTopmost(), 1);
 		ArrayList<UIObject> m = s.searchByType(net.merayen.merasynth.ui.objects.Net.class);
-		assert m.size() == 1 : "Need exactly 1 net uiobject!";
+		if(m.size() != 1)
+			throw new RuntimeException("Need exactly 1 net uiobject");
 
 		return (Net)m.get(0);
 		// ....

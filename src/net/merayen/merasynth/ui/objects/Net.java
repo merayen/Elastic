@@ -69,7 +69,9 @@ public class Net extends net.merayen.merasynth.ui.objects.Group {
 		 * Call this when a port is dragging a line from it.
 		 * This port can then be retrieved by a hovering port by calling getOtherPort()
 		 */
-		assert dragging_port == null : "Already dragging";
+		if(dragging_port != null)
+			throw new RuntimeException("Already dragging");
+
 		dragging_port = port;
 	}
 

@@ -72,6 +72,17 @@ public abstract class Node extends Group {
 	public void addInputPort(String name, Port port) {
 		super.add(port);
 		ports.add(new NodePort(name, port, false));
+		port.node_setHandler(new Port.Handler() {
+			@Override
+			public void onConnect() {
+				// TODO Make this update the netlist, and update ui net from it afterwards
+			}
+
+			@Override
+			public void onDisconnect() {
+				// TODO Make this update the netlist, and update ui net from it afterwards
+			}
+		});
 	}
 
 	public void addOutputPort(String name, Port port) {
@@ -95,7 +106,8 @@ public abstract class Node extends Group {
 	}
 
 	public void restore(JSONObject obj) {
-		assert obj.get("class").equals(this.getClass().getName());
+		if(!obj.get("class").equals(this.getClass().getName()))
+			throw new RuntimeException(String.format("Can not restore from class. %s != %s", obj.get("class"), this.getClass().getName()));
 
 		this.setID((String)obj.get("id")); 
 		translation.x = ((Double)obj.get("x")).floatValue();
@@ -108,7 +120,8 @@ public abstract class Node extends Group {
 		GlueNode result = cache_glue_node.get();
 		if(result == null) {
 			result = getTopObject().getGlueNode(this);
-			assert result != null : "Could not find node's GlueNode sibling";
+			if(result == null)
+				throw new RuntimeException("Could not find UI-node's GlueNode sibling");
 			cache_glue_node = new SoftReference<GlueNode>(result);
 		}
 		return result;
