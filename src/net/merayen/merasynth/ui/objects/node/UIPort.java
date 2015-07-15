@@ -165,11 +165,5 @@ public class UIPort extends UIGroup {
 			getNetObject().reload();
 			return;
 		}
-		getNetObject().addLine(this, port); // Connect the ports together
-
-		//getGlueNode()
-
-		/*if(handler != null)x
-			handler.onConnect();*/
 	}
 }

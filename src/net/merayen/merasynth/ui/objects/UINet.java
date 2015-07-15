@@ -56,16 +56,10 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 
 	/*
 	 * Draws line between two UIObjects.
-	 * Use connect() to actually connect two ports.
+	 * Use connect() afterwards to actually connect two ports.
 	 */
 	public void addLine(UIPort a, UIPort b) {
-		/*for(Connection c : connections)
-			if((c.a == a && c.b == b) || (c.a == b && c.b == a))
-				throw new RuntimeException("Port is already connected.");*/ // NetNode should react here instead
-
 		connections.add(new Connection(a, b));
-
-		//getSupervisor().connect(, b);
 	}
 
 	public void removeLine(UIObject a, UIObject b) {
@@ -97,6 +91,8 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 			throw new RuntimeException(String.format("Port was not found: %s on node %s", b.name, b_node));
 
 		this.getSupervisor().connect(a_node_port, b_node_port);
+
+		reload(); // Reload our changes to netnodes back to us
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
@@ -134,7 +130,6 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 			UIPort a_uiport = a_uinode.getPort(l.a.name);
 			UIPort b_uiport = b_uinode.getPort(l.b.name);
 			connections.add(new Connection(a_uiport, b_uiport));
-			//glue_top.getNodeByNetNodeID(l.);
 		}
 	}
 
