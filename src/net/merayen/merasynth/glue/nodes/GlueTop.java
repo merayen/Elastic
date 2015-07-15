@@ -8,13 +8,13 @@ import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.Context;
 
-public class Top extends GlueObject {
+public class GlueTop extends GlueObject {
 	/*
 	 * Contains all other GlueNodes.
 	 */
 	ArrayList<GlueNode> nodes = new ArrayList<GlueNode>();
 
-	public Top(Context context) {
+	public GlueTop(Context context) {
 		super(context);
 	}
 
@@ -51,6 +51,14 @@ public class Top extends GlueObject {
 				return x;
 
 		return null;
+	}
+
+	public GlueNode getNodeByNetNodeID(String netnode_id) {
+		for(GlueNode x : nodes)
+			if(x.getNetNodeID().equals(netnode_id))
+				return x;
+
+		return null; 
 	}
 
 	public static GlueNode createNodeFromClassPath(String class_path, Context context) {

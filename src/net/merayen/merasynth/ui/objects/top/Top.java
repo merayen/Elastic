@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
+import net.merayen.merasynth.glue.nodes.GlueTop;
 import net.merayen.merasynth.netlist.Supervisor;
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
@@ -148,6 +149,10 @@ public class Top extends UIGroup {
 
 	public Supervisor getSupervisor() {
 		return glue_context.net_supervisor;
+	}
+
+	public GlueTop getGlueTop() {
+		return glue_context.glue_top;
 	}
 
 	public void setHandler(Handler handler) {

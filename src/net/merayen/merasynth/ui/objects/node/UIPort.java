@@ -24,8 +24,9 @@ public class UIPort extends UIGroup {
 	public String title = "";
 	public final String name;
 	public final boolean output;
+	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
 
-	private UIObject temp_port; // Used when dragging a line from this port
+	private PortDrag temp_port; // Used when dragging a line from this port
 
 	public UIPort(String name, boolean output) {
 		super();
@@ -40,7 +41,7 @@ public class UIPort extends UIGroup {
 			@Override
 			public void onMouseUp(Point position) {
 				// Check with the Net-UIObject to see if a line is being drawn
-				UIObject port = getNetObject().getDraggingPort(); // Retrieving the port
+				UIPort port = getNetObject().getDraggingPort(); // Retrieving the port
 				if(port == null) return; // Not dragging a line from a port
 				dropDraggingPort(port);
 			}
@@ -65,18 +66,20 @@ public class UIPort extends UIGroup {
 	}
 
 	protected void onDraw() {
-		draw.setColor(50, 60, 50);
-		draw.fillOval(-0.55f, -0.55f, 1.1f, 1.1f);
-
-		draw.setColor(100, 100, 100);
-		draw.fillOval(-0.5f, -0.5f, 1f, 1f);
-
-		draw.setColor(150, 200, 150);
-		draw.fillOval(-0.4f, -0.4f, 0.8f, 0.8f);
-
-		draw.setColor(0, 0, 0);
-		draw.setFont("SansSerif", 1.0f);
-		draw.text(title, 1f, 0.5f);
+		if(draw_default_port) {
+			draw.setColor(50, 60, 50);
+			draw.fillOval(-0.55f, -0.55f, 1.1f, 1.1f);
+	
+			draw.setColor(100, 100, 100);
+			draw.fillOval(-0.5f, -0.5f, 1f, 1f);
+	
+			draw.setColor(150, 200, 150);
+			draw.fillOval(-0.4f, -0.4f, 0.8f, 0.8f);
+	
+			draw.setColor(0, 0, 0);
+			draw.setFont("SansSerif", 1.0f);
+			draw.text(title, 1f, 0.5f);
+		}
 
 		super.onDraw();
 	}
@@ -145,9 +148,9 @@ public class UIPort extends UIGroup {
 		}));
 	}
 
-	private void dropDraggingPort(UIObject port) {
-		if((UIObject)port == (UIObject)temp_port) return;
-		if((UIObject)port == (UIObject)this) return;
+	private void dropDraggingPort(UIPort port) {
+		if(port == (UIPort)temp_port) return;
+		if(port == this) return;
 
 		boolean ok = true;
 		if(handler != null)
@@ -156,8 +159,14 @@ public class UIPort extends UIGroup {
 		if(!ok)
 			return;
 
+		try {
+			getNetObject().connect(this, (UIPort)port);
+		} catch (net.merayen.merasynth.netlist.exceptions.AlreadyConnected e) {
+			getNetObject().reload();
+			return;
+		}
 		getNetObject().addLine(this, port); // Connect the ports together
-		getNetObject().connect(this, (UIPort)port);
+
 		//getGlueNode()
 
 		/*if(handler != null)x

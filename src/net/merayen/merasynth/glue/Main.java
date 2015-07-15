@@ -4,13 +4,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import net.merayen.merasynth.client.signalgenerator.Glue;
-import net.merayen.merasynth.glue.nodes.Top;
+import net.merayen.merasynth.glue.nodes.GlueTop;
 
 public class Main {
 	
-	public static Top load(String dump) {
+	public static GlueTop load(String dump) {
 		Context context = new Context();
-		Top top = new Top(context);
+		GlueTop top = new GlueTop(context);
 		
 		if(dump == null)
 			top.addObject(new Glue(context));
@@ -29,7 +29,7 @@ public class Main {
 	}
 	
 	public static void main(String slkfjdkl[]) {
-		Top top = load(null);
+		GlueTop top = load(null);
 		String dump = top.dump().toJSONString();
 		System.out.println(dump);
 		top = load(dump);

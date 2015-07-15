@@ -3,6 +3,8 @@ package net.merayen.merasynth.ui.objects;
 import java.util.ArrayList;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
+import net.merayen.merasynth.glue.nodes.GlueTop;
+import net.merayen.merasynth.netlist.Line;
 import net.merayen.merasynth.netlist.Node;
 import net.merayen.merasynth.netlist.Port;
 import net.merayen.merasynth.netlist.Supervisor;
@@ -21,9 +23,9 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	 * Draws the net behind all of the nodes. Must be drawn first.
 	 */
 	private class Connection {
-		public UIObject a, b;
+		public UIPort a, b;
 
-		public Connection(UIObject a, UIObject b) {
+		public Connection(UIPort a, UIPort b) {
 			this.a = a;
 			this.b = b;
 		}
@@ -31,7 +33,7 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 
 	ArrayList<Connection> connections = new ArrayList<Connection>();
 
-	private UIObject dragging_port;
+	private UIPort dragging_port;
 
 	protected void onDraw() {
 		for(Connection c : connections) {
@@ -56,13 +58,13 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	 * Draws line between two UIObjects.
 	 * Use connect() to actually connect two ports.
 	 */
-	public void addLine(UIObject a, UIObject b) {
-		for(Connection c : connections)
+	public void addLine(UIPort a, UIPort b) {
+		/*for(Connection c : connections)
 			if((c.a == a && c.b == b) || (c.a == b && c.b == a))
-				throw new RuntimeException("Port is already connected.");
+				throw new RuntimeException("Port is already connected.");*/ // NetNode should react here instead
 
 		connections.add(new Connection(a, b));
-		
+
 		//getSupervisor().connect(, b);
 	}
 
@@ -95,7 +97,6 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 			throw new RuntimeException(String.format("Port was not found: %s on node %s", b.name, b_node));
 
 		this.getSupervisor().connect(a_node_port, b_node_port);
-		System.out.printf("Hurra");
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
@@ -103,7 +104,7 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		// TODO reload us
 	}
 
-	public void setDraggingPort(UIObject port) {
+	public void setDraggingPort(UIPort port) {
 		/*
 		 * Call this when a port is dragging a line from it.
 		 * This port can then be retrieved by a hovering port by calling getOtherPort()
@@ -111,16 +112,30 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		dragging_port = port;
 	}
 
-	public UIObject getDraggingPort() {
+	public UIPort getDraggingPort() {
 		return dragging_port;
 	}
 
-	public void updateConnectionsFromNet() {
+	public void reload() {
 		/*
 		 * Updates our lines and connections from the netnode-system.
 		 * TODO assert that all the netnodes and uinodes has the same ports available,
 		 * so we might need to wait for all the UINodes to be ready.
 		 */
+		connections.clear();
+		GlueTop glue_top = getGlueTop();
+		for(Line l : this.getSupervisor().getLines()) {
+			Node a_node = l.a.node;
+			Node b_node = l.b.node;
+			GlueNode a_glue_node = glue_top.getNodeByNetNodeID(a_node.getID());
+			GlueNode b_glue_node = glue_top.getNodeByNetNodeID(b_node.getID());
+			UINode a_uinode = a_glue_node.getUINode();
+			UINode b_uinode = b_glue_node.getUINode();
+			UIPort a_uiport = a_uinode.getPort(l.a.name);
+			UIPort b_uiport = b_uinode.getPort(l.b.name);
+			connections.add(new Connection(a_uiport, b_uiport));
+			//glue_top.getNodeByNetNodeID(l.);
+		}
 	}
 
 	private Supervisor getSupervisor() {
@@ -128,5 +143,9 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		 * Return the supervisor from the netnode system.
 		 */
 		return getTopObject().getSupervisor();
+	}
+
+	private GlueTop getGlueTop() {
+		return getTopObject().getGlueTop();
 	}
 }

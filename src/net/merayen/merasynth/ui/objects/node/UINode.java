@@ -92,6 +92,18 @@ public abstract class UINode extends UIGroup {
 		ports.add(new NodePort(name, port, true));
 	}
 
+	public ArrayList<NodePort> getPorts() {
+		return new ArrayList<NodePort>(ports);
+	}
+
+	public UIPort getPort(String name) {
+		for(NodePort x : ports)
+			if(x.name.equals(name))
+				return x.port;
+
+		return null;
+	}
+
 	public JSONObject dump() {
 		JSONObject result = new JSONObject();
 		JSONObject state = new JSONObject();
@@ -127,10 +139,6 @@ public abstract class UINode extends UIGroup {
 			cache_glue_node = new SoftReference<GlueNode>(result);
 		}
 		return result;
-	}
-
-	public ArrayList<NodePort> getPorts() {
-		return new ArrayList<NodePort>(ports);
 	}
 
 	public boolean hasPort(String name) {

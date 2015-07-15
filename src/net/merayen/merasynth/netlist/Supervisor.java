@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import net.merayen.merasynth.netlist.exceptions.AlreadyConnected;
+import net.merayen.merasynth.netlist.exceptions.NoSuchConnectionException;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -17,7 +20,8 @@ public class Supervisor {
 	/*
 	 * Supervisor containing the whole net.
 	 */
-	ArrayList<Node> nodes = new ArrayList<Node>();
+	private ArrayList<Node> nodes = new ArrayList<Node>();
+	private ArrayList<Line> lines = new ArrayList<Line>();
 
 	public void addNode(Node node) {
 		nodes.add(node);
@@ -63,13 +67,78 @@ public class Supervisor {
 		 */
 		if(a == b)
 			throw new RuntimeException("Port can not be connected to itself");
+
+		validatePort(a);
+		validatePort(b);
+
+		if(hasConnection(a, b))
+			throw new AlreadyConnected();
+
 		Line line = new Line(this, a, b);
+		lines.add(line);
 	}
 
 	public void disconnect(Port a, Port b) {
 		if(a == b)
 			throw new RuntimeException("Invalid operation");
-		// TODO
+
+		validatePort(a);
+		validatePort(b);
+
+		if(!hasConnection(a, b))
+			throw new NoSuchConnectionException();
+
+		for(Line l : lines)
+			if((l.a == a && l.b == b) || (l.a == b || l.b == a))
+				lines.remove(l);
+	}
+
+	public HashSet<Line> getConnectedLines(Port p) {
+		/*
+		 * Retrieves all the connected lines for a port.
+		 */
+		validatePort(p);
+
+		HashSet<Line> result = new HashSet<Line>();
+		for(Line l : lines)
+			if(l.a == p || l.b == p)
+				result.add(l);
+
+		return result;
+	}
+
+	public ArrayList<Line> getLines() {
+		return new ArrayList<Line>(lines);
+	}
+
+	private boolean hasConnection(Port a, Port b) {
+		HashSet<Line> a_lines = getConnectedLines(a);
+		HashSet<Line> b_lines = getConnectedLines(b);
+
+		// We check both ways to be extremely sure
+		for(Line l : a_lines)
+			if(l.a == b || l.b == b)
+				return true;
+
+		for(Line l : b_lines)
+			if(l.a == a || l.b == a)
+				return true;
+
+		return false;
+	}
+
+	private void validatePort(Port p) {
+		if(p == null)
+			throw new RuntimeException("Port can not be null");
+
+		if(p.supervisor != this)
+			throw new RuntimeException("Port does not share the same node supervisor");
+
+		for(Node n : nodes)
+			if(n == p.node)
+				return; // All fine
+
+		throw new RuntimeException("Supervisor does not have this node");
 	}
 
 	public JSONObject dump() {
@@ -85,15 +154,9 @@ public class Supervisor {
 			nodes.add(n.dump());
 
 		// Dump of net
-		HashSet lines_dumped = new HashSet<String>(); // To not store all lines twice
 		JSONArray lines = new JSONArray();
-		for(Node node : this.nodes)
-			for(Port port : node.getPorts())
-				for(Line line : port.getLines())
-					if(!lines_dumped.contains(line.getID())) {
-						lines.add(line.dump());
-						lines_dumped.add(line.getID());
-					}
+		for(Line l : this.lines)
+			lines.add(l.dump());
 
 		result.put("lines", lines);	
 		result.put("nodes", nodes);

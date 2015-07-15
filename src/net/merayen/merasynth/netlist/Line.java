@@ -8,17 +8,13 @@ public class Line extends NetListObject {
 	/*
 	 * A connection between two ports
 	 */
-	private Port a;
-	private Port b;
+	public final Port a;
+	public final Port b;
 
 	public Line(Supervisor supervisor, Port a, Port b) {
 		super(supervisor);
 		this.a = a;
 		this.b = b;
-
-		// Tell the ports that we have been connected
-		a.connectLine(this);
-		b.connectLine(this);
 	}
 
 	public void send(Port source, DataPacket data) {
@@ -32,8 +28,6 @@ public class Line extends NetListObject {
 
 	public JSONObject dump() {
 		JSONObject obj = new JSONObject();
-
-		//obj.put("id", this.getID()); We don't bother. No idea what to use it for
 
 		JSONObject port_a = new JSONObject();
 		port_a.put("node", a.node.getID());
