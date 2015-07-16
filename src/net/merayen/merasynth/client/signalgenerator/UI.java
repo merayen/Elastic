@@ -69,7 +69,7 @@ public class UI extends UINode {
 			output_port = new UIPort("output", true);
 			output_port.translation.x = width;
 			output_port.translation.y = 2f;
-			addOutputPort("output", output_port);
+			addPort(output_port);
 		}
 	}
 

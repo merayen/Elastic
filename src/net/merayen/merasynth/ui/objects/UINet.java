@@ -1,6 +1,7 @@
 package net.merayen.merasynth.ui.objects;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.glue.nodes.GlueTop;
@@ -13,14 +14,15 @@ import net.merayen.merasynth.ui.objects.node.UIPort;
 import net.merayen.merasynth.ui.objects.node.UINode;
 
 /*
- * TODO Restore all lines from the actual netlist!
  * Do note that all the nodes must have been initialized and created their ports, first!
  * (Maybe launch our reconnect job on the first onDraw()? After onInit(), onRestore()?
  */
 
 public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
+
 	/* 
-	 * Draws the net behind all of the nodes. Must be drawn first.
+	 * Connection() class is *only* used to cache connections for fast draw times.
+	 * connections-array is reloaded from the netnode system.
 	 */
 	private class Connection {
 		public UIPort a, b;
@@ -73,22 +75,14 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		// TODO Communicate back to the net-node net-system and then reload from it
-		// TODO reload us from the net-node list
-		UINode a_uinode = a.getNode();
-		UINode b_uinode = b.getNode();
-		GlueNode a_glue = a_uinode.getGlueNode();
-		GlueNode b_glue = b_uinode.getGlueNode();
-		Node a_node = a_glue.getNetNode();
-		Node b_node = b_glue.getNetNode();
-		Port a_node_port = a_node.getPort(a.name);
-		Port b_node_port = b_node.getPort(b.name);
+		Port a_node_port = getNetPort(a);
+		Port b_node_port = getNetPort(b);
 
 		if(a_node_port == null)
-			throw new RuntimeException(String.format("Port was not found: %s on node %s", a.name, a_node));
+			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", a.name, a.getNode().getClass().getName()));
 
 		if(b_node_port == null)
-			throw new RuntimeException(String.format("Port was not found: %s on node %s", b.name, b_node));
+			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", b.name, b.getNode().getClass().getName()));
 
 		this.getSupervisor().connect(a_node_port, b_node_port);
 
@@ -96,8 +90,32 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		// TODO Communicate with net-node
-		// TODO reload us
+		Port a_node_port = getNetPort(a);
+		Port b_node_port = getNetPort(b);
+
+		if(a_node_port == null)
+			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", a.name, a.getNode().getClass().getName()));
+
+		if(b_node_port == null)
+			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", b.name, b.getNode().getClass().getName()));
+
+		getSupervisor().disconnect(a_node_port, b_node_port);
+
+		reload(); // Reload our changes to netnodes back to us
+	}
+
+	public void disconnectAll(UIPort p) {
+		/*
+		 * Disconnects all connections on a port.
+		 */
+		Port node_port = getNetPort(p);
+
+		if(node_port == null)
+			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", p.name, p.getNode().getClass().getName()));
+
+		getSupervisor().disconnectAll(node_port);
+
+		reload();
 	}
 
 	public void setDraggingPort(UIPort port) {
@@ -112,11 +130,36 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		return dragging_port;
 	}
 
-	public void reload() {
+	public HashSet<UIPort> getAllConnectedPorts(UIPort p) {
+		/*
+		 * Retrieves all the other UIPort connected to us
+		 */
+		HashSet<UIPort> result = new HashSet<UIPort>();
+		Port net_port = getNetPort(p);
+		HashSet<Port> connected_net_ports = this.getSupervisor().getConnectedPorts(net_port);
+		for(Port x : connected_net_ports) {
+			GlueNode glue_node = this.getGlueTop().getNodeByNetNodeID(x.node.getID());
+			UINode uinode = glue_node.getUINode();
+			UIPort uiport = uinode.getPort(x.name);
+			if(uiport == null)
+				throw new RuntimeException(String.format("Port %s was not found on UINode %s", x.name, uinode));
+
+			result.add(uiport);
+		}
+
+		return result;
+	}
+
+	private Port getNetPort(UIPort p) {
+		UINode uinode = p.getNode();
+		GlueNode glue_node = uinode.getGlueNode();
+		Node node = glue_node.getNetNode();
+		return node.getPort(p.name);
+	}
+
+	private void reload() {
 		/*
 		 * Updates our lines and connections from the netnode-system.
-		 * TODO assert that all the netnodes and uinodes has the same ports available,
-		 * so we might need to wait for all the UINodes to be ready.
 		 */
 		connections.clear();
 		GlueTop glue_top = getGlueTop();
@@ -129,6 +172,17 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 			UINode b_uinode = b_glue_node.getUINode();
 			UIPort a_uiport = a_uinode.getPort(l.a.name);
 			UIPort b_uiport = b_uinode.getPort(l.b.name);
+
+			if(a_uiport == null) {
+				System.out.printf("UINode %s is missing port %s\n", a_uinode.getClass().getName(), l.a.name);
+				continue;
+			}
+
+			if(b_uiport == null) {
+				System.out.printf("UINode %s is missing port %s\n", b_uinode.getClass().getName(), l.b.name);
+				continue;
+			}
+
 			connections.add(new Connection(a_uiport, b_uiport));
 		}
 	}

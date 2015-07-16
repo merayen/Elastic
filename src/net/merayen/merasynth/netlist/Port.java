@@ -6,8 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
 public class Port extends NetListObject {
-	//private java.util.ArrayList<Line> lines = new ArrayList<Line>(); // Lines connected to us
-	public final Node node; // The node containing this node
+	public final Node node; // The node containing this port
 	public final Supervisor supervisor;
 	private ArrayList<DataPacket> incoming = new ArrayList<DataPacket>();
 	
@@ -26,17 +25,8 @@ public class Port extends NetListObject {
 		this.node = node;
 		this.supervisor = node.supervisor;
 	}
-	
-	public void send(DataPacket data) {
-		/*
-		 * Send a datapacket from this port.
-		 * All connected ports will receive.
-		 */
-		for(Line l : supervisor.getConnectedLines(this))
-			l.send(this, data);;
-	}
 
-	public void push(DataPacket data) {
+	public void supervisor_push(DataPacket data) {
 		/*
 		 * Called by another port to receive data from that port
 		 */

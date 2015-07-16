@@ -34,7 +34,7 @@ public class PortParameterSlider extends UIGroup {
 
 		port = new UIPort(name, false);
 		UINode node = (UINode)this.parent;
-		node.addInputPort(name, port);
+		node.addPort(port);
 
 		parameter_slider = new ParameterSlider();
 		add(parameter_slider);

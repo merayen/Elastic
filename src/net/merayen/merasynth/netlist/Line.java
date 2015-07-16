@@ -17,15 +17,6 @@ public class Line extends NetListObject {
 		this.b = b;
 	}
 
-	public void send(Port source, DataPacket data) {
-		if(source == a)
-			b.push(data);
-		else if(source == b)
-			a.push(data);
-		else
-			throw new RuntimeException("This line is not connected to this port");
-	}
-
 	public JSONObject dump() {
 		JSONObject obj = new JSONObject();
 

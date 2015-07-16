@@ -35,6 +35,7 @@ public class UIPort extends UIGroup {
 	}
 
 	protected void onInit() {
+		UIPort self = this;
 		port_drag = new MouseHandler(this);
 		port_drag.setHandler(new MouseHandler.Handler() {
 
@@ -59,7 +60,8 @@ public class UIPort extends UIGroup {
 			@Override
 			public void onMouseDown(Point position) {
 				// Create a new port and notifies the net
-				// TODO If a port is connected, disconnect it, and drag a new one from the existing port
+				if(!self.output) // Input ports can only have 1 line connected
+					getNetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
 				createTempPort();
 			}
 		});
@@ -151,6 +153,7 @@ public class UIPort extends UIGroup {
 	private void dropDraggingPort(UIPort port) {
 		if(port == (UIPort)temp_port) return;
 		if(port == this) return;
+		if(port.parent == this.parent) return;
 
 		boolean ok = true;
 		if(handler != null)
@@ -159,11 +162,12 @@ public class UIPort extends UIGroup {
 		if(!ok)
 			return;
 
+		// If we are an input port, clear any line that is already connected to us (should only every be 1 line)
+		//if(this.getNetObject().get)
 		try {
 			getNetObject().connect(this, (UIPort)port);
 		} catch (net.merayen.merasynth.netlist.exceptions.AlreadyConnected e) {
-			getNetObject().reload();
-			return;
+			// Okido
 		}
 	}
 }

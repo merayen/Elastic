@@ -27,6 +27,17 @@ public class Supervisor {
 		nodes.add(node);
 	}
 
+	public void removeNode(Node node) {
+		if(!nodes.contains(node))
+			throw new RuntimeException(String.format("Node %s does not exist in this supervisor", node));
+
+		// Disconnect all ports
+		for(Port p : node.getPorts())
+			disconnectAll(p);
+
+		nodes.remove(node);
+	}
+
 	public void update(double timeout) {
 		/*
 		 * Oppdaterer hele netlisten til den er ferdigprosessert,
@@ -88,23 +99,47 @@ public class Supervisor {
 		if(!hasConnection(a, b))
 			throw new NoSuchConnectionException();
 
-		for(Line l : lines)
+		for(Line l : new ArrayList<Line>(lines))
 			if((l.a == a && l.b == b) || (l.a == b || l.b == a))
 				lines.remove(l);
 	}
 
-	public HashSet<Line> getConnectedLines(Port p) {
+	public void disconnectAll(Port p) {
+		/*
+		 * Disconnects port from all other ports.
+		 */
+		HashSet<Port> ports = getConnectedPorts(p);
+		for(Line l : new ArrayList<Line>(lines))
+			if(l.a == p || l.b == p)
+				lines.remove(l);
+	}
+
+	public HashSet<Port> getConnectedPorts(Port p) {
 		/*
 		 * Retrieves all the connected lines for a port.
 		 */
 		validatePort(p);
 
-		HashSet<Line> result = new HashSet<Line>();
-		for(Line l : lines)
-			if(l.a == p || l.b == p)
-				result.add(l);
+		HashSet<Port> result = new HashSet<Port>();
+		for(Line l : lines) {
+			if(l.a == p)
+				result.add(l.b);
+			if(l.b == p)
+				result.add(l.a);
+		}
+
+		if(result.contains(p))
+			throw new RuntimeException(
+				String.format("Port %s on node %s is connected to itself. Should not happen",
+						p.name, p.node.getClass().getName())
+			);
 
 		return result;
+	}
+
+	public void send(Port port, DataPacket data) {
+		for(Port p : getConnectedPorts(port))
+			p.supervisor_push(data);
 	}
 
 	public ArrayList<Line> getLines() {
@@ -112,16 +147,13 @@ public class Supervisor {
 	}
 
 	private boolean hasConnection(Port a, Port b) {
-		HashSet<Line> a_lines = getConnectedLines(a);
-		HashSet<Line> b_lines = getConnectedLines(b);
-
 		// We check both ways to be extremely sure
-		for(Line l : a_lines)
-			if(l.a == b || l.b == b)
+		for(Port p : getConnectedPorts(a))
+			if(p == b)
 				return true;
 
-		for(Line l : b_lines)
-			if(l.a == a || l.b == a)
+		for(Port p : getConnectedPorts(b))
+			if(p == a)
 				return true;
 
 		return false;

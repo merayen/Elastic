@@ -4,7 +4,6 @@ import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.objects.node.Titlebar;
-import net.merayen.merasynth.ui.objects.top.Top;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public abstract class UINode extends UIGroup {
 	public float height = 50f;
 
 	protected Titlebar titlebar;
-	protected ArrayList<NodePort> ports = new ArrayList<NodePort>();
+	protected ArrayList<UIPort> ports = new ArrayList<UIPort>();
 
 	protected void onDump(JSONObject state) {}
 	protected void onRestore(JSONObject state) {}
@@ -64,42 +63,36 @@ public abstract class UINode extends UIGroup {
 	@Override
 	public void add(UIObject obj) {
 		if(obj instanceof UIPort)
-			throw new RuntimeException("Add ports with addInputPort() or addOutputPort()");
+			throw new RuntimeException("Add ports with addPort()");
 
 		super.add(obj);
 	}
 
-	public void addInputPort(String name, UIPort port) {
+	public void addPort(UIPort port) {
 		super.add(port);
-		ports.add(new NodePort(name, port, false));
+		ports.add(port);
 		port.node_setHandler(new UIPort.Handler() {
 			@Override
 			public boolean onConnect(UIPort port) {
-				// TODO Notify the GlueNode
-				System.out.printf("Connecting port %s\n", name);
+				// TODO Notify the GlueNode?
 				return true;
 			}
 
 			@Override
 			public void onDisconnect() {
-				// TODO Make this update the netlist, and update ui net from it afterwards
+				// TODO Notify the GlueNode?
 			}
 		});
 	}
 
-	public void addOutputPort(String name, UIPort port) {
-		super.add(port);
-		ports.add(new NodePort(name, port, true));
-	}
-
-	public ArrayList<NodePort> getPorts() {
-		return new ArrayList<NodePort>(ports);
+	public ArrayList<UIPort> getPorts() {
+		return new ArrayList<UIPort>(ports);
 	}
 
 	public UIPort getPort(String name) {
-		for(NodePort x : ports)
+		for(UIPort x : ports)
 			if(x.name.equals(name))
-				return x.port;
+				return x;
 
 		return null;
 	}
@@ -142,7 +135,7 @@ public abstract class UINode extends UIGroup {
 	}
 
 	public boolean hasPort(String name) {
-		for(NodePort port : ports)
+		for(UIPort port : ports)
 			if(port.name.equals(name))
 				return true;
 
