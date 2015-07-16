@@ -4,17 +4,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import net.merayen.merasynth.client.signalgenerator.Net;
-import net.merayen.merasynth.netlist.nodes.*;
 
 public class Main {
 	public static Supervisor load(String dump) {
 		Supervisor supervisor = new Supervisor();
 		if(dump == null) {
 			Node sine_node = new Net(supervisor);
-			Node console_node = new Console(supervisor);
+			//Node console_node = new Console(supervisor);
 			supervisor.addNode(sine_node);
-			supervisor.addNode(console_node);
-			supervisor.connect(sine_node.getPort("output"), console_node.getPort("input"));
+			//supervisor.addNode(console_node);
+			//supervisor.connect(sine_node.getPort("output"), console_node.getPort("input"));
 		} else {
 			try {
 				supervisor.restore((JSONObject)new org.json.simple.parser.JSONParser().parse(dump));

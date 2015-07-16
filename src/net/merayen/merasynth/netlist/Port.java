@@ -2,6 +2,8 @@ package net.merayen.merasynth.netlist;
 
 import java.util.ArrayList;
 
+import net.merayen.merasynth.netlist.datapacket.DataPacket;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 

@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.netlist.exceptions.AlreadyConnected;
 import net.merayen.merasynth.netlist.exceptions.NoSuchConnectionException;
 

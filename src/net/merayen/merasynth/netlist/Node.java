@@ -2,6 +2,7 @@ package net.merayen.merasynth.netlist;
 
 import java.util.ArrayList;
 
+import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.netlist.exceptions.NoSuchPortException;
 
 import org.json.simple.JSONObject;

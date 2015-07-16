@@ -31,8 +31,6 @@ public class UI extends UINode {
 		add(frequency_slider);
 		frequency_slider.translation.x = 5f;
 		frequency_slider.translation.y = 5f;
-
-		System.out.println(this.getGlueNode());
 	}
 
 	public void setFrequency(float frequency) {

@@ -11,5 +11,7 @@ public class Main {
 			node.getUINode().translation.x = 10f + i * 10f;
 			node.getUINode().translation.y = 10f + i * 10f;
 		}
+		GlueNode node = w.node_system.addNode(net.merayen.merasynth.client.output.Glue.class);
+		node.getUINode().translation.x = 50f;
 	}
 }

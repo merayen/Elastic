@@ -1,8 +1,6 @@
-package net.merayen.merasynth.client.signalgenerator;
+package net.merayen.merasynth.client.output;
 
 import net.merayen.merasynth.netlist.*;
-import net.merayen.merasynth.netlist.datapacket.DataPacket;
-
 import org.json.simple.JSONObject;
 
 public class Net extends Node {
@@ -27,7 +25,6 @@ public class Net extends Node {
 
 	public double update() {
 		// TODO lag et sinussignal
-		
 		//send("output", new DataPacket(1337));
 		System.out.println("Updating");
 		return DONE;

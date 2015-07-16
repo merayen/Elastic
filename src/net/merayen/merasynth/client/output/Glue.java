@@ -1,4 +1,4 @@
-package net.merayen.merasynth.client.signalgenerator;
+package net.merayen.merasynth.client.output;
 
 import org.json.simple.JSONObject;
 
@@ -14,28 +14,25 @@ public class Glue extends GlueNode {
 
 	@Override
 	public String getClassPath() {
-		return "net.merayen.merasynth.client.signalgenerator";
+		return "net.merayen.merasynth.client.output";
 	}
 
 	@Override
 	public String getFriendlyName() {
-		return "Pulse Generator 1.0";
+		return "Output";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Simple wave generator with several different wave types.";
+		return "Outputs audio";
 	}
 
 	@Override
 	public void onInit() {
 		super.onInit();
-		System.out.println("(1) Pulse generator initializing");
-		createPort("frequency");
-		createPort("output");
+		createPort("input");
 	}
 
-	@Override
 	protected void onDump(JSONObject state) {
 		
 	}
