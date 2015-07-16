@@ -1,6 +1,7 @@
 package net.merayen.merasynth.ui.objects.node;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.DelayEvent;
@@ -26,7 +27,7 @@ public class UIPort extends UIGroup {
 	public final boolean output;
 	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
 
-	private PortDrag temp_port; // Used when dragging a line from this port
+	private UIPortTemporary temp_port; // Used when dragging a line from this port
 
 	public UIPort(String name, boolean output) {
 		super();
@@ -42,9 +43,16 @@ public class UIPort extends UIGroup {
 			@Override
 			public void onMouseUp(Point position) {
 				// Check with the Net-UIObject to see if a line is being drawn
-				UIPort port = getNetObject().getDraggingPort(); // Retrieving the port
-				if(port == null) return; // Not dragging a line from a port
-				dropDraggingPort(port);
+				UIPort source_port = getNetObject().getDraggingPort(); // Retrieving the port, the port the line is being dragged from
+				if(source_port == null) return; // Not dragging a line from a port
+				if(!self.output) // Is input port, we do not allow multiple connections
+					getNetObject().disconnectAll(self);
+
+				if(self.output)
+					if(source_port.output)
+						return; // We do not allow connecting output ports together
+
+				dropDraggingPort(source_port);
 			}
 
 			@Override
@@ -60,9 +68,22 @@ public class UIPort extends UIGroup {
 			@Override
 			public void onMouseDown(Point position) {
 				// Create a new port and notifies the net
-				if(!self.output) // Input ports can only have 1 line connected
-					getNetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
-				createTempPort();
+				if(!self.output) {// Input ports can only have 1 line connected
+					HashSet<UIPort> connected_ports = getNetObject().getAllConnectedPorts(self);
+					if(connected_ports.size() == 1) {
+						getNetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
+
+						// Reconnect temporary port from the port we were already connected to
+						for(UIPort p : connected_ports)
+							createTempPort(p);
+					} else if(connected_ports.size() == 0) {
+						createTempPort(self);
+					} else {
+						throw new RuntimeException("Multiple lines connected to an input port. Not allowed.");
+					}
+				} else {
+					createTempPort(self);
+				}
 			}
 		});
 	}
@@ -110,7 +131,7 @@ public class UIPort extends UIGroup {
 		return (UINode)x;
 	}
 
-	private UINet getNetObject() {
+	protected UINet getNetObject() {
 		/*
 		 * Gets the Net object that draws all the lines.
 		 * TODO Remove and just mangle directly with netnode lines?
@@ -124,11 +145,10 @@ public class UIPort extends UIGroup {
 		// ....
 	}
 
-	private void createTempPort() {
-		temp_port = new PortDrag();
+	private void createTempPort(UIPort p) {
+		temp_port = new UIPortTemporary();
 		add(temp_port);
-		getNetObject().addLine(this, temp_port);
-		getNetObject().setDraggingPort(this);
+		temp_port.addTempPort(p);
 	}
 
 	private void moveTempPort(Point position) { // Relative coordinates
@@ -143,8 +163,7 @@ public class UIPort extends UIGroup {
 			@Override
 			public void run() {
 				self.remove(temp_port);
-				self.getNetObject().removeLine(self, temp_port);
-				self.getNetObject().setDraggingPort(null);
+				temp_port.removeTempPort();
 				temp_port = null;
 			}
 		}));

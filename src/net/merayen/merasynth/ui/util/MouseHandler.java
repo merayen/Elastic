@@ -53,7 +53,6 @@ public class MouseHandler {
 			net.merayen.merasynth.ui.Point p_relative = uiobject.getPointFromPixel(x, y);
 			net.merayen.merasynth.ui.Point p_absolute = uiobject.getAbsolutePointFromPixel(x, y);
 			
-			// TODO read hit from MouseEvent instead
 			boolean hit = (e.getTopmostHit() == uiobject);
 			
 			if(e.action == MouseEvent.action_type.DOWN) {
