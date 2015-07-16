@@ -92,6 +92,9 @@ public class NodeSystem {
 				executeDelayEvents(dc.outgoing_events);
 
 				// TODO Route outgoing events, if we are contained by container node
+
+				// TODO Move updating of netnodes out to its own thread
+				glue_context.net_supervisor.update(0.1);
 			}
 		});
 	}

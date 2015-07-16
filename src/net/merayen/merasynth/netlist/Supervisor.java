@@ -39,16 +39,16 @@ public class Supervisor {
 		nodes.remove(node);
 	}
 
-	public void update(double timeout) {
-		/*
-		 * Oppdaterer hele netlisten til den er ferdigprosessert,
-		 * eller via timeout.
-		 */
+	public final void update(double timeout) {
+		long stop = System.currentTimeMillis() + (long)(timeout * 1000);
+		while(stop > System.currentTimeMillis()) {
+			ArrayList<Node> to_update = getNodesNeedingUpdate();
+			if(to_update.size() == 0)
+				break;
 
-		// TODO distribute data between nodes. Already done ??
-
-		for(Node n : getNodesNeedingUpdate())
-			n.doUpdate();
+			for(Node n : to_update)
+				n.update();
+		}
 	}
 
 	private ArrayList<Node> getNodesNeedingUpdate() {

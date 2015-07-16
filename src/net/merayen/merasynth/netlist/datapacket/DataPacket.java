@@ -10,4 +10,6 @@ public abstract class DataPacket {
 	public final long id = ++next_id; // Unique packet id, incremental
 
 	public final long created = System.currentTimeMillis();
+
+	public abstract int getSize(); // Estimated memory the packet takes. Only the content
 }

@@ -1,20 +1,34 @@
 package net.merayen.merasynth.client.output;
 
-import net.merayen.merasynth.ui.objects.components.CircularSlider;
+import net.merayen.merasynth.ui.objects.components.Button;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.objects.node.UIPort;
-import net.merayen.merasynth.ui.objects.node.components.PortParameterSlider;
 
 public class UI extends UINode {
 	private UIPort input_port;
 
 	public void onInit() {
 		super.onInit();
+		UI self = this;
 
 		width = 10f;
 		height = 10f;
 
 		titlebar.title = "Output";
+
+		// Test button
+		Button testbutton = new Button();
+		testbutton.label = "Request";
+		testbutton.translation.x = 1f;
+		testbutton.translation.y = 5f;
+		add(testbutton);
+
+		testbutton.setHandler(new Button.IHandler() {
+			@Override
+			public void onClick() {
+				((Glue)self.getGlueNode()).testbuttonClicked();
+			}
+		});
 	}
 
 	@Override

@@ -12,7 +12,6 @@ public abstract class Node extends NetListObject {
 	/*
 	 * Alle noder må inheritere fra denne.
 	 */
-
 	public static class PortExists extends RuntimeException {
 		public PortExists(Node node, String port_name) {
 			super(String.format("Port '%s' already exists on node '%s'", node.getClass().getName(), port_name));
@@ -31,15 +30,23 @@ public abstract class Node extends NetListObject {
 	}
 
 	protected void onCreate() {
-		
+
 	}
 
 	protected void onRestore() {
-		
+
+	}
+
+	protected void onReceive(String port_name, DataPacket dp) {
+
+	}
+
+	protected double onUpdate() {
+		return DONE;
 	}
 
 	protected void onDump(JSONObject state) {
-		
+
 	}
 
 	public void addPort(String port_name) {
@@ -66,7 +73,7 @@ public abstract class Node extends NetListObject {
 
 	protected void send(String port_name, DataPacket data) {
 		/*
-		 * Node kaller denne for å sende data ut på en port
+		 * Node kaller på denne for å sende data ut på en port
 		 */
 		Port port = getPort(port_name);
 
@@ -76,31 +83,15 @@ public abstract class Node extends NetListObject {
 		supervisor.send(port, data);
 	}
 
-	protected DataPacket receive(String port_name) {
-		/*
-		 * Get a datapacket from a port.
-		 * Returns null if no data.
-		 */
-		Port port = getPort(port_name);
-		if(port == null)
-			throw new NoSuchPortException(this, port_name);
+	public void update() {
+		// Read any data available on ports
+		for(Port p : ports) {
+			DataPacket dp;
+			while((dp = p.receive()) != null)
+				onReceive(p.name, dp);
+		}
 
-		return port.receive();
-	}
-
-	/*
-	 * Kalles av supervisoren hyppig.
-	 * Her kan noden prosessere data, motta og sende.
-	 * Returner antall sekunder for når noden ønsker å bli kallt på igjen.
-	 * Den blir kallt omigjen uansett om den mottar data på en port.
-	 */
-	public abstract double update();
-
-	public void doUpdate() {
-		/*
-		 * Kalles av supervisoren.
-		 */
-		double next_return = this.update();
+		double next_return = onUpdate();
 		next_update = System.currentTimeMillis() + (long)(next_return*1000);
 	}
 

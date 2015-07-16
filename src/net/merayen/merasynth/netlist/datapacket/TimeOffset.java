@@ -6,4 +6,8 @@ public class TimeOffset extends DataPacket {
 	 * Use this to scroll forward and backwards in time.
 	 */
 	public float time; // New time in seconds to set
+
+	public int getSize() {
+		return 4;
+	}
 }

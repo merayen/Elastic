@@ -47,4 +47,9 @@ public class Glue extends GlueNode {
 	private net.merayen.merasynth.client.signalgenerator.UI ui() {
 		return ((net.merayen.merasynth.client.signalgenerator.UI)this.getUINode());
 	}
+
+	// Functions called from UI
+	public void testbuttonClicked() {
+		((Net)this.getNetNode()).testRequest();
+	}
 }
