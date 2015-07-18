@@ -28,9 +28,8 @@ public class Glue extends GlueNode {
 	}
 
 	@Override
-	public void onInit() {
+	protected void onInit() {
 		super.onInit();
-		System.out.println("(1) Pulse generator initializing");
 		createPort("frequency");
 		createPort("output");
 	}
@@ -49,5 +48,10 @@ public class Glue extends GlueNode {
 
 	private net.merayen.merasynth.client.signalgenerator.UI ui() {
 		return ((net.merayen.merasynth.client.signalgenerator.UI)this.getUINode());
+	}
+
+	public void changeFrequency(float frequency) {
+		this.frequency = frequency;
+		((Net)this.getNetNode()).setFrequency(frequency);
 	}
 }

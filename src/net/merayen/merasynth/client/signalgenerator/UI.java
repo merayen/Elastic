@@ -6,7 +6,6 @@ import net.merayen.merasynth.ui.objects.node.UIPort;
 import net.merayen.merasynth.ui.objects.node.components.PortParameterSlider;
 
 public class UI extends UINode {
-	private CircularSlider frequency_slider;
 	private PortParameterSlider port_parameter_slider;
 	private UIPort output_port;
 	private float frequency = 440;
@@ -23,14 +22,9 @@ public class UI extends UINode {
 		super.onInit();
 
 		width = 10f;
-		height = 10f;
+		height = 5f;
 
 		titlebar.title = "Wave";
-
-		frequency_slider = new CircularSlider();
-		add(frequency_slider);
-		frequency_slider.translation.x = 5f;
-		frequency_slider.translation.y = 5f;
 	}
 
 	public void setFrequency(float frequency) {
@@ -40,6 +34,7 @@ public class UI extends UINode {
 
 	@Override
 	public void onCreatePort(String name) {
+		UI self = this;
 		if(name.equals("frequency")) {
 			port_parameter_slider = new PortParameterSlider("frequency");
 			port_parameter_slider.translation.y = 2f;
@@ -48,14 +43,15 @@ public class UI extends UINode {
 			port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {
 				@Override
 				public void onChange(double value) {
-					frequency = Math.round(value * 8000.0 * 10) / 10;
+					frequency = Math.round(value * 8000.0 * 10) / 10 + 0.1f;
 					port_parameter_slider.setLabel(String.format("%.2f Hz", frequency));
+					((Glue)self.getGlueNode()).changeFrequency(frequency);
 				}
 
 				@Override
 				public void onButton(int offset) {
 					frequency += offset*1;
-					port_parameter_slider.setValue(frequency / 8000.0 );
+					port_parameter_slider.setValue(frequency / 8000.0);
 				}
 			});
 

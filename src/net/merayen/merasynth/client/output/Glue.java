@@ -1,5 +1,7 @@
 package net.merayen.merasynth.client.output;
 
+import java.util.HashMap;
+
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.Context;
@@ -13,7 +15,7 @@ public class Glue extends GlueNode {
 	}
 
 	@Override
-	public String getClassPath() {
+	public String getClassPath() { // XXX Da wut, don't we already know this?
 		return "net.merayen.merasynth.client.output";
 	}
 
@@ -50,6 +52,10 @@ public class Glue extends GlueNode {
 
 	// Functions called from UI
 	public void testbuttonClicked() {
-		((Net)this.getNetNode()).testRequest();
+		((Net)getNetNode()).requestAudio();
+	}
+
+	public HashMap<String, Number> getStatistics() {
+		return ((Net)getNetNode()).getStatistics();
 	}
 }

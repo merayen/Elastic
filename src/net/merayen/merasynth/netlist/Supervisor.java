@@ -25,39 +25,47 @@ public class Supervisor {
 	private ArrayList<Line> lines = new ArrayList<Line>();
 
 	public void addNode(Node node) {
-		nodes.add(node);
+		synchronized (this) {
+			nodes.add(node);
+		}
 	}
 
 	public void removeNode(Node node) {
-		if(!nodes.contains(node))
-			throw new RuntimeException(String.format("Node %s does not exist in this supervisor", node));
+		synchronized (this) {
+			if(!nodes.contains(node))
+				throw new RuntimeException(String.format("Node %s does not exist in this supervisor", node));
 
-		// Disconnect all ports
-		for(Port p : node.getPorts())
-			disconnectAll(p);
+			// Disconnect all ports
+			for(Port p : node.getPorts())
+				disconnectAll(p);
 
-		nodes.remove(node);
+			nodes.remove(node);
+		}
 	}
 
 	public final void update(double timeout) {
 		long stop = System.currentTimeMillis() + (long)(timeout * 1000);
 		while(stop > System.currentTimeMillis()) {
-			ArrayList<Node> to_update = getNodesNeedingUpdate();
-			if(to_update.size() == 0)
-				break;
+			synchronized (this) {
+				ArrayList<Node> to_update = getNodesNeedingUpdate();
+				if(to_update.size() == 0)
+					break;
 
-			for(Node n : to_update)
-				n.update();
+				for(Node n : to_update)
+					n.update();
+			}
 		}
 	}
 
 	private ArrayList<Node> getNodesNeedingUpdate() {
-		ArrayList<Node> result = new ArrayList<>();
-		for(Node n : nodes)
-			if(n.needsUpdate())
-				result.add(n);
+		synchronized (this) {
+			ArrayList<Node> result = new ArrayList<>();
+			for(Node n : nodes)
+				if(n.needsUpdate())
+					result.add(n);
 
-		return result;
+			return result;
+		}
 	}
 
 	public boolean needsUpdate() {
@@ -65,9 +73,11 @@ public class Supervisor {
 	}
 
 	public Node getNodeByID(String id) {
-		for(Node node : nodes)
-			if(node.getID().equals(id))
-				return node;
+		synchronized (this) {
+			for(Node node : nodes)
+				if(node.getID().equals(id))
+					return node;
+		}
 
 		throw new RuntimeException(String.format("Node by id %s was not found", id));
 	}
@@ -83,11 +93,13 @@ public class Supervisor {
 		validatePort(a);
 		validatePort(b);
 
-		if(hasConnection(a, b))
-			throw new AlreadyConnected();
+		synchronized (this) {
+			if(hasConnection(a, b))
+				throw new AlreadyConnected();
 
-		Line line = new Line(this, a, b);
-		lines.add(line);
+			Line line = new Line(this, a, b);
+			lines.add(line);
+		}
 	}
 
 	public void disconnect(Port a, Port b) {
@@ -97,12 +109,14 @@ public class Supervisor {
 		validatePort(a);
 		validatePort(b);
 
-		if(!hasConnection(a, b))
-			throw new NoSuchConnectionException();
+		synchronized (this) {
+			if(!hasConnection(a, b))
+				throw new NoSuchConnectionException();
 
-		for(Line l : new ArrayList<Line>(lines))
-			if((l.a == a && l.b == b) || (l.a == b || l.b == a))
-				lines.remove(l);
+			for(Line l : new ArrayList<Line>(lines))
+				if((l.a == a && l.b == b) || (l.a == b || l.b == a))
+					lines.remove(l);
+		}
 	}
 
 	public void disconnectAll(Port p) {
@@ -122,11 +136,14 @@ public class Supervisor {
 		validatePort(p);
 
 		HashSet<Port> result = new HashSet<Port>();
-		for(Line l : lines) {
-			if(l.a == p)
-				result.add(l.b);
-			if(l.b == p)
-				result.add(l.a);
+
+		synchronized (this) {
+			for(Line l : lines) {
+				if(l.a == p)
+					result.add(l.b);
+				if(l.b == p)
+					result.add(l.a);
+			}
 		}
 
 		if(result.contains(p))
@@ -139,23 +156,29 @@ public class Supervisor {
 	}
 
 	public void send(Port port, DataPacket data) {
-		for(Port p : getConnectedPorts(port))
-			p.supervisor_push(data);
+		synchronized (this) {
+			for(Port p : getConnectedPorts(port))
+				p.supervisor_push(data);
+		}
 	}
 
 	public ArrayList<Line> getLines() {
-		return new ArrayList<Line>(lines);
+		synchronized (this) {
+			return new ArrayList<Line>(lines);
+		}
 	}
 
 	private boolean hasConnection(Port a, Port b) {
 		// We check both ways to be extremely sure
-		for(Port p : getConnectedPorts(a))
-			if(p == b)
-				return true;
+		synchronized (this) {
+			for(Port p : getConnectedPorts(a))
+				if(p == b)
+					return true;
 
-		for(Port p : getConnectedPorts(b))
-			if(p == a)
-				return true;
+			for(Port p : getConnectedPorts(b))
+				if(p == a)
+					return true;
+		}
 
 		return false;
 	}
@@ -167,9 +190,11 @@ public class Supervisor {
 		if(p.supervisor != this)
 			throw new RuntimeException("Port does not share the same node supervisor");
 
-		for(Node n : nodes)
-			if(n == p.node)
-				return; // All fine
+		synchronized (this) {
+			for(Node n : nodes)
+				if(n == p.node)
+					return; // All fine
+		}
 
 		throw new RuntimeException("Supervisor does not have this node");
 	}
@@ -181,15 +206,16 @@ public class Supervisor {
 		 */
 		JSONObject result = new JSONObject();
 
-		// Dump of nodes
 		JSONArray nodes = new JSONArray();
-		for(Node n : this.nodes)
-			nodes.add(n.dump());
-
-		// Dump of net
 		JSONArray lines = new JSONArray();
-		for(Line l : this.lines)
-			lines.add(l.dump());
+
+		synchronized (this) {
+			for(Node n : this.nodes)
+				nodes.add(n.dump());
+
+			for(Line l : this.lines)
+				lines.add(l.dump());
+		}
 
 		result.put("lines", lines);	
 		result.put("nodes", nodes);
@@ -201,42 +227,44 @@ public class Supervisor {
 		JSONArray nodes = (JSONArray)obj.get("nodes");
 		JSONArray lines = (JSONArray)obj.get("lines");
 
-		// Creation of nodes and their ports
-		for(int i = 0; i < nodes.size(); i++ ) {
-			JSONObject x = (JSONObject)nodes.get(i);
-			String class_name = (String)x.get("class");
-			Node node;
+		synchronized (this) {
+			// Creation of nodes and their ports
+			for(int i = 0; i < nodes.size(); i++ ) {
+				JSONObject x = (JSONObject)nodes.get(i);
+				String class_name = (String)x.get("class");
+				Node node;
 
-			try {
-				node = (Node)Class.forName(class_name).getConstructor(Supervisor.class).newInstance(this);
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Could not instantiate class: " + e.toString());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Could not find class: " + class_name);
+				try {
+					node = (Node)Class.forName(class_name).getConstructor(Supervisor.class).newInstance(this);
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+					e.printStackTrace();
+					throw new RuntimeException("Could not instantiate class: " + e.toString());
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					throw new RuntimeException("Could not find class: " + class_name);
+				}
+
+				node.restore((JSONObject)x);
+
+				this.nodes.add(node);
 			}
 
-			node.restore((JSONObject)x);
+			// Connecting the ports with lines
+			for(int i = 0; i < lines.size(); i++ ) {
+				JSONObject line = (JSONObject)lines.get(i);
+				JSONObject port_a = (JSONObject)line.get("port_a");
+				JSONObject port_b = (JSONObject)line.get("port_b");
 
-			this.nodes.add(node);
-		}
+				Node node_a = getNodeByID((String)port_a.get("node"));
+				Node node_b = getNodeByID((String)port_b.get("node"));
+				assert node_a != null;
+				assert node_b != null;
 
-		// Connecting the ports with lines
-		for(int i = 0; i < lines.size(); i++ ) {
-			JSONObject line = (JSONObject)lines.get(i);
-			JSONObject port_a = (JSONObject)line.get("port_a");
-			JSONObject port_b = (JSONObject)line.get("port_b");
+				Port node_port_a = node_a.getPort((String)port_a.get("name"));
+				Port node_port_b = node_b.getPort((String)port_b.get("name"));
 
-			Node node_a = getNodeByID((String)port_a.get("node"));
-			Node node_b = getNodeByID((String)port_b.get("node"));
-			assert node_a != null;
-			assert node_b != null;
-
-			Port node_port_a = node_a.getPort((String)port_a.get("name"));
-			Port node_port_b = node_b.getPort((String)port_b.get("name"));
-
-			connect(node_port_a, node_port_b);
+				connect(node_port_a, node_port_b);
+			}
 		}
 	}
 }

@@ -25,7 +25,37 @@ public class NodeSystem {
 		public void onClose() {}
 	}
 
+	private class AudioThread extends Thread {
+		Supervisor supervisor;
+		boolean running;
+
+		public AudioThread(Supervisor supervisor) {
+			super();
+			this.supervisor = supervisor;
+		}
+
+		@Override
+		public void run() {
+			running = true;
+			while(running) {
+				glue_context.net_supervisor.update(0.01);
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					break;
+				}
+			}
+		}
+
+		public void end() {
+			running = false;
+		}
+	}
+
 	private final int DUMP_VERSION = 1;
+
+	private AudioThread audio_thread;
 
 	// GlueNodes
 	private net.merayen.merasynth.glue.Context glue_context;
@@ -46,6 +76,8 @@ public class NodeSystem {
 		initGlueNodeSystem();
 		initSurface();
 		initUINodeSystem();
+		audio_thread = new AudioThread(glue_context.net_supervisor);
+		audio_thread.start();
 	}
 
 	private void reinit() {
@@ -92,9 +124,6 @@ public class NodeSystem {
 				executeDelayEvents(dc.outgoing_events);
 
 				// TODO Route outgoing events, if we are contained by container node
-
-				// TODO Move updating of netnodes out to its own thread
-				glue_context.net_supervisor.update(0.1);
 			}
 		});
 	}
@@ -198,6 +227,7 @@ public class NodeSystem {
 		/*
 		 * Stop this nodesystem.
 		 */
+		audio_thread.end();
 		surface.end();
 	}
 
@@ -207,7 +237,7 @@ public class NodeSystem {
 		try {
 			netnode =  ((Class<net.merayen.merasynth.netlist.Node>)Class
 				.forName(node.getNetNodePath()))
-				.getConstructor(net.merayen.merasynth.netlist.Supervisor.class)
+				.getConstructor(Supervisor.class)
 				.newInstance(glue_context.net_supervisor);
 		} catch (SecurityException | ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
 			e.printStackTrace();

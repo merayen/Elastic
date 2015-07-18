@@ -1,34 +1,60 @@
 package net.merayen.merasynth.client.output;
 
+import java.util.HashMap;
+
 import net.merayen.merasynth.ui.objects.components.Button;
+import net.merayen.merasynth.ui.objects.components.Label;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.objects.node.UIPort;
 
 public class UI extends UINode {
 	private UIPort input_port;
 
+	private Label avg_buffer_size_label;
+	private Label sample_rate_label;
+	private Label channels_label;
+
+	// Information
+	private int avg_buffer_size;
+	private int sample_rate;
+	private int channels;
+
 	public void onInit() {
 		super.onInit();
 		UI self = this;
 
-		width = 10f;
-		height = 10f;
+		width = 15f;
+		height = 7f;
 
 		titlebar.title = "Output";
 
-		// Test button
-		Button testbutton = new Button();
-		testbutton.label = "Request";
-		testbutton.translation.x = 1f;
-		testbutton.translation.y = 5f;
-		add(testbutton);
+		// Statistics
+		avg_buffer_size_label = new Label();
+		avg_buffer_size_label.translation.x = 1f;
+		avg_buffer_size_label.translation.y = 2f;
+		add(avg_buffer_size_label);
 
-		testbutton.setHandler(new Button.IHandler() {
-			@Override
-			public void onClick() {
-				((Glue)self.getGlueNode()).testbuttonClicked();
-			}
-		});
+		sample_rate_label = new Label();
+		sample_rate_label.translation.x = 1f;
+		sample_rate_label.translation.y = 3f;
+		add(sample_rate_label);
+
+		channels_label = new Label();
+		channels_label.translation.x = 1f;
+		channels_label.translation.y = 4f;
+		add(channels_label);
+	}
+
+	@Override
+	protected void onDraw() {
+		HashMap<String,Number> stats = ((Glue)getGlueNode()).getStatistics(); // TODO Call less often
+		if(stats != null) {
+			avg_buffer_size_label.label = String.format("Buffer lag: %d", stats.get("current_buffer_size"));
+			sample_rate_label.label = String.format("Sample rate: %d", stats.get("sample_rate"));
+			channels_label.label = String.format("Channels: %d", stats.get("channels"));
+		}
+
+		super.onDraw();
 	}
 
 	@Override
