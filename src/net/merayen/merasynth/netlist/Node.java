@@ -49,6 +49,10 @@ public abstract class Node extends NetListObject {
 
 	}
 
+	protected void onDestroy() {
+		
+	}
+
 	public void addPort(String port_name) {
 		/*
 		 * Noden kaller på denne for å legge til en port

@@ -11,9 +11,11 @@ public class Swing implements Surface {
 	 * A surface to draw on for the Java Swing GUI. 
 	 */	
 	public class LolFrame extends javax.swing.JFrame implements java.awt.event.ActionListener {
+		private Runnable close_function;
 		public final javax.swing.Timer timer = new javax.swing.Timer(1000/30, this);
 
-		public LolFrame() {
+		public LolFrame(Runnable close_function) {
+			this.close_function = close_function;
 			initUI();
 			timer.start();
 		}
@@ -28,6 +30,7 @@ public class Swing implements Surface {
 				@Override
 				public void windowClosing(java.awt.event.WindowEvent we) {
 					timer.stop();
+					close_function.run();
 				}
 			});
 
@@ -98,7 +101,12 @@ public class Swing implements Surface {
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				frame = new LolFrame();
+				frame = new LolFrame(new Runnable() {
+					@Override
+					public void run() {
+						end();
+					}
+				});
 				panel = new LolPanel();
 				frame.add(panel);
 			}

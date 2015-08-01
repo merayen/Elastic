@@ -40,6 +40,8 @@ public class Supervisor {
 				disconnectAll(p);
 
 			nodes.remove(node);
+
+			node.onDestroy();
 		}
 	}
 
@@ -266,5 +268,10 @@ public class Supervisor {
 				connect(node_port_a, node_port_b);
 			}
 		}
+	}
+
+	public void end() {
+		for(Node n : new ArrayList<Node>(nodes))
+			removeNode(n);
 	}
 }

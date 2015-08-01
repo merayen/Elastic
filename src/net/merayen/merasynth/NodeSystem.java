@@ -26,13 +26,7 @@ public class NodeSystem {
 	}
 
 	private class AudioThread extends Thread {
-		Supervisor supervisor;
 		boolean running;
-
-		public AudioThread(Supervisor supervisor) {
-			super();
-			this.supervisor = supervisor;
-		}
 
 		@Override
 		public void run() {
@@ -76,7 +70,7 @@ public class NodeSystem {
 		initGlueNodeSystem();
 		initSurface();
 		initUINodeSystem();
-		audio_thread = new AudioThread(glue_context.net_supervisor);
+		audio_thread = new AudioThread();
 		audio_thread.start();
 	}
 
@@ -161,7 +155,6 @@ public class NodeSystem {
 
 			@Override
 			public void onClose() {
-				end();
 				if(handler != null)
 					handler.onClose();
 			}
@@ -227,8 +220,11 @@ public class NodeSystem {
 		/*
 		 * Stop this nodesystem.
 		 */
+		System.out.println("Ending");
 		audio_thread.end();
+		glue_context.net_supervisor.end();
 		surface.end();
+		
 	}
 
 	private net.merayen.merasynth.netlist.Node createNetNode(GlueNode node) { // TODO Move to netnode-system?
