@@ -55,6 +55,7 @@ public abstract class GlueNode extends GlueObject {
 	}
 
 	public net.merayen.merasynth.netlist.Node getNetNode() {
+		// TODO synchronize the net node? Thread safety...
 		if(net_node_id == null)
 			throw new RuntimeException("Net node is not set yet");
 		return context.net_supervisor.getNodeByID(net_node_id);

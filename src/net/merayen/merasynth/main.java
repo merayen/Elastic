@@ -20,5 +20,9 @@ public class Main {
 		node = w.node_system.addNode(net.merayen.merasynth.client.midi_input.Glue.class);
 		node.getUINode().translation.x = 30f;
 		node.getUINode().translation.y = 20f;
+
+		node = w.node_system.addNode(net.merayen.merasynth.client.vu.Glue.class);
+		node.getUINode().translation.x = 5f;
+		node.getUINode().translation.y = 5f;
 	}
 }
