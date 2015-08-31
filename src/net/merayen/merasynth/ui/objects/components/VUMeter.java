@@ -13,7 +13,6 @@ public class VUMeter extends UIGroup { // TODO break up into smaller classes for
 			if(panel_handler != null)
 				panel_handler.draw(draw, c_radius, Math.PI / 2f + Math.PI / 4f, Math.PI / 2f);
 		}
-		
 	}
 
 	public static abstract class PanelHandler {
@@ -25,7 +24,7 @@ public class VUMeter extends UIGroup { // TODO break up into smaller classes for
 	private PanelHandler panel_handler;
 	public float width = 8;
 	public float height = 5;
-	public String label = "VU-meter";
+	public String label = "VU";
 
 	protected void onInit() {
 		add(panel);
@@ -50,7 +49,7 @@ public class VUMeter extends UIGroup { // TODO break up into smaller classes for
 	private void drawBackground() {
 		draw.setColor(100, 100, 100);
 		draw.setFont("Arial", 0.7f);
-		draw.text(label, width / 2f - draw.getTextWidth(label) / 2f, 0.7f);
+		draw.text(label, width / 2f - draw.getTextWidth(label) / 2f, 3f);
 	}
 
 	private void drawLine() {
@@ -65,11 +64,11 @@ public class VUMeter extends UIGroup { // TODO break up into smaller classes for
 	}
 
 	private void drawOuterHouse() {
-		draw.setColor(100, 100, 100);
+		draw.setColor(70, 70, 70);
 		draw.fillRect(0.1f, height * 0.7f, width - 0.2f, height * 0.3f - 0.1f);
 
 		// Funky stripes
-		draw.setColor(120, 120, 120);
+		draw.setColor(80, 80, 80);
 		for(float i = height * 0.72f; i < height; i += height * 0.05f)
 			draw.line(0.2f, i, width - 0.2f, i);
 	}

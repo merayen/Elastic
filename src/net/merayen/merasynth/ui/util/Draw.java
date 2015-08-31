@@ -14,7 +14,7 @@ public class Draw {
 	 * making it easier to draw stuff, and abstracting away the underlaying painting system.
 	 * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
 	 */
-	private java.awt.Graphics2D g2d;
+	public java.awt.Graphics2D g2d;
 	private UIObject uiobject;
 	
 	private class RectArea {

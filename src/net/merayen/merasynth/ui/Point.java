@@ -1,9 +1,14 @@
 package net.merayen.merasynth.ui;
 
 public class Point {
-	public final float x;
-	public final float y;
-	
+	public float x;
+	public float y;
+
+	public Point() {
+		this.x = 0f;
+		this.y = 0f;
+	}
+
 	public Point(float x, float y) {
 		this.x = x;
 		this.y = y;

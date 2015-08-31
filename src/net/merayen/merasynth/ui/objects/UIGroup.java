@@ -34,7 +34,9 @@ public class UIGroup extends UIObject {
 	}
 
 	public void add(UIObject obj, boolean top) {
-		assert obj.parent != null : "Object can not be a child of anything when adding to a group";
+		if(obj.parent != null)
+			throw new RuntimeException("Object can not be a child of anything when adding to a group");
+
 		if(top)
 			children.add(0, obj);
 		else
