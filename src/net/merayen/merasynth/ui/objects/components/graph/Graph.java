@@ -9,8 +9,6 @@ import net.merayen.merasynth.ui.objects.UIGroup;
 
 public class Graph extends UIGroup {
 	public class Segment {
-		// X-axis is time (seconds) or BPM
-		// Y-axis is value
 		public Point curve_a = new Point();
 		public Point curve_b = new Point();
 		public Point end = new Point();
@@ -63,30 +61,12 @@ public class Graph extends UIGroup {
 	@Override
 	protected void onDraw() {
 		m += 0.05f;
-		/*float x = (float)(Math.sin(m) * 2.5 + 2.5);
-		segments.get(1).curve_a.x = x;
-		segments.get(1).curve_a.y = x;
-		segments.get(1).curve_b.x = x;
-		segments.get(1).curve_b.y = x;
 
-		segments.get(2).curve_a.x = x + 5;
-		segments.get(2).curve_a.y = x;
-		segments.get(2).curve_b.x = x + 5;
-		segments.get(2).curve_b.y = x;*/
-
-		for(int i = 2; i < /*segments.size() - 1*/ 3; i++) {
+		for(int i = 1; i < /*segments.size() - 1*/ 2; i++) {
 			float x = (float)Math.sin(m);
-			//segments.get(i).curve_a.x = 5 * i;
-			segments.get(i - 1).curve_b.y = x * 5;
-			//segments.get(i + 1).curve_b.x = 5 * i;
-			segments.get(i).curve_a.y = -x * 5;
-			//break;
+			segments.get(i).curve_b.y = -x * 5;
+			segments.get(i + 1).curve_a.y = x * 5;
 		}
-
-		/*segments.get(2).curve_a.x = ;
-		segments.get(2).curve_a.y = x;
-		segments.get(2).curve_b.x = x + 5;
-		segments.get(2).curve_b.y = x;*/
 
 		draw.setColor(50, 50, 100);
 		draw.fillRect(0f, 0f, width, height);
@@ -111,19 +91,19 @@ public class Graph extends UIGroup {
 		// Curve control lines
 		draw.setStroke(0.1f);
 		draw.setColor(200, 200, 250);
-		for(Segment s : segments) {
-			
-			draw.line(s.end.x, s.end.y, s.curve_a.x, s.curve_a.y);
-			draw.fillOval(s.curve_a.x - 0.2f, s.curve_a.y - 0.2f, .4f, .4f);
-			
-			draw.line(s.end.x, s.end.y, s.curve_b.x, s.curve_b.y);
-			draw.fillOval(s.curve_b.x - 0.2f, s.curve_b.y - 0.2f, .4f, .4f);
+		for(int i = 1; i < /*segments.size() - 1*/ 2; i++) {
+			Segment s0 = segments.get(i);
+			Segment s1 = segments.get(i + 1);
+
+			draw.setColor(255, 0, 255);
+			draw.line(s0.end.x, s0.end.y, s0.curve_b.x, s0.curve_b.y);
+			draw.fillOval(s0.curve_b.x - 0.2f, s0.curve_b.y - 0.2f, .4f, .4f);
+
+			draw.setColor(255, 255, 0);
+			draw.line(s0.end.x, s0.end.y, s1.curve_a.x, s1.curve_a.y);
+			draw.fillOval(s1.curve_a.x - 0.2f, s1.curve_a.y - 0.2f, .4f, .4f);
 		}
 
 		super.onDraw();
-	}
-
-	private void drawPath() {
-		
 	}
 }
