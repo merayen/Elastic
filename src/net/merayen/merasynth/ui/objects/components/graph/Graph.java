@@ -60,12 +60,13 @@ public class Graph extends UIGroup {
 
 	@Override
 	protected void onDraw() {
+		System.out.println("B");
 		m += 0.05f;
 
 		for(int i = 1; i < /*segments.size() - 1*/ 2; i++) {
 			float x = (float)Math.sin(m);
-			segments.get(i).curve_b.y = -x * 5;
-			segments.get(i + 1).curve_a.y = x * 5;
+			segments.get(i).curve_b.y = -x * 50;
+			segments.get(i + 1).curve_a.y = x * 50;
 		}
 
 		draw.setColor(50, 50, 100);

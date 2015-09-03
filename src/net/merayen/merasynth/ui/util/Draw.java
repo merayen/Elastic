@@ -2,6 +2,9 @@ package net.merayen.merasynth.ui.util;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.objects.UIObject;
@@ -13,21 +16,26 @@ public class Draw {
 	 * This class mostly translates our internal floating point coordinate system to pixels,
 	 * making it easier to draw stuff, and abstracting away the underlaying painting system.
 	 * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
+	 * TODO Abstract this, so we can present these functions to other draw systems (e.g on Android)
 	 */
 	public java.awt.Graphics2D g2d;
 	private UIObject uiobject;
 	
-	private class RectArea {
+	private class RectArea { // TODO replace with Rect() and use Rect().enlarge() instead?
 		public float
 			x1 = Float.MAX_VALUE, y1 = Float.MAX_VALUE,
 			x2 = Float.MIN_VALUE, y2 = Float.MIN_VALUE;
 	}
-	
-	private RectArea outline = null;//new RectArea(, Float.MAX_VALUE, 0, 0); // Calculated size of the drawn area.
-	private RectArea outline_abs = null;//new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Calculated size of the drawn area, pixels absolute
+
+	//private RectArea outline = null;//new RectArea(, Float.MAX_VALUE, 0, 0); // Calculated size of the drawn area.
+	//private RectArea outline_abs = null;//new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Calculated size of the drawn area, pixels absolute
+	private Rect outline = null; // Relative
+	private Rect outline_abs = null; // Absolute
 
 	private String font_name = "Geneva";
 	private float font_size = 1f;
+
+	private ClipStack clip_stack = new ClipStack();
 
 	boolean skip_outline = false;
 
@@ -37,13 +45,13 @@ public class Draw {
 		uiobject = obj;
 		g2d = g;
 	}
-	
+
 	public Rect getRelativeOutline() {
-		return outline == null ? null : new Rect(outline.x1, outline.y1, outline.x2 - outline.x1, outline.y2 - outline.y1);
+		return outline == null ? null : new Rect(outline);
 	}
 
 	public Rect getAbsoluteOutline() {
-		return outline_abs == null ? null : new Rect(outline_abs.x1, outline_abs.y1, outline_abs.x2 - outline_abs.x1, outline_abs.y2 - outline_abs.y1);
+		return outline_abs == null ? null : new Rect(outline_abs);
 	}
 
 	private void reg(
@@ -54,19 +62,12 @@ public class Draw {
 			return;
 
 		if(outline == null) {
-			outline = new RectArea();
-			outline_abs = new RectArea();
+			outline = new Rect(x, y, width, height);
+			outline_abs = new Rect(a_x, a_y, a_width, a_height);
+		} else {
+			outline.enlarge(x, y, width, height);
+			outline_abs.enlarge(a_x, a_y, a_width, a_height);
 		}
-
-		outline.x1 = Math.min(x, outline.x1);
-		outline.y1 = Math.min(y, outline.y1);
-		outline.x2 = Math.max(width, outline.x2);
-		outline.y2 = Math.max(height, outline.y2);
-
-		outline_abs.x1 = Math.min(a_x, outline_abs.x1);
-		outline_abs.y1 = Math.min(a_y, outline_abs.y1);
-		outline_abs.x2 = Math.max(a_x + a_width, outline_abs.x2);
-		outline_abs.y2 = Math.max(a_y + a_height, outline_abs.y2);
 	}
 
 	public void setColor(int r, int g, int b) {
@@ -88,7 +89,7 @@ public class Draw {
 	}
 
 	public void setFont(String font_name, float font_size) {
-		if(font_name != null && font_name.length() > 0 )
+		if(font_name != null && font_name.length() > 0)
 			this.font_name = font_name;
 		this.font_size = font_size;
 	}
@@ -155,10 +156,27 @@ public class Draw {
 		 */
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-		this.reg(
+		reg(
 			x, y, width, height,
 			point.x, point.y, dimension.width, dimension.height
 		);
+	}
+
+	/*
+	 * Only draw inside this rectangle.
+	 * Remember to call clearRect() afterwards!
+	 * TODO Not any good solutions if recursive. We might need to do something clever here?
+	 */
+	public void clip(float x, float y, float width, float height) {
+		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
+		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
+
+		g2d.clip(new java.awt.Rectangle(point.x, point.y, dimension.width, dimension.height));
+	}
+
+	public void popClip() {
+		clip_stack.clear();
+		g2d.setClip(null);
 	}
 
 	public void disableOutline() {

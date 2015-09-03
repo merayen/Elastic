@@ -41,7 +41,8 @@ public abstract class UINode extends UIGroup {
 
 	@Override
 	protected void onDraw() {
-		assert inited : "Forgotten super.onInit() ?";
+		if(!inited)
+			throw new RuntimeException("Forgotten super.onInit() ?");
 
 		draw.setColor(80, 80, 80);
 		draw.fillRect(-0.1f, -0.1f, width + 0.2f, height + 0.2f);

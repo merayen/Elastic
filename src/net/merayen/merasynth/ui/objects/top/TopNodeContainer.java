@@ -41,7 +41,9 @@ public class TopNodeContainer extends UIGroup {
 	}
 
 	public void restore(JSONObject obj) {
-		assert nodes.size() == 0;
+		if(nodes.size() > 0)
+			throw new RuntimeException("Already loaded");
+
 		JSONArray node_dumps = (JSONArray)obj.get("nodes");
 
 		for(int i = 0; i < node_dumps.size(); i++) {

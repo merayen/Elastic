@@ -23,6 +23,8 @@ public class UIGroup extends UIObject {
 
 		for(UIObject x : new ArrayList<UIObject>(children)) // XXX Yuck, copying many times through a frame, is that okay?
 			x.updateDraw(draw_context);
+
+		onChildrenDrawn();
 	}
 
 	@Override
@@ -33,9 +35,16 @@ public class UIGroup extends UIObject {
 			x.updateEvents(draw_context);
 	}
 
+	/*
+	 * Called when all the children for this group has been drawn.
+	 */
+	protected void onChildrenDrawn() {
+
+	}
+
 	public void add(UIObject obj, boolean top) {
 		if(obj.parent != null)
-			throw new RuntimeException("Object can not be a child of anything when adding to a group");
+			throw new RuntimeException("Object can not already be a child when adding to a group");
 
 		if(top)
 			children.add(0, obj);

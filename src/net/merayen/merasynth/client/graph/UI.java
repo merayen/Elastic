@@ -3,6 +3,7 @@ package net.merayen.merasynth.client.graph;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
+import net.merayen.merasynth.ui.objects.UIClip;
 import net.merayen.merasynth.ui.objects.components.Label;
 import net.merayen.merasynth.ui.objects.components.graph.Graph;
 import net.merayen.merasynth.ui.objects.node.UINode;
@@ -10,6 +11,7 @@ import net.merayen.merasynth.ui.objects.node.UIPort;
 
 public class UI extends UINode {
 	private UIPort output_port;
+	private UIClip clip;
 	private Graph graph;
 
 	// Information
@@ -17,45 +19,35 @@ public class UI extends UINode {
 
 	public void onInit() {
 		super.onInit();
-		UI self = this;
 
 		width = 24f;
 		height = 24f;
 
 		titlebar.title = "Graph";
 
+		clip = new UIClip();
+		clip.translation.x = 2f;
+		clip.translation.y = 2f;
+		clip.width = 20f;
+		clip.height = 20f;
+		add(clip);
+
 		graph = new Graph();
-		add(graph);
-		graph.translation.x = 2f;
-		graph.translation.y = 2f;
+		graph.translation.x = 0f;
+		graph.translation.y = 0f;
 		graph.width = 20f;
 		graph.height = 20f;
+		clip.add(graph);
 	}
 
 	@Override
 	protected void onDraw() {
+		//draw.clip(0, 0, width, height);
+		System.out.println("A");
 		super.onDraw();
-		/*u++;
-
-		draw.setColor(50, 50, 100);
-		draw.fillRect(0.5f, 1.5f, width - 1f, height - 2.5f);
-
-		Path2D.Float f = new Path2D.Float();
-
-		Point2D m = this.getAbsolutePixelPoint(2, 2);
-		f.moveTo(m.getX(), m.getY());
-
-		float g = (100 % 1000) / 1000f; 
-
-		for(float i = 2; i < 18; i += g + 0.01) {
-			Point2D p1 = this.getAbsolutePixelPoint(i, (float)(10 + Math.sin(i*5)*5));
-			Point2D p2 = this.getAbsolutePixelPoint(i + (float)Math.sin(i/10f), (float)(10 + Math.sin(i*5)*5));
-			Point2D p3 = this.getAbsolutePixelPoint(i, (float)(10 + Math.sin(i*5)*5));
-			f.curveTo(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());
-		}
-
-		draw.setColor(150, 150, 255);
-		draw.g2d.draw(f);*/
+		System.out.println("C");
+		//draw.clearClip();
+		System.out.println(draw.getAbsoluteOutline());
 	}
 
 	@Override
