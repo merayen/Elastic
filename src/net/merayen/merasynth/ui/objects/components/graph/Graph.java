@@ -106,7 +106,7 @@ public class Graph extends UIGroup {
 
 		draw.debug();
 
-		System.out.printf("%s   %s\n", this.translation.clip, this.absolute_translation.clip); // TODO få den til å faktisk vise clip
+		System.out.printf("%s   %s  [%f,%f]\n", this.translation.clip, this.absolute_translation.clip, this.absolute_translation.x, this.absolute_translation.x); // TODO få den til å faktisk vise clip
 		super.onDraw();
 	}
 }

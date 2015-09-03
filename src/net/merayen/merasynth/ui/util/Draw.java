@@ -170,7 +170,6 @@ public class Draw {
 
 	/*
 	 * Only draw inside this rectangle.
-	 * Remember to call clearRect() afterwards!
 	 * TODO Not any good solutions if recursive. We might need to do something clever here?
 	 */
 	public void clip(float x, float y, float width, float height) {

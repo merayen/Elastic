@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 
 public class TranslationData {
 	public float x = 0, y = 0; // Object's origin (relative to parent)
-	public float scroll_x = 0, scroll_y = 0; // Offset position for the elements inside
+	public float scroll_x = 0, scroll_y = 0; // TODO REMOVE THIS PIECE OF SHIT
 	public float scale_x = 1, scale_y = 1; // 
 	public float rot_x = 0, rot_y = 0;
 	public boolean visible = true;
