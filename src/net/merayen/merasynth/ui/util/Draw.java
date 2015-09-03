@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import net.merayen.merasynth.ui.DrawContext;
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.objects.UIObject;
 
@@ -20,30 +21,20 @@ public class Draw {
 	 */
 	public java.awt.Graphics2D g2d;
 	private UIObject uiobject;
-	
-	private class RectArea { // TODO replace with Rect() and use Rect().enlarge() instead?
-		public float
-			x1 = Float.MAX_VALUE, y1 = Float.MAX_VALUE,
-			x2 = Float.MIN_VALUE, y2 = Float.MIN_VALUE;
-	}
 
-	//private RectArea outline = null;//new RectArea(, Float.MAX_VALUE, 0, 0); // Calculated size of the drawn area.
-	//private RectArea outline_abs = null;//new java.awt.Rectangle(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0); // Calculated size of the drawn area, pixels absolute
 	private Rect outline = null; // Relative
 	private Rect outline_abs = null; // Absolute
 
 	private String font_name = "Geneva";
 	private float font_size = 1f;
 
-	private ClipStack clip_stack = new ClipStack();
-
 	boolean skip_outline = false;
 
 	FontMetrics font_metrics;
 
-	public Draw(UIObject obj, java.awt.Graphics2D g) {
+	public Draw(UIObject obj, DrawContext dc) {
 		uiobject = obj;
-		g2d = g;
+		g2d = dc.graphics2d;
 	}
 
 	public Rect getRelativeOutline() {
@@ -62,12 +53,17 @@ public class Draw {
 			return;
 
 		if(outline == null) {
-			outline = new Rect(x, y, width, height);
-			outline_abs = new Rect(a_x, a_y, a_width, a_height);
+			outline = new Rect(x, y, x + width, y + height);
+			outline_abs = new Rect(a_x, a_y, a_x + a_width, a_y + a_height);
 		} else {
-			outline.enlarge(x, y, width, height);
-			outline_abs.enlarge(a_x, a_y, a_width, a_height);
+			outline.enlarge(x, y, x + width, y + height);
+			outline_abs.enlarge(a_x, a_y, a_x + a_width, a_y + a_height);
 		}
+
+		// Restricts outline to clip
+		/*if(translation.clip != null) {
+			outline.clip(translation.clip);
+			outline*/
 	}
 
 	public void setColor(int r, int g, int b) {
@@ -82,6 +78,16 @@ public class Draw {
 				point.x, point.y, dimension.width, dimension.height
 		);
 		g2d.fillRect(point.x, point.y, dimension.width, dimension.height);
+	}
+
+	public void rect(float x, float y, float width, float height) {
+		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
+		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
+		reg(
+				x, y, width, height,
+				point.x, point.y, dimension.width, dimension.height
+		);
+		g2d.drawRect(point.x, point.y, dimension.width, dimension.height);
 	}
 
 	public void setStroke(float width) {
@@ -171,11 +177,12 @@ public class Draw {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
 
+		uiobject.translation.addClip(x, y, width, height);
 		g2d.clip(new java.awt.Rectangle(point.x, point.y, dimension.width, dimension.height));
 	}
 
 	public void popClip() {
-		clip_stack.clear();
+		uiobject.translation.clip = null;
 		g2d.setClip(null);
 	}
 
@@ -185,5 +192,17 @@ public class Draw {
 
 	public void enableOutline() {
 		skip_outline = false;
+	}
+
+	/*
+	 * Shows debug for the current UIObject
+	 */
+	public void debug() {
+		if(outline != null) {
+			boolean prev = skip_outline;
+			skip_outline = true;
+			rect(outline.x1, outline.y1, outline.x2 - outline.x1, outline.y2 - outline.y1);
+			skip_outline = prev;
+		}
 	}
 }

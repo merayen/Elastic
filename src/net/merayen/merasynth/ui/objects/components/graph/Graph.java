@@ -60,7 +60,6 @@ public class Graph extends UIGroup {
 
 	@Override
 	protected void onDraw() {
-		System.out.println("B");
 		m += 0.05f;
 
 		for(int i = 1; i < /*segments.size() - 1*/ 2; i++) {
@@ -105,6 +104,9 @@ public class Graph extends UIGroup {
 			draw.fillOval(s1.curve_a.x - 0.2f, s1.curve_a.y - 0.2f, .4f, .4f);
 		}
 
+		draw.debug();
+
+		System.out.printf("%s   %s\n", this.translation.clip, this.absolute_translation.clip); // TODO få den til å faktisk vise clip
 		super.onDraw();
 	}
 }

@@ -71,7 +71,7 @@ public class UIGroup extends UIObject {
 	public ArrayList<UIObject> getAllChildren() {
 		ArrayList<UIObject> result = new ArrayList<UIObject>();
 
-		for(UIObject x : children) {
+		for(UIObject x : new ArrayList<UIObject>(children)) {
 			result.add(x);
 			if(x instanceof UIGroup)
 				result.addAll(((UIGroup) x).getAllChildren());

@@ -1,30 +1,30 @@
 package net.merayen.merasynth.ui;
 
 public class Rect {
-	public float x = 0, y = 0, width = 0, height = 0;
-	
-	public Rect(float x, float y, float width, float height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public float x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+
+	public Rect(float x1, float y1, float x2, float y2) {
+		this.x1 = x1;
+		this.y1 = y1;
+		this.x2 = x2;
+		this.y2 = y2;
 	}
 
 	public Rect(Rect r) {
-		x = r.x;
-		y = r.y;
-		width = r.width;
-		height = r.height;
+		x1 = r.x1;
+		y1 = r.y1;
+		x2 = r.x2;
+		y2 = r.y2;
 	}
-	
+
 	public Rect() {
-		
+
 	}
-	
+
 	public String toString() {
 		return String.format(
-				"[Rect(x=%f, y=%f, width=%f, height=%f)]",
-				x, y, width, height
+				"[Rect(x1=%f, y1=%f, x2=%f, y2=%f)]",
+				x1, y1, x2, y2
 		);
 	}
 
@@ -32,23 +32,24 @@ public class Rect {
 	 * Clip this rectangle with another rectangle.
 	 */
 	public void clip(Rect r) {
-		x = Math.max(r.x, x);
-		y = Math.max(r.y, y);
-		width = Math.min(r.width, width);
-		height = Math.min(r.height, height);
+		clip(r.x1, r.y1, r.x2, r.y2);
+	}
+
+	public void clip(float x1, float y1, float x2, float y2) {
+		this.x1 = Math.max(this.x1, x1);
+		this.y1 = Math.max(this.y1, y1);
+		this.x2 = Math.min(this.x2, x2);
+		this.y2 = Math.min(this.y2, y2);
 	}
 
 	public void enlarge(Rect r) {
-		x = Math.min(r.x, x);
-		y = Math.min(r.y, y);
-		width = Math.max(r.width, width);
-		height = Math.max(r.height, height);
+		enlarge(r.x1, r.y1, r.x2, r.y2);
 	}
 
-	public void enlarge(float x, float y, float width, float height) {
-		this.x = Math.min(this.x, x);
-		this.y = Math.min(this.y, y);
-		this.width = Math.max(this.width, width);
-		this.height = Math.max(this.height, height);
+	public void enlarge(float x1, float y1, float x2, float y2) {
+		this.x1 = Math.min(this.x1, x1);
+		this.y1 = Math.min(this.y1, y1);
+		this.x2 = Math.max(this.x2, x2);
+		this.y2 = Math.max(this.y2, y2);
 	}
 }

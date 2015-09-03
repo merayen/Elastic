@@ -9,6 +9,14 @@ public class ClipStack extends ArrayList<Rect> {
 	 * Returns the rectangle where we can draw after all the clip rectangles has been applied.
 	 * ...or null if there is no clipping active.
 	 */
+	public ClipStack(ClipStack cs) {
+		super(cs);
+	}
+
+	public ClipStack() {
+
+	}
+
 	public Rect getClip() {
 		if(size() == 0)
 			return null;

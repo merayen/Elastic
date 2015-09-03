@@ -42,12 +42,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onDraw() {
-		//draw.clip(0, 0, width, height);
-		System.out.println("A");
 		super.onDraw();
-		System.out.println("C");
-		//draw.clearClip();
-		System.out.println(draw.getAbsoluteOutline());
 	}
 
 	@Override

@@ -44,10 +44,10 @@ public class MouseEvent implements IEvent {
 				o.isReady() &&
 				o.absolute_translation.visible &&
 				o.outline_abs != null &&
-				x >= o.outline_abs.x &&
-				y >= o.outline_abs.y &&
-				x < o.outline_abs.x + o.outline_abs.width &&
-				y < o.outline_abs.y + o.outline_abs.height
+				x >= o.outline_abs.x1 &&
+				y >= o.outline_abs.y1 &&
+				x < o.outline_abs.x2 &&
+				y < o.outline_abs.y2
 			)
 				objects_hit.add(o);
 

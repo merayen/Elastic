@@ -44,7 +44,7 @@ public abstract class UIObject {
 
 		this.draw_context = dc;
 
-		this.draw = new Draw(this, dc.graphics2d);
+		this.draw = new Draw(this, dc);
 
 		dc.translation_stack.push(translation);
 
