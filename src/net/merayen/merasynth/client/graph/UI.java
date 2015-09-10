@@ -1,10 +1,6 @@
 package net.merayen.merasynth.client.graph;
 
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-
 import net.merayen.merasynth.ui.objects.UIClip;
-import net.merayen.merasynth.ui.objects.components.Label;
 import net.merayen.merasynth.ui.objects.components.graph.Graph;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.objects.node.UIPort;
@@ -13,9 +9,6 @@ public class UI extends UINode {
 	private UIPort output_port;
 	private UIClip clip;
 	private Graph graph;
-
-	// Information
-	private int u = 0;
 
 	public void onInit() {
 		super.onInit();
