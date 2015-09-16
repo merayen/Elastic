@@ -27,12 +27,10 @@ public class TranslationDataStack {
 			r.y += td.y;
 			r.scale_x *= td.scale_x;
 			r.scale_y *= td.scale_y;
-			r.rot_x += td.rot_x;
-			r.rot_y += td.rot_y;
 			r.visible = td.visible;
 
 			if(td.clip != null) {
-				if(r.clip == null)
+				if(r.clip == null) // TODO apply scaling below?
 					r.clip = new Rect(
 						r.x + td.clip.x1,
 						r.y + td.clip.y1,

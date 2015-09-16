@@ -69,7 +69,6 @@ public class ClipTest extends UIGroup {
 
 		inner1.translation.x = (float)Math.sin(t) * 10f;
 		inner2.translation.y = (float)Math.sin(t) * 10f;
-		System.out.println(t);
 
 		super.onDraw();
 	}

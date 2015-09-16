@@ -3,7 +3,6 @@ package net.merayen.merasynth.ui;
 public class TranslationData {
 	public float x = 0, y = 0; // Object's origin (relative to parent)
 	public float scale_x = 1, scale_y = 1; // 
-	public float rot_x = 0, rot_y = 0;
 	public boolean visible = true;
 	public Rect clip;
 
@@ -16,8 +15,6 @@ public class TranslationData {
 		y = t.y;
 		scale_x = t.scale_x;
 		scale_y = t.scale_y;
-		rot_x = t.rot_x;
-		rot_y = t.rot_y;
 		visible = t.visible;
 	}
 
