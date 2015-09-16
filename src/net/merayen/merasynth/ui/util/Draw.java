@@ -2,9 +2,6 @@ package net.merayen.merasynth.ui.util;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Shape;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 
 import net.merayen.merasynth.ui.DrawContext;
 import net.merayen.merasynth.ui.Rect;
@@ -14,6 +11,7 @@ public class Draw {
 	/*
 	 * Helper class to make drawing easy inside the UIObject()s.
 	 * UIObjects uses this.
+	 * Instantiated for every draw of every UIObject (Hello Java GC, Work bitch)
 	 * This class mostly translates our internal floating point coordinate system to pixels,
 	 * making it easier to draw stuff, and abstracting away the underlaying painting system.
 	 * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
@@ -35,10 +33,17 @@ public class Draw {
 	public Draw(UIObject obj, DrawContext dc) {
 		uiobject = obj;
 		g2d = dc.graphics2d;
+
+		if(uiobject.absolute_translation.clip != null)
+			clip(uiobject.absolute_translation.clip);
+
 	}
 
-	public Rect getRelativeOutline() {
-		return outline == null ? null : new Rect(outline);
+	// Only to be called by UIObject.java
+	public void destroy() {
+		unclip();
+		uiobject = null;
+		g2d = null;
 	}
 
 	public Rect getAbsoluteOutline() {
@@ -60,10 +65,10 @@ public class Draw {
 			outline_abs.enlarge(a_x, a_y, a_x + a_width, a_y + a_height);
 		}
 
-		// Restricts outline to clip
-		/*if(translation.clip != null) {
-			outline.clip(translation.clip);
-			outline*/
+		// Restricts outline to clip TODO
+		// As outline also defines the hitbox for mouse events, the clip will be the maximum hitbox rectangle 
+		//if(uiobject.clip_absolute != null)
+		//	outline_abs.clip(uiobject.clip_absolute);
 	}
 
 	public void setColor(int r, int g, int b) {
@@ -170,18 +175,13 @@ public class Draw {
 
 	/*
 	 * Only draw inside this rectangle.
-	 * TODO Not any good solutions if recursive. We might need to do something clever here?
+	 * Absolute, in pixels.
 	 */
-	public void clip(float x, float y, float width, float height) {
-		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
-		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-
-		uiobject.translation.addClip(x, y, width, height);
-		g2d.clip(new java.awt.Rectangle(point.x, point.y, dimension.width, dimension.height));
+	private void clip(Rect rect) {
+		g2d.clip(new java.awt.Rectangle((int)rect.x1, (int)rect.y1, (int)rect.x2, (int)rect.y2));
 	}
 
-	public void popClip() {
-		uiobject.translation.clip = null;
+	private void unclip() {
 		g2d.setClip(null);
 	}
 

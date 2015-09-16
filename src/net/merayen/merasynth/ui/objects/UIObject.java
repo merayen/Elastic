@@ -16,8 +16,7 @@ public abstract class UIObject {
 
 	// Outline of the box this UIObject has drawn on. Used to figure out mouse capture
 	// Set by the Draw()-class
-	public net.merayen.merasynth.ui.Rect outline; // Relative, in our internal coordinate system
-	public net.merayen.merasynth.ui.Rect outline_abs; // Absolute, in screen pixels
+	public net.merayen.merasynth.ui.Rect outline_abs_px; // Absolute, in screen pixels
 
 	public int draw_z; // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()
 
@@ -44,26 +43,26 @@ public abstract class UIObject {
 
 		this.draw_context = dc;
 
-		this.draw = new Draw(this, dc);
-
 		dc.translation_stack.push(translation);
 
 		absolute_translation = dc.translation_stack.getCurrentTranslationData(); // Caching for outside use
 		draw_z = dc.pushZCounter(); // Set the z-index we are drawing on
 
 		if(absolute_translation.visible) {
+			this.draw = new Draw(this, dc);
+
 			onUpdateDraw();
 
 			// Copy drawn outline box. For caching, drawing, mouse events etc
-			this.outline = draw.getRelativeOutline();
-			this.outline_abs = draw.getAbsoluteOutline();
-		} else {
-			this.outline = new Rect();
-			this.outline_abs = new Rect();
-		}
+			this.outline_abs_px = draw.getAbsoluteOutline();
 
-		// Remove draw object, since we do not allow drawing outside of the onDraw-function
-		this.draw = null;
+			this.draw.destroy();
+
+			// Remove draw object, since we do not allow drawing outside of the onDraw-function
+			this.draw = null;
+		} else {
+			this.outline_abs_px = new Rect();
+		}
 
 		draw_context.translation_stack.pop();
 

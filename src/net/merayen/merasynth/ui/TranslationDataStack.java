@@ -18,6 +18,7 @@ public class TranslationDataStack {
 	public TranslationData getCurrentTranslationData() {
 		/*
 		 * Calculates current translation data.
+		 * The returned results are the absolute translations.
 		 */
 		TranslationData r = new TranslationData();
 
@@ -31,6 +32,7 @@ public class TranslationDataStack {
 			r.rot_x += td.rot_x;
 			r.rot_y += td.rot_y;
 			r.visible = td.visible;
+
 			if(td.clip != null) {
 				if(r.clip == null)
 					r.clip = new Rect(
@@ -48,19 +50,6 @@ public class TranslationDataStack {
 					);
 			}
 		}
-
-		//r.clip = getClip().getClip();
-		return r;
-	}
-
-	/*
-	 * Returns the current clipstack.
-	 */
-	private ClipStack getClip() {
-		ClipStack r = new ClipStack();
-		for(TranslationData td : stack)
-			if(td.clip != null)
-				r.add(td.clip);
 
 		return r;
 	}
