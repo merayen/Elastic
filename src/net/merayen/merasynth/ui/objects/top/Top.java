@@ -43,20 +43,20 @@ public class Top extends UIGroup {
 	protected void onInit() {
 		add(top_node_container);
 
-		top_node_container.translation.scroll_x = -10f;
-		top_node_container.translation.scroll_y = -10f;
+		top_node_container.translation.x = +10f;
+		top_node_container.translation.y = +10f;
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
-				top_node_container.translation.scroll_x = (start_scroll_x - offset.x);
-				top_node_container.translation.scroll_y = (start_scroll_y - offset.y);
+				top_node_container.translation.x = (start_scroll_x + offset.x);
+				top_node_container.translation.y = (start_scroll_y + offset.y);
 			}
 
 			@Override
 			public void onMouseDown(Point position) {
-				start_scroll_x = top_node_container.translation.scroll_x;
-				start_scroll_y = top_node_container.translation.scroll_y;
+				start_scroll_x = top_node_container.translation.x;
+				start_scroll_y = top_node_container.translation.y;
 			}
 		});
 
@@ -123,8 +123,8 @@ public class Top extends UIGroup {
 			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .1f), 10f);
 			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .1f), 10f);
 
-			top_node_container.translation.scroll_x -= (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
-			top_node_container.translation.scroll_y -= (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
+			top_node_container.translation.x += (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
+			top_node_container.translation.y += (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
 		}
 	}
 
