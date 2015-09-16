@@ -32,17 +32,17 @@ public class TranslationDataStack {
 			if(td.clip != null) {
 				if(r.clip == null) // TODO apply scaling below?
 					r.clip = new Rect(
-						r.x + td.clip.x1,
-						r.y + td.clip.y1,
-						r.x + td.clip.x2,
-						r.y + td.clip.y2
+						(r.x + td.clip.x1) * r.scale_x,
+						(r.y + td.clip.y1) * r.scale_y,
+						(r.x + td.clip.x2) * r.scale_x,
+						(r.y + td.clip.y2) * r.scale_y
 					);
 				else
 					r.clip.clip(
-						r.x + td.clip.x1,
-						r.y + td.clip.y1,
-						r.x + td.clip.x2,
-						r.y + td.clip.y2
+						(r.x + td.clip.x1) * r.scale_x,
+						(r.y + td.clip.y1) * r.scale_y,
+						(r.x + td.clip.x2) * r.scale_x,
+						(r.y + td.clip.y2) * r.scale_y
 					);
 			}
 		}

@@ -23,6 +23,8 @@ public class Draw {
 	private Rect outline = null; // Relative
 	private Rect outline_abs = null; // Absolute
 
+	private Rect clip;
+
 	private String font_name = "Geneva";
 	private float font_size = 1f;
 
@@ -178,11 +180,13 @@ public class Draw {
 	 * Absolute, in pixels.
 	 */
 	private void clip(Rect rect) {
-		g2d.clip(new java.awt.Rectangle((int)rect.x1, (int)rect.y1, (int)rect.x2, (int)rect.y2));
+		clip = new Rect(rect);
+		//g2d.clip(new java.awt.Rectangle((int)rect.x1, (int)rect.y1, (int)rect.x2, (int)rect.y2));
 	}
 
 	private void unclip() {
 		g2d.setClip(null);
+		clip = null;
 	}
 
 	public void disableOutline() {
@@ -197,11 +201,18 @@ public class Draw {
 	 * Shows debug for the current UIObject
 	 */
 	public void debug() {
+		boolean prev = skip_outline;
+		skip_outline = true;
 		if(outline != null) {
-			boolean prev = skip_outline;
-			skip_outline = true;
+			setColor(255, 255, 0);
 			rect(outline.x1, outline.y1, outline.x2 - outline.x1, outline.y2 - outline.y1);
-			skip_outline = prev;
 		}
+
+		/*if(clip != null) {
+			setColor(0, 255, 255);
+			rect(clip.x1, clip.y1, clip.x2 - clip.x1, clip.y2 - clip.y1);
+		}*/
+
+		skip_outline = prev;
 	}
 }

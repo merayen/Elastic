@@ -11,7 +11,7 @@ public class UIClip extends UIGroup {
 
 	@Override
 	protected void onDraw() {
-		//translation.clip = new Rect(0, 0, width, height);
+		translation.clip = new Rect(0, 0, width, height);
 		super.onDraw();
 	}
 
