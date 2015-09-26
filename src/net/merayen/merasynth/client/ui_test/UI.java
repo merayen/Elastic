@@ -27,7 +27,6 @@ public class UI extends UINode {
 	@Override
 	protected void onDraw() {
 		super.onDraw();
-		System.out.println(absolute_translation);
 	}
 
 	@Override

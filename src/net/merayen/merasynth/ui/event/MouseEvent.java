@@ -39,7 +39,6 @@ public class MouseEvent implements IEvent {
 		int y_px = mouse_event.getY();
 		float x = x_px / (float)resolution.width;
 		float y = y_px / (float)resolution.height;
-		System.out.printf("%f   %f   %d   %d\n", x, y, x_px, y_px);
 
 		ArrayList<UIObject> objs = top.getAllChildren();
 		objs.add(top);
