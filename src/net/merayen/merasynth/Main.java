@@ -2,7 +2,7 @@ package net.merayen.merasynth;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
 
-public class main {
+public class Main {
 	public static void main(String jhgjhg[]) {
 		WindowManager wm = new WindowManager();
 		Window w = wm.create();
