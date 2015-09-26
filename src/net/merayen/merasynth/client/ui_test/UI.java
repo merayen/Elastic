@@ -25,6 +25,12 @@ public class UI extends UINode {
 	}
 
 	@Override
+	protected void onDraw() {
+		super.onDraw();
+		System.out.println(absolute_translation);
+	}
+
+	@Override
 	public void onCreatePort(String name) {
 		// TODO Auto-generated method stub
 		

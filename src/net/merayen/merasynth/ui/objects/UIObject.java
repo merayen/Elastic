@@ -45,7 +45,7 @@ public abstract class UIObject {
 
 		dc.translation_stack.push(translation);
 
-		absolute_translation = dc.translation_stack.getCurrentTranslationData(); // Caching for outside use
+		absolute_translation = dc.translation_stack.getAbsolute(); // Caching for outside use
 		draw_z = dc.pushZCounter(); // Set the z-index we are drawing on
 
 		if(absolute_translation.visible) {

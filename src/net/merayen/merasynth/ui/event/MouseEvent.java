@@ -19,12 +19,14 @@ public class MouseEvent implements IEvent {
 
 	public java.awt.event.MouseEvent mouse_event;
 	public action_type action;
+	private final java.awt.Dimension resolution;
 
 	public ArrayList<UIObject> objects_hit;
 
-	public MouseEvent(java.awt.event.MouseEvent mouse_event, action_type action) {
+	public MouseEvent(java.awt.event.MouseEvent mouse_event, action_type action, java.awt.Dimension resolution) {
 		this.mouse_event = mouse_event;
 		this.action = action;
+		this.resolution = resolution;
 	}
 
 	// XXX Move hit testing out in a "hit test"-like class? 
@@ -33,8 +35,11 @@ public class MouseEvent implements IEvent {
 
 		objects_hit = new ArrayList<UIObject>();
 
-		int x = mouse_event.getX();
-		int y = mouse_event.getY();
+		int x_px = mouse_event.getX();
+		int y_px = mouse_event.getY();
+		float x = x_px / (float)resolution.width;
+		float y = y_px / (float)resolution.height;
+		System.out.printf("%f   %f   %d   %d\n", x, y, x_px, y_px);
 
 		ArrayList<UIObject> objs = top.getAllChildren();
 		objs.add(top);

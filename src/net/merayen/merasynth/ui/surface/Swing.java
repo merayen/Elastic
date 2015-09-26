@@ -93,8 +93,6 @@ public class Swing implements Surface {
 	private Handler handler;
 	private LolPanel panel;
 	private LolFrame frame;
-	protected int width = 100;
-	protected int height = 100;
 
 	public Swing(Handler handler) {
 		this.handler = handler;
@@ -113,11 +111,6 @@ public class Swing implements Surface {
 		});
 	}
 
-	public void setDimensions(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
 	public int getWidth() {
 		return this.panel.getWidth();
 	}
@@ -130,7 +123,7 @@ public class Swing implements Surface {
 		if(handler == null)
 			return;
 
-		MouseEvent me = new MouseEvent(e, ac);
+		MouseEvent me = new MouseEvent(e, ac, new java.awt.Dimension(this.getWidth(), this.getHeight()));
 		handler.onMouseEvent(me);
 	}
 

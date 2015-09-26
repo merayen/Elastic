@@ -2,8 +2,6 @@ package net.merayen.merasynth.ui;
 
 import java.util.ArrayList;
 
-import net.merayen.merasynth.ui.util.ClipStack;
-
 public class TranslationDataStack {
 	private ArrayList<TranslationData> stack = new ArrayList<TranslationData>();
 
@@ -15,37 +13,15 @@ public class TranslationDataStack {
 		stack.remove(stack.size() - 1);
 	}
 
-	public TranslationData getCurrentTranslationData() {
+	public TranslationData getAbsolute() {
 		/*
 		 * Calculates current translation data.
 		 * The returned results are the absolute translations.
 		 */
 		TranslationData r = new TranslationData();
 
-		for(TranslationData td : stack) {
-			r.x += td.x;
-			r.y += td.y;
-			r.scale_x *= td.scale_x;
-			r.scale_y *= td.scale_y;
-			r.visible = td.visible;
-
-			if(td.clip != null) {
-				if(r.clip == null) // TODO apply scaling below?
-					r.clip = new Rect(
-						(r.x + td.clip.x1) * r.scale_x,
-						(r.y + td.clip.y1) * r.scale_y,
-						(r.x + td.clip.x2) * r.scale_x,
-						(r.y + td.clip.y2) * r.scale_y
-					);
-				else
-					r.clip.clip(
-						(r.x + td.clip.x1) * r.scale_x,
-						(r.y + td.clip.y1) * r.scale_y,
-						(r.x + td.clip.x2) * r.scale_x,
-						(r.y + td.clip.y2) * r.scale_y
-					);
-			}
-		}
+		for(TranslationData td : stack)
+			r.translate(td);
 
 		return r;
 	}

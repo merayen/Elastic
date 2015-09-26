@@ -21,7 +21,6 @@ public class Draw {
 	private UIObject uiobject;
 
 	private Rect outline = null; // Relative
-	private Rect outline_abs = null; // Absolute
 
 	private Rect clip;
 
@@ -49,23 +48,26 @@ public class Draw {
 	}
 
 	public Rect getAbsoluteOutline() {
-		return outline_abs == null ? null : new Rect(outline_abs);
+		if(outline == null)
+			return new Rect();
+
+		Rect r = new Rect(outline);
+		r.x1 = (r.x1 + uiobject.absolute_translation.x) / uiobject.absolute_translation.scale_x;
+		r.y1 = (r.y1 + uiobject.absolute_translation.x) / uiobject.absolute_translation.scale_y;
+		r.x2 = (r.x2 + uiobject.absolute_translation.x) / uiobject.absolute_translation.scale_x;
+		r.y2 = (r.y2 + uiobject.absolute_translation.y) / uiobject.absolute_translation.scale_y;
+
+		return r;
 	}
 
-	private void reg(
-			float x, float y, float width, float height,
-			int a_x, int a_y, int a_width, int a_height
-	) {
+	private void reg(float x, float y, float width, float height) {
 		if(skip_outline)
 			return;
 
-		if(outline == null) {
+		if(outline == null)
 			outline = new Rect(x, y, x + width, y + height);
-			outline_abs = new Rect(a_x, a_y, a_x + a_width, a_y + a_height);
-		} else {
+		else
 			outline.enlarge(x, y, x + width, y + height);
-			outline_abs.enlarge(a_x, a_y, a_x + a_width, a_y + a_height);
-		}
 
 		// Restricts outline to clip TODO
 		// As outline also defines the hitbox for mouse events, the clip will be the maximum hitbox rectangle 
@@ -80,20 +82,14 @@ public class Draw {
 	public void fillRect(float x, float y, float width, float height) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
-		);
+		reg(x, y, width, height);
 		g2d.fillRect(point.x, point.y, dimension.width, dimension.height);
 	}
 
 	public void rect(float x, float y, float width, float height) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
-		);
+		reg(x, y, width, height);
 		g2d.drawRect(point.x, point.y, dimension.width, dimension.height);
 	}
 
@@ -116,15 +112,10 @@ public class Draw {
 		java.awt.Point point1 = uiobject.getAbsolutePixelPoint(x1, y1);
 		java.awt.Point point2 = uiobject.getAbsolutePixelPoint(x2, y2);
 		reg(
-				Math.min(x1, x2),
-				Math.min(y1, y2),
-				Math.abs(x2-x1),
-				Math.abs(y2-y1),
-
-				Math.min(point1.x, point2.x),
-				Math.min(point1.y, point2.y),
-				Math.abs(point2.x - point1.x),
-				Math.abs(point2.y - point1.y)
+			Math.min(x1, x2),
+			Math.min(y1, y2),
+			Math.abs(x2-x1),
+			Math.abs(y2-y1)
 		);
 		g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
 	}
@@ -132,10 +123,7 @@ public class Draw {
 	public void fillOval(float x, float y, float width, float height) {
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
-		);
+		reg(x, y, width, height);
 		g2d.fillOval(point.x, point.y, dimension.width, dimension.height);
 	}
 
@@ -143,10 +131,7 @@ public class Draw {
 		// TODO implement lineWidth
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-		reg(
-				x, y, width, height,
-				point.x, point.y, dimension.width, dimension.height
-		);
+		reg(x, y, width, height);
 		g2d.drawOval(point.x, point.y, dimension.width, dimension.height);
 	}
 
@@ -169,10 +154,7 @@ public class Draw {
 		 */
 		java.awt.Point point = uiobject.getAbsolutePixelPoint(x, y);
 		java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
-		reg(
-			x, y, width, height,
-			point.x, point.y, dimension.width, dimension.height
-		);
+		reg(x, y, width, height);
 	}
 
 	/*
