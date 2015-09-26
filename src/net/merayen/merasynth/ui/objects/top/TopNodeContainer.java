@@ -55,8 +55,6 @@ public class TopNodeContainer extends UIGroup {
 
 	public JSONObject dump() {
 		JSONObject result = new JSONObject();
-		result.put("x_offset", translation.x);
-		result.put("y_offset", translation.y);
 		result.put("nodes", dumpUINodes());
 		return result;
 	}

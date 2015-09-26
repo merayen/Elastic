@@ -1,6 +1,6 @@
 package net.merayen.merasynth.ui.objects.node;
 
-class UIPortTemporary extends UIPort {
+public class UIPortTemporary extends UIPort {
 	/*
 	 * This port is created when user starts to drag a line from a port.
 	 * Is invisible.

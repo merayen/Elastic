@@ -99,10 +99,21 @@ public abstract class UIObject {
 	public net.merayen.merasynth.ui.Point getAbsolutePosition() {
 		/*
 		 * Returns the absolute position of the node.
-		 * Does not include any scrolling!
 		 */
 		TranslationData td = absolute_translation;
 		return new net.merayen.merasynth.ui.Point(td.x, td.y);
+	}
+
+	/*
+	 * Returns the relative position of the object "obj" to this object.
+	 * 
+	 */
+	public net.merayen.merasynth.ui.Point getRelativePosition(UIObject obj) {
+		TranslationData td1 = absolute_translation;
+		return new net.merayen.merasynth.ui.Point(
+			obj.absolute_translation.x - absolute_translation.x,
+			obj.absolute_translation.y - absolute_translation.y
+		);
 	}
 
 	public net.merayen.merasynth.ui.Point getAbsolutePointFromPixel(int x, int y) { // TODO implement scaling

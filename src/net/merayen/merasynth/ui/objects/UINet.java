@@ -40,8 +40,8 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	protected void onDraw() {
 		for(Connection c : connections) {
 			if(c.a.isReady() && c.b.isReady()) { // We need to see if they are ready, otherwise translation isn't available
-				Point p1 = c.a.getAbsolutePosition();
-				Point p2 = c.b.getAbsolutePosition();
+				Point p1 = getRelativePosition(c.a);
+				Point p2 = getRelativePosition(c.b);
 
 				draw.setColor(150, 150, 150);
 				draw.setStroke(0.5f);
@@ -50,6 +50,13 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 				draw.setColor(200, 200, 200);
 				draw.setStroke(0.3f);
 				draw.line(p1.x, p1.y, p2.x, p2.y);
+
+				if (c.a instanceof net.merayen.merasynth.ui.objects.node.UIPortTemporary)
+					System.out.printf("UITemporaryPort: %s\n", p1);
+
+				if (c.b instanceof net.merayen.merasynth.ui.objects.node.UIPortTemporary)
+					System.out.printf("UITemporaryPort: %s\n", p2);
+
 			}
 		}
 

@@ -45,6 +45,7 @@ public class Top extends UIGroup {
 
 		top_node_container.translation.x = +10f;
 		top_node_container.translation.y = +10f;
+
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
