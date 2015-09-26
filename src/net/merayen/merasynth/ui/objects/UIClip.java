@@ -1,6 +1,7 @@
 package net.merayen.merasynth.ui.objects;
 
 import net.merayen.merasynth.ui.Rect;
+import net.merayen.merasynth.ui.event.IEvent;
 
 /*
  * Draws children inside ourself, clipping by our size.
@@ -17,9 +18,4 @@ public class UIClip extends UIGroup {
 		draw.rect(0.1f, 0.1f, width - 0.2f, height - 0.2f);
 		super.onDraw();
 	}
-
-	/*@Override
-	protected void onChildrenDrawn() {
-		draw.popClip();
-	}*/
 }

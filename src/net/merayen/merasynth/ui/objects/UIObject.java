@@ -106,7 +106,6 @@ public abstract class UIObject {
 
 	/*
 	 * Returns the relative position of the object "obj" to this object.
-	 * 
 	 */
 	public net.merayen.merasynth.ui.Point getRelativePosition(UIObject obj) {
 		TranslationData td1 = absolute_translation;

@@ -19,13 +19,17 @@ public class TranslationData {
 	}
 
 	public void translate(TranslationData td) {
-		x += td.x;
+		/*x += td.x;
 		y += td.y;
+		scale_x *= td.scale_x;
+		scale_y *= td.scale_y;*/
+		x = x + td.x;
+		y = y + td.y;
 		scale_x *= td.scale_x;
 		scale_y *= td.scale_y;
 		visible = td.visible;
 
-		if(td.clip != null) {
+		/*if(td.clip != null) {
 			if(clip == null) // TODO apply scaling below?
 				clip = new Rect(
 					(x + td.clip.x1) / scale_x,
@@ -40,13 +44,27 @@ public class TranslationData {
 					(x + td.clip.x2) / scale_x,
 					(y + td.clip.y2) / scale_y
 				);
-		}
+		}*/
+	}
+
+	/*
+	 * Applies scaling to the coordinates and returns a new flattened TranslationData.
+	 */
+	public TranslationData getFlattened() {
+		TranslationData td = new TranslationData();
+		td.x = x / scale_x;
+		td.y = y / scale_y;
+		td.scale_x = 1;
+		td.scale_y = 1;
+		td.visible = visible;
+		td.clip = clip; // Always flattened anyway (has no other properties)
+		return td;
 	}
 
 	public String toString() {
 		return String.format(
-			"X=%f, Y=%f, scale_x=%f, scale_y=%f",
-			x, y, scale_x, scale_y
+			"X=%f, Y=%f, scale_x=%f, scale_y=%f, clip=%s",
+			x, y, scale_x, scale_y, clip
 		);
 	}
 }

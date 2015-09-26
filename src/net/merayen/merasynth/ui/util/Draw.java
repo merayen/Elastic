@@ -5,6 +5,8 @@ import java.awt.FontMetrics;
 
 import net.merayen.merasynth.ui.DrawContext;
 import net.merayen.merasynth.ui.Rect;
+import net.merayen.merasynth.ui.TranslationData;
+import net.merayen.merasynth.ui.objects.UIClip;
 import net.merayen.merasynth.ui.objects.UIObject;
 
 public class Draw {
@@ -70,10 +72,16 @@ public class Draw {
 		else
 			outline.enlarge(x, y, x + width, y + height);
 
-		// Restricts outline to clip TODO
+		// TODO Only do once, not for every drawing (put inside getOutline()-something)
 		// As outline also defines the hitbox for mouse events, the clip will be the maximum hitbox rectangle 
-		//if(uiobject.clip_absolute != null)
-		//	outline_abs.clip(uiobject.clip_absolute);
+		if(uiobject.absolute_translation.clip != null) {
+			TranslationData td = uiobject.absolute_translation;//.getFlattened();
+			Rect c = uiobject.absolute_translation.clip;
+
+			//outline.clip(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y);
+			//if(uiobject instanceof UIClip)
+			//	System.out.printf("Org: %s\nNew: %s\nAbs: %s\n\n", outline, new Rect(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y),td);
+		}
 	}
 
 	public void setColor(int r, int g, int b) {
@@ -170,7 +178,7 @@ public class Draw {
 			(int)((rect.y2 - rect.y1) * draw_context.height)
 		);
 
-		System.out.printf("Clip rect: ID=%s,\t%s\n", uiobject.getID(), r);
+		//System.out.printf("Clip rect: ID=%s,\t%s\n", uiobject.getID(), r);
 
 		g2d.clip(r);
 	}
@@ -195,13 +203,15 @@ public class Draw {
 		skip_outline = true;
 		if(outline != null) {
 			setColor(255, 255, 0);
+			this.setStroke(0.5f);
 			rect(outline.x1, outline.y1, outline.x2 - outline.x1, outline.y2 - outline.y1);
 		}
 
-		/*if(clip != null) {
-			setColor(0, 255, 255);
-			rect(clip.x1, clip.y1, clip.x2 - clip.x1, clip.y2 - clip.y1);
-		}*/
+		if(uiobject.translation.clip != null) {
+			Rect c = uiobject.translation.clip;
+			setColor(0, 0, 255);
+			rect(c.x1, c.y1, c.x2 - c.x1, c.y2 - c.y1);
+		}
 
 		skip_outline = prev;
 	}
