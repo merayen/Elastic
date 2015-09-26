@@ -17,12 +17,11 @@ public class Draw {
 	 * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
 	 * TODO Abstract this, so we can present these functions to other draw systems (e.g on Android)
 	 */
-	public java.awt.Graphics2D g2d;
+	public java.awt.Graphics2D g2d; // TODO Make private
 	private UIObject uiobject;
+	private DrawContext draw_context;
 
 	private Rect outline = null; // Relative
-
-	private Rect clip;
 
 	private String font_name = "Geneva";
 	private float font_size = 1f;
@@ -34,17 +33,19 @@ public class Draw {
 	public Draw(UIObject obj, DrawContext dc) {
 		uiobject = obj;
 		g2d = dc.graphics2d;
+		draw_context = dc;
 
 		if(uiobject.absolute_translation.clip != null)
 			clip(uiobject.absolute_translation.clip);
 
 	}
 
-	// Only to be called by UIObject.java
+	// Only to be called by UIObject.java, and must be called when finished drawing an object!
 	public void destroy() {
 		unclip();
 		uiobject = null;
 		g2d = null;
+		draw_context = null;
 	}
 
 	public Rect getAbsoluteOutline() {
@@ -159,16 +160,23 @@ public class Draw {
 
 	/*
 	 * Only draw inside this rectangle.
-	 * Absolute, in pixels.
+	 * Absolute, in our internal coordinates (X and Y == 0 to 1)
 	 */
 	private void clip(Rect rect) {
-		clip = new Rect(rect);
-		//g2d.clip(new java.awt.Rectangle((int)rect.x1, (int)rect.y1, (int)rect.x2, (int)rect.y2));
+		java.awt.Rectangle r = new java.awt.Rectangle(
+			(int)(rect.x1 * draw_context.width),
+			(int)(rect.y1 * draw_context.height),
+			(int)((rect.x2 - rect.x1) * draw_context.width),
+			(int)((rect.y2 - rect.y1) * draw_context.height)
+		);
+
+		System.out.printf("Clip rect: ID=%s,\t%s\n", uiobject.getID(), r);
+
+		g2d.clip(r);
 	}
 
 	private void unclip() {
 		g2d.setClip(null);
-		clip = null;
 	}
 
 	public void disableOutline() {
