@@ -25,4 +25,15 @@ public class TranslationDataStack {
 
 		return r;
 	}
+
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		for(TranslationData x : stack)
+			s.append(String.format("\t%s\n", x));
+
+		return String.format(
+			"TranslationDataStack([\n%s])",
+			s
+		);
+	}
 }

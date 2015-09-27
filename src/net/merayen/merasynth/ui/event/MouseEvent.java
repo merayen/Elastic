@@ -37,13 +37,18 @@ public class MouseEvent implements IEvent {
 
 		int x_px = mouse_event.getX();
 		int y_px = mouse_event.getY();
-		float x = x_px / (float)resolution.width;
-		float y = y_px / (float)resolution.height;
+		float x = x_px;
+		float y = y_px;
 
 		ArrayList<UIObject> objs = top.getAllChildren();
 		objs.add(top);
 
-		for(UIObject o : objs)
+		System.out.printf("Mouse: %f\t%f\t\n", x, y);
+
+		for(UIObject o : objs) {
+			if(o instanceof net.merayen.merasynth.client.ui_test.UI)
+				System.out.println(o.outline_abs_px);
+
 			if(
 				o.isReady() &&
 				o.absolute_translation.visible &&
@@ -52,8 +57,12 @@ public class MouseEvent implements IEvent {
 				y >= o.outline_abs_px.y1 &&
 				x < o.outline_abs_px.x2 &&
 				y < o.outline_abs_px.y2
-			)
+			) {
+				if(o instanceof net.merayen.merasynth.client.ui_test.UI)
+					System.out.println("Hit");
 				objects_hit.add(o);
+			}
+		}
 
 		objects_hit.sort( (a,b) -> b.draw_z - a.draw_z );
 	}

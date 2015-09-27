@@ -93,7 +93,9 @@ public abstract class UIObject {
 
 	public java.awt.Point getAbsolutePixelPoint(float offset_x, float offset_y) { // Absolute position incl scrolling
 		TranslationData td = absolute_translation;
-		return new java.awt.Point((int)((draw_context.width / td.scale_x) * (td.x + offset_x)), (int)((draw_context.height / td.scale_y) * (td.y + offset_y)));
+		//return new java.awt.Point((int)((draw_context.width / td.scale_x) * (td.x + offset_x)), (int)((draw_context.height / td.scale_y) * (td.y + offset_y)));
+		//return new java.awt.Point((int)((td.x + offset_x) / td.scale_x), (int)((td.y + offset_y) / td.scale_y));
+		return new java.awt.Point((int)(td.x + offset_x / td.scale_x), (int)(td.y + offset_y / td.scale_y)); // Pixel perfect
 	}
 
 	public net.merayen.merasynth.ui.Point getAbsolutePosition() {
@@ -120,7 +122,7 @@ public abstract class UIObject {
 		 * Convert pixel coordinates to our coordinate system
 		 */
 		TranslationData td = absolute_translation;
-		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width / td.scale_x), (float)y / (draw_context.height / td.scale_y));
+		return new net.merayen.merasynth.ui.Point(td.x + x * td.scale_x, td.y + y * td.scale_y);
 	}
 
 	public net.merayen.merasynth.ui.Point getPointFromPixel(int x, int y) {
@@ -128,12 +130,15 @@ public abstract class UIObject {
 		 * Get our internal (relative) position from absolute window pixel position.
 		 */
 		TranslationData td = absolute_translation;
-		return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width / td.scale_x) - td.x, (float)y / (draw_context.height / td.scale_y) - td.y);
+		//return new net.merayen.merasynth.ui.Point((float)x / (draw_context.width / td.scale_x) - td.x, (float)y / (draw_context.height / td.scale_y) - td.y);
+		return new net.merayen.merasynth.ui.Point((float)x - td.x, (float)y - td.y);
 	}
 
 	public java.awt.Dimension getPixelDimension(float width, float height) {
 		TranslationData td = absolute_translation;
-		return new java.awt.Dimension((int)((draw_context.width / td.scale_x) * width), (int)((draw_context.height / td.scale_y) * height));
+		//return new java.awt.Dimension((int)((draw_context.width / td.scale_x) * width), (int)((draw_context.height / td.scale_y) * height));
+		return new java.awt.Dimension((int)(width / td.scale_x), (int)(height / td.scale_y));
+		//return new java.awt.Dimension((int)(width), (int)(height));
 	}
 
 	public int convertUnitToPixel(float a) {
@@ -142,18 +147,22 @@ public abstract class UIObject {
 		 * Uses both scale_x and scale_y to figure out the resulting value.
 		 */
 		TranslationData td = absolute_translation;
-		float resolution = Math.min(draw_context.width, draw_context.height);
-		return (int)(a * resolution / ((td.scale_x + td.scale_y) / 2f));
+		//float resolution = Math.min(draw_context.width, draw_context.height);
+		//return (int)(a * resolution / ((td.scale_x + td.scale_y) / 2f));
+		float resolution = Math.min(td.scale_x, td.scale_y);
+		return (int)(a / resolution);
 	}
 
-	public float convertPixelToUnit(int a) {
+	public float convertPixelToUnit(int a) { // TODO Only uses the x-scale. Maybe make two functions, one for X and one for Y, and one for both somehow?
 		/*
 		 * Converts a single unit.
-		 * Uses both scale_x and scale_y to figure out the resulting value.
+		 * Uses both scale_x and scale_y to figure out the resulting value. No it doesn't.
 		 */
 		TranslationData td = absolute_translation;
-		float resolution = Math.min(draw_context.width, draw_context.height); // Doing it the silly way
-		return (float)a / (resolution / ((td.scale_x + td.scale_y) / 2f));
+		//float resolution = Math.min(draw_context.width, draw_context.height); // Doing it the silly way
+		//return (float)a / (resolution / ((td.scale_x + td.scale_y) / 2f));
+
+		return (float)a * td.scale_x;
 	}
 
 	protected void sendEvent(IEvent event) {

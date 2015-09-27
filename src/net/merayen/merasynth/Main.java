@@ -9,7 +9,7 @@ public class Main {
 
 		GlueNode node;
 
-		for(int i = 0; i < 5; i++ ) {
+		for(int i = 4; i < 5; i++ ) {
 			node = w.node_system.addNode(net.merayen.merasynth.client.signalgenerator.Glue.class);
 			node.getUINode().translation.x = 10f + i * 10f;
 			node.getUINode().translation.y = 10f + i * 10f;
@@ -30,7 +30,7 @@ public class Main {
 		node.getUINode().translation.y = 50f;*/
 
 		node = w.node_system.addNode(net.merayen.merasynth.client.ui_test.Glue.class);
-		node.getUINode().translation.x = 2f;
-		node.getUINode().translation.y = -10f;
+		node.getUINode().translation.x = 100f;
+		node.getUINode().translation.y = 100f;
 	}
 }

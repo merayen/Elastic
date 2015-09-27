@@ -23,10 +23,11 @@ public class TranslationData {
 		y += td.y;
 		scale_x *= td.scale_x;
 		scale_y *= td.scale_y;*/
-		x = x + td.x;
-		y = y + td.y;
 		scale_x *= td.scale_x;
 		scale_y *= td.scale_y;
+		x = x + td.x / scale_x;
+		y = y + td.y / scale_y;
+		
 		visible = td.visible;
 
 		/*if(td.clip != null) {

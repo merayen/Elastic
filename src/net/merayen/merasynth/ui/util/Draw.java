@@ -55,10 +55,10 @@ public class Draw {
 			return new Rect();
 
 		Rect r = new Rect(outline);
-		r.x1 = (r.x1 + uiobject.absolute_translation.x) / uiobject.absolute_translation.scale_x;
-		r.y1 = (r.y1 + uiobject.absolute_translation.y) / uiobject.absolute_translation.scale_y;
-		r.x2 = (r.x2 + uiobject.absolute_translation.x) / uiobject.absolute_translation.scale_x;
-		r.y2 = (r.y2 + uiobject.absolute_translation.y) / uiobject.absolute_translation.scale_y;
+		r.x1 = (r.x1 / uiobject.absolute_translation.scale_x + uiobject.absolute_translation.x);
+		r.y1 = (r.y1 / uiobject.absolute_translation.scale_y + uiobject.absolute_translation.y);
+		r.x2 = (r.x2 / uiobject.absolute_translation.scale_x + uiobject.absolute_translation.x);
+		r.y2 = (r.y2 / uiobject.absolute_translation.scale_y + uiobject.absolute_translation.y);
 
 		return r;
 	}

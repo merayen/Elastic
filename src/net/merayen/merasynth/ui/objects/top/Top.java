@@ -43,8 +43,8 @@ public class Top extends UIGroup {
 	protected void onInit() {
 		add(top_node_container);
 
-		top_node_container.translation.x = +10f;
-		top_node_container.translation.y = +10f;
+		top_node_container.translation.x = 0f;
+		top_node_container.translation.y = 0f;
 
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
@@ -96,7 +96,7 @@ public class Top extends UIGroup {
 
 	protected void onDraw() {
 		draw.setColor(50, 50, 50);
-		draw.fillRect(-draw_context.width/2, -draw_context.height/2, draw_context.width, draw_context.height); // XXX Ikke bruk draw_context, men meh
+		draw.fillRect(0, 0, 1000, 1000); // XXX Ikke bruk draw_context, men meh
 
 		super.onDraw();
 	}
@@ -121,11 +121,11 @@ public class Top extends UIGroup {
 				return;
 			}
 
-			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .1f), 10f);
-			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .1f), 10f);
+			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 1000f);
+			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 1000f);
 
-			top_node_container.translation.x += (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
-			top_node_container.translation.y += (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
+			//top_node_container.translation.x += (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
+			//top_node_container.translation.y += (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
 		}
 	}
 

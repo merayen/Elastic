@@ -125,8 +125,8 @@ public class NodeSystem {
 	private void initUINodeSystem() {
 		events_queue = new ArrayList<net.merayen.merasynth.ui.event.IEvent>();
 
-		glue_context.top_ui_object.translation.scale_x = 100f; // TODO Update by aspect ratio of current window size
-		glue_context.top_ui_object.translation.scale_y = 100f;
+		glue_context.top_ui_object.translation.scale_x = 1f; // TODO Update by aspect ratio of current window size
+		glue_context.top_ui_object.translation.scale_y = 1f;
 
 		glue_context.top_ui_object.setHandler(new net.merayen.merasynth.ui.objects.top.Top.Handler() {
 			@Override

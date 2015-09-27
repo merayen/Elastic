@@ -8,6 +8,7 @@ import net.merayen.merasynth.ui.objects.node.UIPort;
 public class UI extends UINode {
 	private UIPort output_port;
 	private ClipTest clip_test;
+	int i;
 
 	@Override
 	public void onInit() {
@@ -21,14 +22,15 @@ public class UI extends UINode {
 		clip_test = new ClipTest();
 		clip_test.translation.x = 2;
 		clip_test.translation.y = 2;
-		add(clip_test);
+		//add(clip_test);
 	}
 
 	@Override
 	protected void onDraw() {
 		//translation.scale_x = translation.scale_y = (float)Math.sin(System.currentTimeMillis()/1000.0) + 1.1f;
 		super.onDraw();
-		//System.out.println(absolute_translation);
+		//if((i++%10) == 0)
+		//	System.out.printf("%s\n%s\n", draw_context.translation_stack, absolute_translation);
 	}
 
 	@Override
