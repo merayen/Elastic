@@ -2,7 +2,7 @@ package net.merayen.merasynth.ui;
 
 public class TranslationData {
 	public float x = 0, y = 0; // Object's origin (relative to parent)
-	public float scale_x = 1, scale_y = 1; // 
+	public float scale_x = 1, scale_y = 1; // Scales the content INSIDE, not ourself
 	public boolean visible = true;
 	public Rect clip;
 
@@ -23,10 +23,10 @@ public class TranslationData {
 		y += td.y;
 		scale_x *= td.scale_x;
 		scale_y *= td.scale_y;*/
-		scale_x *= td.scale_x;
-		scale_y *= td.scale_y;
 		x = x + td.x / scale_x;
 		y = y + td.y / scale_y;
+		scale_x *= td.scale_x;
+		scale_y *= td.scale_y;
 		
 		visible = td.visible;
 
@@ -50,8 +50,9 @@ public class TranslationData {
 
 	/*
 	 * Applies scaling to the coordinates and returns a new flattened TranslationData.
+	 * TODO Maybe remove this one, as the scale_XXX property only changes the content 
 	 */
-	public TranslationData getFlattened() {
+	/*public TranslationData getFlattened() {
 		TranslationData td = new TranslationData();
 		td.x = x / scale_x;
 		td.y = y / scale_y;
@@ -60,7 +61,7 @@ public class TranslationData {
 		td.visible = visible;
 		td.clip = clip; // Always flattened anyway (has no other properties)
 		return td;
-	}
+	}*/
 
 	public String toString() {
 		return String.format(

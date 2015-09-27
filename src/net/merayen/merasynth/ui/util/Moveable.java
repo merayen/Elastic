@@ -1,6 +1,7 @@
 package net.merayen.merasynth.ui.util;
 
 import net.merayen.merasynth.ui.Point;
+import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.objects.UIObject;
 
 public class Moveable extends MouseHandler {
@@ -11,7 +12,9 @@ public class Moveable extends MouseHandler {
 		public void onDrop(); // Dropped
 	}
 
-	private Point original_position;
+	private Point original_absolute_position;
+	private Point original_relative_position;
+	private Point original_relative_position_local;
 	private IMoveable handler_class;
 	private UIObject moveable;
 
@@ -33,28 +36,32 @@ public class Moveable extends MouseHandler {
 		super.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseUp(Point position) {
-				if(original_position != null) {
+				if(original_absolute_position != null) {
 					handler_class.onDrop();
-					
+
 					handler_class.onDrop();
-					
-					original_position = null;
+
+					original_absolute_position = null;
 				}
 			}
 
 			@Override
 			public void onGlobalMouseMove(Point global_position) {
-				if(original_position != null) {
-					moveable.translation.x = global_position.x - original_position.x;
-					moveable.translation.y = global_position.y - original_position.y;
+				if(original_absolute_position != null) {
+					Point relative = moveable.getRelativePointFromAbsolute(global_position.x, global_position.y);
+					TranslationData td = moveable.absolute_translation;
+					moveable.translation.x = original_relative_position.x + (global_position.x - original_absolute_position.x) * td.scale_x - original_relative_position_local.x;
+					moveable.translation.y = original_relative_position.y + (global_position.y - original_absolute_position.y) * td.scale_y - original_relative_position_local.y;
 					handler_class.onMove();
 				}
 			}
 
 			@Override
 			public void onMouseDown(Point position) {
-				Point p = moveable.getAbsolutePosition();
-				original_position = new Point(p.x + position.x - moveable.translation.x, p.y + position.y - moveable.translation.y);
+				//original_position = new Point(p.x + position.x - moveable.translation.x, p.y + position.y - moveable.translation.y);
+				original_absolute_position = new Point(moveable.getAbsolutePosition());
+				original_relative_position = new Point(moveable.translation.x, moveable.translation.y);
+				original_relative_position_local = new Point(position.x, position.y);
 				handler_class.onGrab();
 			}
 		});
