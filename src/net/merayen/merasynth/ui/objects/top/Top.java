@@ -61,16 +61,17 @@ public class Top extends UIGroup {
 			}
 		});
 
-		initMenuBar();
-
 		initDebug();
+		initMenuBar();
 	}
 
 	private void initDebug() {
 		debug = new Debug();
+		debug.translation.y = 40f;
 		debug.translation.scale_x = 0.1f;
 		debug.translation.scale_y = 0.1f;
 		add(debug);
+		debug.set("DEBUG", "Has been enabled");
 	}
 
 	private void initMenuBar() {
@@ -136,8 +137,8 @@ public class Top extends UIGroup {
 			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 1000f);
 			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 1000f);
 
-			//top_node_container.translation.x += (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
-			//top_node_container.translation.y += (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
+			top_node_container.translation.x += (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
+			top_node_container.translation.y += (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
 		}
 	}
 
