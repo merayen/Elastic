@@ -35,7 +35,7 @@ public class Moveable extends MouseHandler {
 
 		super.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onMouseUp(Point position) {
+			public void onGlobalMouseUp(Point position) {
 				if(original_absolute_position != null) {
 					handler_class.onDrop();
 
