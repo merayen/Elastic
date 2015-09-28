@@ -102,9 +102,9 @@ public class TopMenuBar extends UIGroup {
 
 		Label logo = new Label();
 		logo.label = "MeraSynth";
-		logo.font_size = 1f;
-		logo.translation.x = 1f;
-		logo.translation.y = 98f;
+		logo.font_size = 1.3f;
+		logo.translation.x = 0.5f;
+		logo.translation.y = 96f;
 		add(logo);
 	}
 

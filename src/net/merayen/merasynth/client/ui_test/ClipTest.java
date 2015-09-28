@@ -56,16 +56,16 @@ public class ClipTest extends UIGroup {
 		inner1.set(1);
 		clip1.add(inner1);
 
-		/*clip2 = new UIClip();
+		clip2 = new UIClip();
 		clip2.translation.x = 0f;
 		clip2.translation.y = 0f;
 		clip2.width = 10f;
 		clip2.height = 10f;
-		inner1.add(clip2);
+		//inner1.add(clip2);
 
 		inner2 = new Inner();
 		inner2.set(2);
-		clip2.add(inner2);*/
+		//clip2.add(inner2);
 	}
 
 	@Override
@@ -78,8 +78,8 @@ public class ClipTest extends UIGroup {
 
 		inner1.translation.x = (float)Math.sin(t) * 10f;
 		inner1.translation.y = (float)Math.cos(t) * 10f;
-		/*inner2.translation.x = (float)Math.sin(t*2.4) * 10f;
-		inner2.translation.y = (float)Math.cos(t*2.4) * 10f;*/
+		inner2.translation.x = (float)Math.sin(t*2.4) * 10f;
+		inner2.translation.y = (float)Math.cos(t*2.4) * 10f;
 
 		/*if(inner1.absolute_translation != null)
 			System.out.printf("Inner clip: ID=%s, %s\n", inner1.getID(), inner1.absolute_translation.clip);*/

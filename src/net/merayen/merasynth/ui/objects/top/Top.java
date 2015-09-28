@@ -11,7 +11,6 @@ import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
 import net.merayen.merasynth.ui.objects.UIGroup;
-import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
@@ -33,6 +32,7 @@ public class Top extends UIGroup {
 	float start_scroll_x;
 	float start_scroll_y;
 
+	public Debug debug;
 	private TopNodeContainer top_node_container = new TopNodeContainer();
 	private TopMenuBar top_menu_bar;
 
@@ -62,11 +62,23 @@ public class Top extends UIGroup {
 		});
 
 		initMenuBar();
+
+		initDebug();
+	}
+
+	private void initDebug() {
+		debug = new Debug();
+		debug.translation.scale_x = 0.1f;
+		debug.translation.scale_y = 0.1f;
+		add(debug);
 	}
 
 	private void initMenuBar() {
 		top_menu_bar = new TopMenuBar();
+		top_menu_bar.translation.scale_x = 0.1f;
+		top_menu_bar.translation.scale_y = 0.1f;
 		add(top_menu_bar);
+
 		top_menu_bar.setHandler(new TopMenuBar.Handler() {
 			@Override
 			public void onOpenProject(String path) {

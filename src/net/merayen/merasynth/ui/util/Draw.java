@@ -6,7 +6,6 @@ import java.awt.FontMetrics;
 import net.merayen.merasynth.ui.DrawContext;
 import net.merayen.merasynth.ui.Rect;
 import net.merayen.merasynth.ui.TranslationData;
-import net.merayen.merasynth.ui.objects.UIClip;
 import net.merayen.merasynth.ui.objects.UIObject;
 
 public class Draw {
@@ -21,7 +20,6 @@ public class Draw {
 	 */
 	public java.awt.Graphics2D g2d; // TODO Make private
 	private UIObject uiobject;
-	private DrawContext draw_context;
 
 	private Rect outline = null; // Relative
 
@@ -35,7 +33,6 @@ public class Draw {
 	public Draw(UIObject obj, DrawContext dc) {
 		uiobject = obj;
 		g2d = dc.graphics2d;
-		draw_context = dc;
 
 		if(uiobject.absolute_translation.clip != null)
 			clip(uiobject.absolute_translation.clip);
@@ -47,7 +44,6 @@ public class Draw {
 		unclip();
 		uiobject = null;
 		g2d = null;
-		draw_context = null;
 	}
 
 	public Rect getAbsoluteOutline() {
@@ -80,7 +76,7 @@ public class Draw {
 
 			//outline.clip(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y);
 			//if(uiobject instanceof UIClip)
-			//	System.out.printf("Org: %s\nNew: %s\nAbs: %s\n\n", outline, new Rect(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y),td);
+				//System.out.printf("Org: %s\nNew: %s\nAbs: %s\n\n", outline, new Rect(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y),td);
 		}
 	}
 
@@ -171,16 +167,23 @@ public class Draw {
 	 * Absolute, in our internal coordinates (X and Y == 0 to 1)
 	 */
 	private void clip(Rect rect) {
-		java.awt.Rectangle r = new java.awt.Rectangle(
+		/*java.awt.Rectangle r = new java.awt.Rectangle(
 			(int)(rect.x1 * draw_context.width),
 			(int)(rect.y1 * draw_context.height),
 			(int)((rect.x2 - rect.x1) * draw_context.width),
 			(int)((rect.y2 - rect.y1) * draw_context.height)
+		);*/
+
+		java.awt.Rectangle r = new java.awt.Rectangle(
+			(int)(rect.x1),
+			(int)(rect.y1),
+			(int)((rect.x2 - rect.x1)),
+			(int)((rect.y2 - rect.y1))
 		);
 
-		//System.out.printf("Clip rect: ID=%s,\t%s\n", uiobject.getID(), r);
+		System.out.printf("Clip rect: ID=%s,\nRect: %s,\nResult: %s\n", uiobject.getID(), rect, r);
 
-		g2d.clip(r);
+		//g2d.clip(r);
 	}
 
 	private void unclip() {
