@@ -4,6 +4,11 @@ import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.TranslationData;
 import net.merayen.merasynth.ui.objects.UIObject;
 
+/*
+ * Makes an UIObject moveable by clicking down and dragging it.
+ * TODO Adapt better when scrolling while moving, as this currently offsets the dragging object quite a lot.
+ *
+ */
 public class Moveable extends MouseHandler {
 
 	public interface IMoveable {
@@ -12,7 +17,7 @@ public class Moveable extends MouseHandler {
 		public void onDrop(); // Dropped
 	}
 
-	private Point original_absolute_position;
+	private Point original_absolute_position; // 3 offsets? Come on...
 	private Point original_relative_position;
 	private Point original_relative_position_local;
 	private IMoveable handler_class;
@@ -58,7 +63,6 @@ public class Moveable extends MouseHandler {
 
 			@Override
 			public void onMouseDown(Point position) {
-				//original_position = new Point(p.x + position.x - moveable.translation.x, p.y + position.y - moveable.translation.y);
 				original_absolute_position = new Point(moveable.getAbsolutePosition());
 				original_relative_position = new Point(moveable.translation.x, moveable.translation.y);
 				original_relative_position_local = new Point(position.x, position.y);
