@@ -181,9 +181,11 @@ public class Draw {
 			(int)((rect.y2 - rect.y1))
 		);
 
-		System.out.printf("Clip rect: ID=%s,\nRect: %s,\nResult: %s\n", uiobject.getID(), rect, r);
+		String v = String.format("Draw.java Clip rect [%s] ", uiobject.getID());
+		uiobject.getTopObject().debug.set(v + "rect", rect.toString());
+		uiobject.getTopObject().debug.set(v + "r", r.toString());
 
-		//g2d.clip(r);
+		g2d.clip(r);
 	}
 
 	private void unclip() {

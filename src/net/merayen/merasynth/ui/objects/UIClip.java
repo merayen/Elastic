@@ -17,5 +17,8 @@ public class UIClip extends UIGroup {
 		draw.setStroke(0.5f);
 		draw.rect(0.1f, 0.1f, width - 0.2f, height - 0.2f);
 		super.onDraw();
+
+		getTopObject().debug.set("UIClip clip rel " + getID(), translation.clip);
+		getTopObject().debug.set("UIClip clip abs " + getID(), absolute_translation.clip);
 	}
 }

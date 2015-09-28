@@ -61,11 +61,11 @@ public class ClipTest extends UIGroup {
 		clip2.translation.y = 0f;
 		clip2.width = 10f;
 		clip2.height = 10f;
-		//inner1.add(clip2);
+		inner1.add(clip2);
 
 		inner2 = new Inner();
 		inner2.set(2);
-		//clip2.add(inner2);
+		clip2.add(inner2);
 	}
 
 	@Override
