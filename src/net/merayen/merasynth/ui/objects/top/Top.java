@@ -43,8 +43,14 @@ public class Top extends UIGroup {
 	protected void onInit() {
 		add(top_node_container);
 
+		// TODO Change scale by window size?
+		translation.scale_x = 0.001f;
+		translation.scale_y = 0.001f;
+
 		top_node_container.translation.x = 0f;
 		top_node_container.translation.y = 0f;
+		top_node_container.translation.scale_x = 100f;
+		top_node_container.translation.scale_y = 100f;
 
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
@@ -67,17 +73,17 @@ public class Top extends UIGroup {
 
 	private void initDebug() {
 		debug = new Debug();
-		debug.translation.y = 40f;
-		debug.translation.scale_x = 0.1f;
-		debug.translation.scale_y = 0.1f;
+		debug.translation.y = 0.04f;
+		debug.translation.scale_x = 100f;
+		debug.translation.scale_y = 100f;
 		add(debug);
 		debug.set("DEBUG", "Has been enabled");
 	}
 
 	private void initMenuBar() {
 		top_menu_bar = new TopMenuBar();
-		top_menu_bar.translation.scale_x = 0.1f;
-		top_menu_bar.translation.scale_y = 0.1f;
+		top_menu_bar.translation.scale_x = 100f;
+		top_menu_bar.translation.scale_y = 100f;
 		add(top_menu_bar);
 
 		top_menu_bar.setHandler(new TopMenuBar.Handler() {
@@ -109,8 +115,9 @@ public class Top extends UIGroup {
 
 	protected void onDraw() {
 		draw.setColor(50, 50, 50);
-		draw.fillRect(0, 0, 1000, 1000); // XXX Ikke bruk draw_context, men meh
+		draw.fillRect(0, 0, 1, 1); // XXX Ikke bruk draw_context, men meh
 
+		debug.set("Top absolute_translation", absolute_translation);
 		super.onDraw();
 	}
 
@@ -134,11 +141,26 @@ public class Top extends UIGroup {
 				return;
 			}
 
-			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 1000f);
-			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 1000f);
+			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 100f);
+			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 100f);
 
-			top_node_container.translation.x += (top_node_container.translation.scale_x - p_x)*translation.scale_x/2;
-			top_node_container.translation.y += (top_node_container.translation.scale_y - p_y)*translation.scale_y/2;
+			float b_x = top_node_container.translation.x;
+			float b_y = top_node_container.translation.y;
+	
+			float diff_x = (top_node_container.translation.scale_x - p_x) * 1000 / 2;
+			float diff_y = (top_node_container.translation.scale_y - p_y) * 1000 / 2;
+			//top_node_container.translation.x += diff_x;
+			//top_node_container.translation.y += diff_y;
+
+			debug.set("Top scroll pos", String.format(
+				"Before: %.2f,%.2f, TNC scale: %.2f,%.2f, scale diff: %.2f,%.2f",
+				b_x,
+				b_y,
+				top_node_container.translation.scale_x,
+				top_node_container.translation.scale_y,
+				diff_x,
+				diff_y
+			));
 		}
 	}
 

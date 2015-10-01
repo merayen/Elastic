@@ -27,7 +27,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onDraw() {
-		//translation.scale_x = translation.scale_y = (float)Math.sin(System.currentTimeMillis()/1000.0) / 2f + 0.7f;
+		translation.scale_x = translation.scale_y = (float)Math.sin(System.currentTimeMillis()/1000.0) / 2f + 0.7f;
 		super.onDraw();
 		//if((i++%10) == 0)
 		//	System.out.printf("%s\n%s\n", draw_context.translation_stack, absolute_translation);
