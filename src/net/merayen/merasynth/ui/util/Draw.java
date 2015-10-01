@@ -50,11 +50,16 @@ public class Draw {
 		if(outline == null)
 			return new Rect();
 
+		TranslationData td = uiobject.absolute_translation;
+
 		Rect r = new Rect(outline);
-		r.x1 = (r.x1 / uiobject.absolute_translation.scale_x + uiobject.absolute_translation.x);
-		r.y1 = (r.y1 / uiobject.absolute_translation.scale_y + uiobject.absolute_translation.y);
-		r.x2 = (r.x2 / uiobject.absolute_translation.scale_x + uiobject.absolute_translation.x);
-		r.y2 = (r.y2 / uiobject.absolute_translation.scale_y + uiobject.absolute_translation.y);
+		if(td.clip != null)
+			r.clip(td.clip);
+
+		r.x1 = (r.x1 / td.scale_x + td.x);
+		r.y1 = (r.y1 / td.scale_y + td.y);
+		r.x2 = (r.x2 / td.scale_x + td.x);
+		r.y2 = (r.y2 / td.scale_y + td.y);
 
 		return r;
 	}
