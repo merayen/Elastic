@@ -17,9 +17,15 @@ public class TopNodeContainer extends UIGroup {
 	private UINet net;
 	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 
+	@Override
 	protected void onInit() {
 		net = new UINet();
 		add(net, true); // Add the net first (also, drawn behind everything)
+	}
+
+	protected void onDraw() {
+		super.onDraw();
+		getTopObject().debug.set("TopNodeContainer absolute_translation", absolute_translation);
 	}
 
 	public UINode addNode(String class_path) {

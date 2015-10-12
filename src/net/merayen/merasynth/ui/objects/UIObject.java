@@ -112,8 +112,8 @@ public abstract class UIObject {
 	public net.merayen.merasynth.ui.Point getRelativePosition(UIObject obj) {
 		TranslationData td1 = absolute_translation;
 		return new net.merayen.merasynth.ui.Point(
-			obj.absolute_translation.x - absolute_translation.x,
-			obj.absolute_translation.y - absolute_translation.y
+			(obj.absolute_translation.x - absolute_translation.x) * absolute_translation.scale_x,
+			(obj.absolute_translation.y - absolute_translation.y) * absolute_translation.scale_y
 		);
 	}
 

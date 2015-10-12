@@ -1,14 +1,10 @@
 package net.merayen.merasynth.client.ui_test;
 
-import net.merayen.merasynth.ui.objects.UIClip;
-import net.merayen.merasynth.ui.objects.components.graph.Graph;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.objects.node.UIPort;
 
 public class UI extends UINode {
-	private UIPort output_port;
 	private ClipTest clip_test;
-	int i;
 
 	@Override
 	public void onInit() {

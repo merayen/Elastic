@@ -118,6 +118,11 @@ public class Top extends UIGroup {
 		draw.fillRect(0, 0, 1, 1); // XXX Ikke bruk draw_context, men meh
 
 		debug.set("Top absolute_translation", absolute_translation);
+
+		/*float t = (float)(Math.sin(System.currentTimeMillis() / 1000.0 * 2)) / 10f;
+		top_node_container.translation.x = t + 500 / 1000f;
+		top_node_container.translation.y = t + 500 / 1000f;*/
+
 		super.onDraw();
 	}
 
@@ -141,16 +146,17 @@ public class Top extends UIGroup {
 				return;
 			}
 
-			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 100f);
-			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 100f);
+			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 1000f);
+			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 1000f);
 
 			float b_x = top_node_container.translation.x;
 			float b_y = top_node_container.translation.y;
 	
-			float diff_x = (top_node_container.translation.scale_x - p_x) * 1000 / 2;
-			float diff_y = (top_node_container.translation.scale_y - p_y) * 1000 / 2;
-			//top_node_container.translation.x += diff_x;
-			//top_node_container.translation.y += diff_y;
+			float diff_x = (top_node_container.translation.scale_x - p_x);
+			float diff_y = (top_node_container.translation.scale_y - p_y);
+			float t = (float)(Math.sin(System.currentTimeMillis() / 1000));
+			//top_node_container.translation.x += t;
+			//top_node_container.translation.y += t;
 
 			debug.set("Top scroll pos", String.format(
 				"Before: %.2f,%.2f, TNC scale: %.2f,%.2f, scale diff: %.2f,%.2f",
