@@ -23,7 +23,7 @@ public class Net extends Node {
 	}
 
 	protected void onRestore(JSONObject state) {
-		frequency = (float)state.get("frequency");
+		frequency = ((Double)state.get("frequency")).floatValue();
 	}
 
 	protected void onReceive(String port, DataPacket dp) {

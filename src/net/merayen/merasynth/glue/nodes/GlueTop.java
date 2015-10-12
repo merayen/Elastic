@@ -23,7 +23,8 @@ public class GlueTop extends GlueObject {
 	}
 
 	protected void onRestore(JSONObject state) {
-		assert nodes.size() == 0;
+		if(nodes.size() > 0)
+			throw new RuntimeException("Can not restore when there are existing nodes");
 
 		JSONArray a = (JSONArray)state.get("nodes");
 		for(int i = 0; i < a.size(); i++) {

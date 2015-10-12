@@ -36,7 +36,7 @@ public class Glue extends GlueNode {
 
 	@Override
 	protected void onDump(JSONObject state) {
-		
+		state.put("frequency", frequency);
 	}
 
 	protected void onRestore(JSONObject state) {

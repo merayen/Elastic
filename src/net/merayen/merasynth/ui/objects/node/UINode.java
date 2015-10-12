@@ -119,7 +119,7 @@ public abstract class UINode extends UIGroup {
 
 		this.setID((String)obj.get("id")); 
 		translation.x = ((Double)obj.get("x")).floatValue();
-		translation.y = ((Double)obj.get("y")).floatValue();
+		translation.y = ((Double)obj.get("y")).floatValue(); // TODO Restore scaling
 
 		onRestore((JSONObject)obj.get("state"));
 	}

@@ -25,6 +25,8 @@ public class UI extends UINode {
 		height = 5f;
 
 		titlebar.title = "Wave";
+
+		createFrequencyPort();
 	}
 
 	public void setFrequency(float frequency) {
@@ -36,27 +38,7 @@ public class UI extends UINode {
 	public void onCreatePort(String name) {
 		UI self = this;
 		if(name.equals("frequency")) {
-			port_parameter_slider = new PortParameterSlider("frequency");
-			port_parameter_slider.translation.y = 2f;
-			add(port_parameter_slider);
-
-			port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {
-				@Override
-				public void onChange(double value) {
-					frequency = Math.round(value * 8000.0 * 10) / 10 + 0.1f;
-					port_parameter_slider.setLabel(String.format("%.2f Hz", frequency));
-					((Glue)self.getGlueNode()).changeFrequency(frequency);
-				}
-
-				@Override
-				public void onButton(int offset) {
-					frequency += offset*1;
-					port_parameter_slider.setValue(frequency / 8000.0);
-				}
-			});
-
-			port_parameter_slider.setValue(0);
-			port_parameter_slider.setStep(0.1f);
+			// We create this port in onInit() as it is always available anyway
 		}
 
 		if(name.equals("output")) {
@@ -70,5 +52,30 @@ public class UI extends UINode {
 	@Override
 	public void onRemovePort(String name) {
 		// Never removes any port anyway, so not implemented
+	}
+
+	private void createFrequencyPort() {
+		UI self = this;
+		port_parameter_slider = new PortParameterSlider("frequency");
+		port_parameter_slider.translation.y = 2f;
+		add(port_parameter_slider);
+
+		port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {
+			@Override
+			public void onChange(double value) {
+				frequency = Math.round(value * 8000.0 * 10) / 10 + 0.1f;
+				port_parameter_slider.setLabel(String.format("%.2f Hz", frequency));
+				((Glue)self.getGlueNode()).changeFrequency(frequency);
+			}
+
+			@Override
+			public void onButton(int offset) {
+				frequency += offset*1;
+				port_parameter_slider.setValue(frequency / 8000.0);
+			}
+		});
+
+		port_parameter_slider.setValue(0);
+		port_parameter_slider.setStep(0.1f);
 	}
 }

@@ -144,7 +144,6 @@ public class NodeSystem {
 				}
 
 				reinit();
-				inited = true; // Makes us dirty again (not able to restore)
 				restore(dump_obj);
 			}
 
@@ -205,7 +204,9 @@ public class NodeSystem {
 
 	public void restore(JSONObject obj) {
 		// TODO handle different dump versions
-		assert !inited : "Dumps can only be restored when in a clean state";
+		if(inited)
+			throw new RuntimeException("Dumps can only be restored when in a clean state");
+
 		inited = true;
 		glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
 		glue_context.net_supervisor.restore((JSONObject)obj.get("netnodes"));
