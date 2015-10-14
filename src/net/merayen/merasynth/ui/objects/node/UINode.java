@@ -24,6 +24,7 @@ public abstract class UINode extends UIGroup {
 	protected Titlebar titlebar;
 	protected ArrayList<UIPort> ports = new ArrayList<UIPort>();
 
+	// Dumping and restoring of simple things like position and scaling. All other dumping should be done by GlueNode (and maybe netnode too)
 	protected void onDump(JSONObject state) {}
 	protected void onRestore(JSONObject state) {}
 
@@ -108,6 +109,8 @@ public abstract class UINode extends UIGroup {
 		result.put("id", getID());
 		result.put("x", translation.x);
 		result.put("y", translation.y);
+		result.put("x", translation.scale_x);
+		result.put("y", translation.scale_y);
 		result.put("class", this.getClass().getName());
 
 		return result;
@@ -120,6 +123,8 @@ public abstract class UINode extends UIGroup {
 		this.setID((String)obj.get("id")); 
 		translation.x = ((Double)obj.get("x")).floatValue();
 		translation.y = ((Double)obj.get("y")).floatValue(); // TODO Restore scaling
+		translation.scale_x = ((Double)obj.get("scale_x")).floatValue();
+		translation.scale_y = ((Double)obj.get("scale_y")).floatValue();
 
 		onRestore((JSONObject)obj.get("state"));
 	}
