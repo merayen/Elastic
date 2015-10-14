@@ -43,14 +43,14 @@ public class Top extends UIGroup {
 	protected void onInit() {
 		add(top_node_container);
 
-		// TODO Change scale by window size?
-		translation.scale_x = 0.001f;
-		translation.scale_y = 0.001f;
+		// Pixel mapping. Maybe make this setup-able ala DPI somwhere TODO
+		translation.scale_x = 1;
+		translation.scale_y = 1;
 
 		top_node_container.translation.x = 0f;
 		top_node_container.translation.y = 0f;
-		top_node_container.translation.scale_x = 100f;
-		top_node_container.translation.scale_y = 100f;
+		top_node_container.translation.scale_x = .1f;
+		top_node_container.translation.scale_y = .1f;
 
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
@@ -73,17 +73,17 @@ public class Top extends UIGroup {
 
 	private void initDebug() {
 		debug = new Debug();
-		debug.translation.y = 0.04f;
-		debug.translation.scale_x = 100f;
-		debug.translation.scale_y = 100f;
+		debug.translation.y = 40f;
+		debug.translation.scale_x = .1f;
+		debug.translation.scale_y = .1f;
 		add(debug);
 		debug.set("DEBUG", "Has been enabled");
 	}
 
 	private void initMenuBar() {
 		top_menu_bar = new TopMenuBar();
-		top_menu_bar.translation.scale_x = 100f;
-		top_menu_bar.translation.scale_y = 100f;
+		top_menu_bar.translation.scale_x = .1f;
+		top_menu_bar.translation.scale_y = .1f;
 		add(top_menu_bar);
 
 		top_menu_bar.setHandler(new TopMenuBar.Handler() {
@@ -114,8 +114,11 @@ public class Top extends UIGroup {
 	}
 
 	protected void onDraw() {
+		translation.scale_x = 1;
+		translation.scale_y = 1;
+
 		draw.setColor(50, 50, 50);
-		draw.fillRect(0, 0, 1, 1); // XXX Ikke bruk draw_context, men meh
+		draw.fillRect(0, 0, 1000, 1000); // XXX Ikke bruk draw_context, men meh
 
 		debug.set("Top absolute_translation", absolute_translation);
 
