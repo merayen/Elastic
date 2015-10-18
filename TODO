@@ -1,6 +1,15 @@
-- Fix dumping and restoring of nodes
-- Make sure the system doesn't start the netnode-system before everyone is restored, including ports etc. Maybe make initalizing stage based...
-- Make input on singal generator actually work
+- Design and implement data sending/receiving management system (data between ports)
+	- Create a helper class that buffers audio packets received and makes them available when the node is actually requesting
+	- Need to find out how big buffer we should allow, if one node requests data for like a 60 second offset, we start to eat a lot of memory
+		- Maybe node itself can define the length of the buffer, depending on the settings set on the node
+	- This is important as nodes will be reading datapackets in different time
+		- Like, node A requests data 1 second before node B, so node B needs to cache those data up
+		- The package sending management code needs to calculate the buffer here, maybe, combined with what the nodes requests
+	- Generally, we need to abstract ourself from Netlist node a little, making easy API access like:
+		- getData("input_port", int sample_offset, int sample_count)
+		- sendData("output_port", int sample_offset, int sample_count)
+		...where the abstracting code keeps all the AudioRequest and AudioResponse handling away
+- Make input on a signal generator actually work
 - Create own port for MIDI-data
 - Make MIDI-input node output MIDI
 - Make wavegenerator take MIDI
