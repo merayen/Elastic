@@ -29,8 +29,12 @@ public class Top extends UIGroup {
 	private net.merayen.merasynth.glue.Context glue_context;
 
 	// Scrolling, when dragging the background
-	float start_scroll_x;
-	float start_scroll_y;
+	float start_scroll_x, start_scroll_y;
+
+	// Cached screen width and height. Updates on every draw
+	float screen_width, screen_height;
+
+	double i = Math.PI * 1.5;
 
 	public Debug debug;
 	private TopNodeContainer top_node_container = new TopNodeContainer();
@@ -47,8 +51,8 @@ public class Top extends UIGroup {
 		translation.scale_x = 1;
 		translation.scale_y = 1;
 
-		top_node_container.translation.x = 0f;
-		top_node_container.translation.y = 0f;
+		top_node_container.translation.x = 400f;
+		top_node_container.translation.y = 450f;
 		top_node_container.translation.scale_x = .1f;
 		top_node_container.translation.scale_y = .1f;
 
@@ -114,17 +118,48 @@ public class Top extends UIGroup {
 	}
 
 	protected void onDraw() {
-		translation.scale_x = 1;
-		translation.scale_y = 1;
-
+		screen_width = this.draw_context.width;
+		screen_height = this.draw_context.height;
 		draw.setColor(50, 50, 50);
-		draw.fillRect(0, 0, 1000, 1000); // XXX Ikke bruk draw_context, men meh
+		draw.fillRect(0, 0, screen_width, screen_height);
+
+		draw.setColor(255, 255, 0);
+		draw.setStroke(1);
+		draw.line(0, screen_height / 2, screen_width, screen_height / 2);
+		draw.line(screen_width / 2, 0, screen_width / 2, screen_height);
+
+		/*UIGroup m = top_node_container;
+		float previous_scale = m.translation.scale_x;
+		float scale = (float)Math.sin(i+=0.05) / 20f + 0.15f;
+		float scale_diff = scale - previous_scale;
+
+		float current_offset_x = (m.translation.x - screen_width / 2);
+		float current_offset_y = (m.translation.y - screen_height / 2);
+		float new_x = screen_width / 2 + current_offset_x + current_offset_x * (-scale_diff / scale);
+		float new_y = screen_height / 2 + current_offset_y + current_offset_y * (-scale_diff / scale);
+
+		m.translation.scale_x = scale;
+		m.translation.scale_y = scale;
+		m.translation.x = new_x;
+		m.translation.y = new_y;
+		//m.translation.x = (screen_width / 2) + offset_x / scale;
+		//m.translation.x = (screen_width / 2) + offset_x / scale;
+
+		debug.set("Z scale_diff", String.format("%3f", scale_diff));
+		debug.set("Z current_offset X", String.format("%3f", current_offset_x));
+		debug.set("Z new X", String.format("%3f", new_x));*/
+
+		/*if((i = (i+1) % 100) < 50) {
+			m.translation.scale_x = 0.1f;
+			m.translation.scale_y = 0.1f;
+			m.translation.x = 400;
+		} else {
+			m.translation.scale_x = 0.2f;
+			m.translation.scale_y = 0.2f;
+			m.translation.x = 450;
+		}*/
 
 		debug.set("Top absolute_translation", absolute_translation);
-
-		/*float t = (float)(Math.sin(System.currentTimeMillis() / 1000.0 * 2)) / 10f;
-		top_node_container.translation.x = t + 500 / 1000f;
-		top_node_container.translation.y = t + 500 / 1000f;*/
 
 		super.onDraw();
 	}
@@ -139,37 +174,19 @@ public class Top extends UIGroup {
 			float p_y = top_node_container.translation.scale_y;
 
 			if(e.getOffsetY() < 0) {
-				top_node_container.translation.scale_x /= 1.1;
-				top_node_container.translation.scale_y /= 1.1;
+				zoom(
+					top_node_container.translation.scale_x / 1.1f,
+					top_node_container.translation.scale_y / 1.1f
+				);
 			}
 			else if(e.getOffsetY() > 0) {
-				top_node_container.translation.scale_x *= 1.1;
-				top_node_container.translation.scale_y *= 1.1;
+				zoom(
+					top_node_container.translation.scale_x * 1.1f,
+					top_node_container.translation.scale_y * 1.1f
+				);
 			} else {
 				return;
 			}
-
-			top_node_container.translation.scale_x = Math.min(Math.max(top_node_container.translation.scale_x, .01f), 1000f);
-			top_node_container.translation.scale_y = Math.min(Math.max(top_node_container.translation.scale_y, .01f), 1000f);
-
-			float b_x = top_node_container.translation.x;
-			float b_y = top_node_container.translation.y;
-	
-			float diff_x = (top_node_container.translation.scale_x - p_x);
-			float diff_y = (top_node_container.translation.scale_y - p_y);
-			float t = (float)(Math.sin(System.currentTimeMillis() / 1000));
-			//top_node_container.translation.x += t;
-			//top_node_container.translation.y += t;
-
-			debug.set("Top scroll pos", String.format(
-				"Before: %.2f,%.2f, TNC scale: %.2f,%.2f, scale diff: %.2f,%.2f",
-				b_x,
-				b_y,
-				top_node_container.translation.scale_x,
-				top_node_container.translation.scale_y,
-				diff_x,
-				diff_y
-			));
 		}
 	}
 
@@ -210,5 +227,20 @@ public class Top extends UIGroup {
 
 	public void restore(JSONObject obj) {
 		top_node_container.restore(obj);
+	}
+
+	private void zoom(float new_scale_x, float new_scale_y) {
+		UIGroup tnc = top_node_container;
+		float previous_scale_x = tnc.translation.scale_x;
+		float previous_scale_y = tnc.translation.scale_y;
+		float scale_diff_x = new_scale_x - previous_scale_x;
+		float scale_diff_y = new_scale_y - previous_scale_y;
+		float current_offset_x = (tnc.translation.x - screen_width  / 2);
+		float current_offset_y = (tnc.translation.y - screen_height / 2);
+
+		tnc.translation.scale_x = new_scale_x;
+		tnc.translation.scale_y = new_scale_y;
+		tnc.translation.x = screen_width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
+		tnc.translation.y = screen_height / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
 	}
 }

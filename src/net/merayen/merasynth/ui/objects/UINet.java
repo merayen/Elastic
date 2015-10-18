@@ -38,7 +38,6 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	private UIPort dragging_port;
 
 	protected void onDraw() {
-		this.getTopObject().debug.set("UINet", translation);
 		for(Connection c : connections) {
 			if(c.a.isReady() && c.b.isReady()) { // We need to see if they are ready, otherwise translation isn't available
 				Point p1 = getRelativePosition(c.a);
