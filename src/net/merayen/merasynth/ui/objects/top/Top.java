@@ -151,8 +151,8 @@ public class Top extends UIGroup {
 				return;
 			}
 			zoom(
-				s_x = Math.max(Math.min(s_x, 10f), 0.1f),
-				s_x = Math.max(Math.min(s_x, 10f), 0.1f)
+				Math.max(Math.min(s_x, 10f), 0.1f),
+				Math.max(Math.min(s_y, 10f), 0.1f)
 			);
 		}
 	}
