@@ -14,9 +14,7 @@ public class Titlebar extends UIGroup {
 		moveable.setHandler(new Moveable.IMoveable() {
 
 			@Override
-			public void onGrab() {
-				System.out.println("Grabbed");
-			}
+			public void onGrab() {}
 
 			@Override
 			public void onMove() {}

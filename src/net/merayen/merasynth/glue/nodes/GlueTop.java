@@ -36,6 +36,10 @@ public class GlueTop extends GlueObject {
 
 			nodes.add(node);
 		}
+
+		// Initialize all nodes after restoring
+		for(GlueNode node : nodes)
+			node.doInit();
 	}
 
 	protected void onDump(JSONObject state) {

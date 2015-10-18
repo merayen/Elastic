@@ -156,7 +156,13 @@ public class NodeSystem {
 				}
 
 				reinit();
+				long t = System.currentTimeMillis();
 				restore(dump_obj);
+				glue_context.top_ui_object.whenReady(
+					() -> glue_context.top_ui_object.debug.set(
+						"NodeSystem",
+						String.format("Restoring project took %.3f seconds", (System.currentTimeMillis() - t) / 1000.0f))
+				);
 			}
 
 			@Override
@@ -224,8 +230,8 @@ public class NodeSystem {
 
 		inited = true;
 		try {
-			glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
 			glue_context.net_supervisor.restore((JSONObject)obj.get("netnodes"));
+			glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
 			glue_context.glue_top.restore((JSONObject)obj.get("gluenodes"));
 		} catch (RestoreException e) {
 			System.out.println("Failed restoring of node");

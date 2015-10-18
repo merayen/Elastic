@@ -27,6 +27,7 @@ public abstract class UIObject {
 	protected Draw draw; // Helper class to draw stuff
 
 	private boolean created = false;
+	private boolean alive = true; // TODO Set this to false if this UIObject has been "disposed off". This is to stop any pending async operations
 	private ArrayList<Runnable> when_ready_funcs = new ArrayList<Runnable>();
 
 	/*
@@ -198,5 +199,9 @@ public abstract class UIObject {
 
 	public void setID(String id) {
 		this.id = id;
+	}
+
+	public boolean isAlive() {
+		return alive;
 	}
 }

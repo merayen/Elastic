@@ -31,8 +31,8 @@ public abstract class UINode extends UIGroup {
 	private SoftReference<GlueNode> cache_glue_node = new SoftReference<GlueNode>(null);
 	private boolean inited;
 
-	public abstract void onCreatePort(String name);
-	public abstract void onRemovePort(String name);
+	protected abstract void onCreatePort(String name);
+	protected abstract void onRemovePort(String name);
 
 	protected void onInit() {
 		titlebar = new Titlebar();
@@ -159,5 +159,15 @@ public abstract class UINode extends UIGroup {
 		}
 
 		return uinode;
+	}
+
+	/*
+	 * Ask the UINode object to create the Port so it can be seen.
+	 */
+	public void createPort(String name) {
+		onCreatePort(name);
+
+		// Reload UINet from netlist, in case this port is connected (typical after a restore, where connections are made previously in netlist)
+		getTopObject().getUINet().reload();
 	}
 }

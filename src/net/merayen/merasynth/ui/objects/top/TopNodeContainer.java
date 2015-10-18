@@ -6,7 +6,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.exceptions.RestoreException;
-import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UINet;
 import net.merayen.merasynth.ui.objects.node.UINode;
@@ -69,6 +68,10 @@ public class TopNodeContainer extends UIGroup {
 		JSONObject result = new JSONObject();
 		result.put("nodes", dumpUINodes());
 		return result;
+	}
+
+	public UINet getUINet() {
+		return net;
 	}
 
 	private JSONArray dumpUINodes() {

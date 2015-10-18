@@ -11,6 +11,7 @@ import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.event.MouseWheelEvent;
 import net.merayen.merasynth.ui.objects.UIGroup;
+import net.merayen.merasynth.ui.objects.UINet;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
@@ -186,6 +187,10 @@ public class Top extends UIGroup {
 
 	public void setHandler(Handler handler) {
 		this.handler = handler;
+	}
+
+	public UINet getUINet() {
+		return top_node_container.getUINet();
 	}
 
 	public float getScreenWidth() {

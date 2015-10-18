@@ -102,7 +102,7 @@ public abstract class GlueNode extends GlueObject {
 		ui.whenReady( () -> {
 			if(ui.hasPort(name))
 				return;
-			ui.onCreatePort(name);
+			ui.createPort(name);
 		});
 	}
 

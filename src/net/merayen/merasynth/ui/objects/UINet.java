@@ -37,7 +37,13 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 
 	private UIPort dragging_port;
 
+	private boolean do_reload;
+
+	@Override
 	protected void onDraw() {
+		if(do_reload)
+			doReload();
+
 		for(Connection c : connections) {
 			if(c.a.isReady() && c.b.isReady()) { // We need to see if they are ready, otherwise translation isn't available
 				Point p1 = getRelativePosition(c.a);
@@ -164,10 +170,21 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		return node.getPort(p.name);
 	}
 
-	private void reload() {
+	/*
+	 * Schedules an async reload. Will happen soon, but no more often than for each drawn frame.
+	 */
+	public void reload() {
+		do_reload = true;
+	}
+
+	private void doReload() {
 		/*
 		 * Updates our lines and connections from the netnode-system.
 		 */
+		do_reload = false;
+		if(!isAlive())
+			return;
+
 		connections.clear();
 		GlueTop glue_top = getGlueTop();
 		for(Line l : this.getSupervisor().getLines()) {
@@ -181,12 +198,12 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 			UIPort b_uiport = b_uinode.getPort(l.b.name);
 
 			if(a_uiport == null) {
-				System.out.printf("UINode %s is missing port %s\n", a_uinode.getClass().getName(), l.a.name);
+				//System.out.printf("UINode %s is missing port %s\n", a_uinode.getClass().getName(), l.a.name);
 				continue;
 			}
 
 			if(b_uiport == null) {
-				System.out.printf("UINode %s is missing port %s\n", b_uinode.getClass().getName(), l.b.name);
+				//System.out.printf("UINode %s is missing port %s\n", b_uinode.getClass().getName(), l.b.name);
 				continue;
 			}
 
