@@ -89,7 +89,7 @@ public abstract class Node extends NetListObject {
 
 	public void update() {
 		// Read any data available on ports
-		for(Port p : ports) {
+		for(Port p : new ArrayList<Port>(ports)) {
 			DataPacket dp;
 			while((dp = p.receive()) != null)
 				onReceive(p.name, dp);

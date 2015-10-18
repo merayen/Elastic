@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.merayen.merasynth.exceptions.RestoreException;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UINet;
@@ -54,8 +55,13 @@ public class TopNodeContainer extends UIGroup {
 
 		for(int i = 0; i < node_dumps.size(); i++) {
 			JSONObject node_dump = (JSONObject)node_dumps.get(i);
-			UINode node = addNode((String)node_dump.get("class"));
-			node.restore(node_dump);
+
+			try {
+				UINode node = addNode((String)node_dump.get("class"));
+				node.restore(node_dump);
+			} catch (RuntimeException e) {
+				throw new RestoreException(e);
+			}
 		}
 	}
 

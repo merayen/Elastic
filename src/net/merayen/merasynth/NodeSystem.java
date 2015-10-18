@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.merasynth.exceptions.RestoreException;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 import net.merayen.merasynth.netlist.Supervisor;
 import net.merayen.merasynth.ui.event.DelayEvent;
@@ -28,9 +29,15 @@ public class NodeSystem {
 	private class AudioThread extends Thread {
 		boolean running;
 
+		public AudioThread() {
+			super();
+			start();
+		}
+
 		@Override
 		public void run() {
 			running = true;
+
 			while(running) {
 				glue_context.net_supervisor.update(0.01);
 				try {
@@ -44,6 +51,11 @@ public class NodeSystem {
 
 		public void end() {
 			running = false;
+			try {
+				join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -71,11 +83,11 @@ public class NodeSystem {
 		initSurface();
 		initUINodeSystem();
 		audio_thread = new AudioThread();
-		audio_thread.start();
 	}
 
 	private void reinit() {
 		// Reinit from current nodesystem, using the same frame and panel
+		// TODO Do we need to unload any resources?
 		initGlueNodeSystem();
 		initUINodeSystem();
 	}
@@ -207,10 +219,25 @@ public class NodeSystem {
 		if(inited)
 			throw new RuntimeException("Dumps can only be restored when in a clean state");
 
+		if(audio_thread != null)
+			audio_thread.end();
+
 		inited = true;
-		glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
-		glue_context.net_supervisor.restore((JSONObject)obj.get("netnodes"));
-		glue_context.glue_top.restore((JSONObject)obj.get("gluenodes"));
+		try {
+			glue_context.top_ui_object.restore((JSONObject)obj.get("uinodes"));
+			glue_context.net_supervisor.restore((JSONObject)obj.get("netnodes"));
+			glue_context.glue_top.restore((JSONObject)obj.get("gluenodes"));
+		} catch (RestoreException e) {
+			System.out.println("Failed restoring of node");
+			e.printStackTrace();
+			reinit(); // Give up restore
+		} catch (RuntimeException e) {
+			System.out.println(String.format("Problem occured while restoring"));
+			e.printStackTrace();
+			reinit();
+		}
+
+		audio_thread = new AudioThread(); // Start audio processing again
 	}
 
 	public void setHandler(Handler handler) {

@@ -11,17 +11,16 @@ public class Main {
 
 		for(int i = -1; i < 2; i++ ) {
 			node = w.node_system.addNode(net.merayen.merasynth.client.signalgenerator.Glue.class);
-			node.getUINode().translation.x = i * 10f;
-			node.getUINode().translation.y = i * 10f;
+			node.getUINode().translation.x = i * 150f;
 		}
 		node = w.node_system.addNode(net.merayen.merasynth.client.output.Glue.class);
-		node.getUINode().translation.x = 50f;
+		node.getUINode().translation.x = 400f;
 
 		/*node = w.node_system.addNode(net.merayen.merasynth.client.midi_input.Glue.class);
 		node.getUINode().translation.x = 30f;
 		node.getUINode().translation.y = 20f;*/
 
-		node = w.node_system.addNode(net.merayen.merasynth.client.vu.Glue.class);
+		/*node = w.node_system.addNode(net.merayen.merasynth.client.vu.Glue.class);
 		node.getUINode().translation.x = 0f;
 		node.getUINode().translation.y = 0f;
 
@@ -31,6 +30,6 @@ public class Main {
 
 		node = w.node_system.addNode(net.merayen.merasynth.client.ui_test.Glue.class);
 		node.getUINode().translation.x = 100f;
-		node.getUINode().translation.y = 100f;
+		node.getUINode().translation.y = 100f;*/
 	}
 }

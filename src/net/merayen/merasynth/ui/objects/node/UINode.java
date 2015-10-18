@@ -109,8 +109,8 @@ public abstract class UINode extends UIGroup {
 		result.put("id", getID());
 		result.put("x", translation.x);
 		result.put("y", translation.y);
-		result.put("x", translation.scale_x);
-		result.put("y", translation.scale_y);
+		result.put("scale_x", translation.scale_x);
+		result.put("scale_y", translation.scale_y);
 		result.put("class", this.getClass().getName());
 
 		return result;

@@ -1,4 +1,5 @@
 - Fix dumping and restoring of nodes
+- Make sure the system doesn't start the netnode-system before everyone is restored, including ports etc. Maybe make initalizing stage based...
 - Make input on singal generator actually work
 - Create own port for MIDI-data
 - Make MIDI-input node output MIDI

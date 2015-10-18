@@ -41,13 +41,17 @@ public class Glue extends GlueNode {
 
 	protected void onRestore(JSONObject state) {
 		frequency = ((Double)state.get("frequency")).floatValue();
-		System.out.printf("PulseGenerator is getting restored! My freq: %f\n", frequency);
 
 		ui().whenReady( () -> ui().setFrequency(frequency));
+		net().setFrequency(frequency);
 	}
 
 	private net.merayen.merasynth.client.signalgenerator.UI ui() {
 		return ((net.merayen.merasynth.client.signalgenerator.UI)this.getUINode());
+	}
+
+	private net.merayen.merasynth.client.signalgenerator.Net net() {
+		return ((net.merayen.merasynth.client.signalgenerator.Net)this.getNetNode());
 	}
 
 	public void changeFrequency(float frequency) {

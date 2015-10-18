@@ -22,7 +22,7 @@ public class ParameterSlider extends UIGroup {
 	private IHandler handler;
 
 	public interface IHandler {
-		public void onChange(double value);
+		public void onChange(double value, boolean programatic);
 		public void onButton(int offset);
 	}
 
@@ -37,7 +37,7 @@ public class ParameterSlider extends UIGroup {
 			public void onClick() {
 				if(handler != null) {
 					handler.onButton(-1);
-					handler.onChange(value);
+					handler.onChange(value, false);
 				}
 			}
 		});
@@ -54,7 +54,7 @@ public class ParameterSlider extends UIGroup {
 			public void onClick() {
 				if(handler != null) {
 					handler.onButton(1);
-					handler.onChange(value);
+					handler.onChange(value, false);
 				}
 			}
 		});
@@ -65,7 +65,7 @@ public class ParameterSlider extends UIGroup {
 			public void onMouseDrag(Point start_point, Point offset) {
 				setValue(drag_value + (offset.x / width) * step);
 				if(handler != null)
-					handler.onChange(value);
+					handler.onChange(value, false);
 			}
 
 			@Override
@@ -103,15 +103,19 @@ public class ParameterSlider extends UIGroup {
 		mousehandler.handle(event);
 	}
 
-	public void setValue(double v) {
+	public void setValue(double v, boolean no_event) {
 		if(slider)
 			value = Math.max(Math.min(v, 1), 0);
 		else
 			value = v;
 		if(!inited) {
-			handler.onChange(value);
+			handler.onChange(value, true);
 			inited = true;
 		}
+	}
+
+	public void setValue(double v) {
+		setValue(v, false);
 	}
 
 	public double getValue() {

@@ -18,14 +18,6 @@ public class Net extends Node {
 		super(supervisor);
 	}
 
-	protected void onDump(JSONObject state) {
-		state.put("frequency", frequency);
-	}
-
-	protected void onRestore(JSONObject state) {
-		frequency = ((Double)state.get("frequency")).floatValue();
-	}
-
 	protected void onReceive(String port, DataPacket dp) {
 		if(port.equals("output")) {
 			if(dp instanceof AudioRequest) {
@@ -41,8 +33,7 @@ public class Net extends Node {
 	}
 
 	public double onUpdate() {
-		// TODO lag et sinussignal
-		//send("output", new DataPacket(1337));
+		// Doesn't process anything, unless explicitly asked for data
 		return DONE;
 	}
 

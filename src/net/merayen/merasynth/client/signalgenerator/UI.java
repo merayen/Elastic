@@ -61,10 +61,12 @@ public class UI extends UINode {
 
 		port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {
 			@Override
-			public void onChange(double value) {
+			public void onChange(double value, boolean programatic) {
 				frequency = Math.round(value * 8000.0 * 10) / 10 + 0.1f;
 				port_parameter_slider.setLabel(String.format("%.2f Hz", frequency));
-				((Glue)self.getGlueNode()).changeFrequency(frequency);
+
+				if(!programatic) // If not set by setValue, but by users himself
+					((Glue)self.getGlueNode()).changeFrequency(frequency);
 			}
 
 			@Override

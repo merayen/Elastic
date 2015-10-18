@@ -21,7 +21,7 @@ public class PortParameterSlider extends UIGroup {
 	private IHandler handler;
 
 	public interface IHandler {
-		public void onChange(double value);
+		public void onChange(double value, boolean programatic);
 		public void onButton(int offset);
 	}
 
@@ -42,9 +42,9 @@ public class PortParameterSlider extends UIGroup {
 
 		parameter_slider.setHandler(new ParameterSlider.IHandler() {
 			@Override
-			public void onChange(double value) {
+			public void onChange(double value, boolean programatic) {
 				if(handler != null)
-					handler.onChange(value);
+					handler.onChange(value, programatic);
 			}
 
 			@Override
