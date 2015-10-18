@@ -8,7 +8,6 @@ public class Titlebar extends UIGroup {
 	public String title = "";
 
 	private Moveable moveable = null;
-	int i;
 
 	protected void onInit() {
 		moveable = new Moveable(this.parent, this);
@@ -29,14 +28,11 @@ public class Titlebar extends UIGroup {
 
 	protected void onDraw() {
 		draw.setColor(30, 30, 30);
-		draw.fillRect(0.2f, 0.2f, width - 0.4f, 1f);
+		draw.fillRect(2f, 2f, width - 4f, 10f);
 
 		draw.setColor(200, 200, 200);
-		draw.setFont("Verdana", 0.8f);
-		draw.text(title, 0.5f, 0.9f);
-
-		//if(this.parent instanceof net.merayen.merasynth.client.ui_test.UI && (i++%10) == 0)
-		//	System.out.printf("%s\n%s\n", draw_context.translation_stack, absolute_translation);
+		draw.setFont("Verdana", 8f);
+		draw.text(title, 5f, 9f);
 
 		super.onDraw();
 	}

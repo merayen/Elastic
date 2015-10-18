@@ -8,33 +8,20 @@ public class UI extends UINode {
 	private UIPort port;
 
 	private Label midi_device;
-	private Label sample_rate_label;
-	private Label channels_label;
 
 	public void onInit() {
 		super.onInit();
-		UI self = this;
 
-		width = 10f;
-		height = 5f;
+		width = 100f;
+		height = 50f;
 
 		titlebar.title = "MIDI Input";
 
 		// Statistics
 		midi_device = new Label();
-		midi_device.translation.x = 1f;
-		midi_device.translation.y = 2f;
+		midi_device.translation.x = 10f;
+		midi_device.translation.y = 20f;
 		add(midi_device);
-
-		sample_rate_label = new Label();
-		sample_rate_label.translation.x = 1f;
-		sample_rate_label.translation.y = 3f;
-		add(sample_rate_label);
-
-		channels_label = new Label();
-		channels_label.translation.x = 1f;
-		channels_label.translation.y = 4f;
-		add(channels_label);
 	}
 
 	@Override
@@ -48,7 +35,7 @@ public class UI extends UINode {
 		if(name.equals("output")) {
 			port = new UIPort("output", false);
 			port.translation.x = width;
-			port.translation.y = 2f;
+			port.translation.y = 20f;
 			addPort(port);
 		}
 	}

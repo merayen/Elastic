@@ -14,8 +14,8 @@ public class Graph extends UIGroup {
 		public Point end = new Point();
 	}
 
-	public float width = 20f;
-	public float height = 20f;
+	public float width = 200f;
+	public float height = 200f;
 
 	float m;
 
@@ -36,12 +36,12 @@ public class Graph extends UIGroup {
 		segments.add(s);
 
 		int steps = 4;
-		float end = 20f;
+		float end = 200f;
 		for(int i = 1; i < steps; i++) { // DEBUG
 			s = new Segment();
-			s.curve_a.x = (end / steps) * (i - 0.5f);
+			s.curve_a.x = (end / steps) * (i - 5f);
 			s.curve_a.y = 0;
-			s.curve_b.x = (end / steps) * (i - 0.5f);
+			s.curve_b.x = (end / steps) * (i - 5f);
 			s.curve_b.y = 0;
 			s.end.x = (end / steps) * i;
 			s.end.y = 0;
@@ -49,11 +49,11 @@ public class Graph extends UIGroup {
 		}
 
 		s = new Segment();
-		s.curve_a.x = 20;
+		s.curve_a.x = 200;
 		s.curve_a.y = 0;
-		s.curve_b.x = 20;
+		s.curve_b.x = 200;
 		s.curve_b.y = 0;
-		s.end.x = 20;
+		s.end.x = 200;
 		s.end.y = 0;
 		segments.add(s);
 	}
@@ -64,8 +64,8 @@ public class Graph extends UIGroup {
 
 		for(int i = 1; i < /*segments.size() - 1*/ 2; i++) {
 			float x = (float)Math.sin(m);
-			segments.get(i).curve_b.y = -x * 50;
-			segments.get(i + 1).curve_a.y = x * 50;
+			segments.get(i).curve_b.y = -x * 500;
+			segments.get(i + 1).curve_a.y = x * 500;
 		}
 
 		draw.setColor(50, 50, 100);
@@ -84,12 +84,12 @@ public class Graph extends UIGroup {
 			f.curveTo(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());
 		}
 
-		draw.setStroke(0.2f);
+		draw.setStroke(2f);
 		draw.setColor(150, 150, 255);
 		draw.g2d.draw(f);
 
 		// Curve control lines
-		draw.setStroke(0.1f);
+		draw.setStroke(1f);
 		draw.setColor(200, 200, 250);
 		for(int i = 1; i < /*segments.size() - 1*/ 2; i++) {
 			Segment s0 = segments.get(i);
@@ -97,11 +97,11 @@ public class Graph extends UIGroup {
 
 			draw.setColor(255, 0, 255);
 			draw.line(s0.end.x, s0.end.y, s0.curve_b.x, s0.curve_b.y);
-			draw.fillOval(s0.curve_b.x - 0.2f, s0.curve_b.y - 0.2f, .4f, .4f);
+			draw.fillOval(s0.curve_b.x - 2f, s0.curve_b.y - 2f, 4f, 4f);
 
 			draw.setColor(255, 255, 0);
 			draw.line(s0.end.x, s0.end.y, s1.curve_a.x, s1.curve_a.y);
-			draw.fillOval(s1.curve_a.x - 0.2f, s1.curve_a.y - 0.2f, .4f, .4f);
+			draw.fillOval(s1.curve_a.x - 2f, s1.curve_a.y - 2f, 4f, 4f);
 		}
 
 		draw.debug();

@@ -21,16 +21,16 @@ public class Main {
 		node.getUINode().translation.x = 30f;
 		node.getUINode().translation.y = 20f;*/
 
-		/*node = w.node_system.addNode(net.merayen.merasynth.client.vu.Glue.class);
+		node = w.node_system.addNode(net.merayen.merasynth.client.vu.Glue.class);
 		node.getUINode().translation.x = 0f;
-		node.getUINode().translation.y = 0f;*/
+		node.getUINode().translation.y = 0f;
 
-		/*node = w.node_system.addNode(net.merayen.merasynth.client.graph.Glue.class);
+		node = w.node_system.addNode(net.merayen.merasynth.client.graph.Glue.class);
 		node.getUINode().translation.x = 2f;
-		node.getUINode().translation.y = 50f;*/
+		node.getUINode().translation.y = 50f;
 
-		/*node = w.node_system.addNode(net.merayen.merasynth.client.ui_test.Glue.class);
+		node = w.node_system.addNode(net.merayen.merasynth.client.ui_test.Glue.class);
 		node.getUINode().translation.x = 100f;
-		node.getUINode().translation.y = 100f;*/
+		node.getUINode().translation.y = 100f;
 	}
 }

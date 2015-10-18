@@ -91,17 +91,17 @@ public class UIPort extends UIGroup {
 	protected void onDraw() {
 		if(draw_default_port) {
 			draw.setColor(50, 60, 50);
-			draw.fillOval(-0.55f, -0.55f, 1.1f, 1.1f);
+			draw.fillOval(-5.5f, -5.5f, 11f, 11f);
 	
 			draw.setColor(100, 100, 100);
-			draw.fillOval(-0.5f, -0.5f, 1f, 1f);
+			draw.fillOval(-5f, -5f, 10f, 10f);
 	
 			draw.setColor(150, 200, 150);
-			draw.fillOval(-0.4f, -0.4f, 0.8f, 0.8f);
+			draw.fillOval(-4f, -4f, 8f, 8f);
 	
 			draw.setColor(0, 0, 0);
-			draw.setFont("SansSerif", 1.0f);
-			draw.text(title, 1f, 0.5f);
+			draw.setFont("SansSerif", 10f);
+			draw.text(title, 10f, 5f);
 		}
 
 		super.onDraw();

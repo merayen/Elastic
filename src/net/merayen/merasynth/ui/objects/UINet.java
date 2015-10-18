@@ -44,11 +44,11 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 				Point p2 = getRelativePosition(c.b);
 
 				draw.setColor(150, 150, 150);
-				draw.setStroke(0.5f);
+				draw.setStroke(5f);
 				draw.line(p1.x, p1.y, p2.x, p2.y);
 
 				draw.setColor(200, 200, 200);
-				draw.setStroke(0.3f);
+				draw.setStroke(3f);
 				draw.line(p1.x, p1.y, p2.x, p2.y);
 
 				if (c.a instanceof net.merayen.merasynth.ui.objects.node.UIPortTemporary)

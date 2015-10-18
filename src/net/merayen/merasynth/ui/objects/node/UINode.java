@@ -18,8 +18,8 @@ public abstract class UINode extends UIGroup {
 		 * UINode needs to then create and draw the port afterwards.
 		 */
 	}
-	public float width = 50f;
-	public float height = 50f;
+	public float width = 500f;
+	public float height = 500f;
 
 	protected Titlebar titlebar;
 	protected ArrayList<UIPort> ports = new ArrayList<UIPort>();
@@ -46,16 +46,16 @@ public abstract class UINode extends UIGroup {
 			throw new RuntimeException("Forgotten super.onInit() ?");
 
 		draw.setColor(80, 80, 80);
-		draw.fillRect(-0.1f, -0.1f, width + 0.2f, height + 0.2f);
+		draw.fillRect(-1f, -1f, width + 2f, height + 2f);
 
 		draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
 
 		draw.setColor(180, 180, 180);
-		draw.fillRect(0.1f, 0.1f, width - 0.2f, height - 0.2f);
+		draw.fillRect(1f, 1f, width - 2f, height - 2f);
 
 		draw.setColor(100, 100, 100);
-		draw.fillRect(0.2f, 0.2f, width - 0.4f, height - 0.4f);
+		draw.fillRect(2f, 2f, width - 4f, height - 4f);
 
 		titlebar.width = width;
 

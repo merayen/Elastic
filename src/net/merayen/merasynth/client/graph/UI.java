@@ -13,23 +13,23 @@ public class UI extends UINode {
 	public void onInit() {
 		super.onInit();
 
-		width = 24f;
-		height = 24f;
+		width = 240f;
+		height = 240f;
 
 		titlebar.title = "Graph";
 
 		clip = new UIClip();
-		clip.translation.x = 2f;
-		clip.translation.y = 2f;
-		clip.width = 20f;
-		clip.height = 20f;
+		clip.translation.x = 20f;
+		clip.translation.y = 20f;
+		clip.width = 200f;
+		clip.height = 200f;
 		add(clip);
 
 		graph = new Graph();
 		graph.translation.x = 0f;
 		graph.translation.y = 0f;
-		graph.width = 20f;
-		graph.height = 20f;
+		graph.width = 200f;
+		graph.height = 200f;
 		clip.add(graph);
 	}
 
@@ -43,7 +43,7 @@ public class UI extends UINode {
 		if(name.equals("output")) {
 			output_port = new UIPort("input", false);
 			output_port.translation.x = 0f;
-			output_port.translation.y = 2f;
+			output_port.translation.y = 20f;
 			addPort(output_port);
 		}
 	}

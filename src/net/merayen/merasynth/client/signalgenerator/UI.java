@@ -1,6 +1,5 @@
 package net.merayen.merasynth.client.signalgenerator;
 
-import net.merayen.merasynth.ui.objects.components.CircularSlider;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.objects.node.UIPort;
 import net.merayen.merasynth.ui.objects.node.components.PortParameterSlider;
@@ -21,8 +20,8 @@ public class UI extends UINode {
 	public void onInit() {
 		super.onInit();
 
-		width = 10f;
-		height = 5f;
+		width = 100f;
+		height = 50f;
 
 		titlebar.title = "Wave";
 
@@ -44,7 +43,7 @@ public class UI extends UINode {
 		if(name.equals("output")) {
 			output_port = new UIPort("output", true);
 			output_port.translation.x = width;
-			output_port.translation.y = 2f;
+			output_port.translation.y = 20f;
 			addPort(output_port);
 		}
 	}
@@ -57,7 +56,7 @@ public class UI extends UINode {
 	private void createFrequencyPort() {
 		UI self = this;
 		port_parameter_slider = new PortParameterSlider("frequency");
-		port_parameter_slider.translation.y = 2f;
+		port_parameter_slider.translation.y = 20f;
 		add(port_parameter_slider);
 
 		port_parameter_slider.setHandler(new PortParameterSlider.IHandler() {

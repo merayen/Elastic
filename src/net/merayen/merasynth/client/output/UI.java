@@ -23,25 +23,25 @@ public class UI extends UINode {
 		super.onInit();
 		UI self = this;
 
-		width = 15f;
-		height = 7f;
+		width = 150f;
+		height = 70f;
 
 		titlebar.title = "Output";
 
 		// Statistics
 		avg_buffer_size_label = new Label();
-		avg_buffer_size_label.translation.x = 1f;
-		avg_buffer_size_label.translation.y = 2f;
+		avg_buffer_size_label.translation.x = 10f;
+		avg_buffer_size_label.translation.y = 20f;
 		add(avg_buffer_size_label);
 
 		sample_rate_label = new Label();
-		sample_rate_label.translation.x = 1f;
-		sample_rate_label.translation.y = 3f;
+		sample_rate_label.translation.x = 10f;
+		sample_rate_label.translation.y = 30f;
 		add(sample_rate_label);
 
 		channels_label = new Label();
-		channels_label.translation.x = 1f;
-		channels_label.translation.y = 4f;
+		channels_label.translation.x = 10f;
+		channels_label.translation.y = 40f;
 		add(channels_label);
 	}
 
@@ -62,7 +62,7 @@ public class UI extends UINode {
 		if(name.equals("input")) {
 			input_port = new UIPort("input", false);
 			input_port.translation.x = 0f;
-			input_port.translation.y = 2f;
+			input_port.translation.y = 20f;
 			addPort(input_port);
 		}
 	}

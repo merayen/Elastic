@@ -51,10 +51,10 @@ public class Top extends UIGroup {
 		translation.scale_x = 1;
 		translation.scale_y = 1;
 
-		top_node_container.translation.x = 400f;
-		top_node_container.translation.y = 450f;
-		top_node_container.translation.scale_x = .1f;
-		top_node_container.translation.scale_y = .1f;
+		top_node_container.translation.x = 0f;
+		top_node_container.translation.y = 0f;
+		top_node_container.translation.scale_x = 1f;
+		top_node_container.translation.scale_y = 1f;
 
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
@@ -137,23 +137,23 @@ public class Top extends UIGroup {
 		if(event instanceof MouseWheelEvent) {
 			MouseWheelEvent e = (MouseWheelEvent)event;
 
-			float p_x = top_node_container.translation.scale_x;
-			float p_y = top_node_container.translation.scale_y;
+			float s_x = top_node_container.translation.scale_x;
+			float s_y = top_node_container.translation.scale_y;
 
 			if(e.getOffsetY() < 0) {
-				zoom(
-					top_node_container.translation.scale_x / 1.1f,
-					top_node_container.translation.scale_y / 1.1f
-				);
+				s_x /= 1.1f;
+				s_y /= 1.1f;
 			}
 			else if(e.getOffsetY() > 0) {
-				zoom(
-					top_node_container.translation.scale_x * 1.1f,
-					top_node_container.translation.scale_y * 1.1f
-				);
+				s_x *= 1.1f;
+				s_y *= 1.1f;
 			} else {
 				return;
 			}
+			zoom(
+				s_x = Math.max(Math.min(s_x, 10f), 0.1f),
+				s_x = Math.max(Math.min(s_x, 10f), 0.1f)
+			);
 		}
 	}
 

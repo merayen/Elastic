@@ -29,6 +29,7 @@ public class PortParameterSlider extends UIGroup {
 		super();
 		this.name = name;
 	}
+
 	protected void onInit() {
 		assert parent instanceof UINode;
 
@@ -60,8 +61,8 @@ public class PortParameterSlider extends UIGroup {
 	protected void onDraw() {
 		if(auto_position) {
 			port.translation.x = 0f;
-			port.translation.y = translation.y + 0.75f;
-			parameter_slider.translation.x = 1f;
+			port.translation.y = translation.y + 7.5f;
+			parameter_slider.translation.x = 10f;
 			parameter_slider.translation.y = 0f;
 		}
 

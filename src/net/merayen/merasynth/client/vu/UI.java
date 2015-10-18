@@ -21,13 +21,13 @@ public class UI extends UINode {
 		super.onInit();
 		UI self = this;
 
-		width = 5f;
-		height = 5f;
+		width = 50f;
+		height = 50f;
 
 		titlebar.title = "VU-meter";
 
 		status_label = new Label();
-		status_label.translation.y = 3f;
+		status_label.translation.y = 30f;
 		add(status_label);
 	}
 
@@ -58,10 +58,10 @@ public class UI extends UINode {
 			meters.add(vu);
 			add(vu);
 
-			vu.translation.x = 2 + i * 10;
-			vu.translation.y = 2;
-			vu.width = 8;
-			vu.height = 5;
+			vu.translation.x = 20 + i * 100;
+			vu.translation.y = 20;
+			vu.width = 80;
+			vu.height = 50;
 
 			vu.setPanelDrawFunc(new VUMeter.PanelHandler() {
 				@Override
@@ -70,26 +70,26 @@ public class UI extends UINode {
 					for(int i = 0; i <= count; i++) {
 						if(i > 3) {
 							draw.setColor(120, 120, 120);
-							draw.setStroke(0.05f);
+							draw.setStroke(0.5f);
 						} else {
 							draw.setColor(255, 50, 50);
-							draw.setStroke(0.1f);
+							draw.setStroke(1f);
 						}
 
 						double n = start_rad + (i / (double)count) * length_rad;
 						float x1 = (float)Math.sin(n) * c_radius;
 						float y1 = (float)Math.cos(n) * c_radius;
-						float x2 = (float)Math.sin(n) * c_radius * 0.9f;
-						float y2 = (float)Math.cos(n) * c_radius * 0.9f;
+						float x2 = (float)Math.sin(n) * c_radius * .9f;
+						float y2 = (float)Math.cos(n) * c_radius * .9f;
 						draw.line(x1, y1, x2, y2);
 					}
 				}
 			});
 		}
 
-		width = meters.size() * 10 + 2;
+		width = meters.size() * 100 + 20;
 
-		height = meters.size() > 0 ? 15 : 5;
+		height = meters.size() > 0 ? 150 : 50;
 		status_label.label = meters.size() > 0 ? "" : "No audio detected";
 	}
 
@@ -103,7 +103,7 @@ public class UI extends UINode {
 		if(name.equals("input")) {
 			input_port = new UIPort("input", false);
 			input_port.translation.x = 0f;
-			input_port.translation.y = 2f;
+			input_port.translation.y = 20f;
 			addPort(input_port);
 		}
 	}

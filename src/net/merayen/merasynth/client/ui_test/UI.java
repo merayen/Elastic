@@ -1,7 +1,6 @@
 package net.merayen.merasynth.client.ui_test;
 
 import net.merayen.merasynth.ui.objects.node.UINode;
-import net.merayen.merasynth.ui.objects.node.UIPort;
 
 public class UI extends UINode {
 	private ClipTest clip_test;
@@ -10,23 +9,21 @@ public class UI extends UINode {
 	public void onInit() {
 		super.onInit();
 
-		width = 24f;
-		height = 24f;
+		width = 240f;
+		height = 240f;
 
 		titlebar.title = "UI Test";
 
 		clip_test = new ClipTest();
-		clip_test.translation.x = 2;
-		clip_test.translation.y = 2;
+		clip_test.translation.x = 20;
+		clip_test.translation.y = 20;
 		add(clip_test);
 	}
 
 	@Override
 	protected void onDraw() {
-		translation.scale_x = translation.scale_y = (float)Math.sin(System.currentTimeMillis()/1000.0) / 2f + 0.7f;
+		translation.scale_x = translation.scale_y = (float)Math.sin(System.currentTimeMillis()/1000.0) / .2f + 7f;
 		super.onDraw();
-		//if((i++%10) == 0)
-		//	System.out.printf("%s\n%s\n", draw_context.translation_stack, absolute_translation);
 	}
 
 	@Override

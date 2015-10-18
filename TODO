@@ -1,3 +1,8 @@
-- Centralize zooming
 - Fix dumping and restoring of nodes
+- Make input on singal generator actually work
+- Create own port for MIDI-data
+- Make MIDI-input node output MIDI
+- Make wavegenerator take MIDI
+- Create offset node (adds to the signal)
+- Create volume node (multiplies with the signal)
 - 

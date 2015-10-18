@@ -4,7 +4,7 @@ import net.merayen.merasynth.ui.objects.UIObject;
 
 public class Label extends UIObject {
 	public String label = "";
-	public float font_size = 1f;
+	public float font_size = 10f;
 	public String font_name = "Geneva";
 	private float label_width;
 
