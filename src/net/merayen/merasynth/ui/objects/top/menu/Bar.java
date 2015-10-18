@@ -7,8 +7,8 @@ import net.merayen.merasynth.ui.objects.UIObject;
 
 public class Bar extends UIGroup {
 	public ArrayList<MenuBarItem> items = new ArrayList<MenuBarItem>();
-	public float width = 100f;
-	private final float height = 2f;
+	public float width = 500f;
+	private final float height = 20f;
 	private UIObject logo;
 	private float logo_width;
 
@@ -16,13 +16,13 @@ public class Bar extends UIGroup {
 		float w = 1f;
 		for(MenuBarItem x : items) {
 			x.translation.x = w;
-			w += x.getLabelWidth() + 2f;
+			w += x.getLabelWidth() + 20f;
 		}
 
 		draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
 		draw.setColor(130, 130, 130);
-		draw.fillRect(0, height - 0.01f, width, 0.2f);
+		draw.fillRect(0, height - 0.1f, width, 2f);
 
 		if(logo != null) {
 			logo.translation.x = width - logo_width;

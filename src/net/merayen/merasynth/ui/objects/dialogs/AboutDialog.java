@@ -8,8 +8,8 @@ public class AboutDialog extends UIGroup {
 	private static class AboutDialogContent extends UIGroup {
 		protected void onDraw() {
 			draw.setColor(200, 200, 200);
-			draw.setFont("Geneva", 2f);
-			draw.text("MeraSynth v0.0.1", 10f, 5f);
+			draw.setFont("Geneva", 20f);
+			draw.text("MeraSynth v0.0.1", 100f, 50f);
 		}
 	}
 
@@ -18,18 +18,17 @@ public class AboutDialog extends UIGroup {
 	protected void onInit() {
 		AboutDialog self = this;
 		window = new Window();
-		window.translation.x = 20f;
-		window.translation.y = 20f;
-		window.width = 60f;
-		window.height = 60f;
+		window.width = 600f;
+		window.height = 600f;
+		window.center(getTopObject().getScreenWidth(), getTopObject().getScreenHeight());
 		window.whenReady( () -> {
 			UIGroup pane = window.getContentPane();
 			pane.add(new AboutDialogContent());
 
 			Button button = new Button();
 			button.label = "Close";
-			button.translation.x = 50f;
-			button.translation.y = 55f;
+			button.translation.x = 500f;
+			button.translation.y = 550f;
 			button.setHandler(new Button.IHandler() {
 				@Override
 				public void onClick() {

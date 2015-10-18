@@ -34,14 +34,14 @@ public class MenuList extends UIGroup {
 		for(MenuListItem x : items) {
 			x.translation.y = i; 
 			i += x.getMenuItemHeight();
-			x.width = getMenuWidth() - 0.2f;
+			x.width = getMenuWidth() - 2f;
 		}
 
 		draw.setColor(150, 150, 150);
 		draw.fillRect(0, 0, getMenuWidth(), getMenuHeight());
 
 		draw.setColor(80, 80, 80);
-		draw.fillRect(0.1f, 0.1f, getMenuWidth() - 0.2f, getMenuHeight() - 0.2f);
+		draw.fillRect(1f, 1f, getMenuWidth() - 2f, getMenuHeight() - 2f);
 
 		super.onDraw();
 	}
@@ -61,7 +61,7 @@ public class MenuList extends UIGroup {
 	}
 
 	public float getMenuWidth() {
-		float w = 2f;
+		float w = 20f;
 		for(MenuListItem x : items)
 			w = Math.max(w, x.getMenuItemWidth());
 		return w;

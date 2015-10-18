@@ -26,7 +26,7 @@ public class MenuBarItem extends UIGroup {
 	protected void onInit() {
 		add(menu_list);
 		menu_list.translation.visible = false; // Not drawn until we get clicked on
-		menu_list.translation.y = 2f;
+		menu_list.translation.y = 20f;
 		menu_list.setHandler(new MenuList.Handler() {
 			@Override
 			public void onOutsideClick() {
@@ -54,20 +54,20 @@ public class MenuBarItem extends UIGroup {
 	}
 
 	protected void onDraw() {
-		draw.setFont("Geneva", 1.2f);
+		draw.setFont("Geneva", 12f);
 		label_width = draw.getTextWidth(label);
 
 		draw.setColor(80, 80, 80);
-		draw.fillRect(0f, 0.0f, label_width + 1f, 1.8f);
+		draw.fillRect(0f, 0.0f, label_width + 10f, 18f);
 
 		draw.setColor(80, 80, 80);
-		draw.text(label, 0.5f, 1.5f);
+		draw.text(label, 5f, 15f);
 
 		if(over)
 			draw.setColor(255, 255, 200);
 		else
 			draw.setColor(200, 200, 200);
-		draw.text(label, 0.45f, 1.45f);
+		draw.text(label, 4.5f, 14.5f);
 
 		super.onDraw();
 	}

@@ -6,15 +6,14 @@ import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
 public class Button extends UIObject {
-	
 	public interface IHandler {
 		public void onClick();
 	}
 
 	public String label;
 
-	public float width = 5f;
-	public float height = 1.5f;
+	public float width = 50f;
+	public float height = 15f;
 
 	private IHandler handler; 
 	private MouseHandler mousehandler;
@@ -63,11 +62,12 @@ public class Button extends UIObject {
 			draw.setColor(80, 80, 80);
 		else
 			draw.setColor(120, 120, 120);
-		draw.fillRect(0.1f, 0.1f, width - 0.2f, height - 0.2f);
+		draw.fillRect(1f, 1f, width - 2f, height - 2f);
 
 		draw.setColor(200, 200, 200);
+		draw.setFont("Geneva", 10f);
 		float text_width = draw.getTextWidth(label);
-		draw.text(label, (float)(width/2 - text_width/2), 1f);
+		draw.text(label, (float)(width/2 - text_width/2), 10f);
 
 		super.onDraw();
 	}

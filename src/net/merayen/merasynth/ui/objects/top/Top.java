@@ -38,7 +38,7 @@ public class Top extends UIGroup {
 
 	public Debug debug;
 	private TopNodeContainer top_node_container = new TopNodeContainer();
-	private TopMenuBar top_menu_bar;
+	private TopOverlay top_overlay;
 
 	public Top(net.merayen.merasynth.glue.Context glue_context) {
 		this.glue_context = glue_context;
@@ -72,7 +72,7 @@ public class Top extends UIGroup {
 		});
 
 		initDebug();
-		initMenuBar();
+		initOverlay();
 	}
 
 	private void initDebug() {
@@ -84,13 +84,13 @@ public class Top extends UIGroup {
 		debug.set("DEBUG", "Has been enabled");
 	}
 
-	private void initMenuBar() {
-		top_menu_bar = new TopMenuBar();
-		top_menu_bar.translation.scale_x = .1f;
-		top_menu_bar.translation.scale_y = .1f;
-		add(top_menu_bar);
+	private void initOverlay() {
+		top_overlay = new TopOverlay();
+		top_overlay.translation.scale_x = 1f;
+		top_overlay.translation.scale_y = 1f;
+		add(top_overlay);
 
-		top_menu_bar.setHandler(new TopMenuBar.Handler() {
+		top_overlay.setHandler(new TopOverlay.Handler() {
 			@Override
 			public void onOpenProject(String path) {
 				if(handler != null)
@@ -120,44 +120,11 @@ public class Top extends UIGroup {
 	protected void onDraw() {
 		screen_width = this.draw_context.width;
 		screen_height = this.draw_context.height;
+		this.top_overlay.width = screen_width;
+		this.top_overlay.height = screen_height;
+
 		draw.setColor(50, 50, 50);
 		draw.fillRect(0, 0, screen_width, screen_height);
-
-		draw.setColor(255, 255, 0);
-		draw.setStroke(1);
-		draw.line(0, screen_height / 2, screen_width, screen_height / 2);
-		draw.line(screen_width / 2, 0, screen_width / 2, screen_height);
-
-		/*UIGroup m = top_node_container;
-		float previous_scale = m.translation.scale_x;
-		float scale = (float)Math.sin(i+=0.05) / 20f + 0.15f;
-		float scale_diff = scale - previous_scale;
-
-		float current_offset_x = (m.translation.x - screen_width / 2);
-		float current_offset_y = (m.translation.y - screen_height / 2);
-		float new_x = screen_width / 2 + current_offset_x + current_offset_x * (-scale_diff / scale);
-		float new_y = screen_height / 2 + current_offset_y + current_offset_y * (-scale_diff / scale);
-
-		m.translation.scale_x = scale;
-		m.translation.scale_y = scale;
-		m.translation.x = new_x;
-		m.translation.y = new_y;
-		//m.translation.x = (screen_width / 2) + offset_x / scale;
-		//m.translation.x = (screen_width / 2) + offset_x / scale;
-
-		debug.set("Z scale_diff", String.format("%3f", scale_diff));
-		debug.set("Z current_offset X", String.format("%3f", current_offset_x));
-		debug.set("Z new X", String.format("%3f", new_x));*/
-
-		/*if((i = (i+1) % 100) < 50) {
-			m.translation.scale_x = 0.1f;
-			m.translation.scale_y = 0.1f;
-			m.translation.x = 400;
-		} else {
-			m.translation.scale_x = 0.2f;
-			m.translation.scale_y = 0.2f;
-			m.translation.x = 450;
-		}*/
 
 		debug.set("Top absolute_translation", absolute_translation);
 
@@ -219,6 +186,14 @@ public class Top extends UIGroup {
 
 	public void setHandler(Handler handler) {
 		this.handler = handler;
+	}
+
+	public float getScreenWidth() {
+		return screen_width;
+	}
+
+	public float getScreenHeight() {
+		return screen_height;
 	}
 
 	public JSONObject dump() {

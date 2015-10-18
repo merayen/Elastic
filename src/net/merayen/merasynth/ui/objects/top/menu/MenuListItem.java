@@ -11,7 +11,7 @@ public class MenuListItem extends UIGroup {
 	}
 
 	public String label = "";
-	public float width = 1f; // Set by MenuList()
+	public float width = 10f; // Set by MenuList()
 	private float label_width;
 	private MouseHandler mouse_handler;
 	private Handler handler;
@@ -39,20 +39,20 @@ public class MenuListItem extends UIGroup {
 	}
 
 	protected void onDraw() {
-		draw.setFont("Geneva", 1.2f);
+		draw.setFont("Geneva", 12f);
 		label_width = draw.getTextWidth(label);
 
 		if(over)
 			draw.setColor(150, 150, 150);
 		else
 			draw.setColor(80, 80, 80);
-		draw.fillRect(0.1f, 0.1f, width, getMenuItemHeight() - 0.2f);
+		draw.fillRect(1f, 1f, width, getMenuItemHeight() - 2f);
 
 		draw.setColor(50, 50, 50);
-		draw.text(label, 1f, 1.5f);
+		draw.text(label, 10f, 15f);
 
 		draw.setColor(200, 200, 200);
-		draw.text(label, 1.05f, 1.45f);
+		draw.text(label, 10.5f, 14.5f);
 
 		super.onDraw();
 	}
@@ -62,11 +62,11 @@ public class MenuListItem extends UIGroup {
 	}
 
 	public float getMenuItemWidth() {
-		return label_width + 3f;
+		return label_width + 30f;
 	}
 
 	public float getMenuItemHeight() {
-		return 2f;
+		return 20f;
 	}
 
 	public void setHandler(Handler handler) {

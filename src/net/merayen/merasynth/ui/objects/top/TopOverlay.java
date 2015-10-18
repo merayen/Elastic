@@ -8,7 +8,7 @@ import net.merayen.merasynth.ui.objects.top.menu.Bar;
 import net.merayen.merasynth.ui.objects.top.menu.MenuBarItem;
 import net.merayen.merasynth.ui.objects.top.menu.MenuListItem;
 
-public class TopMenuBar extends UIGroup {
+public class TopOverlay extends UIGroup {
 	public static abstract class Handler {
 		public void onOpenProject(String path) {}
 		public void onSaveProject() {}
@@ -16,19 +16,24 @@ public class TopMenuBar extends UIGroup {
 		public void onClose() {}
 	}
 
-	private Bar menu = new Bar(); // The menu always displayed at top
+	private Bar bar = new Bar(); // The bar on top
 	private Handler handler;
+	public float width = 500;
+	public float height = 500;
 
 	protected void onInit() {
-		add(menu);
-		menu.width = 100f; // Since our scale_x is 100, this one is 100
+		add(bar);
 		fillMenuBar();
+	}
+
+	protected void onDraw() {
+		bar.width = width;
 	}
 
 	private void fillMenuBar() {
 		MenuBarItem file = new MenuBarItem();
 		file.label = "File";
-		menu.addMenuBarItem(file);
+		bar.addMenuBarItem(file);
 
 		MenuListItem new_project = new MenuListItem();
 		new_project.label = "New project";
@@ -80,7 +85,7 @@ public class TopMenuBar extends UIGroup {
 
 		MenuBarItem edit = new MenuBarItem();
 		edit.label = "Edit";
-		menu.addMenuBarItem(edit);
+		bar.addMenuBarItem(edit);
 
 		MenuListItem undo = new MenuListItem();
 		undo.label = "Undo";
@@ -88,7 +93,7 @@ public class TopMenuBar extends UIGroup {
 
 		MenuBarItem hilfe = new MenuBarItem();
 		hilfe.label = "Hilfe";
-		menu.addMenuBarItem(hilfe);
+		bar.addMenuBarItem(hilfe);
 
 		MenuListItem about = new MenuListItem();
 		about.label = "About MeraSynth";
@@ -102,9 +107,9 @@ public class TopMenuBar extends UIGroup {
 
 		Label logo = new Label();
 		logo.label = "MeraSynth";
-		logo.font_size = 1.3f;
-		logo.translation.x = 0.5f;
-		logo.translation.y = 96f;
+		logo.font_size = 13f;
+		logo.translation.x = 5f;
+		logo.translation.y = height - 20f;
 		add(logo);
 	}
 
