@@ -35,20 +35,28 @@ public class Net extends Node {
 
 			System.out.printf("Device found: %s: %s, %s, %s, %s\n", info, info.getName(), info.getDescription(), info.getVendor(), info.getVersion());
 
-			if(!info.getName().equals("KEYBOARD"))
-				continue;
+			if(info.getName().equals("KEYBOARD"));
+			else if(info.getName().equals("Launchpad Mini"));
+			else continue;
 
 			/*for(Transmitter x : device.getTransmitters()) {
 				System.out.println("Transmitter: " + x);
 				x.setReceiver(new MidiReceiver());
 			}*/
 
+			if(device.getTransmitters().size() == 0)
+				continue; // No sending on this devuce TODO make a receiver node of this?
+			else if(device.getTransmitters().size() == 2) {
+				System.out.println("Multiple transmitters found. I don't deal with this currently.");
+				continue;
+			}
+
 			Transmitter trans = null;
 			try {
 				trans = device.getTransmitter();
 			} catch (MidiUnavailableException e) {
 				e.printStackTrace();
-				throw new RuntimeException();
+				throw new RuntimeException(e);
 			}
 			System.out.println(trans);
 			trans.setReceiver(new MidiReceiver());
@@ -58,6 +66,7 @@ public class Net extends Node {
 				e.printStackTrace();
 				throw new RuntimeException();
 			}
+			System.out.println("\tActivated");
 		}
 	}
 
