@@ -35,7 +35,8 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 
 	ArrayList<Connection> connections = new ArrayList<Connection>();
 
-	private UIPort dragging_port;
+	private UIPort dragging_source_port;
+	private UIPort dragging_temp_port;
 
 	private boolean do_reload;
 
@@ -131,16 +132,24 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		reload();
 	}
 
-	public void setDraggingPort(UIPort port) {
+	public void setDraggingPort(UIPort source_port, UIPort temp_port) {
 		/*
 		 * Call this when a port is dragging a line from it.
 		 * This port can then be retrieved by a hovering port by calling getOtherPort()
 		 */
-		dragging_port = port;
+		dragging_source_port = source_port;
+		dragging_temp_port = temp_port;
+		addLine(source_port, temp_port);
 	}
 
-	public UIPort getDraggingPort() {
-		return dragging_port;
+	public void removeDraggingPort() {
+		dragging_source_port = null;
+		dragging_temp_port = null;
+		reload();
+	}
+
+	public UIPort getDraggingSourcePort() {
+		return dragging_source_port;
 	}
 
 	public HashSet<UIPort> getAllConnectedPorts(UIPort p) {
@@ -185,7 +194,7 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		if(!isAlive())
 			return;
 
-		connections.clear();
+		connections.clear(); // XXX Re-use existing connections? Less GC?
 		GlueTop glue_top = getGlueTop();
 		for(Line l : this.getSupervisor().getLines()) {
 			Node a_node = l.a.node;
@@ -208,6 +217,11 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 			}
 
 			connections.add(new Connection(a_uiport, b_uiport));
+		}
+
+		// Connect dragging port, if any
+		if(dragging_source_port != null) {
+			connections.add(new Connection(dragging_source_port, dragging_temp_port));
 		}
 	}
 
