@@ -1,16 +1,17 @@
-package net.merayen.merasynth.audio;
+package net.merayen.merasynth.buffer;
 
 /* 
  * Resizeable audio buffer.
  * Doesn't do channels and stuff, caller has to create a new buffer if this happens.
  * TODO When reading, maybe 
+ * Not thread safe
  */
-public class AudioBuffer {
+public class FloatCircularBuffer implements CircularBuffer {
 	private long write_position;
 	private long read_position;
 	private float[] buffer;
 
-	public AudioBuffer(int size) {
+	public FloatCircularBuffer(int size) {
 		buffer = new float[size];
 	}
 
@@ -38,10 +39,8 @@ public class AudioBuffer {
 			throw new RuntimeException("AudioBuffer internal error: Too big distance between write_position and read_position (larger than buffer)");
 
 		int i = 0;
-		for(; i < available && i < destination.length; i++) {
-			read_position++;
-			destination[i] = buffer[(int)read_position];
-		}
+		for(; i < available && i < destination.length; i++)
+			destination[i] = buffer[(int)(read_position++ % buffer.length)];
 
 		return i;
 	}
@@ -53,8 +52,12 @@ public class AudioBuffer {
 		return (int)(write_position - read_position);
 	}
 
-	public long getFree() {
+	public int getFree() {
 		return (int)(buffer.length - (write_position - read_position));
+	}
+
+	public int getSize() {
+		return buffer.length;
 	}
 
 	private void normalize() {
@@ -64,7 +67,7 @@ public class AudioBuffer {
 	}
 
 	public static void test() {
-		AudioBuffer ab = new AudioBuffer(10);
+		FloatCircularBuffer ab = new FloatCircularBuffer(10);
 		if(ab.getFree() != 10)
 			throw new RuntimeException("Expected free to be 10");
 
@@ -82,9 +85,21 @@ public class AudioBuffer {
 		if(ab.read(result) != 2)
 			throw new RuntimeException("Expected to read only 2 floats");
 
-		if(result[0] != 3 || result[1] != 4)
+		System.out.println(result[0] + " " + result[1]);
+
+		if(result[0] != 5 || result[1] != 6)
 			throw new RuntimeException("Data read is wrong");
 
-		
+		if(ab.getAvailable() != 8)
+			throw new RuntimeException("Expected 8 bytes data available");
+
+		result = new float[10];
+		ab.read(result);
+
+		for(int i = 0; i < result.length; i++)
+			System.out.printf(result[i] + ", ");
+
+		if(result[7] != 14 || result[8] != 0f)
+			throw new RuntimeException();
 	}
 }
