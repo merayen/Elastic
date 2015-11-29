@@ -9,7 +9,18 @@ public abstract class DataPacket {
 
 	public final long id = ++next_id; // Unique packet id, incremental
 
-	public final long created = System.currentTimeMillis();
+	//public final long created = System.currentTimeMillis();
 
-	public abstract int getSize(); // Estimated memory the packet takes. Only the content
+	/*
+	 * How many samples this packet represents.
+	 */
+	public int sample_count;
+
+	/*
+	 * Estimated memory the packet takes. Only the content.
+	 * Override this if you have your own properties in your class.
+	 */
+	public int getSize() {
+		return 8 + 4;
+	}
 }

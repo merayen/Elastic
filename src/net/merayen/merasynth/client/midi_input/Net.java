@@ -1,85 +1,49 @@
 package net.merayen.merasynth.client.midi_input;
 
-import java.util.HashMap;
 import java.util.List;
 
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Transmitter;
-
+import net.merayen.merasynth.midi.devices.IMIDIDeviceAdapter;
+import net.merayen.merasynth.midi.devices.MIDIScanner;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
+import net.merayen.merasynth.netlist.datapacket.MidiRequest;
 
+/*
+ * Represents a MIDI device and output MIDI.
+ * Notice that this is a live node, gathering live data. Due to this, nodes
+ * requesting a-head-of-time will not receive any packets (request is ignored).
+ * TODO Maybe be able to map multiple MIDI devices.
+ * TODO cache MIDI packets, if output is connected.
+ */
 public class Net extends Node {
-	/*
-	 * Genererer sinuslyd
-	 */
+	private MidiReceiver midi_receiver = new MidiReceiver();
+	private IMIDIDeviceAdapter device;
 
-	// These attributes changes if the input audio changes (we re-init the audio output device)
 	public Net(Supervisor supervisor) {
 		super(supervisor);
 		initMidi();
 	}
 
 	private void initMidi() {
-		for(MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
-			MidiDevice device;
-
-			try {
-				device = MidiSystem.getMidiDevice(info);
-			} catch (MidiUnavailableException e) {
-				e.printStackTrace();
-				throw new RuntimeException();
+		List<IMIDIDeviceAdapter> devices = MIDIScanner.getDevices();
+		for(IMIDIDeviceAdapter dev : devices) {
+			System.out.println(dev.getName());
+			if(dev.getName().equals("KEYBOARD")) {
+				dev.open(midi_receiver);
+				device = dev;
 			}
-
-			System.out.printf("Device found: %s: %s, %s, %s, %s\n", info, info.getName(), info.getDescription(), info.getVendor(), info.getVersion());
-
-			if(info.getName().equals("KEYBOARD"));
-			else if(info.getName().equals("Launchpad Mini"));
-			else continue;
-
-			/*for(Transmitter x : device.getTransmitters()) {
-				System.out.println("Transmitter: " + x);
-				x.setReceiver(new MidiReceiver());
-			}*/
-
-			if(device.getTransmitters().size() == 0)
-				continue; // No sending on this devuce TODO make a receiver node of this?
-			else if(device.getTransmitters().size() == 2) {
-				System.out.println("Multiple transmitters found. I don't deal with this currently.");
-				continue;
-			}
-
-			Transmitter trans = null;
-			try {
-				trans = device.getTransmitter();
-			} catch (MidiUnavailableException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
-			System.out.println(trans);
-			trans.setReceiver(new MidiReceiver());
-			try {
-				device.open();
-			} catch (MidiUnavailableException e) {
-				e.printStackTrace();
-				throw new RuntimeException();
-			}
-			System.out.println("\tActivated");
 		}
 	}
 
-	protected void onReceive(String port, DataPacket dp) {
-		;
-	}
-
-	@Override
-	protected double onUpdate() {
-		return DONE;
+	protected void onReceive(String port_name, DataPacket dp) {
+		if(port_name.equals("output") && dp instanceof MidiRequest) {
+			MidiRequest mr = (MidiRequest)dp;
+			send("output", midi_receiver.retrieve(mr.sample_count));
+		}
 	}
 
 	protected void onDestroy() {
-		System.out.println("Yay");
+		if(device != null)
+			device.close();
 	}
 }

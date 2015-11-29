@@ -1,7 +1,5 @@
 package net.merayen.merasynth.client.ui_test;
 
-import org.json.simple.JSONObject;
-
 import net.merayen.merasynth.glue.Context;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 
@@ -10,11 +8,6 @@ public class Glue extends GlueNode {
 
 	public Glue(Context context) {
 		super(context);
-	}
-
-	@Override
-	public String getClassPath() { // XXX Da wut, don't we already know this?
-		return "net.merayen.merasynth.client.ui_test";
 	}
 
 	@Override

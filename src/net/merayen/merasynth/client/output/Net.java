@@ -1,11 +1,14 @@
 package net.merayen.merasynth.client.output;
 
 import java.util.HashMap;
+import java.util.List;
 
+import net.merayen.merasynth.buffer.AudioCircularBuffer;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.AudioRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
+import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
 import net.merayen.merasynth.util.AverageStat;
 
 public class Net extends Node {
@@ -15,9 +18,9 @@ public class Net extends Node {
 
 	// Tuning parameters
 	private int output_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
-	private int process_buffer_size = 16; // Always try to stay minimum these many samples ahead (makes delay)
-	private boolean auto_buffer_size = true; // Put option in GUI?
-	private int sample_rate = 44100; // Put option in GUI?
+	private int process_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
+	private int sample_rate = 44100; // TODO get this from event
+	private AudioFlowHelper audio_flow_helper;
 
 	// These attributes changes if the input audio changes (we re-init the audio output device)
 	private int channels = 0;
@@ -31,13 +34,32 @@ public class Net extends Node {
 
 	public Net(Supervisor supervisor) {
 		super(supervisor);
+
+		audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
+
+			@Override
+			public void onRequest(String port_name, int request_sample_count) {
+				// Won't happen
+			}
+
+			@Override
+			public void onReceive(String port_name) {
+				if(audio_output == null)
+					initOutput(sample_rate, 1 /* mono */); // TODO read channels to output from UI setting on this node
+
+				handleAudioResponse();
+			}
+		});
 	}
 
-	protected void onReceive(String port, DataPacket dp) {
-		if(port.equals("input")) {
-			if(dp instanceof AudioResponse)
-				handleAudioResponse((AudioResponse)dp);
-		}
+	@Override
+	protected void onCreatePort(String port_name) {
+		if(port_name.equals("input"))
+			audio_flow_helper.addInput(this.getPort("input"));
+	}
+
+	protected void onReceive(String port_name, DataPacket dp) {
+		audio_flow_helper.handle(port_name, dp);
 	}
 
 	public double onUpdate() {
@@ -54,9 +76,7 @@ public class Net extends Node {
 	// Functions called from GlueNode
 	public void requestAudio() {
 		AudioRequest ar = new AudioRequest();
-		ar.sample_offset = 0;
 		ar.sample_count = process_buffer_size;
-		ar.sample_rate = sample_rate;
 		this.send("input", ar);
 	}
 
@@ -70,22 +90,7 @@ public class Net extends Node {
 		System.out.println("Inited audio device");
 	}
 
-	private void handleAudioResponse(AudioResponse ar) {
-		if(ar.sample_rate != sample_rate) {
-			System.out.printf("Got sample rate %d, but asked for %d. Sending node must conform to our requested sample rate.\n", ar.sample_rate, sample_rate);
-			return;
-		}
-
-		if(ar.channels <= 0) {
-			System.out.printf("No channels in output packet. Got %d channels.\n", channels);
-			return;
-		}
-
-		if(ar.channels != channels) { // Source changes channel number. We adapt.
-			initOutput(sample_rate, ar.channels);
-			channels = ar.channels;
-		}
-
+	private void handleAudioResponse() {
 		int behind = audio_output.behind();
 		avg_buffer_size.add(behind);
 
@@ -94,7 +99,22 @@ public class Net extends Node {
 			last_buffer_change = System.currentTimeMillis() + 1000;
 		}
 
-		audio_output.write(ar.samples);
+		AudioCircularBuffer acb = audio_flow_helper.getInputBuffer("input");
+		
+		// Some stupid, simple mixing to mono TODO Support multiple channels and more intelligent mixing, respecting the set output channels
+		List<Short> channels = acb.getChannels();
+		int channel_count = channels.size();
+		int available = acb.available();
+		float[] output = new float[available];
+		float[] tmp_channel_buffer = new float[available];
+
+		for(short s : channels) { // Notice: If one of the channels lags behind, it gets silent (0f)
+			acb.read(s, tmp_channel_buffer);
+			for(int i = 0; i < tmp_channel_buffer.length; i++)
+				output[i] += tmp_channel_buffer[i] / channel_count;
+		}
+
+		audio_output.write(output);
 	}
 
 	public HashMap<String, Number> getStatistics() {

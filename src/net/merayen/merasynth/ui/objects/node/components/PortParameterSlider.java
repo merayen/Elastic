@@ -55,7 +55,7 @@ public class PortParameterSlider extends UIGroup {
 		});
 
 		parameter_slider.setValue(value);
-		parameter_slider.step = step;
+		parameter_slider.scale = step;
 	}
 
 	protected void onDraw() {
@@ -87,9 +87,9 @@ public class PortParameterSlider extends UIGroup {
 		parameter_slider.label = t;
 	}
 
-	public void setStep(float step) {
-		this.step = step;
+	public void setScale(float scale) {
+		this.step = scale;
 		if(parameter_slider != null)
-			parameter_slider.step = step;
+			parameter_slider.scale = scale;
 	}
 }

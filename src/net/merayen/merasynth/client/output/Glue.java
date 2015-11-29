@@ -13,11 +13,6 @@ public class Glue extends GlueNode {
 	}
 
 	@Override
-	public String getClassPath() { // XXX Da wut, don't we already know this?
-		return "net.merayen.merasynth.client.output";
-	}
-
-	@Override
 	public String getFriendlyName() {
 		return "Output";
 	}

@@ -15,12 +15,12 @@ public class UIPortTemporary extends UIPort {
 
 	public void addTempPort(UIPort source_port) { // Must be called after you have added this class via add(...)
 		this.source_port = source_port;
-		getNetObject().addLine(source_port, this);
-		getNetObject().setDraggingPort(source_port);
+		getUINetObject().addLine(source_port, this);
+		getUINetObject().setDraggingPort(source_port, this);
 	}
 
 	public void removeTempPort() {
-		getNetObject().removeLine(source_port, this);
-		getNetObject().setDraggingPort(null);
+		getUINetObject().removeLine(source_port, this);
+		getUINetObject().setDraggingPort(null, null);
 	}
 }

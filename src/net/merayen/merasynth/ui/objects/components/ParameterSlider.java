@@ -8,7 +8,7 @@ import net.merayen.merasynth.ui.util.MouseHandler;
 
 public class ParameterSlider extends UIGroup {
 	float width = 80f;
-	public float step = 1f;
+	public float scale = 1f;
 	/*public float max_value = 1f;
 	public float min_value = 0f;*/
 	public String label;
@@ -63,7 +63,7 @@ public class ParameterSlider extends UIGroup {
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
-				setValue(drag_value + (offset.x / width) * step);
+				setValue(drag_value + (offset.x / width) * scale);
 				if(handler != null)
 					handler.onChange(value, false);
 			}

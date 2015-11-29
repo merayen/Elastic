@@ -26,13 +26,24 @@ public abstract class GlueNode extends GlueObject {
 	//}
 	private String net_node_id; // "Soft reference" to the equivalent netnode
 	private String ui_node_id; // "Soft reference" to the equivalent uinode
+	private final String package_name;
 
 	public GlueNode(Context context) {
 		super(context);
-		//onInit();
+
+		package_name = getPackageName();
 	}
 
-	public abstract String getClassPath();
+	private String getPackageName() {
+		String r = this.getClass().getName();
+		if(r.endsWith(".Glue"))
+			r = r.substring(0, r.length() - ".Glue".length());
+		else
+			throw new RuntimeException("Glue node class must be named 'Glue'");
+
+		return r;
+	}
+
 	public abstract String getFriendlyName();
 	public abstract String getDescription();
 
@@ -47,11 +58,11 @@ public abstract class GlueNode extends GlueObject {
 	}
 
 	public String getUINodePath() {
-		return getClassPath() + ".UI";
+		return package_name + ".UI";
 	}
 
 	public String getNetNodePath() {
-		return getClassPath() + ".Net";
+		return package_name + ".Net";
 	}
 
 	public net.merayen.merasynth.netlist.Node getNetNode() {

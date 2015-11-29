@@ -28,13 +28,11 @@ public class UI extends UINode {
 
 	@Override
 	public void onCreatePort(String name) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onRemovePort(String name) {
-		// TODO Auto-generated method stub
-		
+
 	}
 }

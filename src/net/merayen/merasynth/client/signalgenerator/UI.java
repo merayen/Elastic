@@ -77,6 +77,6 @@ public class UI extends UINode {
 		});
 
 		port_parameter_slider.setValue(0);
-		port_parameter_slider.setStep(0.1f);
+		port_parameter_slider.setScale(0.1f);
 	}
 }

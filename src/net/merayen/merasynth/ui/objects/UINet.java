@@ -36,6 +36,7 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 	ArrayList<Connection> connections = new ArrayList<Connection>();
 
 	private UIPort dragging_port;
+	private UIPort dragging_port_source;
 
 	private boolean do_reload;
 
@@ -131,16 +132,17 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		reload();
 	}
 
-	public void setDraggingPort(UIPort port) {
+	public void setDraggingPort(UIPort source_port, UIPort port) {
 		/*
 		 * Call this when a port is dragging a line from it.
 		 * This port can then be retrieved by a hovering port by calling getOtherPort()
 		 */
 		dragging_port = port;
+		dragging_port_source = source_port;
 	}
 
 	public UIPort getDraggingPort() {
-		return dragging_port;
+		return dragging_port_source;
 	}
 
 	public HashSet<UIPort> getAllConnectedPorts(UIPort p) {
@@ -187,6 +189,7 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 
 		connections.clear();
 		GlueTop glue_top = getGlueTop();
+
 		for(Line l : this.getSupervisor().getLines()) {
 			Node a_node = l.a.node;
 			Node b_node = l.b.node;
@@ -209,6 +212,10 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 
 			connections.add(new Connection(a_uiport, b_uiport));
 		}
+
+		// Re add dragging port, if any
+		if(dragging_port != null && dragging_port_source != null)
+			connections.add(new Connection(dragging_port_source, dragging_port));
 	}
 
 	private Supervisor getSupervisor() {

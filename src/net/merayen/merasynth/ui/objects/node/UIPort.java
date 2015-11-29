@@ -43,10 +43,10 @@ public class UIPort extends UIGroup {
 			@Override
 			public void onMouseUp(Point position) {
 				// Check with the Net-UIObject to see if a line is being drawn
-				UIPort source_port = getNetObject().getDraggingPort(); // Retrieving the port, the port the line is being dragged from
+				UIPort source_port = getUINetObject().getDraggingPort(); // Retrieving the port, the port the line is being dragged from
 				if(source_port == null) return; // Not dragging a line from a port
 				if(!self.output) // Is input port, we do not allow multiple connections
-					getNetObject().disconnectAll(self);
+					getUINetObject().disconnectAll(self);
 
 				if(self.output)
 					if(source_port.output)
@@ -69,9 +69,9 @@ public class UIPort extends UIGroup {
 			public void onMouseDown(Point position) {
 				// Create a new port and notifies the net
 				if(!self.output) {// Input ports can only have 1 line connected
-					HashSet<UIPort> connected_ports = getNetObject().getAllConnectedPorts(self);
+					HashSet<UIPort> connected_ports = getUINetObject().getAllConnectedPorts(self);
 					if(connected_ports.size() == 1) {
-						getNetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
+						getUINetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
 
 						// Reconnect temporary port from the port we were already connected to
 						for(UIPort p : connected_ports)
@@ -131,7 +131,7 @@ public class UIPort extends UIGroup {
 		return (UINode)x;
 	}
 
-	protected UINet getNetObject() {
+	protected UINet getUINetObject() {
 		/*
 		 * Gets the Net object that draws all the lines.
 		 * TODO Remove and just mangle directly with netnode lines?
@@ -184,7 +184,7 @@ public class UIPort extends UIGroup {
 		// If we are an input port, clear any line that is already connected to us (should only every be 1 line)
 		//if(this.getNetObject().get)
 		try {
-			getNetObject().connect(this, (UIPort)port);
+			getUINetObject().connect(this, (UIPort)port);
 		} catch (net.merayen.merasynth.netlist.exceptions.AlreadyConnected e) {
 			// Okido
 		}

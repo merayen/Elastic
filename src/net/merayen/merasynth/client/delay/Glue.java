@@ -1,4 +1,4 @@
-package net.merayen.merasynth.client.vu;
+package net.merayen.merasynth.client.delay;
 
 import org.json.simple.JSONObject;
 
@@ -6,7 +6,7 @@ import net.merayen.merasynth.glue.Context;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 
 public class Glue extends GlueNode {
-	private float frequency;
+	private float delay_seconds;
 
 	public Glue(Context context) {
 		super(context);
@@ -14,33 +14,35 @@ public class Glue extends GlueNode {
 
 	@Override
 	public String getFriendlyName() {
-		return "Output";
+		return "Delay";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Outputs audio";
+		return "Mixes two audio sources together";
 	}
 
 	@Override
 	public void onInit() {
 		super.onInit();
 		createPort("input");
+		createPort("output");
 	}
 
 	protected void onDump(JSONObject state) {
-
+		
 	}
 
 	protected void onRestore(JSONObject state) {
-
+		// TODO 
 	}
 
-	private net.merayen.merasynth.client.vu.UI ui() {
-		return ((net.merayen.merasynth.client.vu.UI)this.getUINode());
+	public void changeDelay(float seconds) {
+		delay_seconds = seconds;
+		((Net)this.getNetNode()).changeDelay(seconds);
 	}
 
-	public float[] getChannelLevels() {
-		return ((Net)getNetNode()).getChannelLevels(); // Thread safe...?
+	private net.merayen.merasynth.client.graph.UI ui() {
+		return ((net.merayen.merasynth.client.graph.UI)this.getUINode());
 	}
 }

@@ -19,7 +19,7 @@ public abstract class Node extends NetListObject {
 	}
 
 	// Returner denne i update() for å fortelle Supervisoren at vi ikke trenger mer oppmerksomhet
-	protected final double DONE = 1000000.0;
+	protected final double DONE = 10000000000.0;
 	private long next_update = 0; 
 
 	private ArrayList<Port> ports = new ArrayList<Port>(); // Alle porter på denne noden
@@ -34,6 +34,10 @@ public abstract class Node extends NetListObject {
 	}
 
 	protected void onRestore() {
+
+	}
+
+	protected void onCreatePort(String port_name) {
 
 	}
 
@@ -53,7 +57,7 @@ public abstract class Node extends NetListObject {
 		
 	}
 
-	public void addPort(String port_name) {
+	public final void addPort(String port_name) {
 		/*
 		 * Noden kaller på denne for å legge til en port
 		 */
@@ -61,6 +65,8 @@ public abstract class Node extends NetListObject {
 			throw new PortExists(this, port_name);
 
 		ports.add(new Port(this, port_name));
+
+		onCreatePort(port_name);
 	}
 
 	public ArrayList<Port> getPorts() {
@@ -75,7 +81,7 @@ public abstract class Node extends NetListObject {
 		return null;
 	}
 
-	protected void send(String port_name, DataPacket data) {
+	public void send(String port_name, DataPacket data) {
 		/*
 		 * Node kaller på denne for å sende data ut på en port
 		 */

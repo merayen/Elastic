@@ -1,4 +1,4 @@
-package net.merayen.merasynth.audio;
+package net.merayen.merasynth.audio.transform;
 
 public class SampleRateConverter {
 	/*

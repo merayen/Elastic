@@ -13,11 +13,6 @@ public class Glue extends GlueNode {
 	}
 
 	@Override
-	public String getClassPath() {
-		return "net.merayen.merasynth.client.signalgenerator";
-	}
-
-	@Override
 	public String getFriendlyName() {
 		return "Pulse Generator 1.0";
 	}

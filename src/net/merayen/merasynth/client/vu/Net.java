@@ -28,11 +28,11 @@ public class Net extends Node {
 
 	private void handleAudioResponse(AudioResponse ar) {
 		// TODO do some averaging
-		if(ar.channels != channel_levels.length)
-			channel_levels = new float[ar.channels];
+		//if(ar.channels != channel_levels.length)
+		//	channel_levels = new float[ar.channels];
 
-		for(int i = 0; i < channel_levels.length; i++) // 1 second reduce from level 1 to 0
-			channel_levels[i] -= ar.samples.length / (double)ar.sample_rate;
+		//for(int i = 0; i < channel_levels.length; i++) // 1 second reduce from level 1 to 0
+		//	channel_levels[i] -= ar.samples.length / (double)ar.sample_rate;
 
 		for(int i = 0; i < channel_levels.length; i++) {
 			

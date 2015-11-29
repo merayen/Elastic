@@ -1,15 +1,18 @@
 package net.merayen.merasynth.netlist.datapacket;
 
+/*
+ * Returned by audio nodes, but also graph nodes.
+ * Length of all channels MUST BE EQUAL.
+ */
 public class AudioResponse extends DataPacket {
+	public float[] samples; // Channels are stored in the order which is stated in "channels" variable
+
 	/*
-	 * Returned by audio nodes, but also graph nodes.
+	 * Channel number
 	 */
-	public long sample_offset;
-	public float[] samples; // Byte size: channels * samples.length * 4
-	public int channels; // How many channels
-	public int sample_rate;
+	public short[] channels; // Channel numbers
 
 	public int getSize() {
-		return 8 + (samples == null ? 0 : 4 * samples.length) + 4 + 4;
+		return (channels == null ? 0 : 2 * channels.length) + (samples == null ? 0 : 4 * samples.length);
 	}
 }

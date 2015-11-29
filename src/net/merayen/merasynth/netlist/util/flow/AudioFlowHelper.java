@@ -1,79 +1,112 @@
 package net.merayen.merasynth.netlist.util.flow;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
+import net.merayen.merasynth.buffer.AudioCircularBuffer;
+import net.merayen.merasynth.netlist.Node;
 import net.merayen.merasynth.netlist.Port;
 import net.merayen.merasynth.netlist.datapacket.AudioRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
 
 /*
- * Class that abstracts away sending requests and responses of data.
- * Takes care if for example two nodes are connected to the input of one node,
- * and for example, the nodes request audio in different times.
- * Then this node will automatically buffer the audio and make it available for
- * the slower node.
+ * TODO manage AudioOutputFlow and AudioInputFlow and make easy interface to the netnodes
+ * When a node requests data from us, we call the onRequest()-call, where your node needs
+ * to forward the request, or immediately send the requested data.
+ * 
  */
-public class AudioFlowHelper {
-	public static interface IHandler {
-		public void onAudioReceive(String port);
+public class AudioFlowHelper implements IFlowHelper {
+	public static class PortNotFound extends RuntimeException {
+		public PortNotFound(String port_name) {
+			super(port_name);
+		}
 	}
 
-	private ArrayList<Port> input_ports = new ArrayList<>();
-	private ArrayList<Port> output_ports = new ArrayList<>();
-	private IHandler handler;
-	private float[] buffer;
-	private int sample_rate;
+	private final IHandler handler;
+	private final Node net_node;
+	private final HashMap<String,AudioInputFlow> inputs = new HashMap<>();
+	private final HashMap<String,Port> outputs = new HashMap<>();
 
-	public AudioFlowHelper(IHandler handler) {
+	public AudioFlowHelper(Node net_node, IHandler handler) {
+		this.net_node = net_node;
 		this.handler = handler;
 	}
 
-	public void addInputPort(Port port) {
-		input_ports.add(port);
+	public void addInput(Port port) {
+		AudioFlowHelper self = this;
+		inputs.put(port.name, new AudioInputFlow(new AudioInputFlow.IHandler() {
+			@Override
+			public void onReceive() {
+				self.handler.onReceive(port.name);
+			}
+		}));
 	}
 
-	public void addOutputPort(Port port) {
-		output_ports.add(port);
-	}
-
-	public void requestAudio(Port port, int sample_count) {
-		if(!input_ports.contains(port))
-			throw new RuntimeException(String.format("Port %s is not registered", port.name));
-
-		
-	}
-
-	public void sendAudio(Port port, float[] data, int channels) {
-		if(!output_ports.contains(port))
-			throw new RuntimeException(String.format("Port %s is not registered", port.name));
-
-		
-	}
-
-	public void handle(Port port, DataPacket dp) {
-		if(dp instanceof AudioRequest && output_ports.contains(port))
-			;
-
-		if(dp instanceof AudioResponse && input_ports.contains(port))
-			;
-	}
-	/*
-	 * Returns the sample rate.
-	 * The sample rate is automatically set by the requesting node.
-	 * Use setSampleRate() if you are a output node.
-	 */
-	public int getSampleRate() {
-		return sample_rate;
+	public void addOutput(Port port) {
+		outputs.put(port.name, port);
 	}
 
 	/*
-	 * Set the sample_rate explicitly.
-	 * Do this only if your node is an output node.
-	 * Nodes that gets requested should not do this, as they have to obey
-	 * the requested sample rate.
+	 * Sends data on an output port.
 	 */
-	public void setSampleRate(int sample_rate) {
-		this.sample_rate = sample_rate;
+	public void send(String port_name, short[] channels, float[] samples) {
+		if(outputs.get(port_name) == null)
+			throw new PortNotFound(port_name);
+
+		AudioResponse response = new AudioResponse();
+		response.channels = channels;
+		response.samples = samples;
+		response.sample_count = response.samples.length;
+		net_node.send(port_name, response);
+	}
+
+	public void request(String port_name, int sample_count) {
+		if(inputs.get(port_name) == null)
+			throw new PortNotFound(port_name);
+
+		AudioRequest ar = new AudioRequest();
+		ar.sample_count = sample_count;
+		net_node.send(port_name, ar);
+	}
+
+	/*
+	 * Handles receiving of DataPacket.
+	 * Call this in your onReceive()-function.
+	 */
+	public void handle(String port_name, DataPacket dp) {
+		if(dp instanceof AudioResponse) {
+			AudioInputFlow aif = inputs.get(port_name);
+
+			if(aif != null)
+				aif.handle((AudioResponse)dp);
+
+		} else if(dp instanceof AudioRequest) {
+			AudioRequest ar = (AudioRequest)dp;
+
+			if(outputs.get(port_name) != null)
+				handler.onRequest(port_name, ar.sample_count);
+		}
+	}
+
+	/*
+	 * Returns channels available on a port.
+	 */
+	public AudioCircularBuffer getInputBuffer(String port_name) {
+		AudioInputFlow aif = inputs.get(port_name);
+		if(aif == null)
+			throw new PortNotFound(port_name);
+
+		return aif.buffer;
+	}
+
+	/*
+	 * Returns how many samples are available on a certain port.
+	 */
+	public int available(String port_name) {
+		AudioInputFlow aif = inputs.get(port_name);
+		if(aif == null)
+			throw new PortNotFound(port_name);
+
+		return aif.available();
 	}
 }
