@@ -132,6 +132,18 @@ public class UINet extends net.merayen.merasynth.ui.objects.UIGroup {
 		reload();
 	}
 
+	/*
+	 * See if a port is connected. Does not bother the underlying net-system (that runs in another thread),
+	 * but does a local lookup in our table.
+	 */
+	public boolean isConnected(UIPort port) {
+		for(Connection c : connections)
+			if(c.a == port || c.b == port)
+				return true;
+
+		return false;
+	}
+
 	public void setDraggingPort(UIPort source_port, UIPort port) {
 		/*
 		 * Call this when a port is dragging a line from it.

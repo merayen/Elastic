@@ -1,5 +1,6 @@
 package net.merayen.merasynth.ui.objects.node.components;
 
+import net.merayen.merasynth.ui.Color;
 import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.components.ParameterSlider;
 import net.merayen.merasynth.ui.objects.node.UINode;
@@ -11,12 +12,13 @@ public class PortParameterSlider extends UIGroup {
 	 * Shows the slider when the port isn't connected.  
 	 * Only a node can directly contain this class.
 	 */
-	public UIPort port;
+	private UIPort port;
 	public ParameterSlider parameter_slider;
 	public boolean auto_position = true;
 	public final String name;
 	private double value;
 	private float step = 1f;
+	public Color color;
 
 	private IHandler handler;
 
@@ -62,6 +64,7 @@ public class PortParameterSlider extends UIGroup {
 		if(auto_position) {
 			port.translation.x = 0f;
 			port.translation.y = translation.y + 7.5f;
+			port.color = color;
 			parameter_slider.translation.x = 10f;
 			parameter_slider.translation.y = 0f;
 		}
@@ -91,5 +94,20 @@ public class PortParameterSlider extends UIGroup {
 		this.step = scale;
 		if(parameter_slider != null)
 			parameter_slider.scale = scale;
+	}
+
+	public void showSlider(boolean show) {
+		if(parameter_slider == null)
+			return;
+
+		if(show) {
+			if(parameter_slider.parent == null) {
+				add(parameter_slider);
+			}
+		} else {
+			if(parameter_slider.parent != null) {
+				remove(parameter_slider);
+			}
+		}
 	}
 }

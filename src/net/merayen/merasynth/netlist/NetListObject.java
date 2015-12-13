@@ -9,7 +9,7 @@ public class NetListObject {
 	 * Absolutt alle i en netlist må inheritere denne.
 	 */
 	
-	protected Supervisor supervisor;
+	protected final Supervisor supervisor;
 	protected String id = new Integer(UUID.randomUUID().hashCode()).toString();
 	
 	public NetListObject(Supervisor supervisor) {

@@ -1,26 +1,28 @@
 package net.merayen.merasynth.client.output;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import net.merayen.merasynth.audio.transform.MixSessionAudio;
 import net.merayen.merasynth.buffer.AudioCircularBuffer;
 import net.merayen.merasynth.netlist.*;
+import net.merayen.merasynth.netlist.datapacket.AllowNewSessionsRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
+import net.merayen.merasynth.process.ProcessorController;
 import net.merayen.merasynth.util.AverageStat;
 
 public class Net extends Node {
-	/*
-	 * Genererer sinuslyd
-	 */
+	private final ProcessorController<Processor> pc;
 
 	// Tuning parameters
 	private int output_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
 	private int process_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
 	private int sample_rate = 44100; // TODO get this from event
-	private AudioFlowHelper audio_flow_helper;
 
 	// These attributes changes if the input audio changes (we re-init the audio output device)
 	private int channels = 0;
@@ -35,49 +37,36 @@ public class Net extends Node {
 	public Net(Supervisor supervisor) {
 		super(supervisor);
 
-		audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
-
-			@Override
-			public void onRequest(String port_name, int request_sample_count) {
-				// Won't happen
-			}
-
-			@Override
-			public void onReceive(String port_name) {
-				if(audio_output == null)
-					initOutput(sample_rate, 1 /* mono */); // TODO read channels to output from UI setting on this node
-
-				handleAudioResponse();
-			}
-		});
+		pc = new ProcessorController<Processor>(this, Processor.class);
 	}
 
 	@Override
 	protected void onCreatePort(String port_name) {
-		if(port_name.equals("input"))
-			audio_flow_helper.addInput(this.getPort("input"));
+
 	}
 
 	protected void onReceive(String port_name, DataPacket dp) {
-		audio_flow_helper.handle(port_name, dp);
+		pc.handle(port_name, dp);
 	}
 
 	public double onUpdate() {
 		if(audio_output != null) {
 			int samples_in_buffer = audio_output.behind();
-			if(samples_in_buffer < output_buffer_size)
+			if(samples_in_buffer < output_buffer_size) {
 				requestAudio();
+				tryToMix();
+			}
 		} else if(this.getPort("input") != null) { // hasPort(...) is a dirty hack until we wait for gluenode to finish initing before updating netnode
 			requestAudio();
 		}
 		return 0.001;
 	}
 
-	// Functions called from GlueNode
 	public void requestAudio() {
-		AudioRequest ar = new AudioRequest();
-		ar.sample_count = process_buffer_size;
-		this.send("input", ar);
+		send("input", new AllowNewSessionsRequest()); // We allow nodes to the left to create new sessions
+
+		for(Processor p : pc.getProcessors()) // Request all sessions for audio
+			p.requestAudio(process_buffer_size);
 	}
 
 	private void initOutput(int sample_rate, int channels) {
@@ -90,31 +79,30 @@ public class Net extends Node {
 		System.out.println("Inited audio device");
 	}
 
-	private void handleAudioResponse() {
+	/*
+	 * Called by the processors, whenever they receive audio.
+	 * We then check if we can mix and output audio.
+	 */
+	public void notifyAudioReceived(long voice_id) {
+		tryToMix();
+	}
+
+	/*
+	 * Only does mono for now, and only mixes down to mono
+	 */
+	private void handleAudioResponse(AudioResponse ar) {
+		if(audio_output == null)
+			initOutput(sample_rate, 1 /* mono */); // TODO read channels to output from UI setting on this node
+
 		int behind = audio_output.behind();
 		avg_buffer_size.add(behind);
 
-		if(behind == 0) {
+		if(behind == 0) { // Output buffer is empty, must increase our buffer!
 			output_buffer_size += 8;
 			last_buffer_change = System.currentTimeMillis() + 1000;
 		}
 
-		AudioCircularBuffer acb = audio_flow_helper.getInputBuffer("input");
-		
-		// Some stupid, simple mixing to mono TODO Support multiple channels and more intelligent mixing, respecting the set output channels
-		List<Short> channels = acb.getChannels();
-		int channel_count = channels.size();
-		int available = acb.available();
-		float[] output = new float[available];
-		float[] tmp_channel_buffer = new float[available];
-
-		for(short s : channels) { // Notice: If one of the channels lags behind, it gets silent (0f)
-			acb.read(s, tmp_channel_buffer);
-			for(int i = 0; i < tmp_channel_buffer.length; i++)
-				output[i] += tmp_channel_buffer[i] / channel_count;
-		}
-
-		audio_output.write(output);
+		audio_output.write(ar.samples);
 	}
 
 	public HashMap<String, Number> getStatistics() {
@@ -126,5 +114,29 @@ public class Net extends Node {
 		}
 
 		return null;
+	}
+
+	/*
+	 * Tries to mix and output audio if all the processors have data.
+	 * As input can contain multiple sessions (or "voices") we need to mix it down.
+	 */
+	private void tryToMix() {
+		if(pc.activeProcesses() == 0) {
+			int silence_samples = output_buffer_size - audio_output.behind();
+			if(silence_samples > 0) // No processes that can actually output anything. We output some silence to not starve the output
+				audio_output.write(new float[silence_samples]); // Some random number
+		}
+
+		List<AudioCircularBuffer> buffers = new ArrayList<>(); // Array of all sessions/voices
+
+		// Get all available channels
+		for(Processor p : pc.getProcessors())
+			buffers.add(p.buffer);
+
+		// Note: only mono for now
+		AudioResponse ar = new MixSessionAudio().mix(buffers);
+
+		if(ar != null) // Horay, mixing was possible, we output
+			handleAudioResponse(ar);
 	}
 }

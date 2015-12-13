@@ -9,12 +9,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
 public abstract class Node extends NetListObject {
-	/*
-	 * Alle noder må inheritere fra denne.
-	 */
 	public static class PortExists extends RuntimeException {
 		public PortExists(Node node, String port_name) {
 			super(String.format("Port '%s' already exists on node '%s'", node.getClass().getName(), port_name));
+		}
+	}
+
+	public static class PortNotFound extends RuntimeException {
+		public PortNotFound(Node node, String port_name) {
+			super(String.format("Port '%s' not found on node '%s'", node.getClass().getName(), port_name));
 		}
 	}
 
@@ -54,7 +57,7 @@ public abstract class Node extends NetListObject {
 	}
 
 	protected void onDestroy() {
-		
+
 	}
 
 	public final void addPort(String port_name) {
@@ -73,12 +76,20 @@ public abstract class Node extends NetListObject {
 		return new ArrayList<Port>(ports);
 	}
 
-	public Port getPort(String name) {
+	public Port getPort(String port_name) {
 		for(Port p : ports)
-			if(name.equals(p.name))
+			if(port_name.equals(p.name))
 				return p;
 
 		return null;
+	}
+
+	public boolean isConnected(String port_name) {
+		Port p = getPort(port_name);
+		if(p == null)
+			throw new PortNotFound(this, port_name);
+
+		return supervisor.isConnected(p);
 	}
 
 	public void send(String port_name, DataPacket data) {
@@ -95,11 +106,9 @@ public abstract class Node extends NetListObject {
 
 	public void update() {
 		// Read any data available on ports
-		for(Port p : new ArrayList<Port>(ports)) {
-			DataPacket dp;
-			while((dp = p.receive()) != null)
+		for(Port p : new ArrayList<Port>(ports))
+			for(DataPacket dp : p.retrievePackets())
 				onReceive(p.name, dp);
-		}
 
 		double next_return = onUpdate();
 		next_update = System.currentTimeMillis() + (long)(next_return*1000);
@@ -113,10 +122,7 @@ public abstract class Node extends NetListObject {
 		next_update = 0;
 	}
 
-	public void print(String s, Object... obj) {
-		System.out.printf("[Node] " + s + "\n", obj);
-	}
-
+	@SuppressWarnings("unchecked")
 	public JSONObject dump() {
 		JSONObject result = new JSONObject();
 

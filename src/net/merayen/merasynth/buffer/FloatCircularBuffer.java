@@ -3,10 +3,10 @@ package net.merayen.merasynth.buffer;
 /* 
  * Resizeable audio buffer.
  * Doesn't do channels and stuff, caller has to create a new buffer if this happens.
- * TODO When reading, maybe 
+ * TODO Get rid of "stop" argument, and use "length" instead 
  * Not thread safe
  */
-public class FloatCircularBuffer implements CircularBuffer {
+public class FloatCircularBuffer implements ICircularBuffer {
 	private long write_position;
 	private long read_position;
 	private float[] buffer;
@@ -58,6 +58,20 @@ public class FloatCircularBuffer implements CircularBuffer {
 		return i;
 	}
 
+	public int read(int dest_start, int length, float[] destination) { // TODO Test this
+		long available = available();
+
+		int i = 0;
+		for(; i < available && i < destination.length && i < length; i++)
+			destination[i + dest_start] = buffer[(int)(read_position++ % buffer.length)];
+
+		// Fill the rest with zero, if any
+		for(int j = i; j < destination.length; j++)
+			destination[j + dest_start] = 0;
+
+		return i;
+	}
+
 	/*
 	 * Retruns the current available data
 	 */
@@ -69,7 +83,7 @@ public class FloatCircularBuffer implements CircularBuffer {
 		return (int)(buffer.length - (write_position - read_position));
 	}
 
-	public int getSize() {
+	public int size() {
 		return buffer.length;
 	}
 

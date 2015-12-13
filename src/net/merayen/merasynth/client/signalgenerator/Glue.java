@@ -7,6 +7,7 @@ import net.merayen.merasynth.glue.nodes.GlueNode;
 
 public class Glue extends GlueNode {
 	private float frequency;
+	private float amplitude;
 
 	public Glue(Context context) {
 		super(context);
@@ -26,19 +27,23 @@ public class Glue extends GlueNode {
 	protected void onInit() {
 		super.onInit();
 		createPort("frequency");
+		createPort("amplitude");
 		createPort("output");
 	}
 
 	@Override
 	protected void onDump(JSONObject state) {
 		state.put("frequency", frequency);
+		state.put("amplitude", amplitude);
 	}
 
 	protected void onRestore(JSONObject state) {
 		frequency = ((Double)state.get("frequency")).floatValue();
+		amplitude = ((Double)state.get("amplitude")).floatValue();
 
 		ui().whenReady( () -> ui().setFrequency(frequency));
-		net().setFrequency(frequency);
+		net().frequency = frequency;
+		net().amplitude = amplitude;
 	}
 
 	private net.merayen.merasynth.client.signalgenerator.UI ui() {
@@ -51,6 +56,15 @@ public class Glue extends GlueNode {
 
 	public void changeFrequency(float frequency) {
 		this.frequency = frequency;
-		((Net)this.getNetNode()).setFrequency(frequency);
+		((Net)this.getNetNode()).frequency = frequency;
+	}
+
+	public void changeAmplitude(float amplitude) {
+		this.amplitude = amplitude;
+		((Net)this.getNetNode()).amplitude = amplitude;
+	}
+
+	public Net.Mode getMode() {
+		return ((Net)this.getNetNode()).getMode();
 	}
 }

@@ -3,6 +3,7 @@ package net.merayen.merasynth.ui.objects.node;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import net.merayen.merasynth.ui.Color;
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.DelayEvent;
 import net.merayen.merasynth.ui.objects.UIGroup;
@@ -12,20 +13,22 @@ import net.merayen.merasynth.ui.util.MouseHandler;
 import net.merayen.merasynth.ui.util.Search;
 
 public class UIPort extends UIGroup {
-	/*
-	 * Connectable port
-	 */
 	public static abstract class Handler { // Only to be used by ui Node()!
 		public boolean onConnect(UIPort connecting_port) {return true;} // Port has been connected
 		public void onDisconnect() {} // A line has been removed from the port
 	}
 	private Handler handler;
 
+	public final static Color AUDIO_PORT = new Color(150, 200, 150);
+	public final static Color MIDI_PORT = new Color(200, 150, 100);
+	public final static Color AUX_PORT = new Color(150, 150, 150);
+
 	private MouseHandler port_drag;
 	public String title = "";
 	public final String name;
 	public final boolean output;
 	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
+	public Color color = AUX_PORT;
 
 	private UIPortTemporary temp_port; // Used when dragging a line from this port
 
@@ -92,13 +95,13 @@ public class UIPort extends UIGroup {
 		if(draw_default_port) {
 			draw.setColor(50, 60, 50);
 			draw.fillOval(-5.5f, -5.5f, 11f, 11f);
-	
+
 			draw.setColor(100, 100, 100);
 			draw.fillOval(-5f, -5f, 10f, 10f);
-	
-			draw.setColor(150, 200, 150);
+
+			draw.setColor(color.red, color.green, color.blue);
 			draw.fillOval(-4f, -4f, 8f, 8f);
-	
+
 			draw.setColor(0, 0, 0);
 			draw.setFont("SansSerif", 10f);
 			draw.text(title, 10f, 5f);
@@ -138,6 +141,10 @@ public class UIPort extends UIGroup {
 		 */
 		Search s = new Search(search.getTopmost(), 1);
 		ArrayList<UIObject> m = s.searchByType(net.merayen.merasynth.ui.objects.UINet.class);
+
+		if(m.size() == 0)
+			return null; // UINet object not available yet
+
 		if(m.size() != 1)
 			throw new RuntimeException("Need exactly 1 net uiobject");
 
@@ -162,8 +169,8 @@ public class UIPort extends UIGroup {
 
 			@Override
 			public void run() {
-				self.remove(temp_port);
 				temp_port.removeTempPort();
+				self.remove(temp_port);
 				temp_port = null;
 			}
 		}));

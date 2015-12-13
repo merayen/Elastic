@@ -59,9 +59,14 @@ public class UIGroup extends UIObject {
 	}
 
 	public void remove(UIObject obj) {
+		if(obj.parent != this)
+			throw new RuntimeException("Object is not a child of us");
+
 		for(int i = children.size() - 1; i > -1; i-- )
-			if(children.get(i) == obj)
+			if(children.get(i) == obj) {
 				children.remove(i);
+				obj.parent = null;
+			}
 	}
 
 	public ArrayList<UIObject> getChildren() {

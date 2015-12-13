@@ -1,12 +1,13 @@
 package net.merayen.merasynth.buffer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Generic circular object buffer.
  */
-public class ObjectCircularBuffer<T> implements CircularBuffer {
-	private ArrayList<T> buffer;
+public class ObjectCircularBuffer<T> implements ICircularBuffer {
+	private List<T> buffer;
 	private int size;
 	private int read_position;
 	private int write_position;
@@ -14,6 +15,7 @@ public class ObjectCircularBuffer<T> implements CircularBuffer {
 	public ObjectCircularBuffer(int size) {
 		buffer = new ArrayList<T>(size);
 		this.size = size;
+		clear();
 	}
 
 	public void write(T obj) {
@@ -41,12 +43,27 @@ public class ObjectCircularBuffer<T> implements CircularBuffer {
 		if(read_position == write_position)
 			return null;
 
-		return buffer.get(read_position++);
+		return buffer.get(read_position++ % size);
+	}
+
+	public boolean contains(T obj) {
+		if(obj == null)
+			return false;
+
+		for(T x : buffer) {
+			if(obj.equals(x))
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override
 	public void clear() {
 		buffer.clear();
+		for(int i = 0; i < size; i++) // Ensure size
+			buffer.add(null);
+
 		read_position = 0;
 		write_position = 0;
 	}
@@ -62,7 +79,7 @@ public class ObjectCircularBuffer<T> implements CircularBuffer {
 	}
 
 	@Override
-	public int getSize() {
+	public int size() {
 		return size;
 	}
 

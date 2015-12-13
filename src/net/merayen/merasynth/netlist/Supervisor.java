@@ -16,7 +16,6 @@ import org.json.simple.JSONArray;
  * It might be best to let the glue nodes restore everything.
  * Less complexity? Hmm... 
  */
-
 public class Supervisor {
 	/*
 	 * Supervisor containing the whole net.
@@ -125,16 +124,12 @@ public class Supervisor {
 		/*
 		 * Disconnects port from all other ports.
 		 */
-		HashSet<Port> ports = getConnectedPorts(p);
 		for(Line l : new ArrayList<Line>(lines))
 			if(l.a == p || l.b == p)
 				lines.remove(l);
 	}
 
 	public HashSet<Port> getConnectedPorts(Port p) {
-		/*
-		 * Retrieves all the connected lines for a port.
-		 */
 		validatePort(p);
 
 		HashSet<Port> result = new HashSet<Port>();
@@ -155,6 +150,18 @@ public class Supervisor {
 			);
 
 		return result;
+	}
+
+	/* Checks if a port is connected at all.
+	 * TODO Should have a standalone class that can scan node trees etc.
+	 */
+	public boolean isConnected(Port p) {
+		synchronized (this) {
+			for(Line l : lines)
+				if(l.a == p || l.b == p)
+					return true;
+		}
+		return false;
 	}
 
 	public void send(Port port, DataPacket data) {

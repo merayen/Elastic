@@ -1,86 +1,56 @@
 package net.merayen.merasynth.client.signalgenerator;
 
 import net.merayen.merasynth.netlist.*;
-import net.merayen.merasynth.netlist.datapacket.AudioRequest;
-import net.merayen.merasynth.netlist.datapacket.AudioResponse;
+import net.merayen.merasynth.netlist.datapacket.AllowNewSessionsRequest;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
-import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
-import net.merayen.merasynth.netlist.util.flow.MidiFlowHelper;
+import net.merayen.merasynth.netlist.datapacket.SessionCreatedResponse;
+import net.merayen.merasynth.process.ProcessorController;
 
-import org.json.simple.JSONObject;
-
+/*
+ * TODO change mode when frequency-port is connected/disconnected
+ */
 public class Net extends Node {
-	private enum FrequencyInputMode {
+	public static enum Mode {
+		NONE, // Default mode, where we do nothing. TODO Set to this mode when frequency-port or output-port is connected/disconnected
 		MIDI,
-		Audio
+		AUDIO,
+		STANDALONE // When nothing connected to frequency-port
 	}
 
-	private double pos = 0;
-	private float frequency = 1000f;
-	private int sample_rate = 44100; // TODO Set by event
-	private FrequencyInputMode freq_input_mode = FrequencyInputMode.MIDI;
+	private Mode mode = Mode.NONE;
+	private final ProcessorController<Processor> pc;
 
-	private final AudioFlowHelper audio_flow_helper;
-	private final MidiFlowHelper midi_flow_helper;
+	public float frequency = 1000f; // Only used in STANDALONE mode. This parameter is set in the UI
+	public float amplitude = 1f;  // Only used in STANDALONE mode. This parameter is set in the UI
+	public int sample_rate = 44100; // TODO Set by event
 
 	public Net(Supervisor supervisor) {
 		super(supervisor);
-
-		audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
-
-			@Override
-			public void onRequest(String port_name, int request_sample_count) {
-				//audio_flow_helper.request("frequency", request_sample_count);
-				// Only sends data on first channel for noe
-				// TODO Send on multiple channels as given on the input port
-				// TODO read data from "frequency" (if connected) and generate data dependent on that
-				if(port_name.equals("output"))
-					audio_flow_helper.send("output", new short[]{0}, generate(request_sample_count)); // Synchronous for now
-			}
-
-			@Override
-			public void onReceive(String port_name) {
-				// TODO Generate 
-
-				System.out.printf("Data in: %d\n", audio_flow_helper.available("frequency"));
-			}
-		});
-
-		midi_flow_helper = new MidiFlowHelper(this, new MidiFlowHelper.IHandler() {
-
-			@Override
-			public void onReceive(String port_name) {
-				if(port_name.equals("frequency"))
-					;//System.out.printf("Got MIDI data: %s\n", midi_flow_helper.available());
-			}
-
-			@Override
-			public void onRequest(String port_name, int request_sample_count) {
-				// We do not output MIDI data
-			}
-			
-		});
+		pc = new ProcessorController<Processor>(this, Processor.class);
 	}
 
 	@Override
 	protected void onCreatePort(String port_name) {
-		if(port_name.equals("frequency"))
-			audio_flow_helper.addInput(this.getPort(port_name));
-		
-		if(port_name.equals("output"))
-			audio_flow_helper.addOutput(this.getPort(port_name));
+
 	}
 
 	protected void onReceive(String port_name, DataPacket dp) {
 		if(port_name.equals("output")) {
-			if(dp instanceof AudioRequest) { // TODO use AudioFlowHelper for sending?
-				AudioRequest request = (AudioRequest)dp;
-				
-				
+			if(dp instanceof AllowNewSessionsRequest) {
+				if(!supervisor.isConnected(getPort("frequency")) && pc.activeProcesses() == 0) {
+					changeMode(Mode.STANDALONE);
+				} else {
+					// Forward AllowNewSessionRequest as we have something connected to our frequency port
+					// We can not create our own session
+					send("frequency", dp);
+				}
 			}
+		} else if(port_name.equals("amp")) {
+			if(dp instanceof SessionCreatedResponse)
+				return; // We do not allow sessions to be created through this port, or this is a session we requested (is this right?)
 		}
 
-		audio_flow_helper.handle(port_name, dp);
+		pc.handle(port_name, dp); // The actual audio generating is done here (by the processors)
 	}
 
 	public double onUpdate() {
@@ -88,21 +58,29 @@ public class Net extends Node {
 		return DONE;
 	}
 
-	public void setFrequency(float frequency) {
-		this.frequency = frequency;
+	private void changeMode(Mode new_mode) {
+		for(Processor p : pc.getProcessors()) // Kill all sessions
+			p.kill();
+
+		if(new_mode == Mode.STANDALONE) {
+			Processor p = pc.getProcessor(pc.createProcessor());
+			// TODO if frequency port gets connected later on, we must destroy our session!
+			// TODO request session on amp-port, if it is connected
+		} else if(new_mode == Mode.AUDIO) {
+			// Do nothing. Wait for a AllowNewSessionsRequest() packet that we forward on frequency-port
+		} else if(new_mode == Mode.MIDI) {
+			// Do nothing. Wait for a AllowNewSessionsRequest() packet that we forward on frequency-port
+		}
+
+		mode = new_mode;
+		System.out.println("Running in mode " + mode);
 	}
 
-	private float[] generate(int sample_request_count) {
-		if(frequency <= 0.09)
-			throw new RuntimeException(String.format("Invalid frequency: %d Hz", frequency));
+	public Mode getMode() {
+		return mode;
+	}
 
-		float[] r = new float[sample_request_count]; // TODO use shared buffer
-
-		for(int i = 0; i < r.length; i++)
-			r[i] = (float)Math.sin(pos += ((Math.PI * 2.0) * frequency) / sample_rate);
-
-		pos %= Math.PI*2*1000;
-
-		return r;
+	public synchronized void setMode(Mode new_mode) {
+		mode = new_mode;
 	}
 }

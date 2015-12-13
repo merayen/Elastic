@@ -2,7 +2,7 @@ package net.merayen.merasynth.netlist.util.flow;
 
 import java.util.HashMap;
 
-import net.merayen.merasynth.netlist.Node;
+import net.merayen.merasynth.client.signalgenerator.Processor;
 import net.merayen.merasynth.netlist.Port;
 import net.merayen.merasynth.netlist.datapacket.MidiRequest;
 import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper.PortNotFound;
@@ -11,32 +11,32 @@ public class MidiFlowHelper implements IFlowHelper {
 
 	private final HashMap<String,MidiInputFlow> inputs = new HashMap<>();
 	private final HashMap<String,Port> outputs = new HashMap<>();
-	private Node net_node;
+	private Processor processor;
 	private IHandler handler;
 
-	public MidiFlowHelper(Node net_node, IHandler handler) {
-		this.net_node = net_node;
+	public MidiFlowHelper(Processor processor, IHandler handler) {
+		this.processor = processor;
 		this.handler = handler;
 	}
 
 	@Override
-	public void addInput(Port port) {
+	public void addInput(String port_name) {
 		MidiFlowHelper self = this;
-		inputs.put(port.name, new MidiInputFlow(new MidiInputFlow.IHandler() {
+		inputs.put(port_name, new MidiInputFlow(new MidiInputFlow.IHandler() {
 			@Override
 			public void onReceive() {
-				self.handler.onReceive(port.name);
+				self.handler.onReceive(port_name);
 			}
 		}));
 	}
 
 	@Override
-	public void addOutput(Port port) {
-		outputs.put(port.name, port);
+	public void addOutput(String port_name) {
+		outputs.put(port_name, null);
 	}
 
 	public void send() {
-		
+		// TODO
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class MidiFlowHelper implements IFlowHelper {
 
 		MidiRequest mr = new MidiRequest();
 		mr.sample_count = sample_count;
-		net_node.send(port_name, mr);
+		processor.send(port_name, mr);
 	}
 
 	/*

@@ -21,7 +21,7 @@ public class Net extends Node {
 	public Net(Supervisor supervisor) {
 		super(supervisor);
 
-		audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
+		/*audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
 
 			@Override
 			public void onReceive(String port_name) {
@@ -38,14 +38,14 @@ public class Net extends Node {
 				audio_flow_helper.request("input_b", request_sample_count);
 				audio_flow_helper.request("fac", request_sample_count);
 			}
-		});
+		});*/
 
 		mixer = new Mixer(audio_flow_helper);
 	}
 
 	@Override
 	protected void onCreatePort(String port_name) {
-		System.out.printf("%s: %s\n", port_name, getPort(port_name));
+		/*System.out.printf("%s: %s\n", port_name, getPort(port_name));
 		if(port_name.equals("input_a"))
 			audio_flow_helper.addInput(this.getPort("input_a"));
 		else if(port_name.equals("input_b"))
@@ -53,7 +53,7 @@ public class Net extends Node {
 		else if(port_name.equals("fac"))
 			audio_flow_helper.addInput(this.getPort("fac"));
 		else if(port_name.equals("output"))
-			audio_flow_helper.addOutput(this.getPort("output"));
+			audio_flow_helper.addOutput(this.getPort("output"));*/
 	}
 
 	protected void onReceive(String port_name, DataPacket dp) {

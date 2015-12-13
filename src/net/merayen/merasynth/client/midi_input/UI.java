@@ -33,9 +33,10 @@ public class UI extends UINode {
 	@Override
 	public void onCreatePort(String name) {
 		if(name.equals("output")) {
-			port = new UIPort("output", false);
+			port = new UIPort("output", true);
 			port.translation.x = width;
 			port.translation.y = 20f;
+			port.color = UIPort.MIDI_PORT;
 			addPort(port);
 		}
 	}

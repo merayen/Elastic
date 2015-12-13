@@ -1,9 +1,9 @@
 package net.merayen.merasynth.buffer;
 
-public interface CircularBuffer {
+public interface ICircularBuffer {
 	// Must implement write() and read()
 	public int available(); // Data in the buffer
 	public int getFree(); // Free space in buffer
-	public int getSize(); // Buffer size
+	public int size(); // Buffer size
 	public void clear();
 }

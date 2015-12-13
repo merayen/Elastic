@@ -1,15 +1,12 @@
 package net.merayen.merasynth.ui.objects.components;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.IEvent;
 import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.util.MouseHandler;
 
 public class CircularSlider extends UIObject {
-	public float size = 3f;
+	public float size = 30f;
 
 	// In radian, min and max position
 	public float min = (float) Math.PI*1.8f;
@@ -25,7 +22,7 @@ public class CircularSlider extends UIObject {
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
-				setValue(drag_value - offset.y/10f);
+				setValue(drag_value - offset.y / (size * 5));
 			}
 
 			@Override
@@ -37,15 +34,16 @@ public class CircularSlider extends UIObject {
 
 	@Override
 	protected void onDraw() {
+		draw.setStroke(2);
 		draw.setColor(200, 200, 200);
 		draw.fillOval(0, 0, size, size);
 
 		draw.setColor(100, 100, 100);
-		draw.fillOval(0.1f, 0.1f, size - 0.2f, size - 0.2f);
+		draw.fillOval(1, 1, size - 2, size - 2);
 
 		draw.setColor(150, 150, 150);
-		drawLine(0, 0.8f);
-		drawLine(1, 0.8f);
+		drawLine(0, 0.5f);
+		drawLine(1, 0.5f);
 
 		draw.setColor(200, 200, 200);
 		drawLine(value, 0);
@@ -58,7 +56,7 @@ public class CircularSlider extends UIObject {
 
 	private void drawLine(float value, float length) {
 		//value = Math.max(Math.min(value, 1f), 0f);
-		draw.setStroke(0.2f);
+		draw.setStroke(2);
 		draw.line(
 			size/2 + (float)Math.sin(min + value * (max-min)) * (size * length) / 2.1f,
 			size/2 + (float)Math.cos(min + value * (max-min)) * (size * length) / 2.1f,

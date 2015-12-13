@@ -94,7 +94,7 @@ public class OracleJavaDevice implements IMIDIDeviceAdapter {
 			if(device.getMaxTransmitters() == 0)
 				continue;
 
-			System.out.printf("Device found: %s: %s, %s, %s, %s, %d\n", info, info.getName(), info.getDescription(), info.getVendor(), info.getVersion(), device.getMaxTransmitters());
+			//System.out.printf("Device found: %s: %s, %s, %s, %s, %d\n", info, info.getName(), info.getDescription(), info.getVendor(), info.getVersion(), device.getMaxTransmitters());
 
 			devices.add(new OracleJavaDevice(device, info));
 		}

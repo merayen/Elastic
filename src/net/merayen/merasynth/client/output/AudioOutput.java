@@ -45,8 +45,7 @@ public class AudioOutput {
 	}
 
 	/*
-	 * Writes data onto buffer. Returns how many samples that are in the buffer.
-	 * This can be used to calculate how much more audio data that needs to be generated.
+	 * Writes data onto buffer.
 	 */
 	public void write(float[] data) {
 		if((data.length % channels) != 0) {
@@ -61,11 +60,14 @@ public class AudioOutput {
 				clipping = true;
 
 			// Ikke korrekt! Fiks!
-			buff[i * 2 + 0] = (byte)(Math.min(data[i] * 127, 127));
-			buff[i * 2 + 1] = (byte)(data[i] * 32767);
+			int d = (int)((double)(data[i]) * 32700);
+			if(d > 32700) d = 32700;
+			if(d < - 32700) d = - 32700;
+			buff[i * 2 + 0] = (byte)(d >> 8);
+			buff[i * 2 + 1] = (byte)(d);
 		}
-		if(clipping)
-			System.out.println("Clipping");
+		//if(clipping)
+		//	System.out.println("Clipping");
 		sdl.write(buff, 0, buff.length);
 	}
 

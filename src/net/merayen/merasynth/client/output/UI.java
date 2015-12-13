@@ -63,6 +63,7 @@ public class UI extends UINode {
 			input_port = new UIPort("input", false);
 			input_port.translation.x = 0f;
 			input_port.translation.y = 20f;
+			input_port.color = UIPort.AUDIO_PORT;
 			addPort(input_port);
 		}
 	}

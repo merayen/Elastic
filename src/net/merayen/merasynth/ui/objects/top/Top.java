@@ -201,6 +201,10 @@ public class Top extends UIGroup {
 		return screen_height;
 	}
 
+	public void debugPrint(String key, Object value) {
+		debug.set(key, value);
+	}
+
 	public JSONObject dump() {
 		return top_node_container.dump();
 	}
