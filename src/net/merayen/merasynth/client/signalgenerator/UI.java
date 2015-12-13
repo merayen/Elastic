@@ -1,6 +1,5 @@
 package net.merayen.merasynth.client.signalgenerator;
 
-import net.merayen.merasynth.ui.Color;
 import net.merayen.merasynth.ui.objects.node.UINode;
 import net.merayen.merasynth.ui.objects.node.UIPort;
 import net.merayen.merasynth.ui.objects.node.components.PortParameterSlider;

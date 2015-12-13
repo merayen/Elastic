@@ -1,7 +1,6 @@
 package net.merayen.merasynth.client.output;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,10 +8,8 @@ import net.merayen.merasynth.audio.transform.MixSessionAudio;
 import net.merayen.merasynth.buffer.AudioCircularBuffer;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.AllowNewSessionsRequest;
-import net.merayen.merasynth.netlist.datapacket.AudioRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
-import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
 import net.merayen.merasynth.process.ProcessorController;
 import net.merayen.merasynth.util.AverageStat;
 
@@ -28,7 +25,6 @@ public class Net extends Node {
 	private int channels = 0;
 
 	private AudioOutput audio_output;
-	private long last_buffer_change = 0;
 
 	private HashMap<String, Number> statistics = new HashMap<String, Number>();
 
@@ -99,7 +95,6 @@ public class Net extends Node {
 
 		if(behind == 0) { // Output buffer is empty, must increase our buffer!
 			output_buffer_size += 8;
-			last_buffer_change = System.currentTimeMillis() + 1000;
 		}
 
 		audio_output.write(ar.samples);
