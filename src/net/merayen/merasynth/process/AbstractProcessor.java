@@ -13,7 +13,7 @@ import net.merayen.merasynth.netlist.datapacket.DataPacket;
  * so that the processor knows which ports are connected etc.
  */
 public abstract class AbstractProcessor {
-	protected final Node net_node;
+	public final Node net_node;
 	public final long session_id;
 	public final long time_created = System.currentTimeMillis();
 
