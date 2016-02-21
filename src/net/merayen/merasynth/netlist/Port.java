@@ -26,9 +26,6 @@ public class Port extends NetListObject {
 	}
 
 	public void supervisor_push(DataPacket data) {
-		/*
-		 * Called by another port to receive data from that port
-		 */
 		incoming.add(data);
 		node.queueUpdate(); // Fikk data, så da må noden få kallt update()
 	}

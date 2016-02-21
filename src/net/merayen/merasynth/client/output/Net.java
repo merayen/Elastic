@@ -5,17 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.merayen.merasynth.audio.transform.MixSessionAudio;
-import net.merayen.merasynth.buffer.AudioCircularBuffer;
+import net.merayen.merasynth.net.util.flow.PortBuffer;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.AllowNewSessionsRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
-import net.merayen.merasynth.netlist.datapacket.DataPacket;
-import net.merayen.merasynth.process.ProcessorController;
+import net.merayen.merasynth.netlist.util.AudioNode;
 import net.merayen.merasynth.util.AverageStat;
 
-public class Net extends Node {
-	private final ProcessorController<Processor> pc;
-
+public class Net extends AudioNode<Processor> {
 	// Tuning parameters
 	private int output_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
 	private int process_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
@@ -31,18 +28,7 @@ public class Net extends Node {
 	private AverageStat<Integer> avg_buffer_size = new AverageStat<Integer>(100);
 
 	public Net(Supervisor supervisor) {
-		super(supervisor);
-
-		pc = new ProcessorController<Processor>(this, Processor.class);
-	}
-
-	@Override
-	protected void onCreatePort(String port_name) {
-
-	}
-
-	protected void onReceive(String port_name, DataPacket dp) {
-		pc.handle(port_name, dp);
+		super(supervisor, Processor.class);
 	}
 
 	public double onUpdate() {
@@ -61,7 +47,7 @@ public class Net extends Node {
 	public void requestAudio() {
 		send("input", new AllowNewSessionsRequest()); // We allow nodes to the left to create new sessions
 
-		for(Processor p : pc.getProcessors()) // Request all sessions for audio
+		for(Processor p : processor_controller.getProcessors()) // Request all sessions for audio
 			p.requestAudio(process_buffer_size);
 	}
 
@@ -75,7 +61,7 @@ public class Net extends Node {
 		System.out.println("Inited audio device");
 	}
 
-	/*
+	/**
 	 * Called by the processors, whenever they receive audio.
 	 * We then check if we can mix and output audio.
 	 */
@@ -83,7 +69,7 @@ public class Net extends Node {
 		tryToMix();
 	}
 
-	/*
+	/**
 	 * Only does mono for now, and only mixes down to mono
 	 */
 	private void handleAudioResponse(AudioResponse ar) {
@@ -116,20 +102,21 @@ public class Net extends Node {
 	 * As input can contain multiple sessions (or "voices") we need to mix it down.
 	 */
 	private void tryToMix() {
-		if(pc.activeProcesses() == 0) {
+		if(processor_controller.activeProcesses() == 0) {
 			int silence_samples = output_buffer_size - audio_output.behind();
-			if(silence_samples > 0) // No processes that can actually output anything. We output some silence to not starve the output
-				audio_output.write(new float[silence_samples]); // Some random number
+			if(silence_samples > 0) // No processors that can actually output anything. We output some silence to not starve the output
+				audio_output.write(new float[silence_samples]);
+			return;
 		}
 
-		List<AudioCircularBuffer> buffers = new ArrayList<>(); // Array of all sessions/voices
+		List<PortBuffer> buffers = new ArrayList<>(); // Array of all sessions/voices
 
-		// Get all available channels
-		for(Processor p : pc.getProcessors())
-			buffers.add(p.buffer);
+		for(Processor p : processor_controller.getProcessors())
+			if(p.isAlive())
+				if(p.isValid())
+					buffers.add(p.getBuffer());
 
-		// Note: only mono for now
-		AudioResponse ar = new MixSessionAudio().mix(buffers);
+		AudioResponse ar = MixSessionAudio.mix(buffers); // TODO send a channel map to mix down to
 
 		if(ar != null) // Horay, mixing was possible, we output
 			handleAudioResponse(ar);

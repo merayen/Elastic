@@ -1,18 +1,16 @@
 package net.merayen.merasynth.client.signalgenerator;
 
-import net.merayen.merasynth.client.signalgenerator.Net.Mode;
 import net.merayen.merasynth.midi.MidiStatuses;
+import net.merayen.merasynth.net.util.flow.PortBuffer;
+import net.merayen.merasynth.net.util.flow.PortBufferIterator;
+import net.merayen.merasynth.net.util.flow.portmanager.ManagedPortState;
 import net.merayen.merasynth.netlist.Node;
-import net.merayen.merasynth.netlist.datapacket.AudioRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.netlist.datapacket.EndSessionResponse;
-import net.merayen.merasynth.netlist.datapacket.MidiRequest;
 import net.merayen.merasynth.netlist.datapacket.MidiResponse;
 import net.merayen.merasynth.netlist.datapacket.SessionCreatedResponse;
-import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
-import net.merayen.merasynth.netlist.util.flow.MidiFlowHelper;
-import net.merayen.merasynth.process.AbstractProcessor;
+import net.merayen.merasynth.process.AudioProcessor;
 
 /*
  * Makes beeping sounds.
@@ -20,187 +18,187 @@ import net.merayen.merasynth.process.AbstractProcessor;
  * how much they should produce, like remember the amount requested, as incoming data might be much more than
  * we have requested due to ports being split.
  */
-public class Processor extends AbstractProcessor {
-	private final AudioFlowHelper audio_flow_helper;
-	private final MidiFlowHelper midi_flow_helper;
-
+public class Processor extends AudioProcessor {
 	private float midi_amplitude = 1f;
 	private float midi_frequency;
 
 	private final Net net_node;
-	private boolean dead;
 
 	private double pos = 0;
 
-	public Processor(Node net_node, long session_id) {
-		super(net_node, session_id);
-		this.net_node = Net.class.cast(net_node);
-
-		audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
-
-			@Override
-			public void onRequest(String port_name, int request_sample_count) {
-				//audio_flow_helper.request("frequency", request_sample_count);
-				// Only sends data on first channel for now
-				// TODO Send on multiple channels as given on the input port
-				// TODO read data from "frequency" (if connected) and generate data dependent on that
-				if(port_name.equals("output"))
-					audio_flow_helper.send("output", new short[]{0}, generate(request_sample_count)); // Synchronous for now
-			}
-
-			@Override
-			public void onReceive(String port_name) {
-				// TODO Generate 
-
-				System.out.printf("Data in: %d\n", audio_flow_helper.available("frequency"));
-			}
-		});
-
-		audio_flow_helper.addInput("frequency");
-		audio_flow_helper.addOutput("output");
-
-		midi_flow_helper = new MidiFlowHelper(this, new MidiFlowHelper.IHandler() {
-
-			@Override
-			public void onReceive(String port_name) {
-				if(port_name.equals("frequency"))
-					;//System.out.printf("Got MIDI data: %s\n", midi_flow_helper.available());
-			}
-
-			@Override
-			public void onRequest(String port_name, int request_sample_count) {
-				// We do not output MIDI data
-			}
-		});
-
-		// We tell right nodes that we have created this session and that they should now request from us
-		send("output", new SessionCreatedResponse());
+	public Processor(Node n, long session_id) {
+		super(n, session_id);
+		this.net_node = (Net)n;
 	}
 
 	@Override
-	public void handle(String port_name, DataPacket dp) {
-		if(port_name.equals("output")) {
-			if(dp instanceof AudioRequest) {
-				if(dead) {
-					System.out.println("Got an audio request after we ended session. Ignored.");
-					return;
-				}
+	protected void onCreate() { // TODO only allow creation from frequency port? Hmm
+		// We tell right nodes that we have created this session and that they should now request from us
+		respond("output", new SessionCreatedResponse());
 
-				if(net_node.isConnected("frequency")) {
-					if(net_node.getMode() == Net.Mode.NONE) {
-						// Mode is not set yet, we ask for both Audio and Midi
-						// Depending on what we receive, we set mode after that
-						requestMidi((AudioRequest)dp);
-						requestAudio((AudioRequest)dp);
-					}
-					if(net_node.getMode() == Net.Mode.MIDI)
-						requestMidi((AudioRequest)dp);
-					else if(net_node.getMode() == Net.Mode.AUDIO)
-						requestAudio((AudioRequest)dp);
-				} else {
-					audio_flow_helper.handle(port_name, dp); // Hmmm...
-				}
-			}
-		}
+		// TODO Request session on amplitude-port, if it is connected?
+	}
 
-		if(port_name.equals("frequency")) {
-			if(!dead && dp instanceof MidiResponse) {
-				if(net_node.getMode() == Net.Mode.MIDI)
-					; // OK
-				else if(net_node.getMode() == Net.Mode.NONE)
-					net_node.setMode(Net.Mode.MIDI);
-				else
-					throw new RuntimeException("Processor received unexpected format on frequency-port");
+	private void tryToGenerate() {
+		boolean frequency_connected = net_node.isConnected("frequency");
+		boolean amplitude_connected = net_node.isConnected("amplitude");
+		ManagedPortState frequency_state = getPortState("frequency");
 
-				handleMidi((MidiResponse)dp);
-			}
+		float[] r = null;
+		if(frequency_connected && frequency_state != null && frequency_state.format == MidiResponse.class)
+			r = generateWithMidi();
+		else if(!frequency_connected && !amplitude_connected)
+			r = generateStandalone();
 
-			if(!dead && dp instanceof AudioResponse) {
-				if(net_node.getMode() == Net.Mode.AUDIO)
-					; // OK
-				else if(net_node.getMode() == Net.Mode.NONE)
-					net_node.setMode(Net.Mode.AUDIO);
-				else
-					throw new RuntimeException("Processor received unexpected format on frequency-port");
-
-				handleAudio((AudioResponse)dp);
-			}
-
-			if(dp instanceof EndSessionResponse)
-				kill();
+		if(r != null) {
+			AudioResponse ar = new AudioResponse();
+			ar.sample_count = r.length;
+			ar.channels = new short[]{0}; // We only send mono
+			ar.samples = r;
+			send("output", ar);
 		}
 	}
 
-	private float[] generate(int sample_request_count) {
-		// TODO mix with frequency port if it is audio
-		float[] r = new float[sample_request_count]; // TODO use shared buffer
-		float frequency;
-		if(net_node.getMode() == Net.Mode.STANDALONE) // TODO Make several generate() functions, for MIDI, AUDIO and this for STANDALONE
-			frequency = net_node.frequency;
-		else if(net_node.getMode() == Net.Mode.MIDI)
-			frequency = midi_frequency;
+	/**
+	 * Generate sine wave without the frequency port or amplitude port.
+	 * We then generate data synchronously 
+	 */
+	private float[] generateStandalone() {
+		// Figure how much data we need to generate
+		int to_generate = this.getPortBuffer("output").available();
+		//for(DataPacket dp : this.getPortBuffer("output"))
+		//	if(dp instanceof DataRequest)
+		//		to_generate += dp.sample_count;
+		//	else
+		//		throw new RuntimeException(String.format("Got unexpected packet on output-port: %s", dp.getClass().getName()));
+
+		float[] r = new float[to_generate]; // TODO use shared buffer
+		float frequency = net_node.frequency;
+		float amplitude = net_node.amplitude;// * midi_amplitude;
+
+		if(amplitude > 0)
+			for(int i = 0; i < r.length; i++)
+				r[i] = (float)Math.sin(pos += (Math.PI * 2.0 * frequency) / net_node.sample_rate) * amplitude * 0.2f;
 		else
-			throw new RuntimeException("Not implemented yet");
-
-		float amplitude = net_node.amplitude * midi_amplitude;
-
-		for(int i = 0; i < r.length; i++)
-			r[i] = (float)Math.sin(pos += ((Math.PI * 2.0) * frequency) / net_node.sample_rate) * amplitude * 0.2f;
+				pos += (Math.PI * 2.0 * frequency * r.length) / net_node.sample_rate;
 
 		pos %= Math.PI * 2 * 1000;
+
+		this.getPortBuffer("output").clear();
 
 		return r;
 	}
 
-	private void requestMidi(AudioRequest ar) {
-		MidiRequest mr = new MidiRequest();
-		mr.sample_count = ar.sample_count;
-		send("frequency", mr);
-	}
-
-	private void requestAudio(AudioRequest ar) {
-		send("frequency", ar);
-	}
-
 	/**
-	 * Handles MIDI coming into the Frequency port.
-	 * TODO better MIDI handling, for more correct time vs frequency handling.
+	 * Generate sine wave from frequency port connected to a MIDI source.
+	 * Amplitude may or may not be connected.
 	 */
-	private void handleMidi(MidiResponse mr) {
-		for(int i = 0; i < mr.midi.length; i++) {
-			final short[] packet = mr.midi[i];
+	private float[] generateWithMidi() {
+		boolean amplitude_connected = net_node.isConnected("amplitude");
+		PortBuffer frequency_buffer = this.getPortBuffer("frequency");
+		PortBuffer amplitude_buffer = this.getPortBuffer("amplitude");
 
-			if(packet[0] == MidiStatuses.KEY_DOWN) {
-				setFrequencyFromMidi(packet);
-			} else if(packet[0] == MidiStatuses.KEY_UP) {
-				// We end session on right side. This is to save resources. User needs to latch session on the left side of us if this is not wanted.
-				send("output", new EndSessionResponse());
-				dead = true;
-				return;
+		int to_generate = Math.min(frequency_buffer.available(), Integer.MAX_VALUE);
+		if(amplitude_connected)
+			to_generate = Math.min(amplitude_buffer.available(), to_generate);
+
+		if(to_generate == 0)
+			return null;
+
+		float[] output = new float[to_generate];
+
+		PortBuffer[] ports;
+		if(amplitude_connected)
+			ports = new PortBuffer[]{frequency_buffer, amplitude_buffer};
+		else
+			ports = new PortBuffer[]{frequency_buffer};
+
+		new PortBufferIterator(ports, new PortBufferIterator.IteratorFunc() {
+
+			private MidiResponse last_mr_packet = null;
+
+			@Override
+			public void loop(DataPacket[] port_packets, int[] packet_offsets, int offset, int sample_count) {
+				// MIDI packet swapped? We update ourself
+				if(port_packets[0] != last_mr_packet) {
+					last_mr_packet = (MidiResponse)port_packets[0];
+					for(short[] midi : last_mr_packet.midi) { // XXX Placing MIDI interpreting here is not 100% accurate. Problem?
+						if(midi[0] == MidiStatuses.KEY_DOWN) {
+							setFrequencyFromMidi(midi);
+						} else if(midi[0] == MidiStatuses.KEY_UP) {
+							end(); // This sends EndSessionHint and EndSessionResponse and then kill ourself
+							throw new PortBufferIterator.Stop();
+						}
+					}
+				}
+
+				if(amplitude_connected) {
+					/*float[] f = ((AudioResponse)port_packets[2]).samples;
+
+					for(int i = 0; i < sample_count; i++)
+						output[offset + i] =
+							a[packet_offsets[0] + i]  * f[packet_offsets[2] + i] + // TODO retrieve the fac_value from fac-port, if connected
+							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);*/
+					// TODO
+					throw new RuntimeException("Not implemented");
+				} else {
+					for(int i = 0; i < sample_count; i++)
+						output[offset + i] = (float)Math.sin(pos += (Math.PI * 2.0 * midi_frequency) / net_node.sample_rate) * midi_amplitude * 0.2f;
+				}
 			}
+		});
+
+		// Forward the buffer
+		if(isAlive()) { // We might kill ourself in the loop above, and since the buffers get cleared, we will fail here
+			frequency_buffer.forward(to_generate);
+			if(amplitude_connected)
+				amplitude_buffer.forward(to_generate);
 		}
 
-		// TODO don't generate audio from response sample count, we need a class that keeps track of the requested amount of data
-		AudioResponse ar = new AudioResponse();
-		ar.sample_count = mr.sample_count;
-		ar.channels = new short[]{0}; // We only send mono
-		ar.samples = generate(mr.sample_count);
-		send("output", ar);
-	}
-
-	private void handleAudio(AudioResponse ar) {
-		// TODO generate audio now, with the response
+		return output;
 	}
 
 	private void setFrequencyFromMidi(short[] packet) {
 		midi_frequency = (float)(440 * Math.pow(2, (packet[1] - 69) / 12.0f));
 		midi_amplitude = packet[2] / 128f;
 		pos = 0;
+		System.out.println(midi_frequency);
 	}
 
 	@Override
 	public void onDestroy() {
-		if(!dead)
-			send("output", new EndSessionResponse());
+		//if(!dead)
+		//	send("output", new EndSessionResponse());
+	}
+
+	private void requestData() {
+		PortBuffer output_buffer = getPortBuffer("output");
+		int to_request = output_buffer.available();
+		if(to_request > 0) {
+			if(net_node.isConnected("frequency")) {
+				//System.out.printf("Signalgenerator %d requests %d samples\n", this.session_id, to_request);
+				this.request("frequency", to_request);
+			}
+
+			if(net_node.isConnected("amplitude"))
+				this.request("amplitude", to_request);
+
+			output_buffer.clear();
+		}
+	}
+
+	@Override
+	protected void onReceive(String port_name) {
+		tryToGenerate();
+
+		if(port_name.equals("output") && (net_node.isConnected("frequency") || net_node.isConnected("amplitude")))
+			requestData();
+	}
+
+	protected void onReceiveControl(String port_name, DataPacket dp) {
+		if(port_name.equals("frequency")) {
+			if(dp instanceof EndSessionResponse)
+				terminate();
+		}
 	}
 }

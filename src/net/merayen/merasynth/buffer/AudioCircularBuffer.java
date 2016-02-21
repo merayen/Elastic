@@ -78,7 +78,7 @@ public class AudioCircularBuffer {
 
 	private void ensure(int channel) { // TODO remove dead channels automatically
 		if(channel >= MAX_CHANNELS)
-			throw new RuntimeException(String.format("Can't create channel No. %i. Max %i channels allowed", channel, MAX_CHANNELS));
+			throw new RuntimeException(String.format("Can't create channel No. %d. Max %d channels allowed", channel, MAX_CHANNELS));
 
 		if(buffers[channel] == null)
 			buffers[channel] = new FloatCircularBuffer(buffer_size);
@@ -137,5 +137,45 @@ public class AudioCircularBuffer {
 					throw new OutOfSyncException();
 
 		is_engaged = false;
+	}
+
+	public static void test() {
+		final int buffer_size = 4410;
+		System.out.println("Testing AudioCircularBuffer performance");
+		float[] random = new float[buffer_size*2];
+		for(int i = 0; i < random.length; i++)
+			random[i] = (float)Math.random() * 2 - 1;
+
+		AudioCircularBuffer buffer = new AudioCircularBuffer(buffer_size);
+
+		long copies = 0;
+		long samples_copied = 0;
+
+		float[] read = new float[buffer_size];
+		long tid = -System.currentTimeMillis();
+		float m = 0;
+		for(int i = 0; i < 3200; i++) {
+			for(int j = 0; j < random.length;) {
+				int next_step = Math.min(j + 128, random.length);
+				int length = next_step - j;
+				copies += 1;
+				samples_copied += length;
+				buffer.write(i / 100, j, next_step, random);
+				buffer.read(i / 100, read);
+				j = next_step;
+			}
+		}
+
+		tid += System.currentTimeMillis();
+		float[] test = new float[buffer_size];
+		if(buffer.read(0, test) != buffer_size)
+			throw new RuntimeException("Nope");
+
+		for(int i = 0; i < test.length; i++)
+			m += test[i];
+
+		System.out.println(m);
+		System.out.println("Copies: " + copies + ", samples copied: " + samples_copied + " at: " + (samples_copied / tid) + "K samples/s, time: " + (tid / 1000f));
+		//System.out.println("Total sum: " + s);
 	}
 }

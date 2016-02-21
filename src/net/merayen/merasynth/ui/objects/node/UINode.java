@@ -1,6 +1,7 @@
 package net.merayen.merasynth.ui.objects.node;
 
 import net.merayen.merasynth.glue.nodes.GlueNode;
+import net.merayen.merasynth.netlist.util.Stats;
 import net.merayen.merasynth.ui.objects.UIGroup;
 import net.merayen.merasynth.ui.objects.UIObject;
 import net.merayen.merasynth.ui.objects.node.Titlebar;
@@ -59,6 +60,20 @@ public abstract class UINode extends UIGroup {
 
 		titlebar.width = width;
 
+		// Doodling
+		Stats s = getGlueNode().getStats();
+		if(s != null) { // Statistics are only available for Net nodes that are AudioNodes
+			for(UIPort p : this.getPorts()) // TODO Only show when enabled in the UI?
+				if(s.ports.containsKey(p.name))
+					p.setPortStats(s.ports.get(p.name));
+
+			if(absolute_translation.scale_x < .5) {
+				draw.setColor(255, 255, 255);
+				draw.setFont("Verdana", 8);
+				draw.text(String.format("%d",  s.processor_count), 0, -5);
+			}
+		}
+
 		super.onDraw();
 	}
 
@@ -70,6 +85,9 @@ public abstract class UINode extends UIGroup {
 		super.add(obj);
 	}
 
+	/**
+	 * The class inheriting UINode can call this to add a new port
+	 */
 	public void addPort(UIPort port) {
 		super.add(port);
 		ports.add(port);
@@ -85,6 +103,11 @@ public abstract class UINode extends UIGroup {
 				// TODO Notify the GlueNode?
 			}
 		});
+	}
+
+	public void removePort(UIPort port) {
+		super.remove(port);
+		ports.remove(port);
 	}
 
 	public ArrayList<UIPort> getPorts() {
@@ -161,11 +184,21 @@ public abstract class UINode extends UIGroup {
 		return uinode;
 	}
 
-	/*
-	 * Ask the UINode object to create the Port so it can be seen.
+	/**
+	 * Don't call this manually.
 	 */
-	public void createPort(String name) {
-		onCreatePort(name);
+	public void gluenode_createPort(String port_name) {
+		onCreatePort(port_name);
+
+		// Reload UINet from netlist, in case this port is connected (typical after a restore, where connections are made previously in netlist)
+		getTopObject().getUINet().reload();
+	}
+
+	/**
+	 * Don't call this manually.
+	 */
+	public void gluenode_removePort(String port_name) {
+		onRemovePort(port_name);
 
 		// Reload UINet from netlist, in case this port is connected (typical after a restore, where connections are made previously in netlist)
 		getTopObject().getUINet().reload();

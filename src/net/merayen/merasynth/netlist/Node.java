@@ -1,6 +1,7 @@
 package net.merayen.merasynth.netlist;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.netlist.exceptions.NoSuchPortException;
@@ -44,12 +45,23 @@ public abstract class Node extends NetListObject {
 
 	}
 
+	protected void onRemovePort(String port_name) {
+
+	}
+
 	protected void onReceive(String port_name, DataPacket dp) {
 
 	}
 
 	protected double onUpdate() {
 		return DONE;
+	}
+
+	/**
+	 * Called when one or more wires has been added or removed from this node.
+	 */
+	protected void onRewire() {
+
 	}
 
 	protected void onDump(JSONObject state) {
@@ -60,16 +72,26 @@ public abstract class Node extends NetListObject {
 
 	}
 
-	public final void addPort(String port_name) {
-		/*
-		 * Noden kaller på denne for å legge til en port
-		 */
+	/**
+	 * Don't call this manually
+	 */
+	public void addPort(String port_name) {
 		if(getPort(port_name) != null)
 			throw new PortExists(this, port_name);
 
 		ports.add(new Port(this, port_name));
 
 		onCreatePort(port_name);
+	}
+
+	public void removePort(String port_name) {
+		Port port = getPort(port_name); 
+		if(port == null)
+			throw new PortNotFound(this, port_name);
+
+		ports.remove(port);
+
+		onRemovePort(port_name);
 	}
 
 	public ArrayList<Port> getPorts() {
@@ -92,16 +114,61 @@ public abstract class Node extends NetListObject {
 		return supervisor.isConnected(p);
 	}
 
-	public void send(String port_name, DataPacket data) {
-		/*
-		 * Node kaller på denne for å sende data ut på en port
-		 */
-		Port port = getPort(port_name);
+	public Node[] getConnectedNodes(String port_name) {
+		Port p = getPort(port_name);
+		if(p == null)
+			throw new PortNotFound(this, port_name);
 
+		Set<Port> ports = supervisor.getConnectedPorts(p);
+		Node[] result = new Node[ports.size()];
+
+		int i = 0;
+		for(Port port : ports)
+			result[i++] = port.node;
+
+		return result;
+	}
+
+	public int getConnectionCount(String port_name) {
+		Port p = getPort(port_name);
+		if(p == null)
+			throw new PortNotFound(this, port_name);
+
+		return supervisor.getConnectedPorts(p).size();
+	}
+
+	/**
+	 * Send data out from one of the nodes ports.
+	 */
+	public void send(String port_name, DataPacket data) {
+		Port port = getPort(port_name);
 		if(port == null)
 			throw new NoSuchPortException(this, port_name);
 
+		if(data.sender_port != null)
+			throw new RuntimeException("Resending of packets are not allowed. You will need to recreate them");
+
+		data.sender_port = port;
+
 		supervisor.send(port, data);
+	}
+
+	/**
+	 * Send data directly to a port (not the usual distribute to all connected lines-method).
+	 * Note, no checks are done to see if this port is connected at all. Be careful to always
+	 * be up-to-date on connected ports if using this.
+	 */
+	public void send(String source_port, Port destination_port, DataPacket data) {
+		Port port = getPort(source_port);
+		if(port == null)
+			throw new NoSuchPortException(this, source_port);
+
+		if(data.sender_port != null)
+			throw new RuntimeException("Resending of packets are not allowed. You will need to recreate them");
+
+		data.sender_port = port;
+
+		supervisor.sendPort(destination_port, data);
 	}
 
 	public void update() {

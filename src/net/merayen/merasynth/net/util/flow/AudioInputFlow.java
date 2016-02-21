@@ -1,4 +1,4 @@
-package net.merayen.merasynth.netlist.util.flow;
+package net.merayen.merasynth.net.util.flow;
 
 import net.merayen.merasynth.buffer.AudioCircularBuffer;
 import net.merayen.merasynth.netlist.Port;

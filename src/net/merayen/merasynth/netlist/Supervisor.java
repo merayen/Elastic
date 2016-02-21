@@ -91,6 +91,9 @@ public class Supervisor {
 		if(a == b)
 			throw new RuntimeException("Port can not be connected to itself");
 
+		if(a.node == b.node)
+			throw new RuntimeException("Node can not connect to itself");
+
 		validatePort(a);
 		validatePort(b);
 
@@ -101,6 +104,10 @@ public class Supervisor {
 			Line line = new Line(this, a, b);
 			lines.add(line);
 		}
+
+		// Notify nodes
+		a.node.onRewire();
+		b.node.onRewire();
 	}
 
 	public void disconnect(Port a, Port b) {
@@ -118,15 +125,27 @@ public class Supervisor {
 				if((l.a == a && l.b == b) || (l.a == b || l.b == a))
 					lines.remove(l);
 		}
+
+		a.node.onRewire();
+		b.node.onRewire();
 	}
 
 	public void disconnectAll(Port p) {
 		/*
 		 * Disconnects port from all other ports.
 		 */
-		for(Line l : new ArrayList<Line>(lines))
-			if(l.a == p || l.b == p)
+		for(Line l : new ArrayList<Line>(lines)) {
+			if(l.a == p || l.b == p) {
 				lines.remove(l);
+
+				if(l.a != p)
+					l.a.node.onRewire();
+				else
+					l.b.node.onRewire();
+			}
+		}
+
+		p.node.onRewire();
 	}
 
 	public HashSet<Port> getConnectedPorts(Port p) {
@@ -152,7 +171,8 @@ public class Supervisor {
 		return result;
 	}
 
-	/* Checks if a port is connected at all.
+	/**
+	 * Checks if a port is connected at all.
 	 * TODO Should have a standalone class that can scan node trees etc.
 	 */
 	public boolean isConnected(Port p) {
@@ -169,6 +189,14 @@ public class Supervisor {
 			for(Port p : getConnectedPorts(port))
 				p.supervisor_push(data);
 		}
+	}
+
+	/**
+	 * Send directly to a port without the usual distribution.
+	 * No checks on if this port is actually connected, be careful.
+	 */
+	public void sendPort(Port destination_port, DataPacket data) {
+		destination_port.supervisor_push(data);
 	}
 
 	public ArrayList<Line> getLines() {

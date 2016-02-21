@@ -49,13 +49,14 @@ public class UI extends UINode {
 			mix_slider.translation.x = 0f;
 			mix_slider.translation.y = 55f;
 			add(mix_slider);
-
+			Glue glue_node = (Glue)this.getGlueNode();
 			mix_slider.setHandler(new PortParameterSlider.IHandler() {
 
 				@Override
 				public void onChange(double value, boolean programatic) {
 					mix_value = Math.round(value * 200) / 200f;
 					mix_slider.setLabel(String.format("%d %%", (int)Math.round((mix_value*200 - 100))));
+					glue_node.setFac(mix_value);
 				}
 
 				@Override

@@ -4,6 +4,8 @@ import org.json.simple.JSONObject;
 
 import net.merayen.merasynth.glue.Context;
 import net.merayen.merasynth.netlist.Node;
+import net.merayen.merasynth.netlist.util.AudioNode;
+import net.merayen.merasynth.netlist.util.Stats;
 import net.merayen.merasynth.ui.objects.node.UINode;
 
 public abstract class GlueNode extends GlueObject {
@@ -101,6 +103,14 @@ public abstract class GlueNode extends GlueObject {
 		return ui_node_id;
 	}
 
+	public Stats getStats() {
+		if(this.getNetNode() instanceof AudioNode)
+			return ((AudioNode<?>)getNetNode()).getStats();
+
+		// Not an AudioNode, statistics are not easily available. You will need to make your own if necessary
+		return null;
+	}
+
 	protected void createPort(String name) {
 		// Create port on Netnode
 		Node node = this.getNetNode();
@@ -111,9 +121,23 @@ public abstract class GlueNode extends GlueObject {
 		UINode ui = this.getUINode();
 
 		ui.whenReady( () -> {
-			if(ui.hasPort(name))
-				return;
-			ui.createPort(name);
+			if(!ui.hasPort(name))
+				ui.gluenode_createPort(name);
+		});
+	}
+
+	protected void removePort(String port_name) {
+		// Create port on Netnode
+		Node node = this.getNetNode();
+		if(node.getPort(port_name) != null)
+			node.removePort(port_name);
+
+		// Update UINode too
+		UINode ui = this.getUINode();
+
+		ui.whenReady( () -> {
+			if(ui.hasPort(port_name))
+				ui.gluenode_removePort(port_name);
 		});
 	}
 

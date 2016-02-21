@@ -5,6 +5,7 @@ import net.merayen.merasynth.ui.objects.node.UIPort;
 import net.merayen.merasynth.ui.objects.node.components.PortParameterSlider;
 
 public class UI extends UINode {
+	private WaveSelect wave_select;
 	private PortParameterSlider frequency_slider;
 	private PortParameterSlider amp_slider;
 	private UIPort output_port;
@@ -23,9 +24,14 @@ public class UI extends UINode {
 		super.onInit();
 
 		width = 100f;
-		height = 80f;
+		height = 100f;
 
 		titlebar.title = "Signalgenerator";
+
+		wave_select = new WaveSelect();
+		wave_select.translation.x = 35;
+		wave_select.translation.y = 20;
+		add(wave_select);
 
 		createFrequencyPort();
 		createAmplitudePort();
@@ -70,7 +76,7 @@ public class UI extends UINode {
 	private void createFrequencyPort() {
 		UI self = this;
 		frequency_slider = new PortParameterSlider("frequency");
-		frequency_slider.translation.y = 20f;
+		frequency_slider.translation.y = 40f;
 		frequency_slider.color = UIPort.AUX_PORT;
 		add(frequency_slider);
 
@@ -98,7 +104,7 @@ public class UI extends UINode {
 	private void createAmplitudePort() {
 		UI self = this;
 		amp_slider = new PortParameterSlider("amplitude");
-		amp_slider.translation.y = 50f;
+		amp_slider.translation.y = 70f;
 		amp_slider.color = UIPort.AUDIO_PORT;
 		add(amp_slider);
 

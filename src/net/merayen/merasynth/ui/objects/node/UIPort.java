@@ -3,6 +3,7 @@ package net.merayen.merasynth.ui.objects.node;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import net.merayen.merasynth.netlist.util.Stats.PortStats;
 import net.merayen.merasynth.ui.Color;
 import net.merayen.merasynth.ui.Point;
 import net.merayen.merasynth.ui.event.DelayEvent;
@@ -31,6 +32,11 @@ public class UIPort extends UIGroup {
 	public Color color = AUX_PORT;
 
 	private UIPortTemporary temp_port; // Used when dragging a line from this port
+
+	/**
+	 * The state from the Net-system for this port
+	 */
+	private PortStats port_stats;
 
 	public UIPort(String name, boolean output) {
 		super();
@@ -107,6 +113,13 @@ public class UIPort extends UIGroup {
 			draw.text(title, 10f, 5f);
 		}
 
+		if(port_stats != null && this.absolute_translation.scale_x < .5) {
+			draw.setFont("SansSerif", 6);
+			draw.setColor(255, 255, 255);
+			draw.text(String.format("%d kb", (int)(port_stats.bytes_transferred / 1000)), -10, 10);
+			draw.text(String.format("%d/%d", port_stats.active, port_stats.total), -10, 16);
+		}
+
 		super.onDraw();
 	}
 
@@ -150,6 +163,10 @@ public class UIPort extends UIGroup {
 
 		return (UINet)m.get(0);
 		// ....
+	}
+
+	public void setPortStats(PortStats ps) {
+		port_stats = ps;
 	}
 
 	private void createTempPort(UIPort p) {

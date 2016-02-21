@@ -6,7 +6,6 @@ import net.merayen.merasynth.glue.Context;
 import net.merayen.merasynth.glue.nodes.GlueNode;
 
 public class Glue extends GlueNode {
-	private float frequency;
 
 	public Glue(Context context) {
 		super(context);
@@ -39,7 +38,11 @@ public class Glue extends GlueNode {
 		// TODO 
 	}
 
-	private net.merayen.merasynth.client.graph.UI ui() {
-		return ((net.merayen.merasynth.client.graph.UI)this.getUINode());
+	public void setFac(float fac_value) {
+		((Net)this.getNetNode()).fac_value = fac_value;
+	}
+
+	private UI ui() {
+		return (UI)this.getUINode();
 	}
 }

@@ -3,13 +3,8 @@ package net.merayen.merasynth.client.delay;
 import net.merayen.merasynth.buffer.AudioCircularBuffer;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
-import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
 
 public class Net extends Node {
-	/*
-	 * Genererer sinuslyd
-	 */
-	AudioFlowHelper audio_flow_helper;
 	int sample_delay = 0;
 	AudioCircularBuffer buffer;
 	int SAMPLE_RATE = 44100; // TODO get sample rate from event

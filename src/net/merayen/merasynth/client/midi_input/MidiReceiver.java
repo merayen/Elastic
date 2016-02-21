@@ -21,7 +21,7 @@ class MidiReceiver implements IMIDIReceiver {
 	public void onReceive(short[] midi, long timeStamp) {
 		short status = midi[0];
 
-		/*if(status == 144) {
+		if(status == 144) {
 			// Keypress down
 			int key_no = midi[1];
 			int key_velocity = midi[2];
@@ -38,7 +38,7 @@ class MidiReceiver implements IMIDIReceiver {
 			// Mod change
 			int value = midi[2]; // Not sure about mess[1]...
 			System.out.printf("Mod change: %d, %d\n", midi[1], midi[2]);
-		}*/
+		}
 
 		if(midi == null)
 			throw new RuntimeException("NBei har du sett");
@@ -50,7 +50,7 @@ class MidiReceiver implements IMIDIReceiver {
 	}
 
 	/*
-	 * TODO Skip midi packets that are too old (over a certain thresahold)
+	 * TODO Skip MIDI packets that are too old (over a certain threshold)
 	 */
 	public MidiPacket pop() {
 		return buffer.read();

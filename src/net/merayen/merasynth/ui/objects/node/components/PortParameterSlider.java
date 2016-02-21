@@ -64,7 +64,8 @@ public class PortParameterSlider extends UIGroup {
 		if(auto_position) {
 			port.translation.x = 0f;
 			port.translation.y = translation.y + 7.5f;
-			port.color = color;
+			if(color != null)
+				port.color = color;
 			parameter_slider.translation.x = 10f;
 			parameter_slider.translation.y = 0f;
 		}

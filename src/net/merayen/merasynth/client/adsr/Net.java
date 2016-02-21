@@ -3,6 +3,7 @@ package net.merayen.merasynth.client.adsr;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.AllowNewSessionsRequest;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
+import net.merayen.merasynth.process.AbstractProcessor;
 import net.merayen.merasynth.process.ProcessorController;
 
 public class Net extends Node {
@@ -13,7 +14,13 @@ public class Net extends Node {
 
 	public Net(Supervisor supervisor) {
 		super(supervisor);
-		pc = new ProcessorController<Processor>(this, Processor.class);
+		pc = new ProcessorController<Processor>(this, Processor.class, new ProcessorController.IHandler() {
+
+			@Override
+			public void onCreate(AbstractProcessor processor) {
+
+			}
+		});
 	}
 
 	protected void onReceive(String port_name, DataPacket dp) {

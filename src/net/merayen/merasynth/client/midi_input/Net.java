@@ -8,6 +8,8 @@ import net.merayen.merasynth.midi.devices.MIDIScanner;
 import net.merayen.merasynth.netlist.*;
 import net.merayen.merasynth.netlist.datapacket.AllowNewSessionsRequest;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
+import net.merayen.merasynth.netlist.util.AudioNode;
+import net.merayen.merasynth.process.AbstractProcessor;
 import net.merayen.merasynth.process.ProcessorController;
 
 /*
@@ -20,24 +22,24 @@ import net.merayen.merasynth.process.ProcessorController;
  * by some other circumstances.
  * TODO Maybe be able to map multiple MIDI devices.
  */
-public class Net extends Node {
+public class Net extends AudioNode<Processor> {
 	private final int MAX_SESSIONS = 16;
 	private MidiReceiver midi_receiver = new MidiReceiver();
 	private IMIDIDeviceAdapter device;
-	private final ProcessorController<Processor> pc;
 
 	public Net(Supervisor supervisor) {
-		super(supervisor);
-		pc = new ProcessorController<Processor>(this, Processor.class);
+		super(supervisor, Processor.class);
 		initMidi();
 	}
 
 	private void initMidi() {
 		List<IMIDIDeviceAdapter> devices = MIDIScanner.getDevices();
 		for(IMIDIDeviceAdapter dev : devices) {
+			System.out.printf("MIDI device available %s\n", dev.getName());
 			if(
-				//dev.getName().equals("Launchkey MIDI") ||
-				dev.getName().equals("KEYBOARD"))
+				dev.getName().equals("Launchpad Mini") ||
+				dev.getName().equals("KEYBOARD") ||
+				dev.getName().equals("Keystation 49e"))
 			{
 				System.out.printf("Using device %s\n", dev.getName());
 				dev.open(midi_receiver);
@@ -49,18 +51,10 @@ public class Net extends Node {
 
 	protected void onReceive(String port_name, DataPacket dp) {
 		processMidiIndata();
+		super.onReceive(port_name, dp);
 
-		if(dp instanceof AllowNewSessionsRequest) {
+		if(dp instanceof AllowNewSessionsRequest)
 			startNewSessions();
-			return;
-		}
-
-		if(dp.session_id != DataPacket.ALL_SESSIONS && dp.session_id != DataPacket.MAIN_SESSION && !pc.hasProcess(dp.session_id))
-			// We are asked about a session we don't have. We do not create it since we are a generator.
-			// This is most likely a fault on the right side of this node.
-			return;
-
-		pc.handle(port_name, dp);
 	}
 
 	protected void onDestroy() {
@@ -73,7 +67,7 @@ public class Net extends Node {
 	 * We do this as we are only allowed to create sessions under the AllowNewSessionRequest()!
 	 */
 	private void startNewSessions() {
-		for(Processor p : pc.getProcessors())
+		for(Processor p : processor_controller.getProcessors())
 			p.allow();
 	}
 
@@ -81,28 +75,19 @@ public class Net extends Node {
 		MidiReceiver.MidiPacket mp;
 
 		while((mp = midi_receiver.pop()) != null) {
-			if(mp.midi[0] == MidiStatuses.KEY_DOWN) {
+			if(mp.midi[0] == MidiStatuses.KEY_DOWN && mp.midi[2] > 0) // Tangent down, and we require a value. Zero value will be treated by KEY_UP by processor
 				spawnNewProcessor().addMidiPacket(mp);
-
-			} else if(mp.midi[0] == MidiStatuses.KEY_UP) { // Key Up event is separate for each processor // TODO Other events like after touch should also be separated
-				for(Processor p : pc.getProcessors())
-					if(p.midi_note_value == mp.midi[1])
-						p.addMidiPacket(mp);
-
-			// TODO see if any other processor separate data is available, like after touch (for each tangent)
-
-			} else { // All other data is distributed on all processes (sessions)
-				for(Processor p : pc.getProcessors())
+			else
+				for(Processor p : processor_controller.getProcessors()) // All other data is distributed on all processes (sessions)
 					p.addMidiPacket(mp);
-			}
 		}
 	}
 
 	private Processor spawnNewProcessor() {
-		if(pc.activeProcesses() >= MAX_SESSIONS)
-			getKillableProcessor().kill(); // Too many Processors running, need to kill a processor to process next tangent
+		if(processor_controller.activeProcesses() >= MAX_SESSIONS)
+			getKillableProcessor().terminate(); // Too many Processors running, need to kill a processor to process next tangent. TODO Make sure we end the session graceuflly (informing right nodes)
 
-		return pc.getProcessor(pc.createProcessor());
+		return processor_controller.getProcessor(processor_controller.createProcessor());
 	}
 
 	/*
@@ -113,7 +98,7 @@ public class Net extends Node {
 		Processor oldest_inactive = null;
 		Processor oldest = null;
 
-		for(Processor p : pc.getProcessors()) {
+		for(Processor p : processor_controller.getProcessors()) {
 			if(oldest == null || p.time_created < oldest.time_created) {
 				oldest = p;
 			}

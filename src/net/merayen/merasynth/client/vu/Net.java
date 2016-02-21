@@ -3,7 +3,7 @@ package net.merayen.merasynth.client.vu;
 import java.util.HashMap;
 
 import net.merayen.merasynth.netlist.*;
-import net.merayen.merasynth.netlist.datapacket.AudioRequest;
+import net.merayen.merasynth.netlist.datapacket.DataRequest;
 import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.util.AverageStat;

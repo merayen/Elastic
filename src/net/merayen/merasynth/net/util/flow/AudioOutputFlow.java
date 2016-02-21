@@ -1,4 +1,4 @@
-package net.merayen.merasynth.netlist.util.flow;
+package net.merayen.merasynth.net.util.flow;
 
 // Dummy class
 public class AudioOutputFlow {

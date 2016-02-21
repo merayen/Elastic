@@ -9,7 +9,7 @@ public class Main {
 
 		GlueNode node;
 
-		for(int i = -1; i < 0; i++ ) {
+		for(int i = -1; i < 2; i++ ) {
 			node = w.node_system.addNode(net.merayen.merasynth.client.signalgenerator.Glue.class);
 			node.getUINode().translation.x = i * 150f;
 			node.getUINode().translation.y = 50;
@@ -17,17 +17,20 @@ public class Main {
 		node = w.node_system.addNode(net.merayen.merasynth.client.output.Glue.class);
 		node.getUINode().translation.x = 400f;
 
+		node = w.node_system.addNode(net.merayen.merasynth.client.output_benchmark.Glue.class);
+		node.getUINode().translation.x = 500f;
+
 		node = w.node_system.addNode(net.merayen.merasynth.client.midi_input.Glue.class);
 		node.getUINode().translation.x = 30f;
 		node.getUINode().translation.y = 20f;
 
-		node = w.node_system.addNode(net.merayen.merasynth.client.adsr.Glue.class);
+		/*node = w.node_system.addNode(net.merayen.merasynth.client.adsr.Glue.class);
 		node.getUINode().translation.x = 200f;
-		node.getUINode().translation.y = 200f;
-
-		/*node = w.node_system.addNode(net.merayen.merasynth.client.mix.Glue.class);
-		node.getUINode().translation.x = 50f;
 		node.getUINode().translation.y = 200f;*/
+
+		node = w.node_system.addNode(net.merayen.merasynth.client.mix.Glue.class);
+		node.getUINode().translation.x = 50f;
+		node.getUINode().translation.y = 200f;
 
 		/*node = w.node_system.addNode(net.merayen.merasynth.client.delay.Glue.class);
 		node.getUINode().translation.x = 100f;

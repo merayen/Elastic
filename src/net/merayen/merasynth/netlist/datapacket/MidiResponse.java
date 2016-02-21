@@ -1,17 +1,17 @@
 package net.merayen.merasynth.netlist.datapacket;
 
-/*
+/**
  * Contains raw MIDI data.
  * Can contain multiple MIDI-packets, and they can be synchronous.
  */
 public class MidiResponse extends ResponsePacket {
-	/*
+	/**
 	 * MIDI data.
 	 * Format: midi[packet no][MIDI data offset]
 	 */
 	public short[][] midi;
 
-	/*
+	/**
 	 * Offset in sample count for each MIDI packet.
 	 * Must be the same length as MIDI packets in midi-variable.
 	 */

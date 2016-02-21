@@ -8,37 +8,47 @@ import java.util.Map;
 import net.merayen.merasynth.buffer.ObjectCircularBuffer;
 import net.merayen.merasynth.netlist.Node;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
-import net.merayen.merasynth.netlist.datapacket.KillAllSessionsRequest;
+import net.merayen.merasynth.netlist.datapacket.EndSessionHint;
+import net.merayen.merasynth.netlist.datapacket.EndSessionResponse;
 
 /*
  * Initiates processors and delegates data to them.
  * This makes a node being able to contain many separated processing instances of itself.
  */
 public class ProcessorController<T extends AbstractProcessor> {
+	public interface IHandler {
+		/**
+		 * Called when a processor has been created. Additional initializing of the processor is then possible.
+		 */
+		public void onCreate(AbstractProcessor processor);  
+	}
+
 	public static class AlreadyEndedException extends Exception {
 		public AlreadyEndedException(Node net_node, long session_id) {
 			super(String.format("Session can not be recreated. Node = %s, session_id = %d", net_node.getClass().getName(), session_id));
 		}
 	}
 
-	private static long voice_id_counter = 1; // Unique voice id
+	private static long session_id_counter = 1; // Unique voice id
 
 	private final int MAX_SESSIONS = 64;
 
 	private final Map<Long,T> processors = new HashMap<>(); // XXX Replace with faster map?
 	private final Class<T> process_class;
+	private final IHandler handler;
 	private final ObjectCircularBuffer<Long> killed_sessions = new ObjectCircularBuffer<>(1024); // Stupid check to see if someone tries to recreate a session that has been killed
 
 	public final Node net_node;
 
-	public ProcessorController(Node net_node, Class<T> process_class) {
+	public ProcessorController(Node net_node, Class<T> process_class, IHandler handler) {
 		this.net_node = net_node;
 		this.process_class = process_class;
+		this.handler = handler;
 	}
 
 	public long createProcessor() {
 		try {
-			return createProcessor(voice_id_counter++);
+			return createProcessor(session_id_counter++);
 		} catch(AlreadyEndedException e) {
 			throw new RuntimeException(e);
 		}
@@ -48,8 +58,14 @@ public class ProcessorController<T extends AbstractProcessor> {
 		if(processors.size() >= MAX_SESSIONS)
 			throw new RuntimeException("Too many sessions detected");
 
-		if(killed_sessions.contains(new Long(voice_id)))
+		if(voice_id < 0)
+			throw new RuntimeException(String.format("Invalid session id %d", voice_id));
+
+		if(voice_id != DataPacket.MAIN_SESSION && killed_sessions.contains(new Long(voice_id)))
 			throw new AlreadyEndedException(net_node, voice_id);
+
+		if(processors.containsKey(voice_id))
+			throw new RuntimeException(String.format("Processor with session %d already exists", voice_id));
 
 		T p;
 
@@ -61,6 +77,9 @@ public class ProcessorController<T extends AbstractProcessor> {
 
 		processors.put(voice_id, p);
 
+		handler.onCreate(p);
+		p.onCreate();
+
 		//System.out.printf("%s: Started processor %d\n", net_node.getClass().getName(), voice_id);
 		return voice_id;
 	}
@@ -68,7 +87,7 @@ public class ProcessorController<T extends AbstractProcessor> {
 	public void handle(String port_name, DataPacket dp) {
 		purge();
 
-		if(dp.session_id == DataPacket.MAIN_SESSION) {
+		if(dp.session_id == DataPacket.CONTROL_SESSION) {
 			return; // Packet not meant to be processed by processors
 
 		} else if(dp.session_id == DataPacket.ALL_SESSIONS) {
@@ -78,6 +97,9 @@ public class ProcessorController<T extends AbstractProcessor> {
 		} else {
 			AbstractProcessor p = processors.get(dp.session_id);
 			if(p == null) {
+				if(dp instanceof EndSessionHint || dp instanceof EndSessionResponse)
+					return; // Don't recreate session upon receiving packets that are ending sessions
+
 				try {
 					p = processors.get(createProcessor(dp.session_id)); // Create a voice/session that handles the incoming session id
 				} catch(AlreadyEndedException e) {
@@ -92,7 +114,7 @@ public class ProcessorController<T extends AbstractProcessor> {
 
 	public void killAll() {
 		for(T p : processors.values())
-			p.kill();
+			p.terminate();
 	}
 
 	public Collection<T> getProcessors() {
@@ -119,7 +141,7 @@ public class ProcessorController<T extends AbstractProcessor> {
 		Iterator<T> values = processors.values().iterator();
 		while(values.hasNext()) {
 			T p = values.next();
-			if(!p.isAlive()) {
+			if(p.isTerminated()) {
 				p.onDestroy();
 				values.remove();
 				killed_sessions.write(new Long(p.session_id));

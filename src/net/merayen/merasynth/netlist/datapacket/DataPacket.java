@@ -1,20 +1,33 @@
 package net.merayen.merasynth.netlist.datapacket;
 
+import net.merayen.merasynth.netlist.Port;
+
+/**
+ * All datapackets must inherits this class.
+ * Represents a packet that is sent between the nodes.
+ * A packet *CAN NOT* be forwarded, it must be created again.
+ */
 public abstract class DataPacket {
-	/*
-	 * All datapackets must inherits this class.
-	 * Represents a packet that is sent between the nodes.
-	 */
 	private static long next_id = 0;
 
-	/*
-	 * All nodes has what is called "main session". This session is always running,
-	 * and is not dependable on the asynchronous (time wise) processors the nodes contain
+	/**
+	 * Gets sent to all running processors
 	 */
 	public static final long ALL_SESSIONS = -1;
-	public static final long MAIN_SESSION = -2;
+
+	/**
+	 * All nodes has what is called "control session". This session is not processed by the processors.
+	 */
+	public static final long CONTROL_SESSION = -2;
+
+	/**
+	 * Main session. All processors that or not a voice (like in a poly synth), processes by this
+	 * session by default.
+	 */
+	public static final long MAIN_SESSION = 0; 
 
 	public final long id = ++next_id; // Unique packet id, incremental
+	public Port sender_port; // Do we really need this?
 
 	//public final long created = System.currentTimeMillis();
 

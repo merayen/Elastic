@@ -1,71 +1,70 @@
 package net.merayen.merasynth.client.output;
 
-import net.merayen.merasynth.buffer.AudioCircularBuffer;
+import net.merayen.merasynth.net.util.flow.PortBuffer;
+import net.merayen.merasynth.net.util.flow.portmanager.ProcessorManagedPort;
 import net.merayen.merasynth.netlist.Node;
-import net.merayen.merasynth.netlist.datapacket.AudioRequest;
+import net.merayen.merasynth.netlist.datapacket.AudioResponse;
 import net.merayen.merasynth.netlist.datapacket.DataPacket;
 import net.merayen.merasynth.netlist.datapacket.EndSessionResponse;
-import net.merayen.merasynth.netlist.datapacket.KillAllSessionsRequest;
-import net.merayen.merasynth.netlist.util.flow.AudioFlowHelper;
-import net.merayen.merasynth.process.AbstractProcessor;
+import net.merayen.merasynth.process.AudioProcessor;
 
-/*
+/**
  * Processor for outputting audio.
  * Accumulates audio and then the Net-node will acquire data when needed.
  */
-public class Processor extends AbstractProcessor {
-	private AudioFlowHelper audio_flow_helper;
+public class Processor extends AudioProcessor {
 	private final Net node;
-	public final AudioCircularBuffer buffer = new AudioCircularBuffer(2048); // Playback buffer should not be bigger than this anyway, hopefully
-	private final AudioCircularBuffer input_buffer; // Direct reference to the buffer for the "input" port
+	private boolean valid = true;
 
 	public Processor(Node net_node, long session_id) {
 		super(net_node, session_id);
-		this.node = Net.class.cast(net_node); 
-
-		audio_flow_helper = new AudioFlowHelper(this, new AudioFlowHelper.IHandler() {
-
-			@Override
-			public void onRequest(String port_name, int request_sample_count) {
-				// Won't happen
-			}
-
-			@Override
-			public void onReceive(String port_name) {
-				buffer.writeFromBuffer(input_buffer);
-				node.notifyAudioReceived(session_id);
-			}
-		});
-		audio_flow_helper.addInput("input");
-		input_buffer = audio_flow_helper.getInputBuffer("input");
+		this.node = (Net)net_node;
 	}
 
 	@Override
-	public void handle(String port_name, DataPacket dp) {
-		if(!isAlive())
-			System.out.println("output feil");
-		audio_flow_helper.handle(port_name, dp);
-
-		if(dp instanceof KillAllSessionsRequest) {
-			if(port_name.equals("input"))
-				kill();
+	protected void onReceive(String port_name) {
+		ProcessorManagedPort input_port = ports.get(port_name);
+		if(valid) {
+			if(!input_port.buffer.isEmpty()) {
+				if(!(input_port.buffer.getLast() instanceof AudioResponse))
+					valid = false;
+				else
+					node.notifyAudioReceived(session_id);
+			}
 		}
 
+		if(!valid)
+			input_port.buffer.clear();
+	}
+
+	@Override
+	protected void onReceiveControl(String port_name, DataPacket dp) {
 		if(port_name.equals("input")) {
 			if(dp instanceof EndSessionResponse)
-				kill();
+				terminate();
 		}
 	}
 
 	public void requestAudio(int sample_count) {
-		AudioRequest ar = new AudioRequest();
-		ar.sample_count = sample_count;
-		ar.session_id = DataPacket.ALL_SESSIONS; // We request all the processors on the left side for audio
-		send("input", ar);
+		request("input", sample_count);
+	}
+
+	public PortBuffer getBuffer() {
+		return ports.get("input").buffer;
+	}
+
+	public boolean isValid() {
+		return valid;
 	}
 
 	@Override
 	public void onDestroy() {
 
+	}
+
+	@Override
+	protected void onCreate() {
+		// TODO Auto-generated method stub
+		
 	}
 }
