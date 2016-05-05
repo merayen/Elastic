@@ -1,0 +1,39 @@
+問題：
+- Alt dette rotet oppstår pga vi ønsker å ha flere viewports
+- Vi tenker GObjects med flere parents, men da får vi problemer med flere translation-data
+- Hvordan endrer vi vår scene graph når vi itererer igjennom den? Kopiere alt sammen? Queue events?
+	- implementere onUpdate() på alle noder, som eksekveres i ubestemt rekkefølge?
+- Dette blir komplisert
+	- …og av erfaring bruker man mye tid og stopper kanskje opp halvveis
+
+
+
+- Mulig vi skal gå tilbake til Single-parent, men at GObjects peker på forskjellige Draw-nodes
+
+Format:
+- GList
+	- GObject
+		- UIObject[...]   <henter data fra LogicNodes>
+
+--- Mulig løsning ---
+- Vi går bort fra multiple-parents i vår scene graph
+- Vi har i stedet separate UIObjects for hver Viewport
+	- Disse vil motta events fra LogicNodes og oppdateres synkront
+	- ...altså, flere NodeContainer()s
+- Når man kaller på remove(), så skal den fjernes med en gang fra GList, Java GC ordner resten
+- UIObjects må implementere onUpdate()
+	- Det er kun her strukturelle endringer kan skje
+		...strukturelle endringer kan også oppstå i onInit()
+- Kun onDraw() kalles i struktur
+
+Hvordan manipulere treet underveis:
+- I onUpdate(), eller i onInit()
+
+Gjøre alt i Draw()-loop?
+- Nei, tror ikke det
+
+
+Hierarki:
+- GList
+	- GObject
+		- UIObject
