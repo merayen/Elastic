@@ -6,20 +6,13 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.Titlebar;
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class UINode extends UIObject {
-	protected class Action {
-
-		/*
-		 * Called everytime GlueNode creates a port.
-		 * UINode needs to then create and draw the port afterwards.
-		 */
-	}
-
 	public String node_id; // Same ID as in the backend-system, netlist etc
 	public float width = 500f;
 	public float height = 500f;
@@ -35,6 +28,7 @@ public abstract class UINode extends UIObject {
 
 	protected abstract void onCreatePort(String name);
 	protected abstract void onRemovePort(String name);
+	protected abstract void onMessage(NodeParameterMessage message);
 
 	protected void onInit() {
 		titlebar = new Titlebar();
@@ -153,9 +147,17 @@ public abstract class UINode extends UIObject {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			if(m.key.equals("ui.java.translation.x"))
 				translation.x = (Float)m.value;
-
-			if(m.key.equals("ui.java.translation.y"))
+			else if(m.key.equals("ui.java.translation.y"))
 				translation.y = (Float)m.value;
+			else
+				onMessage(m);
 		}
+	}
+
+	protected UINet getUINet() {
+		UIObject c = this;
+		while(!((c = c.getParent()) instanceof NodeView)); // Will crash hardstyle if not found
+
+		return ((NodeView)c).getUINet();
 	}
 }

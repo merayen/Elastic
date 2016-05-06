@@ -1,4 +1,4 @@
-package net.merayen.elastic.uinodes.list.signalgenerator_100;
+package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.BlockSelect;

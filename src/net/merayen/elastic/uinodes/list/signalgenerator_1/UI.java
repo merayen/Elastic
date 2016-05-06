@@ -1,9 +1,11 @@
-package net.merayen.elastic.uinodes.list.signalgenerator_100;
+package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.components.ParameterSlider;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
+import net.merayen.elastic.util.Postmaster;
 
 public class UI extends UINode {
 	private WaveSelect wave_select;
@@ -23,6 +25,7 @@ public class UI extends UINode {
 		return "Generates audio waves.";
 	}
 
+	@Override
 	public void onInit() {
 		super.onInit();
 
@@ -43,14 +46,27 @@ public class UI extends UINode {
 
 	public void onDraw() {
 		// TODO Only do this when connections are actually changed
-		frequency_slider.showSlider(!this.getTopObject().getUINet().isConnected(this.getPort("frequency")));
-		amp_slider.showSlider(!this.getTopObject().getUINet().isConnected(this.getPort("amplitude")));
+		frequency_slider.showSlider(!getUINet().isConnected(this.getPort("frequency")));
+		amp_slider.showSlider(!getUINet().isConnected(this.getPort("amplitude")));
 		super.onDraw();
 	}
 
-	public void setFrequency(float frequency) {
-		this.frequency = frequency;
-		frequency_slider.setValue(frequency / 8000.0);
+	@Override
+	protected void onMessage(NodeParameterMessage message) {
+		if(message.key.equals("data.frequency")) {
+			frequency = (float)message.value;
+			frequency_slider.setValue(frequency / 8000);
+		}
+
+		else if(message.key.equals("data.amplitude")) {
+			amplitude = (float)message.value;
+			amp_slider.setValue(amplitude / 10000);
+		}
+
+		else if(message.key.equals("data.offset")) {
+			offset = (float)message.value;
+			offset_slider.setValue(offset / 10000.0);
+		}
 	}
 
 	@Override
@@ -88,20 +104,24 @@ public class UI extends UINode {
 			@Override
 			public void onChange(double value, boolean programatic) {
 				frequency = Math.round(value * 8000.0 * 10) / 10 + 0.1f;
-				frequency_slider.setLabel(String.format("%.2f Hz", frequency));
 
 				if(!programatic) // If not set by setValue, but by users himself
-					((Glue)self.getGlueNode()).changeFrequency(frequency);
+					sendParameter("data.frequency", frequency);
 			}
 
 			@Override
 			public void onButton(int offset) {
 				frequency += offset*1;
-				frequency_slider.setValue(frequency / 8000.0);
+				frequency_slider.setValue(frequency / 8000);
+			}
+
+			@Override
+			public String onLabelUpdate(double value) {
+				return String.format("%.2f Hz", frequency);
 			}
 		});
 
-		frequency_slider.setValue(0);
+		frequency_slider.setValue(frequency / 8000);
 		frequency_slider.setScale(0.1f);
 	}
 
@@ -116,16 +136,20 @@ public class UI extends UINode {
 			@Override
 			public void onChange(double value, boolean programatic) {
 				amplitude = (float)(value * 10000f);
-				amp_slider.setLabel(String.format("%.2f", amplitude));
 
 				if(!programatic) // If not set by setValue, but by users himself
-					((Glue)self.getGlueNode()).changeAmplitude(amplitude);
+					sendParameter("data.amplitude", amplitude);
 			}
 
 			@Override
 			public void onButton(int offset) {
 				amplitude += offset * 0.1f;
 				amp_slider.setValue(amplitude / 10000f);
+			}
+
+			@Override
+			public String onLabelUpdate(double value) {
+				return String.format("%.2f", amplitude);
 			}
 		});
 
@@ -143,21 +167,25 @@ public class UI extends UINode {
 		offset_slider.setHandler(new ParameterSlider.IHandler() {
 			@Override
 			public void onChange(double value, boolean programatic) {
-				offset = (float)(value * 10000f) - 5000;
-				offset_slider.label = String.format("%.1f", offset);
+				offset = (float)(value * 10000f);
 
-				if(!programatic) // If not set by setValue, but by users himself
-					((Glue)self.getGlueNode()).changeOffset(offset);
+				if(!programatic)
+					sendParameter("data.offset", offset);
 			}
 
 			@Override
 			public void onButton(int offset) {
 				self.offset += offset;
-				offset_slider.setValue(offset / 10000f + 0.5f);
+				offset_slider.setValue(offset / 10000f);
+			}
+
+			@Override
+			public String onLabelUpdate(double value) {
+				return String.format("%.1f", offset);
 			}
 		});
 
-		offset_slider.setValue(0.5f);
+		offset_slider.setValue(0);
 		offset_slider.scale = 0.02f;
 	}
 }

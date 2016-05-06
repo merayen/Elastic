@@ -23,14 +23,13 @@ public class NodeView extends View {
 	private Movable movable;
 	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s";
-	private float scale = 1;
 
 	@Override
 	protected void onInit() {
 		add(container);
 
 		net = new UINet();
-		container.add(net/*, true*/); // Add the net first (also, drawn behind everything)
+		container.add(net, true); // Add the net first (also, drawn behind everything), as addNode() might have already been called
 
 		// Make it possible to move NodeViewContainer by dragging the background
 		movable = new Movable(container, this);
@@ -72,6 +71,7 @@ public class NodeView extends View {
 		for(UINode x : nodes)
 			if(x.node_id.equals(id))
 				return x;
+
 		return null;
 	}
 
@@ -90,20 +90,19 @@ public class NodeView extends View {
 		node.executeMessage(message);
 	}
 
-	/*private void zoom(float new_scale_x, float new_scale_y) {
-		UIObject tnc = node_view;
-		float previous_scale_x = tnc.translation.scale_x;
-		float previous_scale_y = tnc.translation.scale_y;
+	private void zoom(float new_scale_x, float new_scale_y) {
+		float previous_scale_x = container.translation.scale_x;
+		float previous_scale_y = container.translation.scale_y;
 		float scale_diff_x = new_scale_x - previous_scale_x;
 		float scale_diff_y = new_scale_y - previous_scale_y;
-		float current_offset_x = (tnc.translation.x - screen_width  / 2);
-		float current_offset_y = (tnc.translation.y - screen_height / 2);
+		float current_offset_x = (container.translation.x - width  / 2);
+		float current_offset_y = (container.translation.y - height / 2);
 	
-		tnc.translation.scale_x = new_scale_x;
-		tnc.translation.scale_y = new_scale_y;
-		tnc.translation.x = screen_width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
-		tnc.translation.y = screen_height / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
-	}*/
+		container.translation.scale_x = new_scale_x;
+		container.translation.scale_y = new_scale_y;
+		container.translation.x = width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
+		container.translation.y = height / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
+	}
 
 	@Override
 	protected void onEvent(IEvent event) {
@@ -115,27 +114,23 @@ public class NodeView extends View {
 			MouseWheelEvent e = (MouseWheelEvent)event;
 
 			if(isFocused()) {
-				scale += (scale * e.getOffsetY()) / 10;
-				container.translation.scale_x = container.translation.scale_y = scale;
-			}
+				float s_x = container.translation.scale_x;
+				float s_y = container.translation.scale_y;
 
-			/*float s_x = node_view.translation.scale_x;
-			float s_y = node_view.translation.scale_y;
+				if(e.getOffsetY() < 0) {
+					s_x /= 1.1f;
+					s_y /= 1.1f;
+				}
+				else if(e.getOffsetY() > 0) {
+					s_x *= 1.1f;
+					s_y *= 1.1f;
+				}
 
-			if(e.getOffsetY() < 0) {
-				s_x /= 1.1f;
-				s_y /= 1.1f;
+				zoom(
+					Math.max(Math.min(s_x, 10f), 0.1f),
+					Math.max(Math.min(s_y, 10f), 0.1f)
+				);
 			}
-			else if(e.getOffsetY() > 0) {
-				s_x *= 1.1f;
-				s_y *= 1.1f;
-			} else {
-				return;
-			}
-			zoom(
-				Math.max(Math.min(s_x, 10f), 0.1f),
-				Math.max(Math.min(s_y, 10f), 0.1f)
-			);*/
 		}
 	}
 }

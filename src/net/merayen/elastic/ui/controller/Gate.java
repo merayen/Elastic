@@ -71,7 +71,7 @@ public class Gate {
 
 	List<Controller> list = new ArrayList<>();
 
-	private final Top top;
+	final Top top;
 
 	private final UIGate ui_gate;
 	private final BackendGate backend_gate;
@@ -79,13 +79,15 @@ public class Gate {
 	private final Postmaster from_backend = new Postmaster(); // Incoming from backend
 	//private final Postmaster to_ui = new Postmaster(); // Processed by the controllers, but since Controller acts directly with UIObjects, we have no buffer 
 	private final Postmaster from_ui = new Postmaster(); // Messages sent from UI awaiting to be processed by a Controller
-	private final Postmaster to_backend = new Postmaster(); // Processed by Controller, awaiting to be read by backend
+	final Postmaster to_backend = new Postmaster(); // Processed by Controller, awaiting to be read by backend
 
 	public Gate(Top top) {
 		this.top = top;
 		ui_gate = new UIGate(this);
 		backend_gate = new BackendGate(this);
-		list.add(new NodeController(top));
+
+		list.add(new NodeController(this));
+		list.add(new NetController(this));
 	}
 
 	public UIGate getUIGate() {

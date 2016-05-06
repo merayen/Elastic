@@ -3,11 +3,13 @@ package net.merayen.elastic.ui.objects.node;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.Movable;
 
-class Titlebar extends UIObject {
+public class Titlebar extends UIObject {
 	public float width;
 	public String title = "";
 
 	private Movable moveable = null;
+
+	Titlebar() {}
 
 	protected void onInit() {
 		moveable = new Movable(this.getParent(), this);

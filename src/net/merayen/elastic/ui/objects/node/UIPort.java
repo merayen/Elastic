@@ -1,14 +1,11 @@
 package net.merayen.elastic.ui.objects.node;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.ui.Color;
 import net.merayen.elastic.ui.Point;
-import net.merayen.elastic.ui.Search;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.DelayEvent;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.util.MouseHandler;
 
@@ -22,6 +19,11 @@ public class UIPort extends UIObject {
 	public final static Color AUDIO_PORT = new Color(150, 200, 150);
 	public final static Color MIDI_PORT = new Color(200, 150, 100);
 	public final static Color AUX_PORT = new Color(150, 150, 150);
+
+	private static int debug_id_count;
+	private int debug_id = debug_id_count++;
+
+	private int task_remove_port;
 
 	private MouseHandler port_drag;
 	public String title = "";
@@ -60,7 +62,7 @@ public class UIPort extends UIObject {
 
 			@Override
 			public void onMouseDrop(Point start_point, Point offset) {
-				removeTempPort();
+				task_remove_port = 2; // Delay removal of port some frames
 			}
 
 			@Override
@@ -73,7 +75,7 @@ public class UIPort extends UIObject {
 				// Create a new port and notifies the net
 				if(!self.output) {// Input ports can only have 1 line connected
 					HashSet<UIPort> connected_ports = getUINetObject().getAllConnectedPorts(self);
-					if(connected_ports.size() == 1) {
+					if(connected_ports.size() > 0) {
 						getUINetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
 
 						// Reconnect temporary port from the port we were already connected to
@@ -121,6 +123,11 @@ public class UIPort extends UIObject {
 		port_drag.handle(event);
 	}
 
+	protected void onUpdate() {
+		if(task_remove_port > 0 && --task_remove_port == 0)
+			removeTempPort();
+	}
+
 	public void node_setHandler(Handler handler) {
 		/*
 		 * Only to be set by Node()
@@ -142,21 +149,7 @@ public class UIPort extends UIObject {
 	}
 
 	protected UINet getUINetObject() {
-		/*
-		 * Gets the Net object that draws all the lines.
-		 * TODO Remove and just mangle directly with netnode lines?
-		 */
-		Search s = new Search(search.getTop(), 1);
-		ArrayList<UIObject> m = s.searchByType(net.merayen.elastic.ui.objects.UINet.class);
-
-		if(m.size() == 0)
-			return null; // UINet object not available yet
-
-		if(m.size() != 1)
-			throw new RuntimeException("Need exactly 1 net uiobject");
-
-		return (UINet)m.get(0);
-		// ....
+		return getNode().getUINet();
 	}
 
 	/*public void setPortStats(PortStats ps) {
@@ -164,6 +157,7 @@ public class UIPort extends UIObject {
 	}*/
 
 	private void createTempPort(UIPort p) {
+		System.out.println("Creating temp port " + debug_id);
 		temp_port = new UIPortTemporary();
 		add(temp_port);
 		temp_port.addTempPort(p);
@@ -175,16 +169,10 @@ public class UIPort extends UIObject {
 	}
 
 	private void removeTempPort() {
-		UIPort self = this;
-		this.draw_context.queueEvent(new DelayEvent(new Runnable() {
-
-			@Override
-			public void run() {
-				temp_port.removeTempPort();
-				self.remove(temp_port);
-				temp_port = null;
-			}
-		}));
+		System.out.println("Removing temp port " + debug_id);
+		temp_port.removeTempPort();
+		remove(temp_port);
+		temp_port = null;
 	}
 
 	private void dropDraggingPort(UIPort port) {

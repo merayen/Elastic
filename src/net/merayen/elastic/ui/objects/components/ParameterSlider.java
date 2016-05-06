@@ -3,27 +3,23 @@ package net.merayen.elastic.ui.objects.components;
 import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.objects.components.Button.IHandler;
 import net.merayen.elastic.ui.util.MouseHandler;
 
 public class ParameterSlider extends UIObject {
 	float width = 80f;
 	public float scale = 1f;
-	/*public float max_value = 1f;
-	public float min_value = 0f;*/
 	public String label;
-	public boolean slider = true; // When true, value can only be between 0 and 1
 
 	private Button left_button, right_button;
 	private MouseHandler mousehandler;
 	private double value = 0f;
 	private double drag_value;
-	private boolean inited;
 	private IHandler handler;
 
 	public interface IHandler {
 		public void onChange(double value, boolean programatic);
 		public void onButton(int offset);
+		public String onLabelUpdate(double value);
 	}
 
 	protected void onInit() {
@@ -38,6 +34,7 @@ public class ParameterSlider extends UIObject {
 				if(handler != null) {
 					handler.onButton(-1);
 					handler.onChange(value, false);
+					label = handler.onLabelUpdate(value);
 				}
 			}
 		});
@@ -55,6 +52,7 @@ public class ParameterSlider extends UIObject {
 				if(handler != null) {
 					handler.onButton(1);
 					handler.onChange(value, false);
+					label = handler.onLabelUpdate(value);
 				}
 			}
 		});
@@ -64,8 +62,10 @@ public class ParameterSlider extends UIObject {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
 				setValue(drag_value + (offset.x / width) * scale);
-				if(handler != null)
+				if(handler != null) {
 					handler.onChange(value, false);
+					label = handler.onLabelUpdate(value);
+				}
 			}
 
 			@Override
@@ -104,14 +104,8 @@ public class ParameterSlider extends UIObject {
 	}
 
 	public void setValue(double v, boolean no_event) {
-		if(slider)
-			value = Math.max(Math.min(v, 1), 0);
-		else
-			value = v;
-		if(!inited) {
-			handler.onChange(value, true);
-			inited = true;
-		}
+		value = Math.max(Math.min(v, 1), 0);
+		label = handler.onLabelUpdate(value);
 	}
 
 	public void setValue(double v) {

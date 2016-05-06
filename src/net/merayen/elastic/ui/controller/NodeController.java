@@ -11,9 +11,12 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
 
+/**
+ * Handles messages sent and received by nodes.
+ */
 public class NodeController extends Controller {
-	public NodeController(Top top) {
-		super(top);
+	public NodeController(Gate gate) {
+		super(gate);
 	}
 
 	@Override
@@ -42,8 +45,8 @@ public class NodeController extends Controller {
 	private List<NodeView> getNodeViews() {
 		List<NodeView> result = new ArrayList<>();
 
-		if(top.isInitialized()) {
-			for(Viewport vp : top.getViewportContainer().getViewports()) {
+		if(getTopObject().isInitialized()) {
+			for(Viewport vp : getTopObject().getViewportContainer().getViewports()) {
 				if(vp.view instanceof NodeView)
 					result.add((NodeView)vp.view);
 			}

@@ -3,11 +3,9 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.merayen.elastic.ui.event.DelayEvent;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
-import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.surface.Surface;
 import net.merayen.elastic.ui.surface.Swing;
 import net.merayen.elastic.ui.util.DrawContext;

@@ -4,10 +4,10 @@ import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class Controller {
-	protected Top top;
+	protected Gate gate;
 
-	public Controller(Top top) {
-		this.top = top;
+	public Controller(Gate gate) {
+		this.gate = gate;
 	}
 
 	/**
@@ -19,4 +19,12 @@ public abstract class Controller {
 	 * Message sent from the UI.
 	 */
 	public abstract void onMessageFromUI(Postmaster.Message message);
+
+	public void sendToBackend(Postmaster.Message message) {
+		gate.to_backend.send(message);
+	}
+
+	public Top getTopObject() {
+		return gate.top;
+	}
 }

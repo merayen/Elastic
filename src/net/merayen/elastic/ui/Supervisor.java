@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.ui.controller.Gate;
@@ -55,7 +56,7 @@ public class Supervisor {
 
 			draw.destroy();
 
-			for(UIObject o : uiobject.children)
+			for(UIObject o : new ArrayList<>(uiobject.children))
 				internalDraw(dc, o);
 
 		} else {

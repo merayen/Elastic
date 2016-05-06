@@ -62,7 +62,10 @@ public class BackendContext {
 			CreateNodeMessage m = (CreateNodeMessage)message;
 			String node_id = logicnode_list.createNode(m.name, m.version);
 			from_backend.send(new NodeCreatedMessage(node_id, m.name, m.version));
+		}
 
+		else if(message instanceof NodeConnectMessage) {
+			// TODO deal with it
 		}
 	}
 

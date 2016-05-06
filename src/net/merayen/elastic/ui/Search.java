@@ -22,8 +22,8 @@ public class Search {
 	
 	public UIObject getTop() {
 		UIObject top = obj;
-		while(top.parent != null)
-			top = top.parent;
+		while(top.getParent() != null)
+			top = top.getParent();
 		
 		return top;
 	}

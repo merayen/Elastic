@@ -73,10 +73,12 @@ public class MouseHandler {
 						handler_class.onMouseClick(p_relative);
 
 				handler_class.onGlobalMouseUp(p_absolute);
+
 				if(mouse_dragging && mouse_down) {
 					mouse_dragging = false;
 					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.ui.Point(p_relative.x - drag_start.x, p_relative.y - drag_start.y));
 				}
+
 				mouse_down = false;
 			}
 			else if(e.action == MouseEvent.action_type.MOVE) {

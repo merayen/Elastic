@@ -6,7 +6,7 @@ import java.util.List;
 import net.merayen.elastic.ui.event.IEvent;
 
 public abstract class UIObject {
-	UIObject parent;
+	private UIObject parent;
 	final List<UIObject> children = new ArrayList<>(); 
 
 	public net.merayen.elastic.ui.Rect outline_abs_px; // Absolute, in screen pixels
@@ -30,11 +30,18 @@ public abstract class UIObject {
 	protected void onEvent(IEvent e) {}
 
 	public void add(UIObject uiobject) {
+		add(uiobject, false);
+	}
+
+	public void add(UIObject uiobject, boolean first) {
 		if(uiobject.parent != null)
 			throw new RuntimeException("UIObject already has a parent");
 
 		uiobject.parent = this;
-		children.add(uiobject);
+		if(first)
+			children.add(0, uiobject);
+		else
+			children.add(uiobject);
 	}
 
 	public void remove(UIObject uiobject) {
@@ -106,7 +113,7 @@ public abstract class UIObject {
 	 * Converts a single unit.
 	 * Uses both scale_x and scale_y to figure out the resulting value.
 	 */
-	public int convertUnitToPixel(float a) {
+	public int convertUnitToAbsolute(float a) {
 		TranslationData td = absolute_translation;
 		float resolution = Math.min(td.scale_x, td.scale_y);
 		return (int)(a / resolution);
@@ -116,7 +123,7 @@ public abstract class UIObject {
 	 * Converts a single unit.
 	 * Uses both scale_x and scale_y to figure out the resulting value. No it doesn't.
 	 */
-	public float convertPixelToUnit(int a) { // TODO Only uses the x-scale. Maybe make two functions, one for X and one for Y, and one for both somehow?
+	public float convertAbsoluteToUnit(int a) { // TODO Only uses the x-scale. Maybe make two functions, one for X and one for Y, and one for both somehow?
 		TranslationData td = absolute_translation;
 
 		return (float)a * td.scale_x;

@@ -112,7 +112,7 @@ public class Draw {
 	}
 
 	public void setStroke(float width) {
-		g2d.setStroke(new java.awt.BasicStroke(uiobject.convertUnitToPixel(width)));
+		g2d.setStroke(new java.awt.BasicStroke(uiobject.convertUnitToAbsolute(width)));
 	}
 
 	public void setFont(String font_name, float font_size) {
@@ -122,7 +122,7 @@ public class Draw {
 	}
 
 	private void setFont() {
-		Font font = new Font(font_name, 0, (int)uiobject.convertUnitToPixel(font_size));
+		Font font = new Font(font_name, 0, (int)uiobject.convertUnitToAbsolute(font_size));
 		g2d.setFont(font);
 	}
 
@@ -156,7 +156,7 @@ public class Draw {
 
 	public float getTextWidth(String text) {
 		setFont();
-		return uiobject.convertPixelToUnit(g2d.getFontMetrics().stringWidth(text));
+		return uiobject.convertAbsoluteToUnit(g2d.getFontMetrics().stringWidth(text));
 	}
 
 	public void empty(float x, float y, float width, float height) {

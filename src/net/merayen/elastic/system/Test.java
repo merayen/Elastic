@@ -5,9 +5,6 @@ import net.merayen.elastic.system.intercom.*;
 public class Test {
 	public static void test() {
 		ElasticSystem system = new ElasticSystem();
-		//system.sendMessageToUI(new DummyMessage());
-		//system.sendMessageToBackend(new DummyMessage());
-		//system.sendMessageToBackend(new CreateNodeMessage("group", 1));
 
 		try {
 			Thread.sleep(1000); // Give some time for the UI to create the viewports and the NodeView
@@ -15,7 +12,9 @@ public class Test {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 		system.sendMessageToBackend(new CreateNodeMessage("test", 100));
+		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
 
 		long t = System.currentTimeMillis() + 600000000;
 		while(t > System.currentTimeMillis()) {

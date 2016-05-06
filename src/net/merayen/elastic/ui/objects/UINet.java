@@ -2,25 +2,25 @@ package net.merayen.elastic.ui.objects;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
-import net.merayen.elastic.netlist.Line;
-import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.netlist.Port;
-import net.merayen.elastic.netlist.NetList;
+import net.merayen.elastic.system.intercom.NodeConnectMessage;
+import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
 import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.util.Postmaster;
 
 /**
  * Draws the lines between the ports on the nodes.
  */
 public class UINet extends UIObject {
 
-	/* 
-	 * Connection() class is *only* used to cache connections for fast draw times.
-	 * TODO might make it more permanent and allow 
+	/**
+	 * Class keeps all the connections in the UI. Gets gradually build from the messages send from backend. 
 	 */
 	private class Connection {
 		public UIPort a, b;
@@ -31,18 +31,14 @@ public class UINet extends UIObject {
 		}
 	}
 
-	ArrayList<Connection> connections = new ArrayList<Connection>();
+	List<Connection> connections = new ArrayList<Connection>();
 
 	private UIPort dragging_port;
 	private UIPort dragging_port_source;
 
-	//private boolean do_reload;
-
 	@Override
 	protected void onDraw() {
 		Top top = (Top)search.getTop();
-		//if(do_reload)
-			//doReload();
 
 		for(Connection c : connections) {
 			if(c.a.isInitialized() && c.b.isInitialized()) { // We need to see if they are ready, otherwise translation isn't available
@@ -88,54 +84,64 @@ public class UINet extends UIObject {
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		System.out.println("Connecting is not implemented"); // TODO send a message to backend postmaster
-		return;
+		((Top)search.getTop()).sendMessageToBackend(new NodeConnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
+	}
 
-		/*Port a_node_port = getNetPort(a);
-		Port b_node_port = getNetPort(b);
+	private void internalConnect(NodeConnectMessage message) {
+		NodeView nv = getNodeView();
+		UINode node_a = nv.getNode(message.node_a);
+		UINode node_b = nv.getNode(message.node_b);
+		UIPort port_a = node_a.getPort(message.port_a);
+		UIPort port_b = node_b.getPort(message.port_b);
 
-		if(a_node_port == null)
-			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", a.name, a.getNode().getClass().getName()));
+		if(node_a == null || node_b == null) {
+			System.out.println("ERROR: Could not connect nodes together as one/both does not exist in the UI. Sync issues?");
+			return;
+		}
 
-		if(b_node_port == null)
-			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", b.name, b.getNode().getClass().getName()));
+		if(port_a == null || port_b == null) {
+			System.out.println("ERROR: Could not connect ports together as one/both ports does not exist in the UI. Sync issues?");
+			return;
+		}
 
-		//this.getNetList().connect(a_node_port, b_node_port);
-
-		//reload(); // Reload our changes to netnodes back to us*/
+		connections.add(new Connection(port_a, port_b));
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		System.out.println("Disonnecting is not implemented"); // TODO send a message to backend postmaster
+		((Top)search.getTop()).sendMessageToBackend(new NodeDisconnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
+	}
 
-		/*Port a_node_port = getNetPort(a);
-		Port b_node_port = getNetPort(b);
-
-		if(a_node_port == null)
-			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", a.name, a.getNode().getClass().getName()));
-
-		if(b_node_port == null)
-			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", b.name, b.getNode().getClass().getName()));
-
-		//getNetList().disconnect(a_node_port, b_node_port);
-
-		//reload(); // Reload our changes to netnodes back to us*/
+	private void internalDisconnect(NodeDisconnectMessage message) {
+		for(int i = connections.size() - 1; i >= 0; i--) {
+			Connection c = connections.get(i);
+			String node_a = c.a.getNode().node_id;
+			String node_b = c.b.getNode().node_id;
+			if(node_a.equals(message.node_a) && node_b.equals(message.node_b)) {
+				if(c.a.name.equals(message.port_a) && c.b.name.equals(message.port_b))
+					connections.remove(i);
+			} else if(node_a.equals(message.node_b) && node_b.equals(message.node_a)) {
+				if(c.a.name.equals(message.port_b) && c.b.name.equals(message.port_a))
+					connections.remove(i);
+			}
+		}
 	}
 
 	/**
 	 * Disconnects all connections on a port.
 	 */
 	public void disconnectAll(UIPort p) {
-		System.out.println("Disonnecting all is not implemented"); // TODO send a message to backend postmaster
-		/*Port node_port = getNetPort(p);
+		Top top = ((Top)search.getTop());
+		for(Connection c : connections)
+			if(p == c.a || p == c.b)
+				top.sendMessageToBackend(new NodeDisconnectMessage(c.a.getNode().node_id, c.a.name, c.b.getNode().node_id, c.b.name));
+	}
 
-		if(node_port == null)
-			throw new RuntimeException(String.format("Netnode is missing port %s (UINode %s)", p.name, p.getNode().getClass().getName()));
+	public void handleMessage(Postmaster.Message message) {
+		if(message instanceof NodeConnectMessage)
+			internalConnect((NodeConnectMessage)message);
 
-		System.out.println("Disconnecting is not implemented"); // TODO send a message to backend postmaster
-		//getSupervisor().disconnectAll(node_port);
-
-		//reload();*/
+		else if(message instanceof NodeDisconnectMessage)
+			internalDisconnect((NodeDisconnectMessage)message);
 	}
 
 	/*
@@ -157,6 +163,7 @@ public class UINet extends UIObject {
 		 */
 		dragging_port = port;
 		dragging_port_source = source_port;
+		System.out.println("Setting dragging port: " + source_port + " | " + port);
 	}
 
 	public UIPort getDraggingPort() {
@@ -167,82 +174,23 @@ public class UINet extends UIObject {
 	 * Retrieves all the other UIPort connected to us
 	 */
 	public HashSet<UIPort> getAllConnectedPorts(UIPort p) {
-		throw new RuntimeException("Not implemented"); // TODO 
-		/*
-		HashSet<UIPort> result = new HashSet<UIPort>();
-		Port net_port = getNetPort(p);
-		HashSet<Port> connected_net_ports = this.getSupervisor().getConnectedPorts(net_port);
-		for(Port x : connected_net_ports) {
-			GlueNode glue_node = this.getGlueTop().getNodeByNetNodeID(x.node.getID());
-			UINode uinode = glue_node.getUINode();
-			UIPort uiport = uinode.getPort(x.name);
-			if(uiport == null)
-				throw new RuntimeException(String.format("Port %s was not found on UINode %s", x.name, uinode));
+		HashSet<UIPort> result = new HashSet<>();
 
-			result.add(uiport);
+		for(Connection c : connections) {
+			if(p == c.a)
+				result.add(c.b);
+			else if(p == c.b)
+				result.add(c.a);
 		}
 
-		return result;*/
+		return result;
 	}
 
-	/*private Port getNetPort(UIPort p) {
-		UINode uinode = p.getNode();
-		GlueNode glue_node = uinode.getGlueNode();
-		Node node = glue_node.getNetNode();
-		return node.getPort(p.name);
-	}*/
+	private NodeView getNodeView() {
+		UIObject o = this;
+		while(!(o instanceof NodeView))
+			o = o.getParent();
 
-	/*
-	 * Schedules an async reload. Will happen soon, but no more often than for each drawn frame.
-	 */
-	/*public void reload() {
-		do_reload = true;
-	}*/
-
-	/**
-	 * Updates our lines and connections from the netnode-system.
-	 */
-	/*private void doReload() {
-		do_reload = false;
-		if(!isAlive())
-			return;
-
-		connections.clear();
-		GlueTop glue_top = getGlueTop();
-
-		for(Line l : this.getSupervisor().getLines()) {
-			Node a_node = l.a.node;
-			Node b_node = l.b.node;
-			GlueNode a_glue_node = glue_top.getNodeByNetNodeID(a_node.getID());
-			GlueNode b_glue_node = glue_top.getNodeByNetNodeID(b_node.getID());
-			UINode a_uinode = a_glue_node.getUINode();
-			UINode b_uinode = b_glue_node.getUINode();
-			UIPort a_uiport = a_uinode.getPort(l.a.name);
-			UIPort b_uiport = b_uinode.getPort(l.b.name);
-
-			if(a_uiport == null) {
-				//System.out.printf("UINode %s is missing port %s\n", a_uinode.getClass().getName(), l.a.name);
-				continue;
-			}
-
-			if(b_uiport == null) {
-				//System.out.printf("UINode %s is missing port %s\n", b_uinode.getClass().getName(), l.b.name);
-				continue;
-			}
-
-			connections.add(new Connection(a_uiport, b_uiport));
-		}
-
-		// Re add dragging port, if any
-		if(dragging_port != null && dragging_port_source != null)
-			connections.add(new Connection(dragging_port_source, dragging_port));
-	}*/
-
-	/*private NetList getSupervisor() {
-		return getTopObject().getSupervisor();
-	}*/
-
-	/*private GlueTop getGlueTop() {
-		return getTopObject().getGlueTop();
-	}*/
+		return (NodeView)o;
+	}
 }

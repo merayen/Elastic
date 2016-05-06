@@ -25,6 +25,7 @@ public class PortParameterSlider extends UIObject {
 	public interface IHandler {
 		public void onChange(double value, boolean programatic);
 		public void onButton(int offset);
+		public String onLabelUpdate(double value);
 	}
 
 	public PortParameterSlider(String name) {
@@ -33,10 +34,11 @@ public class PortParameterSlider extends UIObject {
 	}
 
 	protected void onInit() {
-		assert parent instanceof UINode;
+		if(!(getParent() instanceof UINode))
+			throw new RuntimeException("Must be a direct parent of UINode");
 
 		port = new UIPort(name, false);
-		UINode node = (UINode)this.parent;
+		UINode node = (UINode)getParent();
 		node.addPort(port);
 
 		parameter_slider = new ParameterSlider();
@@ -53,6 +55,14 @@ public class PortParameterSlider extends UIObject {
 			public void onButton(int offset) {
 				if(handler != null)
 					handler.onButton(offset);
+			}
+
+			@Override
+			public String onLabelUpdate(double value) {
+				if(handler != null)
+					return handler.onLabelUpdate(value);
+
+				return "";
 			}
 		});
 
@@ -102,11 +112,11 @@ public class PortParameterSlider extends UIObject {
 			return;
 
 		if(show) {
-			if(parameter_slider.parent == null) {
+			if(parameter_slider.getParent() == null) {
 				add(parameter_slider);
 			}
 		} else {
-			if(parameter_slider.parent != null) {
+			if(parameter_slider.getParent() != null) {
 				remove(parameter_slider);
 			}
 		}
