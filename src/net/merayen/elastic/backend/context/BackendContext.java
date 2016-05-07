@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
-import net.merayen.elastic.backend.architectures.Dispatch.Message;
 import net.merayen.elastic.backend.nodes.LogicNodeList;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -14,7 +13,6 @@ import net.merayen.elastic.util.Postmaster;
 
 /**
  * Glues together NetList, MainNodes and the processing backend (architecture)
- * TODO implement the UI too
  */
 public class BackendContext {
 	private NetList netlist;
@@ -35,15 +33,31 @@ public class BackendContext {
 	public static BackendContext create() {
 		BackendContext context = new BackendContext();
 		context.netlist = new NetList();
-		context.logicnode_list = new LogicNodeList(context.netlist);
 		context.dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
 			@Override
-			public void onMessage(Message message) {
-				// TODO
+			public void onMessage(Postmaster.Message message) {
+				
 			}
 		});
 
-		context.dispatch.launch(context.netlist, 8); // TODO 8? Nononon. Make it customizable/load it from somewhere
+		context.dispatch.launch(context.netlist, 8); // TODO 8? Make it customizable/load it from somewhere
+
+		context.logicnode_list = new LogicNodeList(context.netlist, new LogicNodeList.IHandler() {
+			@Override
+			public void sendMessageToUI(net.merayen.elastic.util.Postmaster.Message message) {
+				context.from_backend.send(message);
+			}
+
+			@Override
+			public void sendMessageToBackend(net.merayen.elastic.util.Postmaster.Message message) {
+				if(message instanceof NodeParameterMessage) { // Update our NetList with the new value
+					NodeParameterMessage m = (NodeParameterMessage)message;
+					Node node = context.netlist.getNodeByID(((NodeParameterMessage) message).node_id);
+					node.properties.put(m.key, m.value);
+				}
+				context.dispatch.executeMessage(message);
+			}
+		});
 
 		return context;
 	}
@@ -60,12 +74,26 @@ public class BackendContext {
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
-			String node_id = logicnode_list.createNode(m.name, m.version);
-			from_backend.send(new NodeCreatedMessage(node_id, m.name, m.version));
+			logicnode_list.createNode(m.name, m.version);
 		}
 
 		else if(message instanceof NodeConnectMessage) {
-			// TODO deal with it
+			NodeConnectMessage m = (NodeConnectMessage)message;
+			netlist.connect(m.node_a, m.port_a, m.node_b, m.port_b);
+			logicnode_list.handleMessageFromUI(message);
+			dispatch.executeMessage(message);
+		}
+
+		else if(message instanceof NodeDisconnectMessage) {
+			NodeDisconnectMessage m = (NodeDisconnectMessage)message;
+			netlist.disconnect(m.node_a, m.port_a, m.node_b, m.port_b);
+			debug();
+			logicnode_list.handleMessageFromUI(message);
+			dispatch.executeMessage(message);
+		}
+
+		else if(message instanceof NodeParameterMessage) {
+			logicnode_list.handleMessageFromUI(message); // Gets reviewed by LogicNode, which again may edit and forward the Message further into the backend
 		}
 	}
 
@@ -92,12 +120,8 @@ public class BackendContext {
 		logicnode_list.removeNode(node_id);
 	}
 
-	public void connect(String node_a, String port_a, String node_b, String port_b) {
-		netlist.connect(node_a, port_a, node_b, port_b);
-	}
-
-	public void disconnect(String node_a, String port_a, String node_b, String port_b) {
-		netlist.disconnect(node_a, port_a, node_b, port_b);
+	private void debug() {
+		System.out.println(Serializer.dump(netlist));
 	}
 
 	public void end() {

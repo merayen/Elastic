@@ -1,13 +1,12 @@
 package net.merayen.elastic.backend.architectures;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.merayen.elastic.backend.architectures.Dispatch.Message;
+import net.merayen.elastic.util.Postmaster;
 
 public abstract class AbstractExecutor {
-	private final List<Message> ingoing = new ArrayList<>(); // From the processor
-	private final List<Message> outgoing = new ArrayList<>(); // To the processor
+	//private final List<Postmaster.Message> ingoing = new ArrayList<>(); // From the processor
+	//private final List<Postmaster.Message> outgoing = new ArrayList<>(); // To the processor
+
+	private final Postmaster from_processing = new Postmaster(); // Messages sent from this executor
 
 	/**
 	 * Call this to stop the processing.
@@ -17,39 +16,21 @@ public abstract class AbstractExecutor {
 
 	/**
 	 * Gets called very endlessly.
-	 * You need to call Threda.sleep(...)
+	 * You need to call Thread.sleep(...)
 	 */
 	public abstract void update();
 
-	public synchronized void notifyNode(Message message) {
-		outgoing.add(message);
-	}
+	/**
+	 * Message to your processing backend.
+	 */
+	public abstract void handleMessage(Postmaster.Message message);
 
 	/**
-	 * Called by this application to retrieve any events sent from the processor.
+	 * Retrieves any messages sent from the processor.
 	 * Needs to be polled often.
 	 * Returns null if nothing.
 	 */
-	public synchronized List<Message> consumeIngoing() {
-		if(ingoing.size() == 0)
-			return null;
-
-		List<Message> result = new ArrayList<>(ingoing);
-		ingoing.clear();
-
-		return result;
-	}
-
-	/**
-	 * Called by the processor to consume events sent from this application.
-	 */
-	public synchronized List<Message> consumeOutgoing() {
-		if(outgoing.size() == 0)
-			return null;
-
-		List<Message> result = new ArrayList<>(outgoing);
-		outgoing.clear();
-
-		return result;
+	public final Postmaster.Message receiveMessage() {
+		return from_processing.receive();
 	}
 }

@@ -1,9 +1,9 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
+import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
-
 	private LocalNetList netlist;
 
 	public Executor(LocalNetList netlist) {
@@ -24,11 +24,15 @@ public class Executor extends AbstractExecutor {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
 		try {
 			Thread.sleep(100);
 		} catch(InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void handleMessage(Postmaster.Message message) {
+		System.out.printf("Local processing architecture got this message: %s\n", message);
 	}
 }

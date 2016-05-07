@@ -9,12 +9,12 @@ import net.merayen.elastic.util.Postmaster;
  * This is the top class for everything.
  */
 public class ElasticSystem {
-	Supervisor uicontext;
-	BackendContext backendcontext;
+	Supervisor ui;
+	BackendContext backend;
 
 	public ElasticSystem() {
-		backendcontext = BackendContext.create(); // Start blank, for now. Need some default file
-		uicontext = new Supervisor();
+		backend = BackendContext.create(); // Start blank, for now. Need some default file
+		ui = new Supervisor();
 	}
 
 	/**
@@ -25,31 +25,31 @@ public class ElasticSystem {
 	}
 
 	public void end() {
-		uicontext.end();
-		backendcontext.end();
+		ui.end();
+		backend.end();
 	}
 
 	private void routeMessages() {
-		Postmaster.Message message = backendcontext.receiveFromBackend();
+		Postmaster.Message message = backend.receiveFromBackend();
 		if(message != null)
-			uicontext.sendMessageToUI(message);
+			ui.sendMessageToUI(message);
 
-		message = uicontext.receiveMessageFromUI();
+		message = ui.receiveMessageFromUI();
 		if(message != null)
-			backendcontext.executeMessage(message);
+			backend.executeMessage(message);
 	}
 
 	/**
 	* Only to be called outside the ElasticSystem, for testing, or for other control of it.
 	*/
 	void sendMessageToUI(Postmaster.Message message) {
-		uicontext.sendMessageToUI(message);
+		ui.sendMessageToUI(message);
 	}
 
 	/**
 	* Only to be called outside the ElasticSystem, for testing, or for other control of it.
 	*/
 	void sendMessageToBackend(Postmaster.Message message) {
-		backendcontext.executeMessage(message);
+		backend.executeMessage(message);
 	}
 }

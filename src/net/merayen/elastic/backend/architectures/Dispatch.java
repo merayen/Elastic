@@ -1,36 +1,17 @@
 package net.merayen.elastic.backend.architectures;
 
 import net.merayen.elastic.netlist.NetList;
+import net.merayen.elastic.util.Postmaster;
 
 /**
  * Dispatch the NetList to an architecture.
  */
 public class Dispatch {
-	/**
-	 * A message that can be sent to and from the processor.
-	 * A message is read by a processor, and can change its parameter.
-	 * Usually sent when user turns a knob in the UI. 
-	 */
-	public class Message {
-		public final String node_id;
-		public final String key;
-		public final Object value; // Must be JSON compatible
-
-		public Message(String node_id, String key, Object value) {
-			this.node_id = node_id;
-			this.key = key;
-			this.value = value;
-
-			if(
-				!(value instanceof String) ||
-				!(value instanceof Number)
-			)
-				throw new RuntimeException("Invalid value type");
-		}
-	}
-
 	public interface Handler {
-		public void onMessage(Message message);
+		/**
+		 * Message received from the backend.
+		 */
+		public void onMessage(Postmaster.Message message);
 	}
 
 	class Runner extends Thread {
@@ -38,7 +19,6 @@ public class Dispatch {
 		private volatile boolean running = true;
 
 		public Runner(AbstractExecutor executor) {
-			super();
 			this.executor = executor;
 		}
 
@@ -60,6 +40,10 @@ public class Dispatch {
 		this.architecture = architecture;
 		this.handler = handler;
 		this.compiler = architecture.instance.getCompiler();
+	}
+
+	public void executeMessage(Postmaster.Message message) {
+		executor.handleMessage(message);
 	}
 
 	/**

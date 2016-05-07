@@ -17,19 +17,20 @@ public class NetController extends Controller {
 
 	@Override
 	public void onMessageFromBackend(Message message) {
-		if(message instanceof NodeConnectMessage) {
-			
+		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage) {
+			for(NodeView nv : getNodeViews()) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+				nv.getUINet().handleMessage(message);
 		}
 	}
 
 	@Override
 	public void onMessageFromUI(Message message) {
 		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage) {
-			//sendToBackend(message);
+			sendToBackend(message); // Forward message. Backend will respond with the same message
 
 			// Send it back to UI, for all views for now, for testing
-			for(NodeView nv : getNodeViews())
-				nv.getUINet().handleMessage(message);
+			//for(NodeView nv : getNodeViews())
+			//	nv.getUINet().handleMessage(message);
 		}
 	}
 

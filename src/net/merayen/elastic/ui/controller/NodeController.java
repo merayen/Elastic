@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.merayen.elastic.system.intercom.NodeCreatedMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
@@ -39,6 +38,8 @@ public class NodeController extends Controller {
 			// Distribute message to all other NodeViews, so they get updated
 			for(NodeView nv : getNodeViews())
 				nv.messageNode(m.node_id, m);
+
+			sendToBackend(message); // Forward message to backend 
 		}
 	}
 
