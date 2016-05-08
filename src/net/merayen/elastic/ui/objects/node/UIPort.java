@@ -34,13 +34,11 @@ public class UIPort extends UIObject {
 
 	private UIPortTemporary temp_port; // Used when dragging a line from this port
 
-	public UIPort(String name, boolean output) {
+	UIPort(String name, boolean output) {
 		super();
 		this.name = name;
 		this.output = output;
-	}
 
-	protected void onInit() {
 		UIPort self = this;
 		port_drag = new MouseHandler(this);
 		port_drag.setHandler(new MouseHandler.Handler() {

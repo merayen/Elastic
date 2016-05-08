@@ -1,35 +1,28 @@
 package net.merayen.elastic.uinodes.list.test_100;
 
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 
 public class UI extends UINode {
-
-	@Override
-	protected void onInit() {
-		super.onInit();
+	public UI() {
+		super();
 		width = 100;
 		height = 100;
-
-		UIPort port = new UIPort(node_id, true);
-		addPort(port);
 	}
 
 	@Override
-	protected void onDraw() {
-		super.onDraw();
+	protected void onCreatePort(UIPort port) {
+		if(port.name.equals("input")) {
+			port.translation.y = 20;
+		}
+	}
 
+	@Override
+	protected void onRemovePort(UIPort port) {
 		
 	}
 
 	@Override
-	protected void onCreatePort(String name) {
-		
-	}
-
-	@Override
-	protected void onRemovePort(String name) {
-		
-	}
-
+	protected void onMessage(NodeParameterMessage message) {}
 }

@@ -3,6 +3,8 @@ package net.merayen.elastic.backend.nodes;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.NodeCreatedMessage;
+import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
+import net.merayen.elastic.system.intercom.CreateNodePortMessage;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class BaseLogicNode {
@@ -22,14 +24,45 @@ public abstract class BaseLogicNode {
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
 	protected abstract void onDisconnect(String port); // When port was connected, but has no more connections
 
-	protected void definePort(String name, boolean output) {
+	protected void createPort(String name, boolean output, Format[] format) {
+		if(format.length == 0)
+			throw new RuntimeException("No format defined");
+
+		if(output && format.length != 1)
+			throw new RuntimeException("Output can only have 1 format");
+
+		if(node.getPort(name) != null)
+			throw new RuntimeException(String.format("Port %s already exist on node", name));
+
 		Port port = node.createPort(name);
 		port.properties.put("output", output);
+		port.properties.put("format", format);
+
+		// Notify both ways
+		Postmaster.Message message = new CreateNodePortMessage(id, name, output, format);
+		sendMessageToUI(message);
+		sendMessageToBackend(message);
+	}
+
+	protected void createPort(String name, boolean output, Format format) {
+		createPort(name, output, new Format[]{format});
+	}
+
+	protected void removePort(String name) {
+		if(node.getPort(name) == null)
+			throw new RuntimeException(String.format("Port %s does not exist on Node", name));
+
+		node.removePort(name);
+
+		// Notify both ways
+		Postmaster.Message message = new RemoveNodePortMessage(id, name);
+		sendMessageToUI(message);
+		sendMessageToBackend(message);
 	}
 
 	void create(String name, Integer version) {
-		onCreate();
 		sendMessageToUI(new NodeCreatedMessage(id, name, version)); // Acknowledges creation of Node to the UI
+		onCreate();
 	}
 
 	/**

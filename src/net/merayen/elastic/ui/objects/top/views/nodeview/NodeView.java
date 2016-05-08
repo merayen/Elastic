@@ -24,8 +24,8 @@ public class NodeView extends View {
 	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s";
 
-	@Override
-	protected void onInit() {
+	public NodeView() {
+		super();
 		add(container);
 
 		net = new UINet();

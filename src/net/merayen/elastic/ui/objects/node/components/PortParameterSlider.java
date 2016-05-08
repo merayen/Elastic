@@ -37,10 +37,6 @@ public class PortParameterSlider extends UIObject {
 		if(!(getParent() instanceof UINode))
 			throw new RuntimeException("Must be a direct parent of UINode");
 
-		port = new UIPort(name, false);
-		UINode node = (UINode)getParent();
-		node.addPort(port);
-
 		parameter_slider = new ParameterSlider();
 		add(parameter_slider);
 
@@ -71,7 +67,7 @@ public class PortParameterSlider extends UIObject {
 	}
 
 	protected void onDraw() {
-		if(auto_position) {
+		if(auto_position && port != null) {
 			port.translation.x = 0f;
 			port.translation.y = translation.y + 7.5f;
 			if(color != null)
@@ -85,6 +81,10 @@ public class PortParameterSlider extends UIObject {
 
 	public void setHandler(IHandler handler) {
 		this.handler = handler;
+	}
+
+	public void setPort(UIPort port) { // Set to null when port is removed from your node
+		this.port = port;
 	}
 
 	public void setValue(double v) {

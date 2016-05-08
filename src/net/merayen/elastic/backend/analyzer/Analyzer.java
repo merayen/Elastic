@@ -13,7 +13,7 @@ import net.merayen.elastic.netlist.NetList;
  * 
  * We also figure out which format is sent between the nodes.
  * 
- * This analyzer must be run before the NetListzis sent to a processor architecture.
+ * This analyzer must be run before the NetList is sent to a processor architecture.
  */
 public class Analyzer {
 	private Analyzer() {}

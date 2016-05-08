@@ -21,24 +21,21 @@ public class AboutDialog extends UIObject {
 		window.width = 600f;
 		window.height = 600f;
 		//window.center(getTopObject().getScreenWidth(), getTopObject().getScreenHeight());
-		window.whenReady( () -> {
-			UIObject pane = window.getContentPane();
-			pane.add(new AboutDialogContent());
 
-			Button button = new Button();
-			button.label = "Close";
-			button.translation.x = 500f;
-			button.translation.y = 550f;
-			button.setHandler(new Button.IHandler() {
-				@Override
-				public void onClick() {
-					self.parent.remove(self);
-				}
-			});
-			pane.add(button);
+		UIObject pane = window.getContentPane(); // Will be null. TODO Move to update() and wait for it to be initialized?
+		pane.add(new AboutDialogContent());
+
+		Button button = new Button();
+		button.label = "Close";
+		button.translation.x = 500f;
+		button.translation.y = 550f;
+		button.setHandler(new Button.IHandler() {
+			@Override
+			public void onClick() {
+				self.getParent().remove(self);
+			}
 		});
+		pane.add(button);
 		add(window);
-
-		super.onInit();
 	}
 }

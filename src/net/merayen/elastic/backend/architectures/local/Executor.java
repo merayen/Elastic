@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
@@ -33,6 +34,9 @@ public class Executor extends AbstractExecutor {
 
 	@Override
 	public void handleMessage(Postmaster.Message message) {
-		System.out.printf("Local processing architecture got this message: %s\n", message);
+		if(message instanceof NodeParameterMessage) {
+			
+		}
+		//System.out.printf("Local processing architecture got this message: %s\n", message);
 	}
 }

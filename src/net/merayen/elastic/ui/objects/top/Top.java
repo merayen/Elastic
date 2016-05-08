@@ -27,7 +27,7 @@ public class Top extends UIObject {
 		this.ui_gate = ui_gate;
 	}
 
-	protected void onInit() {
+	public Top() {
 		viewport_container = new ViewportContainer();
 		viewport_container.defaultView();
 		add(viewport_container);

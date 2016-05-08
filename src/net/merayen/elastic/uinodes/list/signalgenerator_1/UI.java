@@ -5,30 +5,18 @@ import net.merayen.elastic.ui.objects.components.ParameterSlider;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
-import net.merayen.elastic.util.Postmaster;
 
 public class UI extends UINode {
 	private WaveSelect wave_select;
 	private PortParameterSlider frequency_slider;
 	private PortParameterSlider amp_slider;
 	private ParameterSlider offset_slider;
-	private UIPort output_port;
 	private float frequency = 440;
 	private float amplitude = 0.1f;
 	private float offset = 0;
 
-	public static String getNodeName() {
-		return "Signalgenerator";
-	}
-
-	public static String getNodeDescription() {
-		return "Generates audio waves.";
-	}
-
-	@Override
-	public void onInit() {
-		super.onInit();
-
+	public UI() {
+		super();
 		width = 100f;
 		height = 120f;
 
@@ -39,16 +27,30 @@ public class UI extends UINode {
 		wave_select.translation.y = 20;
 		add(wave_select);
 
-		createFrequencyPort();
-		createAmplitudePort();
-		createOffsetPort();
+		createFrequencySlider();
+		createAmplitudeSlider();
+		createOffsetSlider();
+	}
+
+	public static String getNodeName() {
+		return "Signalgenerator";
+	}
+
+	public static String getNodeDescription() {
+		return "Generates audio waves.";
 	}
 
 	public void onDraw() {
-		// TODO Only do this when connections are actually changed
-		frequency_slider.showSlider(!getUINet().isConnected(this.getPort("frequency")));
-		amp_slider.showSlider(!getUINet().isConnected(this.getPort("amplitude")));
 		super.onDraw();
+
+		if(getPort("output") != null)
+			getPort("output").translation.x = width;
+
+		if(getPort("frequency") != null)
+			frequency_slider.showSlider(!getUINet().isConnected(getPort("frequency"))); // TODO Only do this when connections are actually changed
+
+		if(getPort("amplitude") != null)
+			amp_slider.showSlider(!getUINet().isConnected(getPort("amplitude")));
 	}
 
 	@Override
@@ -70,30 +72,27 @@ public class UI extends UINode {
 	}
 
 	@Override
-	public void onCreatePort(String name) {
-		if(name.equals("frequency")) {
-			// We create this port in onInit() as it is always available anyway
+	public void onCreatePort(UIPort port) {
+		if(port.name.equals("frequency")) {
+			frequency_slider.setPort(port);
 		}
 
-		if(name.equals("amplitude")) {
-			// We create this port in onInit() as it is always available anyway
+		if(port.name.equals("amplitude")) {
+			amp_slider.setPort(port);
 		}
 
-		if(name.equals("output")) {
-			output_port = new UIPort("output", true);
-			output_port.translation.x = width;
-			output_port.translation.y = 20f;
-			output_port.color = UIPort.AUDIO_PORT;
-			addPort(output_port);
+		if(port.name.equals("output")) {
+			port.translation.y = 20f;
+			port.color = UIPort.AUDIO_PORT;
 		}
 	}
 
 	@Override
-	public void onRemovePort(String name) {
+	public void onRemovePort(UIPort port) {
 		// Never removes any port anyway, so not implemented
 	}
 
-	private void createFrequencyPort() {
+	private void createFrequencySlider() {
 		UI self = this;
 		frequency_slider = new PortParameterSlider("frequency");
 		frequency_slider.translation.y = 40f;
@@ -125,7 +124,7 @@ public class UI extends UINode {
 		frequency_slider.setScale(0.1f);
 	}
 
-	private void createAmplitudePort() {
+	private void createAmplitudeSlider() {
 		UI self = this;
 		amp_slider = new PortParameterSlider("amplitude");
 		amp_slider.translation.y = 70f;
@@ -157,7 +156,7 @@ public class UI extends UINode {
 		amp_slider.setScale(0.02f);
 	}
 
-	private void createOffsetPort() {
+	private void createOffsetSlider() {
 		UI self = this;
 		offset_slider = new ParameterSlider();
 		offset_slider.translation.x = 10f;

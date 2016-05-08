@@ -18,9 +18,8 @@ public abstract class UIObject {
 
 	protected Draw draw; // Helper class to draw stuff
 
-	private boolean created = false;
+	private boolean inited = false;
 	private boolean alive = true; // TODO Set this to false if this UIObject has been "disposed off". This is to stop any pending async operations
-	private final ArrayList<Runnable> when_ready_funcs = new ArrayList<Runnable>();
 
 	public final Search search = new Search(this);
 
@@ -61,14 +60,11 @@ public abstract class UIObject {
 
 	void initialize() {
 		onInit();
-		created = true;
+		inited = true;
 	}
 
 	final void updateDraw(Draw draw) {
 		this.draw = draw;
-
-		//while(when_ready_funcs.size() > 0)
-		//	when_ready_funcs.remove(0).run();
 
 		onDraw();
 
@@ -140,14 +136,7 @@ public abstract class UIObject {
 	 * not available until the object has been drawn (and initialized).
 	 */
 	public boolean isInitialized() {
-		return created;
-	}
-
-	/**
-	 * Add your function here to run it after this object has been drawn for the first time
-	 */
-	public void whenReady(Runnable func) {
-		when_ready_funcs.add(func);
+		return inited;
 	}
 
 	public boolean isAlive() {

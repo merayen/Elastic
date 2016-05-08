@@ -20,10 +20,6 @@ public class Viewport extends UIObject {
 
 	public Viewport(ViewportContainer vc) {
 		this.viewport_container = vc;
-	}
-
-	@Override
-	protected void onInit() {
 		clip.translation.x = 10;
 		clip.translation.y = 10;
 		add(clip);

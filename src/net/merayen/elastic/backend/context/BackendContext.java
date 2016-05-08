@@ -44,12 +44,12 @@ public class BackendContext {
 
 		context.logicnode_list = new LogicNodeList(context.netlist, new LogicNodeList.IHandler() {
 			@Override
-			public void sendMessageToUI(net.merayen.elastic.util.Postmaster.Message message) {
+			public void sendMessageToUI(net.merayen.elastic.util.Postmaster.Message message) { // Message sent from LogicNodes to the UI
 				context.from_backend.send(message);
 			}
 
 			@Override
-			public void sendMessageToBackend(net.merayen.elastic.util.Postmaster.Message message) {
+			public void sendMessageToBackend(net.merayen.elastic.util.Postmaster.Message message) { // Messages sent further into the backend, from the LogicNodes
 				if(message instanceof NodeParameterMessage) { // Update our NetList with the new value
 					NodeParameterMessage m = (NodeParameterMessage)message;
 					Node node = context.netlist.getNodeByID(((NodeParameterMessage) message).node_id);
@@ -70,8 +70,6 @@ public class BackendContext {
 	}
 
 	public void executeMessage(Postmaster.Message message) {
-		System.out.printf("Backend received message of type %s\n", message.getClass().getSimpleName());
-
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
 			logicnode_list.createNode(m.name, m.version);
@@ -79,9 +77,12 @@ public class BackendContext {
 
 		else if(message instanceof NodeConnectMessage) {
 			NodeConnectMessage m = (NodeConnectMessage)message;
+
 			netlist.connect(m.node_a, m.port_a, m.node_b, m.port_b);
 			logicnode_list.handleMessageFromUI(message);
 			dispatch.executeMessage(message);
+
+			from_backend.send(message); // Send back to UI to acknowledge connect
 		}
 
 		else if(message instanceof NodeDisconnectMessage) {
@@ -90,6 +91,8 @@ public class BackendContext {
 			debug();
 			logicnode_list.handleMessageFromUI(message);
 			dispatch.executeMessage(message);
+
+			from_backend.send(message); // Send back to UI to acknowledge disconnect
 		}
 
 		else if(message instanceof NodeParameterMessage) {

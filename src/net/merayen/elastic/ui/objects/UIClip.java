@@ -9,14 +9,8 @@ import net.merayen.elastic.ui.objects.top.Top;
  */
 public class UIClip extends UIObject {
 	private static int count_id;
-	private int count;
 	public float width = 10f;
 	public float height = 10f;
-
-	@Override
-	protected void onInit() {
-		count = count_id++;
-	}
 
 	@Override
 	protected void onDraw() {

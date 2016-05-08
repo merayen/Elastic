@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.nodes.list.signalgenerator_1;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -8,6 +9,9 @@ public class LogicNode extends BaseLogicNode {
 	@Override
 	protected void onCreate() {
 		System.out.println("Signal generator created");
+		createPort("frequency", false, new Format[]{Format.AUDIO, Format.MIDI});
+		createPort("amplitude", false, Format.AUDIO);
+		createPort("output", true, Format.AUDIO);
 	}
 
 	@Override

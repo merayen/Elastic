@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.elastic.system.intercom.CreateNodePortMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.Titlebar;
@@ -26,11 +28,11 @@ public abstract class UINode extends UIObject {
 
 	private boolean inited;
 
-	protected abstract void onCreatePort(String name);
-	protected abstract void onRemovePort(String name);
+	protected abstract void onCreatePort(UIPort port); // Node can customize the created UIPort in this function
+	protected abstract void onRemovePort(UIPort port); // Node can clean up any resources belonging to the UIPort
 	protected abstract void onMessage(NodeParameterMessage message);
 
-	protected void onInit() {
+	public UINode() {
 		titlebar = new Titlebar();
 		add(titlebar);
 		inited = true;
@@ -74,35 +76,7 @@ public abstract class UINode extends UIObject {
 
 	@Override
 	public void add(UIObject obj) {
-		if(obj instanceof UIPort)
-			throw new RuntimeException("Add ports with addPort()");
-
 		super.add(obj);
-	}
-
-	/**
-	 * The class inheriting UINode can call this to add a new port
-	 */
-	public void addPort(UIPort port) {
-		super.add(port);
-		ports.add(port);
-		port.node_setHandler(new UIPort.Handler() {
-			@Override
-			public boolean onConnect(UIPort port) {
-				// TODO Notify the GlueNode?
-				return true;
-			}
-
-			@Override
-			public void onDisconnect() {
-				// TODO Notify the GlueNode?
-			}
-		});
-	}
-
-	public void removePort(UIPort port) {
-		super.remove(port);
-		ports.remove(port);
 	}
 
 	public ArrayList<UIPort> getPorts() {
@@ -125,6 +99,7 @@ public abstract class UINode extends UIObject {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static UINode createFromClassPath(String class_path) { // TODO remove?
 		net.merayen.elastic.ui.objects.node.UINode uinode;
 
@@ -151,6 +126,20 @@ public abstract class UINode extends UIObject {
 				translation.y = (Float)m.value;
 			else
 				onMessage(m);
+
+		} else if(message instanceof CreateNodePortMessage) {
+			CreateNodePortMessage m = (CreateNodePortMessage)message;
+			UIPort port = new UIPort(m.port, m.output);
+			ports.add(port);
+			add(port);
+			onCreatePort(port);
+
+		} else if(message instanceof RemoveNodePortMessage) {
+			RemoveNodePortMessage m = (RemoveNodePortMessage)message;
+			UIPort port = getPort(m.port);
+			remove(port);
+			ports.remove(port);
+			onRemovePort(port);
 		}
 	}
 
