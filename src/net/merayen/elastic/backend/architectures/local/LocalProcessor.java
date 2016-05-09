@@ -9,11 +9,37 @@ public abstract class LocalProcessor {
 		public boolean keep_alive = false;
 	}
 
+	public static class Port {}
+
+	public static class OutputPort extends Port {
+		public final float[] output_buffer;
+		int written; // Number of samples written yet
+
+		OutputPort(int buffer_size) {
+			output_buffer = new float[buffer_size];
+		}
+
+		/**
+		 * Return how many samples that have been output into this buffer so far.
+		 */
+		public int available() {
+			return written;
+		}
+	}
+
+	public static class InputPort extends Port {
+		public final OutputPort output_port; // Output-port that we are connected to. null if not connected
+
+		InputPort(OutputPort p) {
+			output_port = p;
+		}
+	}
+
 	private static int id_counter;
 
-	private int id = ++id_counter;
-	private State state = new State();
-	private LocalNode localnode;
+	private final int id = ++id_counter;
+	private final State state = new State();
+	private LocalNode localnode; // Our parent LocalNode that keeps us
 	protected final Map<String, PortResult> output_buffers = new HashMap<>();
 
 	void LocalProcessor_setInfo(LocalNode localnode, int buffer_size) {

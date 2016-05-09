@@ -9,6 +9,13 @@ import net.merayen.elastic.util.Postmaster;
  * This is the top class for everything.
  */
 public class ElasticSystem {
+	public interface IListener {
+		public void onMessageToUI(Postmaster.Message message);
+		public void onMessageToBackend(Postmaster.Message message);
+	}
+
+	private IListener listener;
+
 	Supervisor ui;
 	BackendContext backend;
 
@@ -21,7 +28,9 @@ public class ElasticSystem {
 	 * Needs to be called often.
 	 */
 	public void update() {
-		routeMessages();
+		long t = System.currentTimeMillis() + 10;
+
+		while(t >= System.currentTimeMillis() && routeMessages());
 	}
 
 	public void end() {
@@ -29,14 +38,30 @@ public class ElasticSystem {
 		backend.end();
 	}
 
-	private void routeMessages() {
+	private boolean routeMessages() {
+		boolean activity = false;
+
 		Postmaster.Message message = backend.receiveFromBackend();
-		if(message != null)
+		if(message != null) {
 			ui.sendMessageToUI(message);
 
+			if(listener != null)
+				listener.onMessageToUI(message);
+
+			activity = true;
+		}
+
 		message = ui.receiveMessageFromUI();
-		if(message != null)
+		if(message != null) {
 			backend.executeMessage(message);
+
+			if(listener != null)
+				listener.onMessageToBackend(message);
+
+			activity = true;
+		}
+
+		return activity;
 	}
 
 	/**
@@ -51,5 +76,9 @@ public class ElasticSystem {
 	*/
 	void sendMessageToBackend(Postmaster.Message message) {
 		backend.executeMessage(message);
+	}
+
+	public void listen(IListener listener) {
+		this.listener = listener;
 	}
 }

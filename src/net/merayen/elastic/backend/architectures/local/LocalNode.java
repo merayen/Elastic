@@ -3,45 +3,41 @@ package net.merayen.elastic.backend.architectures.local;
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
  * All nodes must implement this.
+ * Its processors are the ones actually performing the work.
+ * LocalNodes receives parameter changes and behaves after that.
  */
 public abstract class LocalNode {
-	/**
-	 * Options set by the scanner.
-	 */
-	private class Options {
-		public boolean isGenerator; // If *true*, this node generates without input 
-	}
-
-	static class Port {
+	static public class Port {
 		public final String name;
-		public final Line[] destinations;
 
-		public Port(String name, Line[] destinations) {
+		Port(String name) {
 			this.name = name;
-			this.destinations = destinations;
 		}
 	}
 
-	static class Line {
-		public final LocalNode node; // Receiving node
-		public final String port; // Receiving port on that node
+	static public class OutputPort extends Port {
+		public final float[] buffer;
 
-		Line(LocalNode node, String port) {
-			this.node = node;
-			this.port = port;
+		OutputPort(String name, int buffer_size) {
+			super(name);
+			buffer = new float[buffer_size];
 		}
 	}
 
-	private String id;
+	private String node_id; // Same node ID as in the rest of the system
 	private int buffer_size;
-	private Class<? extends LocalProcessor> localprocessor_cls;
 	protected Port[] ports;
-	public final Options options = new Options();
 	private Class<? extends LocalProcessor> processor_cls;
 	private ProcessorList processors = new ProcessorList();
 
+	protected abstract void onInit();
+
+	public LocalNode(Class<? extends LocalProcessor> cls) {
+		processor_cls = cls;
+	}
+
 	public String getID() {
-		return id;
+		return node_id;
 	}
 
 	LocalProcessor launchProcessor() {
@@ -59,13 +55,40 @@ public abstract class LocalNode {
 		return localprocessor;
 	}
 
-	void compiler_setInfo(String id, int buffer_size, Class<? extends LocalProcessor> localprocessor_cls) {
-		this.id = id;
+	void compiler_setInfo(String id, int buffer_size, Class<? extends LocalProcessor> processor_cls) {
+		this.node_id = id;
 		this.buffer_size = buffer_size;
-		this.localprocessor_cls = localprocessor_cls;
+		this.processor_cls = processor_cls;
 	}
 
 	void compiler_setPorts(Port[] ports) {
 		this.ports = ports;
+	}
+
+	/**
+	 * Spawn voice from an output port, creating a new instance of all the nodes on the left.
+	 */
+	protected int spawnVoice() {
+		// TODO
+		return 0;
+	}
+
+	/**
+	 * Returns LocalProcessor for this LocalNode
+	 */
+	LocalProcessor spawnProcessor() {
+		LocalProcessor lp;
+
+		try {
+			lp = (LocalProcessor)processor_cls.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+
+		return lp;
+	}
+
+	void init() {
+		onInit();
 	}
 }

@@ -6,6 +6,7 @@ import net.merayen.elastic.ui.util.Movable;
 public class Titlebar extends UIObject {
 	public float width;
 	public String title = "";
+	private boolean dragging; // True when user is dragging the node
 
 	private Movable moveable = null;
 
@@ -16,7 +17,9 @@ public class Titlebar extends UIObject {
 		moveable.setHandler(new Movable.IMoveable() {
 
 			@Override
-			public void onGrab() {}
+			public void onGrab() {
+				dragging = true;
+			}
 
 			@Override
 			public void onMove() {
@@ -25,7 +28,9 @@ public class Titlebar extends UIObject {
 			}
 
 			@Override
-			public void onDrop() {}
+			public void onDrop() {
+				dragging = false;
+			}
 		});
 	}
 
@@ -42,5 +47,9 @@ public class Titlebar extends UIObject {
 
 	protected void onEvent(net.merayen.elastic.ui.event.IEvent event) {
 		moveable.handle(event);
+	}
+
+	public boolean isDragging() {
+		return dragging;
 	}
 }
