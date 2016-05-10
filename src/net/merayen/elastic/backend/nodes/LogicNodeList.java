@@ -104,7 +104,7 @@ public class LogicNodeList {
 	public void handleMessageFromUI(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
-			get(m.node_id).onMessageFromUI(message);
+			get(m.node_id).onParameterChange(m.key, m.value);
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 			NodeConnectMessage m = (NodeConnectMessage)message;

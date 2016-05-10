@@ -8,19 +8,27 @@ import net.merayen.elastic.util.Postmaster.Message;
 public class LogicNode extends BaseLogicNode {
 	@Override
 	protected void onCreate() {
-		System.out.println("Signal generator created");
-		createPort("frequency", false, new Format[]{Format.AUDIO, Format.MIDI});
-		createPort("amplitude", false, Format.AUDIO);
-		createPort("output", true, Format.AUDIO);
+		createPort(new BaseLogicNode.PortDefinition() {{
+			name = "frequency";
+			format = new Format[]{Format.AUDIO, Format.MIDI};
+		}});
+
+		createPort(new BaseLogicNode.PortDefinition() {{
+			name = "amplitude";
+			format = new Format[]{Format.AUDIO};
+		}});
+
+		createPort(new BaseLogicNode.PortDefinition() {{
+			name = "output";
+			format = new Format[]{Format.AUDIO};
+			output = true;
+		}});
 	}
 
 	@Override
-	protected void onMessageFromUI(Message message) {
-		if(message instanceof NodeParameterMessage) {
-			System.out.printf("Signalgenerator got parameter: %s: %s\n", ((NodeParameterMessage) message).key, ((NodeParameterMessage) message).value);
-			sendMessageToBackend(message); // TODO inspect and control message?
-			sendMessageToUI(message); // Acknowledge change
-		}
+	protected void onParameterChange(String key, Object value) { // Parameter change from UI
+		System.out.printf("Signalgenerator value: %s: %s\n", key, value);
+		set(key, value); // Acknowledge anyway
 	}
 
 	@Override

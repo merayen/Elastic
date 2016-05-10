@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author merayen
- *
+ * Contains a list of several LocalProcessors that is active in this voice.
  */
 public class ProcessorList {
-	public final long voice_id;
+	public final int voice_id;
 
 	private List<LocalProcessor> processors = new ArrayList<>(); 
 

@@ -22,8 +22,9 @@ public class Analyzer {
 	 * Updates all the nodes with new analyzis properties.
 	 */
 	public static void analyze(NetList netlist) {
-		analyzeState(netlist);
+		analyzeState(netlist); // ???
 		analyzeFormat(netlist);
+		analyzeSessions(netlist);
 	}
 
 	/**
@@ -38,6 +39,13 @@ public class Analyzer {
 	 * Nodes can later poll this to see which format to expect.
 	 */
 	private static void analyzeFormat(NetList netlist) {
+		
+	}
+
+	/**
+	 * Analyzes all the sessions.
+	 */
+	private static void analyzeSessions(NetList netlist) {
 		
 	}
 }

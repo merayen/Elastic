@@ -8,11 +8,11 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onCreate() {
-		createPort("input", false, Format.AUDIO);
+		createPort(new BaseLogicNode.PortDefinition() {{
+			name = "input";
+			format = new Format[]{Format.AUDIO};
+		}});
 	}
-
-	@Override
-	protected void onMessageFromUI(Message message) {}
 
 	@Override
 	protected void onMessageFromBackend(Message message) {}
@@ -22,4 +22,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onDisconnect(String port) {}
+
+	@Override
+	protected void onParameterChange(String key, Object value) {}
 }

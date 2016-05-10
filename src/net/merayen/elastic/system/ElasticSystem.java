@@ -1,5 +1,7 @@
 package net.merayen.elastic.system;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.backend.context.BackendContext;
 import net.merayen.elastic.ui.Supervisor;
 import net.merayen.elastic.util.Postmaster;
@@ -22,6 +24,14 @@ public class ElasticSystem {
 	public ElasticSystem() {
 		backend = BackendContext.create(); // Start blank, for now. Need some default file
 		ui = new Supervisor();
+	}
+
+	public void load(JSONObject dump) {
+		
+	}
+
+	public JSONObject dump() {
+		return null; // TODO
 	}
 
 	/**
