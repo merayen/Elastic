@@ -161,7 +161,7 @@ public class Top extends UIObject {
 		debug.set(key, value);
 	}
 
-	public void sendMessageToBackend(Postmaster.Message message) {
+	public void sendMessage(Postmaster.Message message) {
 		ui_gate.send(message);
 	}
 }

@@ -1,5 +1,7 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UIClip;
 import net.merayen.elastic.ui.objects.top.views.View;
@@ -11,7 +13,8 @@ import net.merayen.elastic.ui.objects.top.views.View;
  * Holds one object that it only sets as a child when drawing, and removes it afterwards.
  */
 public class Viewport extends UIObject {
-	public float width, height;
+	float width, height;
+	float ratio; // Value from 0 to 1, telling how much of the width or height this viewport takes from the view
 	public View view; // The view to draw. Set this and we will change to it on next onUpdate()
 
 	private final ViewportContainer viewport_container;
@@ -25,13 +28,13 @@ public class Viewport extends UIObject {
 		add(clip);
 	}
 
-	/*@Override
+	@Override
 	protected void onDraw() {
-		super.onDraw();
-
-		draw.setColor(20, 20, 50);
-		draw.fillRect(5, 5, width, height - 5);
-	}*/
+		draw.setColor(100, 100, 100); // Move out to separate UIObject, make interactable
+		draw.setStroke(2);
+		for(int i = 5; i < 8; i++)
+			draw.line(width - i * 5, 0, width, 5 * i);
+	}
 
 	@Override
 	protected void onUpdate() {

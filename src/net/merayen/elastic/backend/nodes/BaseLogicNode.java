@@ -55,7 +55,7 @@ public abstract class BaseLogicNode {
 
 		Port port = node.createPort(def.name);
 		port.properties.put("output", def.output);
-		port.properties.put("format", def.format);
+		port.properties.put("format", Format.toStrings(def.format));
 
 		if(def.poly_no > -1)
 			port.properties.put("poly_no", def.poly_no);

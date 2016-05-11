@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.util.Postmaster;
 
@@ -86,7 +88,8 @@ public class Gate {
 		ui_gate = new UIGate(this);
 		backend_gate = new BackendGate(this);
 
-		list.add(new NodeController(this));
+		list.add(new ViewportController(this));
+		list.add(new NodeViewController(this));
 		list.add(new NetController(this));
 	}
 
@@ -96,5 +99,20 @@ public class Gate {
 
 	public BackendGate getBackendGate() {
 		return backend_gate;
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONObject dump() {
+		JSONObject result = new JSONObject();
+		JSONObject controllers = new JSONObject();
+		result.put("controllers", controllers);
+
+		for(Controller c : list) {
+			JSONObject obj = c.dump();
+			if(obj != null)
+				controllers.put(c.getClass().getSimpleName(), obj);
+		}
+
+		return result;
 	}
 }

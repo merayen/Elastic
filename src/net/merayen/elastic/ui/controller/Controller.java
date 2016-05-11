@@ -1,5 +1,7 @@
 package net.merayen.elastic.ui.controller;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.util.Postmaster;
 
@@ -27,4 +29,6 @@ public abstract class Controller {
 	public Top getTopObject() {
 		return gate.top;
 	}
+
+	public abstract JSONObject dump();
 }

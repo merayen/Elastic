@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.system.intercom.NodeConnectMessage;
 import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
@@ -45,5 +47,10 @@ public class NetController extends Controller {
 		}
 
 		return result;
+	}
+
+	@Override
+	public JSONObject dump() {
+		return null; // Nothing to serialize. Loaded from backend anyway
 	}
 }

@@ -3,7 +3,10 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.util.Postmaster;
 
 public abstract class UIObject {
 	private UIObject parent;
@@ -125,8 +128,12 @@ public abstract class UIObject {
 		return (float)a * td.scale_x;
 	}
 
-	protected void sendEvent(IEvent event) {
-		throw new RuntimeException("Not implemented yet");
+	protected void sendMessage(Postmaster.Message message) {
+		UIObject top = search.getTop();
+		if(top instanceof Top)
+			((Top)top).sendMessage(message);
+		else
+			System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", this.getClass().getName());
 	}
 
 	/**

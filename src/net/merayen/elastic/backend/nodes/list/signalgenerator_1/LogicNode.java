@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.nodes.list.signalgenerator_1;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.backend.nodes.Format;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.util.Postmaster.Message;
 
 public class LogicNode extends BaseLogicNode {

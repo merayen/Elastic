@@ -114,7 +114,7 @@ public abstract class UINode extends UIObject {
 	}
 
 	protected void sendParameter(String key, Object value) {
-		((Top)search.getTop()).sendMessageToBackend(new NodeParameterMessage(node_id, key, value));
+		sendMessage(new NodeParameterMessage(node_id, key, value));
 	}
 
 	public void executeMessage(Postmaster.Message message) {

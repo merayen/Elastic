@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.system.intercom.CreateNodePortMessage;
 import net.merayen.elastic.system.intercom.NodeCreatedMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
@@ -15,8 +17,8 @@ import net.merayen.elastic.util.Postmaster.Message;
 /**
  * Handles messages sent and received by nodes.
  */
-public class NodeController extends Controller {
-	public NodeController(Gate gate) {
+public class NodeViewController extends Controller {
+	public NodeViewController(Gate gate) {
 		super(gate);
 	}
 
@@ -54,8 +56,9 @@ public class NodeController extends Controller {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 
 			// Distribute message to all other NodeViews, so they get updated
-			for(NodeView nv : getNodeViews())
-				nv.messageNode(m.node_id, m);
+			// NO! We don't feed it back directly to all other views, the backend will send it to us afterwards anyway
+			//for(NodeView nv : getNodeViews())
+			//	nv.messageNode(m.node_id, m);
 
 			sendToBackend(message); // Forward message to backend 
 		}
@@ -72,5 +75,11 @@ public class NodeController extends Controller {
 		}
 
 		return result;
+	}
+
+	@Override
+	public JSONObject dump() {
+		// TODO Serialize... uhm... what?
+		return null;
 	}
 }

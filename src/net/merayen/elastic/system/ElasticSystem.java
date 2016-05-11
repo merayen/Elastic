@@ -26,12 +26,18 @@ public class ElasticSystem {
 		ui = new Supervisor();
 	}
 
-	public void load(JSONObject dump) {
-		
+	public static ElasticSystem load(JSONObject dump) {
+		ElasticSystem es = new ElasticSystem();
+
+		// TODO send messages to backend
+
+		return es;
 	}
 
 	public JSONObject dump() {
-		return null; // TODO
+		JSONObject result = new JSONObject();
+		result.put("ui.java", ui.dump());
+		return backend.dump();
 	}
 
 	/**

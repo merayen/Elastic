@@ -39,6 +39,10 @@ public class Postmaster {
 		return queue.poll();
 	}
 
+	public void clear() {
+		queue.clear();
+	}
+
 	private void clean() {
 		long t = System.currentTimeMillis();
 		for(Message o : queue)

@@ -3,6 +3,8 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.ui.controller.Gate;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.objects.top.Top;
@@ -18,10 +20,11 @@ public class Supervisor {
 	private final Top top;
 	private final Gate.UIGate ui_gate; // Only to be used by the UI-thread
 	private final Gate.BackendGate backend_gate; // Only to be used by the main-thread
+	private final Gate gate;
 
 	public Supervisor() {
 		top = new Top();
-		Gate gate = new Gate(top);
+		gate = new Gate(top);
 		ui_gate = gate.getUIGate();
 		top.setUIGate(ui_gate);
 		backend_gate = gate.getBackendGate();
@@ -97,6 +100,10 @@ public class Supervisor {
 
 	public void end() {
 		surfacehandler.end();
+	}
+
+	public JSONObject dump() {
+		return gate.dump();
 	}
 
 	private void initSurface() {

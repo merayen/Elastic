@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.context;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.elastic.Info;
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
 import net.merayen.elastic.backend.nodes.LogicNodeList;
@@ -88,7 +89,7 @@ public class BackendContext {
 		else if(message instanceof NodeDisconnectMessage) {
 			NodeDisconnectMessage m = (NodeDisconnectMessage)message;
 			netlist.disconnect(m.node_a, m.port_a, m.node_b, m.port_b);
-			debug();
+			//debug();
 			logicnode_list.handleMessageFromUI(message);
 			dispatch.executeMessage(message);
 
@@ -107,6 +108,7 @@ public class BackendContext {
 	@SuppressWarnings("unchecked")
 	public JSONObject dump() {
 		JSONObject result = new JSONObject();
+		result.put("version", Info.getVersion());
 		result.put("netlist", Serializer.dump(netlist));
 		return result;
 	}

@@ -2,6 +2,9 @@ package net.merayen.elastic.system;
 
 import java.util.ArrayList;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -10,7 +13,7 @@ public class Test {
 		new Test();
 	}
 
-	private final ElasticSystem system;
+	private ElasticSystem system;
 
 	public Test() {
 		system = new ElasticSystem();
@@ -22,6 +25,7 @@ public class Test {
 		}
 
 		ArrayList<NodeCreatedMessage> nodes = new ArrayList<>();
+
 		system.listen(new ElasticSystem.IListener() {
 			@Override
 			public void onMessageToUI(Message message) {
@@ -50,7 +54,23 @@ public class Test {
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(2).node_id, "input"));
 		//system.sendMessageToBackend(new NodeConnectMessage("signalgenerator", 1));
 
-		operate(10000000, 1000);
+		operate(1000, 10);
+
+		// Test dumping
+		String dump = system.dump().toJSONString();
+		System.out.println(dump);
+
+		system.end();
+
+		// Test restoring the dump
+		try {
+			system = ElasticSystem.load((JSONObject)new org.json.simple.parser.JSONParser().parse(dump));
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+
+		// Now just run
+		operate(10000000, 10);
 
 		system.end();
 	}

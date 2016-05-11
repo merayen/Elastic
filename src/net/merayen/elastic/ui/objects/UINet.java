@@ -84,7 +84,7 @@ public class UINet extends UIObject {
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		((Top)search.getTop()).sendMessageToBackend(new NodeConnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
+		((Top)search.getTop()).sendMessage(new NodeConnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
 	}
 
 	private void internalConnect(NodeConnectMessage message) {
@@ -108,7 +108,7 @@ public class UINet extends UIObject {
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		((Top)search.getTop()).sendMessageToBackend(new NodeDisconnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
+		((Top)search.getTop()).sendMessage(new NodeDisconnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
 	}
 
 	private void internalDisconnect(NodeDisconnectMessage message) {
@@ -133,7 +133,7 @@ public class UINet extends UIObject {
 		Top top = ((Top)search.getTop());
 		for(Connection c : connections)
 			if(p == c.a || p == c.b)
-				top.sendMessageToBackend(new NodeDisconnectMessage(c.a.getNode().node_id, c.a.name, c.b.getNode().node_id, c.b.name));
+				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().node_id, c.a.name, c.b.getNode().node_id, c.b.name));
 	}
 
 	public void handleMessage(Postmaster.Message message) {
