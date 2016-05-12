@@ -29,7 +29,6 @@ public class Top extends UIObject {
 
 	public Top() {
 		viewport_container = new ViewportContainer();
-		viewport_container.defaultView();
 		add(viewport_container);
 
 		mousehandler = new MouseHandler(this);

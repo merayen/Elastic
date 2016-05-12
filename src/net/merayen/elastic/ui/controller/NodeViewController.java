@@ -23,7 +23,10 @@ public class NodeViewController extends Controller {
 	}
 
 	@Override
-	public void onMessageFromBackend(Postmaster.Message message) {
+	protected void onInit() {}
+
+	@Override
+	protected void onMessageFromBackend(Postmaster.Message message) {
 		if(message instanceof NodeCreatedMessage) {
 			NodeCreatedMessage m = (NodeCreatedMessage)message;
 			System.out.println("Got message: " + m);
@@ -51,7 +54,7 @@ public class NodeViewController extends Controller {
 	}
 
 	@Override
-	public void onMessageFromUI(Message message) {
+	protected void onMessageFromUI(Message message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 
@@ -78,8 +81,13 @@ public class NodeViewController extends Controller {
 	}
 
 	@Override
-	public JSONObject dump() {
+	protected JSONObject onDump() {
 		// TODO Serialize... uhm... what?
 		return null;
+	}
+
+	@Override
+	protected void onRestore(JSONObject obj) {
+		
 	}
 }

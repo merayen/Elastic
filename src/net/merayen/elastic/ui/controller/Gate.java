@@ -12,7 +12,6 @@ import net.merayen.elastic.util.Postmaster;
  * A controller communicates with the backend, and manages the nodes in the UI.
  */
 public class Gate {
-
 	/**
 	 * Only used by the UI-thread.
 	 */
@@ -36,15 +35,20 @@ public class Gate {
 		public void update() {
 			Postmaster.Message message;
 
+			if(!gate.top.isInitialized())
+				return;
+
+			if(!gate.inited)
+				gate.init();
+
 			// Sending of messages to UI
-			if(gate.top.isInitialized()) // Require Top to be initialized
-				while((message = gate.from_backend.receive()) != null)
-					for(Controller c : gate.list)
-						c.onMessageFromBackend(message);
+			while((message = gate.from_backend.receive()) != null)
+				for(Controller c : gate.controllers)
+					c.onMessageFromBackend(message);
 
 			// Sending of messages to backend
 			while((message = gate.from_ui.receive()) != null)
-				for(Controller c : gate.list)
+				for(Controller c : gate.controllers)
 					c.onMessageFromUI(message);
 		}
 	}
@@ -71,7 +75,9 @@ public class Gate {
 		}
 	}
 
-	List<Controller> list = new ArrayList<>();
+	private boolean inited;
+	List<Controller> controllers = new ArrayList<>();
+	private JSONObject to_load;
 
 	final Top top;
 
@@ -88,9 +94,9 @@ public class Gate {
 		ui_gate = new UIGate(this);
 		backend_gate = new BackendGate(this);
 
-		list.add(new ViewportController(this));
-		list.add(new NodeViewController(this));
-		list.add(new NetController(this));
+		controllers.add(new ViewportController(this));
+		controllers.add(new NodeViewController(this));
+		controllers.add(new NetController(this));
 	}
 
 	public UIGate getUIGate() {
@@ -103,16 +109,40 @@ public class Gate {
 
 	@SuppressWarnings("unchecked")
 	public JSONObject dump() {
-		JSONObject result = new JSONObject();
-		JSONObject controllers = new JSONObject();
-		result.put("controllers", controllers);
+		if(!inited)
+			throw new RuntimeException("Gate() has not inited yet. Too early to dump");
 
-		for(Controller c : list) {
-			JSONObject obj = c.dump();
+		JSONObject result = new JSONObject();
+		JSONObject ctrls = new JSONObject();
+		result.put("controllers", ctrls);
+
+		for(Controller c : controllers) {
+			JSONObject obj = c.onDump();
 			if(obj != null)
-				controllers.put(c.getClass().getSimpleName(), obj);
+				ctrls.put(c.getClass().getSimpleName(), obj);
 		}
 
 		return result;
+	}
+
+	public void restore(JSONObject obj) {
+		if(inited)
+			throw new RuntimeException("Restoring state must be done before calling any update() on UIGate, also before initied");
+
+		to_load = obj;
+	}
+
+	private void init() {
+		for(Controller c : controllers)
+			c.onInit();
+
+		if(to_load != null) {
+			for(Controller c : controllers) {
+				JSONObject data = (JSONObject)to_load.get(c.getClass().getSimpleName());
+				c.onRestore(data);
+			}
+		}
+
+		inited = true;
 	}
 }

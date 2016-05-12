@@ -18,7 +18,10 @@ public class NetController extends Controller {
 	}
 
 	@Override
-	public void onMessageFromBackend(Message message) {
+	protected void onInit() {}
+
+	@Override
+	protected void onMessageFromBackend(Message message) {
 		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage) {
 			for(NodeView nv : getNodeViews()) // Forward message regarding the net, from backend to the UINet, to all NodeViews
 				nv.getUINet().handleMessage(message);
@@ -26,7 +29,7 @@ public class NetController extends Controller {
 	}
 
 	@Override
-	public void onMessageFromUI(Message message) {
+	protected void onMessageFromUI(Message message) {
 		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage) {
 			sendToBackend(message); // Forward message. Backend will respond with the same message
 
@@ -50,7 +53,12 @@ public class NetController extends Controller {
 	}
 
 	@Override
-	public JSONObject dump() {
+	public JSONObject onDump() {
 		return null; // Nothing to serialize. Loaded from backend anyway
+	}
+
+	@Override
+	protected void onRestore(JSONObject obj) {
+		
 	}
 }

@@ -12,15 +12,17 @@ public abstract class Controller {
 		this.gate = gate;
 	}
 
+	protected abstract void onInit();
+
 	/**
 	 * Message received from the backend.
 	 */
-	public abstract void onMessageFromBackend(Postmaster.Message message);
+	protected abstract void onMessageFromBackend(Postmaster.Message message);
 
 	/**
 	 * Message sent from the UI.
 	 */
-	public abstract void onMessageFromUI(Postmaster.Message message);
+	protected abstract void onMessageFromUI(Postmaster.Message message);
 
 	public void sendToBackend(Postmaster.Message message) {
 		gate.to_backend.send(message);
@@ -30,5 +32,6 @@ public abstract class Controller {
 		return gate.top;
 	}
 
-	public abstract JSONObject dump();
+	protected abstract JSONObject onDump();
+	protected abstract void onRestore(JSONObject obj);
 }

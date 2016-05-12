@@ -56,4 +56,8 @@ public class Viewport extends UIObject {
 			current_view.height = height - 20;
 		}
 	}
+
+	JSONObject dump() {
+		return null;
+	}
 }

@@ -3,8 +3,10 @@ package net.merayen.elastic.ui.objects.top.viewport;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.intercom.ViewportContainerUpdateMessage;
+import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 
 /**
@@ -23,7 +25,7 @@ public class ViewportContainer extends UIObject {
 		return new ArrayList<>(viewports);
 	}
 
-	public void defaultView() { // Testing purposes probably
+	private void defaultView() { // Testing purposes probably
 		Viewport m;
 
 		m = new Viewport(this);
@@ -41,7 +43,12 @@ public class ViewportContainer extends UIObject {
 		add(m);
 		viewports.add(m);
 
-		sendMessage(new ViewportContainerUpdateMessage(viewports));
+		sendMessage(new ViewportHelloMessage(this));
+	}
+
+	@Override
+	protected void onInit() {
+		defaultView();
 	}
 
 	/*@Override
@@ -62,5 +69,24 @@ public class ViewportContainer extends UIObject {
 			v.height = height / viewports.size();
 			i++;
 		}
+	}
+
+	/**
+	 * Called by the ViewportController when serializing.
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject dump() {
+		JSONObject result = new JSONObject();
+
+		result.put("hi", "mom"); // TODO dump layout and type of view, and then dump all the views
+
+		//for(Viewport v : viewports)
+		//	v.dump();
+
+		return result;
+	}
+
+	public void restore(JSONObject obj) {
+		System.out.printf("ViewportContainer received restore: %s\n", obj);
 	}
 }

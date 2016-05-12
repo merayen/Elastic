@@ -34,10 +34,12 @@ public class ElasticSystem {
 		return es;
 	}
 
+	@SuppressWarnings("unchecked")
 	public JSONObject dump() {
 		JSONObject result = new JSONObject();
 		result.put("ui.java", ui.dump());
-		return backend.dump();
+		result.put("backend", backend.dump());
+		return result;
 	}
 
 	/**
