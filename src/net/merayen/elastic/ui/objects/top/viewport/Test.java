@@ -40,7 +40,7 @@ public class Test {
 		validate(layout, 0, 0, 0, 1, 1, a);
 		validate(layout, 1, 1, 0, 0, 1, b);
 
-		l.resizeWidth(b, 0.5f); // This operation should be ignored, as resizing left-most object is not allowed
+		l.resize(b, 0.5f); // This operation should be ignored, as resizing left-most object is not allowed
 
 		layout = l.getLayout();
 
@@ -48,8 +48,8 @@ public class Test {
 		validate(layout, 1, 1, 0, 0, 1, b);
 
 		l.splitHorizontal(b, c);
-		l.resizeWidth(a, 0.25f);
-		l.resizeWidth(b, 0.10f);
+		l.resize(a, 0.25f);
+		l.resize(b, 0.10f);
 
 		layout = l.getLayout();
 
@@ -60,9 +60,17 @@ public class Test {
 		validate(layout, 1, 0.25f, 0, 0.10f, 1, b);
 		validate(layout, 2, 0.35f, 0, 0.65f, 1, c);
 
-		// Now create a vertical out of "b"
+		// Now create a vertical out of "b", with "d" delow
 		l.splitVertical(b, d);
-		//l.resizeHeight();
+		l.resize(b, 0.75f);
+
 		layout = l.getLayout();
+
+		validate(layout, 0, 0.00f, 0, 0.25f, 1, a);
+		validate(layout, 1, 0.25f, 0, 0.10f, 0.75f, b);
+		validate(layout, 2, 0.25f, 0.75f, 0.10f, 0.25f, d);
+		validate(layout, 3, 0.35f, 0, 0.65f, 1, c);
+
+		// Now try to resize "d"'s width, which should resize its parent ruler
 	}
 }

@@ -93,6 +93,7 @@ public class Layout {
 
 			ruler.items.set(ruler.items.indexOf(userobj), new_ruler);
 			new_ruler.items.add(userobj);
+			list.add(new_ruler);
 
 			ruler = new_ruler;
 		}
@@ -120,6 +121,7 @@ public class Layout {
 
 			ruler.items.set(ruler.items.indexOf(userobj), new_ruler);
 			new_ruler.items.add(userobj);
+			list.add(new_ruler);
 
 			ruler = new_ruler;
 		}
@@ -131,24 +133,31 @@ public class Layout {
 	/**
 	 * Resizes @param obj and the object after it.
 	 */
-	public void resizeWidth(Object obj, float size) {
+	private void resize(Item item, float size) {
 		if(size < 0 || size > 1)
 			throw new RuntimeException("Size must be from 0 to 1");
 
-		UserObject user_obj = getUserObject(obj);
-		Ruler ruler = getRuler(obj);
+		Ruler ruler = getRuler(item);
 
-		if(ruler.items.indexOf(user_obj) == ruler.items.size() - 1)
-			return; // Rightmost objects can not be resized. Ignored.
+		if(ruler.items.indexOf(item) == ruler.items.size() - 1)
+			return; // Rightmost/bottom-most objects can not be resized. Ignored.
 
-		Item right_item = ruler.items.get(ruler.items.indexOf(user_obj) + 1);
+		Item right_item = ruler.items.get(ruler.items.indexOf(item) + 1);
 
 		normalize(ruler);
 
-		float diff = size - user_obj.size;
+		float diff = size - item.size;
 
 		right_item.size -= diff;
-		user_obj.size += diff;
+		item.size += diff;
+	}
+
+	public void resizeHorizontally(Object obj, float size) {
+		UserObject userobj = getUserObject(obj);
+	}
+
+	public void resizeVertically(Object obj, float size) {
+		
 	}
 
 	public void remove(Object obj) {
