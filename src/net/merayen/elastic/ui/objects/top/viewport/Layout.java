@@ -78,8 +78,8 @@ public class Layout {
 		if(hasUserObject(new_obj))
 			throw new RuntimeException("Object is already added");
 
-		Ruler ruler = getRuler(obj); // Get the ruler containing this object
 		UserObject userobj = getUserObject(obj);
+		Ruler ruler = getRuler(userobj); // Get the ruler containing this object
 		UserObject new_userobj = new UserObject(new_obj);
 
 		if(ruler.vertical && ruler.items.size() == 1) { // Only 1 item? Make ruler horizontal first
@@ -97,7 +97,7 @@ public class Layout {
 
 			ruler = new_ruler;
 		}
-		
+
 		ruler.items.add(new_userobj);
 		list.add(new_userobj);
 	}
@@ -106,8 +106,8 @@ public class Layout {
 		if(hasUserObject(new_obj))
 			throw new RuntimeException("Already has this object");
 
-		Ruler ruler = getRuler(obj);
 		UserObject userobj = getUserObject(obj);
+		Ruler ruler = getRuler(userobj);
 		UserObject new_userobj = new UserObject(new_obj);
 
 		if(!ruler.vertical && ruler.items.size() == 1) { // Only 1 item? Make ruler vertical first
@@ -154,10 +154,30 @@ public class Layout {
 
 	public void resizeHorizontally(Object obj, float size) {
 		UserObject userobj = getUserObject(obj);
+		Ruler ruler = getRuler(userobj);
+
+		if(ruler.vertical) { // Slider is vertical, need to resize the whole ruler instead, and not ourself only
+			if(getRuler(ruler).vertical) // Is parent ruler also vertical? This is a critical error
+				throw new RuntimeException("Should not happen");
+
+			resize(ruler, size);
+		} else { // Just resize our item
+			resize(getUserObject(obj), size);
+		}
 	}
 
 	public void resizeVertically(Object obj, float size) {
-		
+		UserObject userobj = getUserObject(obj);
+		Ruler ruler = getRuler(userobj);
+
+		if(!ruler.vertical) { // Slider is horizontal, need to resize the whole ruler instead, and not ourself only
+			if(!getRuler(ruler).vertical) // Is parent ruler also horizontal? This is a critical error
+				throw new RuntimeException("Should not happen");
+
+			resize(ruler, size);
+		} else { // Just resize our item
+			resize(getUserObject(obj), size);
+		}
 	}
 
 	public void remove(Object obj) {
@@ -230,14 +250,12 @@ public class Layout {
 				item.size = 1f / ruler.items.size();
 	}
 
-	public Ruler getRuler(Object obj) {
-		for(Item item : list)
-			if(item instanceof Ruler)
-				for(Item rule_item : ((Ruler)item).items)
-					if(rule_item instanceof UserObject && ((UserObject)rule_item).obj == obj)
-						return (Ruler)item;
+	public Ruler getRuler(Item item) {
+		for(Item x : list)
+			if(x instanceof Ruler && ((Ruler)x).items.contains(item))
+				return (Ruler)x;
 
-		throw new RuntimeException("User's object not already added to this layout");
+		throw new RuntimeException("Should not happen");
 	}
 
 	private boolean hasUserObject(Object obj) {

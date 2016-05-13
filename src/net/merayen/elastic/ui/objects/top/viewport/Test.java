@@ -40,7 +40,7 @@ public class Test {
 		validate(layout, 0, 0, 0, 1, 1, a);
 		validate(layout, 1, 1, 0, 0, 1, b);
 
-		l.resize(b, 0.5f); // This operation should be ignored, as resizing left-most object is not allowed
+		l.resizeHorizontally(b, 0.5f); // This operation should be ignored, as resizing left-most object is not allowed
 
 		layout = l.getLayout();
 
@@ -48,8 +48,8 @@ public class Test {
 		validate(layout, 1, 1, 0, 0, 1, b);
 
 		l.splitHorizontal(b, c);
-		l.resize(a, 0.25f);
-		l.resize(b, 0.10f);
+		l.resizeHorizontally(a, 0.25f);
+		l.resizeHorizontally(b, 0.10f);
 
 		layout = l.getLayout();
 
@@ -62,7 +62,7 @@ public class Test {
 
 		// Now create a vertical out of "b", with "d" delow
 		l.splitVertical(b, d);
-		l.resize(b, 0.75f);
+		l.resizeVertically(b, 0.75f);
 
 		layout = l.getLayout();
 
