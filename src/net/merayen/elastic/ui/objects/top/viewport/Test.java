@@ -7,6 +7,17 @@ public class Test {
 		throw new RuntimeException("Nope");
 	}
 
+	private static void validate(List<Layout.CalculatedPosition> layout, int i, float x, float y, float width, float height, Object obj) {
+		if(layout.get(i).obj != obj)
+			nope();
+
+		if(Math.abs(layout.get(i).width - width) > 0.0001 || Math.abs(layout.get(i).height - height) > 0.0001) // c
+			nope();
+
+		if(Math.abs(layout.get(i).x - x) > 0.0001 || Math.abs(layout.get(i).y - y) > 0.0001) // c
+			nope();
+	}
+
 	public static void test() {
 		String a = "a", b = "b", c = "c", d = "d", e = "e";
 
@@ -17,8 +28,7 @@ public class Test {
 		if(layout.size() != 1)
 			nope();
 
-		if(layout.get(0).height != 1f || layout.get(0).width != 1f || layout.get(0).obj != a)
-			nope();
+		validate(layout, 0, 0, 0, 1, 1, a);
 
 		l.splitHorizontal(a, b);
 
@@ -27,21 +37,15 @@ public class Test {
 		if(layout.size() != 2)
 			nope();
 
-		if(layout.get(0).height != 1f || layout.get(0).width != 1f || layout.get(0).obj != a) // a
-			nope();
+		validate(layout, 0, 0, 0, 1, 1, a);
+		validate(layout, 1, 1, 0, 0, 1, b);
 
-		if(layout.get(1).height != 1f || layout.get(1).width != 0f || layout.get(1).obj != b) // b
-			nope();
-
-		l.resizeWidth(b, 0.5f); // This operation is ignored, as resizing left-most object is not allowed
+		l.resizeWidth(b, 0.5f); // This operation should be ignored, as resizing left-most object is not allowed
 
 		layout = l.getLayout();
 
-		if(layout.get(0).height != 1f || layout.get(0).width != 1f || layout.get(0).obj != a) // a
-			nope();
-
-		if(layout.get(1).height != 1f || layout.get(1).width != 0f || layout.get(1).obj != b) // b
-			nope();
+		validate(layout, 0, 0, 0, 1, 1, a);
+		validate(layout, 1, 1, 0, 0, 1, b);
 
 		l.splitHorizontal(b, c);
 		l.resizeWidth(a, 0.25f);
@@ -52,19 +56,13 @@ public class Test {
 		if(layout.size() != 3)
 			nope();
 
-		if(layout.get(0).height != 1f || layout.get(0).width != 0.25f || layout.get(0).obj != a) // a
-			nope();
-
-		if(layout.get(1).height != 1f || Math.abs(layout.get(1).width - 0.10f) > 0.000001 || layout.get(1).obj != b) // b
-			nope();
-
-		if(layout.get(2).height != 1f || layout.get(2).width != 0.65f || layout.get(2).obj != c) // c
-			nope();
+		validate(layout, 0, 0.00f, 0, 0.25f, 1, a);
+		validate(layout, 1, 0.25f, 0, 0.10f, 1, b);
+		validate(layout, 2, 0.35f, 0, 0.65f, 1, c);
 
 		// Now create a vertical out of "b"
 		l.splitVertical(b, d);
 		//l.resizeHeight();
 		layout = l.getLayout();
-		
 	}
 }
