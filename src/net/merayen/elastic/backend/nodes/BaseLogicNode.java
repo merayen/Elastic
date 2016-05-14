@@ -34,8 +34,7 @@ public abstract class BaseLogicNode {
 	 * This could be the UI changing a parameter, or a restore loading parameters.
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
 	 */
-	protected abstract void onParameterChange(String key, Object value);
-	protected abstract void onMessageFromBackend(Postmaster.Message message);
+	protected abstract void onParameterChange(NodeParameterMessage message);
 
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
@@ -80,6 +79,11 @@ public abstract class BaseLogicNode {
 
 	protected void set(String key, Object value) {
 		NodeParameterMessage message = new NodeParameterMessage(id, key, value);
+		sendMessageToBackend(message);
+		sendMessageToUI(message);
+	}
+
+	protected void set(NodeParameterMessage message) {
 		sendMessageToBackend(message);
 		sendMessageToUI(message);
 	}

@@ -33,6 +33,8 @@ public class NodeView extends View {
 
 		// Make it possible to move NodeViewContainer by dragging the background
 		movable = new Movable(container, this);
+
+		// TODO request refresh of all nodes?
 	}
 
 	@Override
@@ -132,5 +134,12 @@ public class NodeView extends View {
 				);
 			}
 		}
+	}
+
+	@Override
+	public View cloneView() {
+		NodeView nv = new NodeView();
+		// TODO copy scroll position
+		return nv;
 	}
 }

@@ -65,4 +65,9 @@ public class TestView extends View {
 		/*((Top)search.getTop()).debug.set(String.format("TestView.Absolute %d", count), this.absolute_translation);
 		((Top)search.getTop()).debug.set(String.format("TestView.OutlineAbsolute %d", count), this.outline_abs_px);*/
 	}
+
+	@Override
+	public View cloneView() {
+		return new TestView();
+	}
 }

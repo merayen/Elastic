@@ -104,7 +104,7 @@ public class LogicNodeList {
 	public void handleMessageFromUI(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
-			get(m.node_id).onParameterChange(m.key, m.value);
+			get(m.node_id).onParameterChange(m);
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 			NodeConnectMessage m = (NodeConnectMessage)message;
@@ -117,6 +117,7 @@ public class LogicNodeList {
 			get(m.node_b).notifyDisconnect(m.port_b);
 
 		}
+
 
 		// XXX Should we handle adding and removing of nodes here? Hmm.
 		// Connecting/disconnect should probably not be handled here in any way, other than notifying the LogicNode about it. Yes.

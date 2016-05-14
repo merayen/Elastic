@@ -34,6 +34,7 @@ public class Titlebar extends UIObject {
 		});
 	}
 
+	@Override
 	protected void onDraw() {
 		draw.setColor(30, 30, 30);
 		draw.fillRect(2f, 2f, width - 4f, 10f);
@@ -45,6 +46,7 @@ public class Titlebar extends UIObject {
 		super.onDraw();
 	}
 
+	@Override
 	protected void onEvent(net.merayen.elastic.ui.event.IEvent event) {
 		moveable.handle(event);
 	}

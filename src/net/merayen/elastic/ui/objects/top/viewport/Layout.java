@@ -56,6 +56,10 @@ public class Layout {
 			this.height = height;
 			this.obj = obj;
 		}
+
+		public String toString() {
+			return String.format("CalculatedPosition(obj=%s, x=%f, y=%f, w=%f, h=%f)", obj, x, y, width, height);
+		}
 	}
 
 	private final Ruler top;
@@ -72,9 +76,9 @@ public class Layout {
 	}
 
 	/**
-	 * Splits the obj in two horizontally, from the top
+	 * Splits the obj in two vertically, adding another object to the left
 	 */
-	public void splitHorizontal(Object obj, Object new_obj) {
+	public void splitVertical(Object obj, Object new_obj) {
 		if(hasUserObject(new_obj))
 			throw new RuntimeException("Object is already added");
 
@@ -98,11 +102,14 @@ public class Layout {
 			ruler = new_ruler;
 		}
 
-		ruler.items.add(new_userobj);
+		ruler.items.add(ruler.items.indexOf(userobj) + 1, new_userobj);
 		list.add(new_userobj);
 	}
 
-	public void splitVertical(Object obj, Object new_obj) {
+	/**
+	 * Splits the obj in two horizontally, adding another object below it
+	 */
+	public void splitHorizontal(Object obj, Object new_obj) {
 		if(hasUserObject(new_obj))
 			throw new RuntimeException("Already has this object");
 
@@ -126,7 +133,7 @@ public class Layout {
 			ruler = new_ruler;
 		}
 
-		ruler.items.add(new_userobj);
+		ruler.items.add(ruler.items.indexOf(userobj) + 1, new_userobj);
 		list.add(new_userobj);
 	}
 
@@ -148,11 +155,14 @@ public class Layout {
 
 		float diff = size - item.size;
 
+		// Limit resizable amount to the item right/below
+		diff = Math.min(right_item.size, diff);
+
 		right_item.size -= diff;
 		item.size += diff;
 	}
 
-	public void resizeHorizontally(Object obj, float size) {
+	public void resizeWidth(Object obj, float size) {
 		UserObject userobj = getUserObject(obj);
 		Ruler ruler = getRuler(userobj);
 
@@ -166,7 +176,7 @@ public class Layout {
 		}
 	}
 
-	public void resizeVertically(Object obj, float size) {
+	public void resizeHeight(Object obj, float size) {
 		UserObject userobj = getUserObject(obj);
 		Ruler ruler = getRuler(userobj);
 

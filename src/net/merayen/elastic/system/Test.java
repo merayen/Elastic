@@ -56,7 +56,7 @@ public class Test {
 
 		operate(1000, 10);
 
-		// Test dumping
+		/*// Test dumping
 		String dump = system.dump().toJSONString();
 		System.out.println(dump);
 
@@ -67,7 +67,7 @@ public class Test {
 			system = ElasticSystem.load((JSONObject)new org.json.simple.parser.JSONParser().parse(dump));
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
-		}
+		}*/
 
 		// Now just run
 		operate(10000000, 10);

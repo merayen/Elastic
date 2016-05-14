@@ -11,7 +11,7 @@ public class Test {
 		//net.merayen.elastic.backend.architectures.Test.test();
 		//net.merayen.elastic.backend.context.Test.test();
 		net.merayen.elastic.ui.objects.top.viewport.Test.test();
-		//net.merayen.elastic.system.Test.test();
+		net.merayen.elastic.system.Test.test();
 		//net.merayen.elastic.ui.Test.test();
 		//net.merayen.elastic.graphlist.Test.test();
 

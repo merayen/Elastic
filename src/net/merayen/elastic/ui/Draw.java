@@ -127,9 +127,10 @@ public class Draw {
 	}
 
 	public void line(float x1, float y1, float x2, float y2) {
-		Point point1 = uiobject.getAbsolutePosition(x1, y1);
-		Point point2 = uiobject.getAbsolutePosition(x2, y2);
-		g2d.drawLine((int)point1.x, (int)point1.y, (int)point2.x, (int)point2.y);
+		Point p1 = uiobject.getAbsolutePosition(x1, y1);
+		Point p2 = uiobject.getAbsolutePosition(x2, y2);
+		reg(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x1 - x2), Math.abs(y1 - y2));
+		g2d.drawLine((int)p1.x, (int)p1.y, (int)p2.x, (int)p2.y);
 	}
 
 	public void fillOval(float x, float y, float width, float height) {

@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.nodes.list.test_100;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.backend.nodes.Format;
-import net.merayen.elastic.util.Postmaster.Message;
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 
 public class LogicNode extends BaseLogicNode {
 
@@ -15,12 +15,9 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onParameterChange(String key, Object value) {
-		set(key, value);
+	protected void onParameterChange(NodeParameterMessage message) {
+		set(message);
 	}
-
-	@Override
-	protected void onMessageFromBackend(Message message) {}
 
 	@Override
 	protected void onConnect(String port) {}

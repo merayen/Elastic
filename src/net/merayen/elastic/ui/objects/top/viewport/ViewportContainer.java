@@ -1,12 +1,16 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
+import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 
 /**
@@ -16,6 +20,8 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 public class ViewportContainer extends UIObject {
 	public float width, height;
 	List<Viewport> viewports = new ArrayList<>(); // Flat list of all the viewports
+	private Layout layout;
+	private Viewport dragging_viewport;
 
 	public void addViewport(Viewport viewport) {
 		viewports.add(viewport);
@@ -26,22 +32,14 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private void defaultView() { // Testing purposes probably
-		Viewport m;
+		Viewport a = createViewport(new NodeView());
+		layout = new Layout(a);
 
-		m = new Viewport(this);
-		m.view = new NodeView();
-		add(m);
-		viewports.add(m);
+		Viewport b = createViewport(new NodeView());
+		layout.splitVertical(a, b);
 
-		m = new Viewport(this);
-		m.view = new NodeView();
-		add(m);
-		viewports.add(m);
-		
-		m = new Viewport(this);
-		m.view = new NodeView();
-		add(m);
-		viewports.add(m);
+		Viewport c = createViewport(new NodeView());
+		layout.splitVertical(b, c);
 
 		sendMessage(new ViewportHelloMessage(this));
 	}
@@ -57,6 +55,7 @@ public class ViewportContainer extends UIObject {
 		((Top)search.getTop()).debug.set("ViewContainer.OutlineAbsolute", this.outline_abs_px);
 	}*/
 
+	static int asdf;
 	@Override
 	protected void onUpdate() {
 		// TODO Remove. Requires defaultView to have been called
@@ -68,6 +67,13 @@ public class ViewportContainer extends UIObject {
 			v.translation.y = (height / viewports.size()) * i; 
 			v.height = height / viewports.size();
 			i++;
+		}
+
+		updateLayout();
+		if(asdf++ % 100 == 0) {
+			System.out.println("ViewportContainer layout ");//
+			for(Object o : layout.getLayout())
+				System.out.println("\t" + o);
 		}
 	}
 
@@ -88,5 +94,52 @@ public class ViewportContainer extends UIObject {
 
 	public void restore(JSONObject obj) {
 		System.out.printf("ViewportContainer received restore: %s\n", obj);
+	}
+
+	private void updateLayout() {
+		for(Layout.CalculatedPosition p : layout.getLayout()) {
+			Viewport v = ((Viewport)p.obj);
+			v.translation.x = p.x * width;
+			v.translation.y = p.y * height;
+			v.width = p.width * width;
+			v.height = p.height * height;
+		}
+	}
+
+	private Viewport createViewport(View view) {
+		final Map<String, Object> m = new HashMap<>();
+
+		Viewport v = new Viewport(new Viewport.Handler() {
+			@Override
+			public void onNewViewport(boolean vertical) { // TODO refuse creation if we are too small
+				Viewport v = createViewport(view.cloneView());
+				if(vertical) {
+					layout.splitVertical(m.get("viewport"), v);
+				} else { // Horizontal
+					layout.splitHorizontal(m.get("viewport"), v);
+				}
+				dragging_viewport = (Viewport)m.get("viewport");
+			}
+
+			@Override
+			public void onNewViewportResize(float new_size, boolean vertical) {
+				if(dragging_viewport == null)
+					throw new RuntimeException("Should not happen");
+
+				// TODO refuse smaller than a certain value 
+				if(vertical)
+					layout.resizeWidth(m.get("viewport"), new_size / width);
+				else
+					layout.resizeHeight(m.get("viewport"), new_size / height);
+
+				((Top)search.getTop()).debug.set("ViewContainer new_size", new_size);
+			}
+		});
+
+		v.view = view;
+		add(v);
+		viewports.add(v);
+		m.put("viewport", v);
+		return v;
 	}
 }

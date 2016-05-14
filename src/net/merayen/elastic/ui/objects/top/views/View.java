@@ -9,6 +9,8 @@ public abstract class View extends UIObject {
 	public float height = 100;
 	private boolean focused; // true when mouse is hovering over us, meaning we have the focus
 
+	public abstract View cloneView();
+
 	@Override
 	protected void onDraw() {
 		if(focused) {

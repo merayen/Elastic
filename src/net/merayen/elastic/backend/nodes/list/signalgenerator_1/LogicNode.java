@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.nodes.list.signalgenerator_1;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.backend.nodes.Format;
-import net.merayen.elastic.util.Postmaster.Message;
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 
 public class LogicNode extends BaseLogicNode {
 	@Override
@@ -25,14 +25,9 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onParameterChange(String key, Object value) { // Parameter change from UI
-		System.out.printf("Signalgenerator value: %s: %s\n", key, value);
-		set(key, value); // Acknowledge anyway
-	}
-
-	@Override
-	protected void onMessageFromBackend(Message message) {
-
+	protected void onParameterChange(NodeParameterMessage message) { // Parameter change from UI
+		System.out.printf("Signalgenerator value: %s: %s\n", message.key, message.value);
+		set(message); // Acknowledge anyway
 	}
 
 	@Override
