@@ -35,11 +35,11 @@ public class ViewportContainer extends UIObject {
 		Viewport a = createViewport(new NodeView());
 		layout = new Layout(a);
 
-		Viewport b = createViewport(new NodeView());
+		/*Viewport b = createViewport(new NodeView());
 		layout.splitVertical(a, b);
 
 		Viewport c = createViewport(new NodeView());
-		layout.splitVertical(b, c);
+		layout.splitVertical(b, c);*/
 
 		sendMessage(new ViewportHelloMessage(this));
 	}
@@ -126,13 +126,16 @@ public class ViewportContainer extends UIObject {
 				if(dragging_viewport == null)
 					throw new RuntimeException("Should not happen");
 
+				if(width == 0 || height == 0)
+					return;
+
 				// TODO refuse smaller than a certain value 
 				if(vertical)
 					layout.resizeWidth(m.get("viewport"), new_size / width);
 				else
 					layout.resizeHeight(m.get("viewport"), new_size / height);
 
-				((Top)search.getTop()).debug.set("ViewContainer new_size", new_size);
+				((Top)search.getTop()).debug.set("ViewContainer new_size", new_size / (vertical ? width : height));
 			}
 		});
 

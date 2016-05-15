@@ -29,6 +29,7 @@ public class Viewport extends UIObject {
 	private ViewportDrag drag;
 	private Handler handler;
 
+	private static final int BORDER_WIDTH = 2;
 	private static int lol_c;
 	private int lol = lol_c++;
 
@@ -36,8 +37,8 @@ public class Viewport extends UIObject {
 
 	public Viewport(Handler handler) {
 		this.handler = handler;
-		clip.translation.x = 10;
-		clip.translation.y = 10;
+		clip.translation.x = BORDER_WIDTH;
+		clip.translation.y = BORDER_WIDTH;
 		add(clip);
 	}
 
@@ -82,16 +83,16 @@ public class Viewport extends UIObject {
 			}
 		}
 
-		clip.width = width - 20;
-		clip.height = height - 20;
+		clip.width = width - BORDER_WIDTH * 2;
+		clip.height = height - BORDER_WIDTH * 2;
 
 		if(current_view != null) {
-			current_view.width = width - 20;
-			current_view.height = height - 20;
+			current_view.width = width - BORDER_WIDTH * 2;
+			current_view.height = height - BORDER_WIDTH * 2;
 		}
 
-		drag.width = width - 20;
-		drag.height = height - 20;
+		drag.width = width - BORDER_WIDTH * 2;
+		drag.height = height - BORDER_WIDTH * 2;
 
 		((Top)search.getTop()).debugPrint("Viewport " + lol, translation + "   [" + width + ", " + height + "]");
 	}

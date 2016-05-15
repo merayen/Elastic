@@ -6,6 +6,7 @@ import java.util.List;
 public class Layout {
 	private abstract class Item {
 		float size; // width or height, depending on if this object is in a Horizontal() or Vertical(). Value can be 0 to 1
+		float abs_x, abs_y, abs_width, abs_height; // Calculated values
 	}
 
 	private class UserObject extends Item {
@@ -73,6 +74,8 @@ public class Layout {
 		UserObject uobj = new UserObject(main);
 		top.items.add(uobj);
 		list.add(uobj);
+
+		recalc();
 	}
 
 	/**
@@ -104,6 +107,8 @@ public class Layout {
 
 		ruler.items.add(ruler.items.indexOf(userobj) + 1, new_userobj);
 		list.add(new_userobj);
+
+		recalc();
 	}
 
 	/**
@@ -135,16 +140,23 @@ public class Layout {
 
 		ruler.items.add(ruler.items.indexOf(userobj) + 1, new_userobj);
 		list.add(new_userobj);
+
+		recalc();
 	}
 
 	/**
 	 * Resizes @param obj and the object after it.
 	 */
-	private void resize(Item item, float size) {
-		if(size < 0 || size > 1)
+	private void resize(Item item, float abs_size) {
+		if(abs_size < 0 || abs_size > 1)
 			throw new RuntimeException("Size must be from 0 to 1");
 
-		Ruler ruler = getRuler(item);
+		Ruler ruler = getRuler(item); // The ruler that contains the item we are about to resize
+		float size = abs_size / (float)Math.max(ruler.vertical ? ruler.abs_height : ruler.abs_width, 0.001);
+
+		
+		if(size != abs_size)
+			System.out.println("Diffidiff " + abs_size + ", " + size);
 
 		if(ruler.items.indexOf(item) == ruler.items.size() - 1)
 			return; // Rightmost/bottom-most objects can not be resized. Ignored.
@@ -160,6 +172,8 @@ public class Layout {
 
 		right_item.size -= diff;
 		item.size += diff;
+
+		recalc(); // Recalculate absolute values
 	}
 
 	public void resizeWidth(Object obj, float size) {
@@ -167,7 +181,7 @@ public class Layout {
 		Ruler ruler = getRuler(userobj);
 
 		if(ruler.vertical) { // Slider is vertical, need to resize the whole ruler instead, and not ourself only
-			if(getRuler(ruler).vertical) // Is parent ruler also vertical? This is a critical error
+			if(getRuler(ruler).vertical) // Is parent ruler also vertical?
 				throw new RuntimeException("Should not happen");
 
 			resize(ruler, size);
@@ -181,7 +195,7 @@ public class Layout {
 		Ruler ruler = getRuler(userobj);
 
 		if(!ruler.vertical) { // Slider is horizontal, need to resize the whole ruler instead, and not ourself only
-			if(!getRuler(ruler).vertical) // Is parent ruler also horizontal? This is a critical error
+			if(!getRuler(ruler).vertical) // Is parent ruler also horizontal?
 				throw new RuntimeException("Should not happen");
 
 			resize(ruler, size);
@@ -194,53 +208,66 @@ public class Layout {
 		
 	}
 
-	public void updateLayout(float width, float height) {
-		
-	}
-
 	/**
 	 * Retrieves a list of all your objects with position and dimension.
 	 */
 	public List<CalculatedPosition> getLayout() {
 		List<CalculatedPosition> result = new ArrayList<>();
 
-		handle(result, top, new Translation(0, 0, 1, 1));
+		for(Item item : list) {
+			if(item instanceof UserObject) {
+				UserObject o = (UserObject)item;
+				result.add(new CalculatedPosition(o.abs_x, o.abs_y, o.abs_width, o.abs_height, o.obj));
+			}
+		}
 
 		return result;
 	}
 
-	private void handle(List<CalculatedPosition> result, Ruler ruler, Translation t) {
+	/**
+	 * Calculates absolute values for every Item
+	 */
+	private void recalc() {
+		top.abs_width = 1;
+		top.abs_height = 1;
+		calc(top, new Translation(0, 0, 1, 1));
+	}
+
+	private void calc(Ruler ruler, Translation t) { // Only used by recalc()
 		normalize(ruler); // Make the result a sum of 1
 		Translation new_t = new Translation(t.x, t.y, t.width, t.height);
 
 		if(ruler.vertical) {
 			for(Item item : ruler.items) {
-				if(item instanceof UserObject)
-					result.add(new CalculatedPosition(new_t.x, new_t.y, new_t.width, new_t.height * item.size, ((UserObject)item).obj));
-				else // is Ruler()-object
-					handle(result, (Ruler)item, new Translation(new_t.x, new_t.y, new_t.width, new_t.height * item.size));
+
+				// Assign absolute values on each item
+				item.abs_x = new_t.x;
+				item.abs_y = new_t.y;
+				item.abs_width = new_t.width;
+				item.abs_height = new_t.height * item.size;
+
+				if(item instanceof Ruler)
+					calc((Ruler)item, new Translation(new_t.x, new_t.y, new_t.width, new_t.height * item.size));
 
 				new_t.y += t.height * item.size;
 			}
 
 		} else { // Horizontal
 			for(Item item : ruler.items) {
-				if(item instanceof UserObject)
-					result.add(new CalculatedPosition(new_t.x, new_t.y, new_t.width * item.size, new_t.height, ((UserObject)item).obj));
-				else // is Ruler()-object
-					handle(result, (Ruler)item, new Translation(new_t.x, new_t.y, new_t.width * item.size, new_t.height));
+
+				// Assign absolute values on each item
+				item.abs_x = new_t.x;
+				item.abs_y = new_t.y;
+				item.abs_width = new_t.width * item.size;
+				item.abs_height = new_t.height;
+
+				if(item instanceof Ruler)
+					calc((Ruler)item, new Translation(new_t.x, new_t.y, new_t.width * item.size, new_t.height));
 
 				new_t.x += t.width * item.size;
 			}
 		}
 	}
-
-	/*private void transform(CalculatedPosition to_transform, float x, float y, float width, float height) {
-		to_transform.width *= width;
-		to_transform.height *= height;
-		to_transform.x += x;
-		to_transform.y += y;
-	}*/
 
 	private void normalize(Ruler ruler) {
 		float sum = 0;
@@ -260,7 +287,7 @@ public class Layout {
 				item.size = 1f / ruler.items.size();
 	}
 
-	public Ruler getRuler(Item item) {
+	private Ruler getRuler(Item item) {
 		for(Item x : list)
 			if(x instanceof Ruler && ((Ruler)x).items.contains(item))
 				return (Ruler)x;
