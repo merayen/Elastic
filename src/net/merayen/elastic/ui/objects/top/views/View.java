@@ -14,9 +14,9 @@ public abstract class View extends UIObject {
 	@Override
 	protected void onDraw() {
 		if(focused) {
-			draw.setColor(255, 0, 255);
-			draw.setStroke(4);
-			draw.rect(1, 1, width - 2, height - 2);
+			//draw.setColor(255, 0, 255);
+			//draw.setStroke(4);
+			//draw.rect(1, 1, width - 2, height - 2);
 		}
 	}
 

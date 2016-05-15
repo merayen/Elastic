@@ -45,7 +45,7 @@ public class Top extends UIObject {
 		width = draw.getScreenWidth();
 		height = draw.getScreenHeight();
 
-		draw.setColor(0, 0, 0);
+		draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
 	}
 

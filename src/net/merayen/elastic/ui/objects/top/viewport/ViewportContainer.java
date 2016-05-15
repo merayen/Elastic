@@ -15,7 +15,6 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 
 /**
  * Contains all the viewports.
- * TODO implement layouting
  */
 public class ViewportContainer extends UIObject {
 	public float width, height;

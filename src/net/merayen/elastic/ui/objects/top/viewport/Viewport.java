@@ -72,6 +72,26 @@ public class Viewport extends UIObject {
 	}
 
 	@Override
+	protected void onDraw() {
+		//draw.setColor(100, 100, 100);
+		//draw.setStroke(BORDER_WIDTH * 4);
+		//draw.rect(0, 0, width, height);
+
+		draw.setColor(150, 150, 150);
+		draw.setStroke(BORDER_WIDTH);
+		draw.rect(BORDER_WIDTH, BORDER_WIDTH, width - BORDER_WIDTH * 2, height - BORDER_WIDTH * 2);
+
+		draw.setColor(200, 200, 200);
+		draw.setStroke(BORDER_WIDTH / 2f);
+		draw.rect(BORDER_WIDTH, BORDER_WIDTH, width - BORDER_WIDTH * 2, height - BORDER_WIDTH * 2);
+
+		/*draw.line(0, 0, 0, height);
+		draw.line(width, 0, width, height);
+		draw.line(0, 0, width, 0);
+		draw.line(0, height, width, height);*/
+	}
+
+	@Override
 	protected void onUpdate() {
 		if(current_view != view) {
 			if(current_view != null)
