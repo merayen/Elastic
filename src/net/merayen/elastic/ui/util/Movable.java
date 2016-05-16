@@ -3,7 +3,6 @@ package net.merayen.elastic.ui.util;
 import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.TranslationData;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.objects.top.Top;
 
 /*
  * Makes an UIObject moveable by clicking down and dragging it.

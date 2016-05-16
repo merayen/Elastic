@@ -6,7 +6,8 @@ import net.merayen.elastic.ui.event.MouseEvent;
 
 /**
  * Helper class to make an UIObject moveable.
- * Tightly coupled to UIObjects
+ * Tightly coupled to UIObjects.
+ * 
  */
 public class MouseHandler {
 	public static abstract class Handler {
@@ -16,8 +17,8 @@ public class MouseHandler {
 		public void onMouseOver() {} // Mouse enters the hitbox
 		public void onMouseOut() {} // Mouse leaves the hitbox
 		public void onMouseMove(net.merayen.elastic.ui.Point position) {} // Mouse moves over the hitbox
-		public void onMouseDrag(net.merayen.elastic.ui.Point start_point, net.merayen.elastic.ui.Point offset) {} // Mouse down on hitbox and is now moving
-		public void onMouseDrop(net.merayen.elastic.ui.Point start_point, net.merayen.elastic.ui.Point offset) {} // Mouse has dragged item but now drops it
+		public void onMouseDrag(net.merayen.elastic.ui.Point position, net.merayen.elastic.ui.Point offset) {} // Mouse down on hitbox and is now moving
+		public void onMouseDrop(net.merayen.elastic.ui.Point position, net.merayen.elastic.ui.Point offset) {} // Mouse has dragged item but now drops it
 		public void onGlobalMouseMove(net.merayen.elastic.ui.Point global_position) {} // Mouse has been moved anywhere. TODO add others too? Like click
 		public void onGlobalMouseUp(net.merayen.elastic.ui.Point global_position) {}
 		public void onMouseOutsideDown(net.merayen.elastic.ui.Point global_position) {} // Mouse down outside

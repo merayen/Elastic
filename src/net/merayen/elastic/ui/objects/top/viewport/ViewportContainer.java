@@ -7,11 +7,16 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.elastic.ui.Point;
+import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.ui.util.HitTester;
+import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.TaskExecutor;
 
 /**
@@ -23,6 +28,7 @@ public class ViewportContainer extends UIObject {
 	private Layout layout;
 	private Viewport dragging_viewport;
 	private TaskExecutor task_executor = new TaskExecutor();
+	private MouseHandler mouse_handler;
 
 	public void addViewport(Viewport viewport) {
 		viewports.add(viewport);
@@ -46,14 +52,69 @@ public class ViewportContainer extends UIObject {
 		sendMessage(new ViewportHelloMessage(this));
 	}
 
+	boolean me;
 	@Override
 	protected void onInit() {
+		mouse_handler = new MouseHandler(this);
+		mouse_handler.setHandler(new MouseHandler.Handler() {
+			private Viewport moving;
+			private boolean vertical;
+
+			@Override
+			public void onMouseDown(Point position) {
+				for(Viewport v : viewports)
+					if(HitTester.inside(position, new Rect(
+						v.translation.x + v.width - 4,
+						v.translation.y,
+						v.translation.x + v.width + 4,
+						v.translation.y + v.height)
+					)) {
+						moving = v;
+						vertical = true;
+					}
+
+					else if(HitTester.inside(position, new Rect(
+						v.translation.x,
+						v.translation.y + v.height - 4,
+						v.translation.x + v.width,
+						v.translation.y + v.height + 4)
+					)) {
+						moving = v;
+						vertical = false;
+					}
+
+				me = true;
+			}
+
+			@Override
+			public void onMouseDrag(Point position, Point offset) {
+				if(moving == null)
+					return;
+
+				if(vertical)
+					layout.resizeWidth(moving, position.x / width);
+				else
+					layout.resizeHeight(moving, position.y / height);
+			}
+
+			@Override
+			public void onGlobalMouseUp(Point position) {
+				for(Viewport v : viewports)
+					v.translation.visible = true;
+				
+				me = false;
+				moving = null;
+			}
+		});
 		defaultView();
 	}
 
 	@Override
 	protected void onDraw() {
-		draw.setColor(100, 100, 100);
+		if(me)
+			draw.setColor(255,  0,  255);
+		else
+			draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
 	}
 
@@ -79,6 +140,11 @@ public class ViewportContainer extends UIObject {
 		}
 
 		task_executor.update();
+	}
+
+	@Override
+	protected void onEvent(IEvent event) {
+		mouse_handler.handle(event);
 	}
 
 	/**
@@ -148,5 +214,9 @@ public class ViewportContainer extends UIObject {
 		viewports.add(v);
 		m.put("viewport", v);
 		return v;
+	}
+
+	private void moveViewportBorder() {
+		
 	}
 }
