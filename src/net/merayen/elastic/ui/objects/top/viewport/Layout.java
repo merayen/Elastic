@@ -148,8 +148,9 @@ public class Layout {
 	 * Resizes @param obj and the object after it.
 	 */
 	private void resize(Item item, float abs_size) {
-		if(abs_size < 0 || abs_size > 1)
-			throw new RuntimeException("Size must be from 0 to 1");
+		//if(abs_size < 0 || abs_size > 1)
+		//	throw new RuntimeException("Size must be from 0 to 1");
+		abs_size = abs_size > 1 ? 1 : abs_size < 0 ? 0 : abs_size;
 
 		Ruler ruler = getRuler(item); // The ruler that contains the item we are about to resize
 		float size = abs_size / (float)Math.max(ruler.vertical ? ruler.abs_height : ruler.abs_width, 0.001);
@@ -186,7 +187,7 @@ public class Layout {
 
 			resize(ruler, size);
 		} else { // Just resize our item
-			resize(getUserObject(obj), size);
+			resize(userobj, size);
 		}
 	}
 
@@ -204,8 +205,45 @@ public class Layout {
 		}
 	}
 
+	public float getWidth(Object obj) {
+		return getUserObject(obj).abs_width;
+	}
+
+	public float getHeight(Object obj) {
+		return getUserObject(obj).abs_height;
+	}
+
 	public void remove(Object obj) {
-		
+		internalRemove(getUserObject(obj));
+	}
+
+	private void internalRemove(Item item) {
+		Ruler ruler = getRuler(item);
+
+		if(ruler == top && ruler.items.size() == 1)
+			throw new RuntimeException("Can not remove last object"); // Layout() requires to always have at least 1 object
+
+		if(ruler.items.size() == 1)
+			throw new RuntimeException("Should not happen"); // No ruler, other than the top one, can contain only 1 item
+
+		ruler.items.remove(item);
+		list.remove(item);
+
+		if(ruler.items.size() == 1 && ruler != top) { // Only one object, we pop it out of the ruler, if not the last object
+			Item remaining_item = ruler.items.remove(0);
+			Ruler parent_ruler = getRuler(ruler);
+
+			// Replace the ruler with the item that was inside it
+			parent_ruler.items.set(parent_ruler.items.indexOf(ruler), remaining_item);
+			remaining_item.size = ruler.size;
+
+			list.remove(ruler);
+
+			ruler = parent_ruler;
+		}
+
+		normalize(ruler);
+		recalc();
 	}
 
 	/**

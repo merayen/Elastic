@@ -23,6 +23,7 @@ public abstract class UIObject {
 
 	private boolean inited = false;
 	private boolean alive = true; // TODO Set this to false if this UIObject has been "disposed off". This is to stop any pending async operations
+	private boolean attached; // Attached to the tree (reachable from Top) or not
 
 	public final Search search = new Search(this);
 
@@ -44,6 +45,11 @@ public abstract class UIObject {
 			children.add(0, uiobject);
 		else
 			children.add(uiobject);
+
+		// Mark every child as attached to the tree
+		uiobject.attached = true;
+		for(UIObject o : uiobject.search.getAllChildren())
+			o.attached = true;
 	}
 
 	public void remove(UIObject uiobject) {
@@ -55,6 +61,11 @@ public abstract class UIObject {
 
 		children.remove(uiobject);
 		uiobject.parent = null;
+
+		// Mark every child to be detached
+		uiobject.attached = false;
+		for(UIObject o : uiobject.search.getAllChildren())
+			o.attached = false;
 	}
 
 	public UIObject getParent() {
@@ -148,5 +159,9 @@ public abstract class UIObject {
 
 	public boolean isAlive() {
 		return alive;
+	}
+
+	public boolean isAttached() {
+		return attached;
 	}
 }

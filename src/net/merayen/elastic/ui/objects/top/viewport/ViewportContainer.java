@@ -55,6 +55,8 @@ public class ViewportContainer extends UIObject {
 	boolean me;
 	@Override
 	protected void onInit() {
+		ViewportContainer self = this;
+
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			private Viewport moving;
@@ -91,19 +93,35 @@ public class ViewportContainer extends UIObject {
 				if(moving == null)
 					return;
 
-				if(vertical)
-					layout.resizeWidth(moving, position.x / width);
-				else
-					layout.resizeHeight(moving, position.y / height);
+				if(vertical) {
+					layout.resizeWidth(moving, (position.x - moving.translation.x) / width);
+				} else {
+					layout.resizeHeight(moving, (position.y - moving.translation.y)/ height);
+				}
 			}
 
 			@Override
 			public void onGlobalMouseUp(Point position) {
-				for(Viewport v : viewports)
-					v.translation.visible = true;
-				
 				me = false;
 				moving = null;
+
+				self.addTask(new TaskExecutor.Task(new Object(), 0, () -> clean()));
+			}
+
+			/**
+			 * Looks for too small/hidden viewports. They get removed.
+			 * Happens when user minimizes a Viewport and let go off the mouse --> remove Viewport.
+			 */
+			private void clean() {
+				for(int i = viewports.size() - 1; i > -1; i--) {
+					Viewport v = viewports.get(i);
+
+					if(v.width <= 10 || v.height <= 10) {
+						self.remove(v);
+						viewports.remove(v);
+						layout.remove(v);
+					}
+				}
 			}
 		});
 		defaultView();

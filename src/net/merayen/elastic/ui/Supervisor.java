@@ -78,6 +78,9 @@ public class Supervisor {
 		list.add(0, top);
 
 		for(UIObject o : list) {
+			if(!(o instanceof Top) && !o.isAttached()) // UIObject is not connected to the tree. Most likely detached under an previously onUpdate(), after getAllChildren() was called
+				continue;
+
 			if(o.isInitialized()) // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
 				for(IEvent e : events)
 					o.onEvent(e);
