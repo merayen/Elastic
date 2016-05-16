@@ -13,19 +13,28 @@ public enum Format {
 		this.name = name;
 	}
 
-	public Format get(String name) {
+	public static Format get(String name) {
 		for(Format f : Format.values())
 			if(f.name.equals(name))
 				return f;
 
-		return null;
+		throw new RuntimeException("Format " + name + " not found");
 	}
 
-	public static List<String> toStrings(Format[] formats) {
-		List<String> result = new ArrayList<>();
+	public static String[] toStrings(Format[] formats) {
+		String[] result = new String[formats.length];
 
-		for(Format f : formats)
-			result.add(f.name);
+		for(int i = 0; i < formats.length; i++)
+			result[i] = formats[i].name;
+
+		return result;
+	}
+
+	public static Format[] fromStrings(String[] formats) {
+		Format[] result = new Format[formats.length];
+
+		for(int i = 0; i < formats.length; i++)
+			result[i] = get(formats[i]);
 
 		return result;
 	}

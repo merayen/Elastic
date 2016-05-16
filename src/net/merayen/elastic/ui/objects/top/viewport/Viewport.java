@@ -124,4 +124,8 @@ public class Viewport extends UIObject {
 	public String toString() {
 		return "Viewport(" + lol + ")";
 	}
+
+	public ViewportContainer getViewportContainer() {
+		return (ViewportContainer) getParent();
+	}
 }

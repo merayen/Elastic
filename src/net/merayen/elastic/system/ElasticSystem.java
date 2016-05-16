@@ -83,7 +83,7 @@ public class ElasticSystem {
 	}
 
 	/**
-	* Only to be called outside the ElasticSystem, for testing, or for other control of it.
+	* Send message to UI.
 	*/
 	void sendMessageToUI(Postmaster.Message message) {
 		ui.sendMessageToUI(message);

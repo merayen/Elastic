@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview;
 
 import java.util.ArrayList;
 
+import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.UINet;
@@ -9,6 +10,7 @@ import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.TaskExecutor;
 
 // TODO accept NetList as input and rebuild ourselves automatically from that
 // TODO allow forwarding of node messages from and to the backend.
@@ -33,8 +35,13 @@ public class NodeView extends View {
 
 		// Make it possible to move NodeViewContainer by dragging the background
 		movable = new Movable(container, this);
+	}
 
-		// TODO request refresh of all nodes?
+	@Override
+	protected void onInit() {
+		super.onInit();
+		// Ask for sending a new NetList. We queue it up in the ViewportContainer domain, as several NodeViews might have been created simultaneously, we then only send 1 message
+		addTask(new TaskExecutor.Task(getClass(), 1000, () -> sendMessage(new NetListRefreshRequestMessage())));
 	}
 
 	@Override
@@ -141,5 +148,17 @@ public class NodeView extends View {
 		NodeView nv = new NodeView();
 		// TODO copy scroll position
 		return nv;
+	}
+
+	public void reset() {
+		net.reset();
+
+		for(UINode node : nodes)
+			container.remove(node);
+
+		if(container.search.getAllChildren().size() != 1) // Only UINet() should be remaining
+			throw new RuntimeException("Should not happen");
+
+		nodes.clear();
 	}
 }

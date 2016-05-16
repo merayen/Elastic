@@ -12,6 +12,7 @@ import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.util.TaskExecutor;
 
 /**
  * Contains all the viewports.
@@ -21,9 +22,17 @@ public class ViewportContainer extends UIObject {
 	List<Viewport> viewports = new ArrayList<>(); // Flat list of all the viewports
 	private Layout layout;
 	private Viewport dragging_viewport;
+	private TaskExecutor task_executor = new TaskExecutor();
 
 	public void addViewport(Viewport viewport) {
 		viewports.add(viewport);
+	}
+
+	/**
+	 * Add a task in the domain of ViewportContainer.
+	 */
+	public void addTask(TaskExecutor.Task task) {
+		task_executor.add(task);
 	}
 
 	public List<Viewport> getViewports() {
@@ -34,12 +43,6 @@ public class ViewportContainer extends UIObject {
 		Viewport a = createViewport(new NodeView());
 		layout = new Layout(a);
 
-		/*Viewport b = createViewport(new NodeView());
-		layout.splitVertical(a, b);
-
-		Viewport c = createViewport(new NodeView());
-		layout.splitVertical(b, c);*/
-
 		sendMessage(new ViewportHelloMessage(this));
 	}
 
@@ -48,11 +51,11 @@ public class ViewportContainer extends UIObject {
 		defaultView();
 	}
 
-	/*@Override
+	@Override
 	protected void onDraw() {
-		((Top)search.getTop()).debug.set("ViewContainer.Absolute", this.absolute_translation);
-		((Top)search.getTop()).debug.set("ViewContainer.OutlineAbsolute", this.outline_abs_px);
-	}*/
+		draw.setColor(100, 100, 100);
+		draw.fillRect(0, 0, width, height);
+	}
 
 	static int asdf;
 	@Override
@@ -74,6 +77,8 @@ public class ViewportContainer extends UIObject {
 			for(Object o : layout.getLayout())
 				System.out.println("\t" + o);
 		}
+
+		task_executor.update();
 	}
 
 	/**

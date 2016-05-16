@@ -70,6 +70,10 @@ public final class NetList {
 		return new ArrayList<>(nodes);
 	}
 
+	public synchronized List<Line> getLines() {
+		return new ArrayList<>(lines);
+	}
+
 	public synchronized Node getNodeByID(String id) {
 		for(Node node : nodes)
 			if(node.id.equals(id))

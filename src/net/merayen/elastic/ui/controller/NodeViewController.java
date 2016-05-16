@@ -5,10 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import net.merayen.elastic.system.intercom.CreateNodePortMessage;
-import net.merayen.elastic.system.intercom.NodeCreatedMessage;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
@@ -27,9 +24,10 @@ public class NodeViewController extends Controller {
 
 	@Override
 	protected void onMessageFromBackend(Postmaster.Message message) {
-		if(message instanceof NodeCreatedMessage) {
-			NodeCreatedMessage m = (NodeCreatedMessage)message;
-			System.out.println("Got message: " + m);
+		System.out.printf("UI got message: %s\n", message.getClass().getSimpleName());
+
+		if(message instanceof CreateNodeMessage) {
+			CreateNodeMessage m = (CreateNodeMessage)message;
 
 			for(NodeView nv : getNodeViews())
 				nv.addNode(m.node_id, m.name, m.version);
@@ -42,14 +40,19 @@ public class NodeViewController extends Controller {
 
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
+
 			for(NodeView nv : getNodeViews())
 				nv.getNode(m.node_id).executeMessage(message); // Exception? UI out of sync
 
 		} else if(message instanceof RemoveNodePortMessage) {
 			RemoveNodePortMessage m = (RemoveNodePortMessage)message;
+
 			for(NodeView nv : getNodeViews())
 				nv.getNode(m.node_id).executeMessage(message); // Exception? UI out of sync
 
+		} else if(message instanceof ResetNetListMessage) { // TODO implement support to only reset a certain group?
+			for(NodeView nv : getNodeViews())
+				nv.reset();
 		}
 	}
 

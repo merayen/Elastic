@@ -61,8 +61,6 @@ public class UINet extends UIObject {
 
 			}
 		}
-
-		super.onDraw();
 	}
 
 	/**
@@ -184,6 +182,12 @@ public class UINet extends UIObject {
 		}
 
 		return result;
+	}
+
+	public void reset() {
+		connections.clear();
+		dragging_port = null;
+		dragging_port_source = null;
 	}
 
 	private NodeView getNodeView() {

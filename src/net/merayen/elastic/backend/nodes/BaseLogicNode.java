@@ -2,10 +2,7 @@ package net.merayen.elastic.backend.nodes;
 
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
-import net.merayen.elastic.system.intercom.NodeCreatedMessage;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
-import net.merayen.elastic.system.intercom.CreateNodePortMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class BaseLogicNode {
@@ -52,13 +49,6 @@ public abstract class BaseLogicNode {
 		if(def.output && def.format.length != 1)
 			throw new RuntimeException("Output port can only have 1 format");
 
-		Port port = node.createPort(def.name);
-		port.properties.put("output", def.output);
-		port.properties.put("format", Format.toStrings(def.format));
-
-		if(def.poly_no > -1)
-			port.properties.put("poly_no", def.poly_no);
-
 		// Notify both ways
 		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format, def.poly_no);
 		sendMessageToUI(message);
@@ -89,7 +79,7 @@ public abstract class BaseLogicNode {
 	}
 
 	void create(String name, Integer version) {
-		sendMessageToUI(new NodeCreatedMessage(id, name, version)); // Acknowledges creation of Node to the UI
+		sendMessageToUI(new CreateNodeMessage(id, name, version)); // Acknowledges creation of Node to the UI
 		onCreate();
 	}
 

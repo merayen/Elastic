@@ -24,13 +24,13 @@ public class Test {
 			e1.printStackTrace();
 		}
 
-		ArrayList<NodeCreatedMessage> nodes = new ArrayList<>();
+		ArrayList<CreateNodeMessage> nodes = new ArrayList<>();
 
 		system.listen(new ElasticSystem.IListener() {
 			@Override
 			public void onMessageToUI(Message message) {
-				if(message instanceof NodeCreatedMessage) {
-					nodes.add((NodeCreatedMessage)message);
+				if(message instanceof CreateNodeMessage) {
+					nodes.add((CreateNodeMessage)message);
 				}
 			}
 
@@ -47,8 +47,8 @@ public class Test {
 		operate(100, 10);
 
 		// Place the nodes
-		system.sendMessageToUI(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 50f));
-		system.sendMessageToUI(new NodeParameterMessage(nodes.get(2).node_id, "ui.java.translation.x", 200f));
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 50f));
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "ui.java.translation.x", 200f));
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(2).node_id, "input"));

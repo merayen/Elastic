@@ -1,11 +1,9 @@
 package net.merayen.elastic.ui.controller;
 
-import java.util.List;
-
 import org.json.simple.JSONObject;
 
+import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
-import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -21,13 +19,20 @@ public class ViewportController extends Controller {
 
 	@Override
 	public void onMessageFromBackend(Message message) {
-		// Views are internal for the UI, no interaction with backend here
+		if(message instanceof NetListRefreshRequestMessage) {
+			
+		}
 	}
 
 	@Override
 	public void onMessageFromUI(Message message) {
-		if(message instanceof ViewportHelloMessage) // Received from ViewportContainer UIObject when it has inited. We can then manage it.
+		if(message instanceof ViewportHelloMessage) { // Received from ViewportContainer UIObject when it has inited. We can then manage it
 			viewport_container = ((ViewportHelloMessage)message).viewport_container;
+		}
+
+		else if(message instanceof NetListRefreshRequestMessage) {
+			sendToBackend(message);
+		}
 	}
 
 	@Override
