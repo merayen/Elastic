@@ -44,8 +44,8 @@ public class Movable extends MouseHandler {
 			public void onGlobalMouseMove(Point global_position) {
 				if(start_absolute_position != null) {
 					TranslationData td = movable.absolute_translation;
-					movable.translation.x = start_relative_position.x + (global_position.x - start_absolute_position.x) * td.scale_x;
-					movable.translation.y = start_relative_position.y + (global_position.y - start_absolute_position.y) * td.scale_y;
+					movable.translation.x = start_relative_position.x + (global_position.x - start_absolute_position.x) * td.scale_x / movable.translation.scale_x;
+					movable.translation.y = start_relative_position.y + (global_position.y - start_absolute_position.y) * td.scale_y / movable.translation.scale_y;
 
 					if(handler != null)
 						handler.onMove();

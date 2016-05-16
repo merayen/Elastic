@@ -10,7 +10,6 @@ import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.Titlebar;
-import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
 
@@ -34,6 +33,8 @@ public abstract class UINode extends UIObject {
 
 	public UINode() {
 		titlebar = new Titlebar();
+		translation.scale_x = 0.5f;
+		translation.scale_y = 0.5f;
 		add(titlebar);
 		inited = true;
 	}

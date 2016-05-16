@@ -52,7 +52,6 @@ public class MouseHandler {
 			net.merayen.elastic.ui.Point p_relative = uiobject.getRelativeFromAbsolute(x, y);
 			net.merayen.elastic.ui.Point p_absolute = new net.merayen.elastic.ui.Point(x, y);//uiobject.getAbsolutePointFromPixel(x, y);
 
-			//boolean hit = (e.getTopmostHit(uiobject.getTopObject()) == uiobject);
 			boolean hit = e.isHit(uiobject); // XXX doing this for absolute every uiobject, ouch!
 
 			if(e.action == MouseEvent.action_type.DOWN) {

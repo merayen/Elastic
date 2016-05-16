@@ -39,6 +39,7 @@ public class UINet extends UIObject {
 	@Override
 	protected void onDraw() {
 		Top top = (Top)search.getTop();
+		draw.disableOutline();
 
 		for(Connection c : connections) {
 			if(c.a.isInitialized() && c.b.isInitialized()) { // We need to see if they are ready, otherwise translation isn't available
