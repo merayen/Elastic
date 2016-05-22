@@ -17,28 +17,11 @@ public class Compiler extends ICompiler {
 	public AbstractExecutor compile(NetList netlist, int buffer_size) {
 		long t = System.currentTimeMillis();
 
-		LocalNetList local_netlist = createNetList(netlist, buffer_size);
-		// TODO run the analyzer on the local netlist
+		NetList local_netlist = netlist.copy();
 
 		System.out.printf("Compiling took: %d ms\n", System.currentTimeMillis() - t);
 
 		return new Executor(local_netlist);
-	}
-
-	private static LocalNetList createNetList(NetList netlist, int buffer_size) {
-		List<LocalNode> processors = new ArrayList<>();
-
-		// Create all the LocalNodes
-		for(Node node : netlist.getNodes())
-			processors.add(createNode(netlist, node, buffer_size));
-
-		LocalNetList local_netlist = new LocalNetList(processors.toArray(new LocalNode[0]));
-
-		// Set up the routing between them
-		for(Node node : netlist.getNodes())
-			routeNode(local_netlist, netlist, node);
-
-		return local_netlist;
 	}
 
 	private static LocalNode createNode(NetList netlist, Node node, int buffer_size) {

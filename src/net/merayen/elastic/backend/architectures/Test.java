@@ -1,8 +1,8 @@
 package net.merayen.elastic.backend.architectures;
 
-import net.merayen.elastic.backend.architectures.Dispatch.Message;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.util.Postmaster.Message;
 
 public class Test {
 	public static void test() {
@@ -14,7 +14,10 @@ public class Test {
 		netlist.connect(test1, "output", test2, "input");
 
 		Dispatch dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
-			@Override public void onMessage(Message message) {}
+			@Override
+			public void onMessage(Message message) {
+				
+			}
 		});
 
 		dispatch.launch(netlist, 8);

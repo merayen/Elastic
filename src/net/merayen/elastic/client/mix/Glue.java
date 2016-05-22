@@ -39,7 +39,7 @@ public class Glue extends GlueNode {
 	}
 
 	public void setFac(float fac_value) {
-		((Net)this.getNetNode()).fac_value = fac_value;
+		((Node)this.getNetNode()).fac_value = fac_value;
 	}
 
 	private UI ui() {

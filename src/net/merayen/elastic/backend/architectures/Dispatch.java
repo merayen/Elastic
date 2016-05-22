@@ -4,7 +4,7 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.util.Postmaster;
 
 /**
- * Dispatch the NetList to an architecture.
+ * Used by the backend to communicate with the processor
  */
 public class Dispatch {
 	public interface Handler {
@@ -43,7 +43,11 @@ public class Dispatch {
 	}
 
 	public void executeMessage(Postmaster.Message message) {
-		executor.handleMessage(message);
+		executor.to_processing.send(message);
+	}
+
+	public Postmaster.Message receiveMessageFromProcessor() {
+		return executor.from_processing.receive();
 	}
 
 	/**

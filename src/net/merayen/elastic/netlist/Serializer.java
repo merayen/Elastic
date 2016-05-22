@@ -80,7 +80,7 @@ public final class Serializer {
 
 			JSONObject j_ports = (JSONObject)n.get("ports");
 			for(Object port_name : j_ports.keySet()) {
-				Port port = node.createPort((String)port_name);
+				Port port = netlist.createPort(node, (String)port_name);
 				JSONObject j_properties = (JSONObject)((JSONObject)j_ports.get(port_name)).get("properties");
 				for(Object k : j_properties.keySet())
 					port.properties.put((String)k, j_properties.get((String)k));
@@ -91,9 +91,9 @@ public final class Serializer {
 		for(Object _l : lines) {
 			JSONObject l = (JSONObject)_l;
 			netlist.connect(
-				netlist.getNodeByID((String)l.get("node_a")),
+				netlist.getNode((String)l.get("node_a")),
 				(String)l.get("port_a"),
-				netlist.getNodeByID((String)l.get("node_b")),
+				netlist.getNode((String)l.get("node_b")),
 				(String)l.get("port_b")
 			);
 		}

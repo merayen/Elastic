@@ -32,14 +32,14 @@ class MessageHandler {
 	void handleFromLogicToBackend(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) { // Update our NetList with the new value
 			NodeParameterMessage m = (NodeParameterMessage)message;
-			Node node = backend_context.netlist.getNodeByID(m.node_id);
+			Node node = backend_context.netlist.getNode(m.node_id);
 			node.properties.put(m.key, m.value);
 		}
 
 		else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
 
-			Port port = backend_context.netlist.getNodeByID(m.node_id).createPort(m.port);
+			Port port = backend_context.netlist.getNode(m.node_id).createPort(m.port);
 
 			port.properties.put("output", m.output);
 			port.properties.put("format", Format.toStrings(m.format));
@@ -70,8 +70,8 @@ class MessageHandler {
 		else if(message instanceof NodeConnectMessage) {
 			NodeConnectMessage m = (NodeConnectMessage)message;
 
-			boolean output_a = (boolean)netlist.getNodeByID(m.node_a).getPort(m.port_a).properties.get("output");
-			boolean output_b = (boolean)netlist.getNodeByID(m.node_b).getPort(m.port_b).properties.get("output");
+			boolean output_a = (boolean)netlist.getNode(m.node_a).getPort(m.port_a).properties.get("output");
+			boolean output_b = (boolean)netlist.getNode(m.node_b).getPort(m.port_b).properties.get("output");
 
 			if(output_a == output_b)
 				return; // Only inputs and outputs can be connected
@@ -79,10 +79,10 @@ class MessageHandler {
 			if(m.node_a.equals(m.node_b))
 				return; // Node can not be connected to itself
 
-			if(!output_a && netlist.getConnections(netlist.getNodeByID(m.node_a), m.port_a).size() > 0)
+			if(!output_a && netlist.getConnections(netlist.getNode(m.node_a), m.port_a).size() > 0)
 				return; // Input ports can only have 1 line connected
 
-			if(!output_b && netlist.getConnections(netlist.getNodeByID(m.node_b), m.port_b).size() > 0)
+			if(!output_b && netlist.getConnections(netlist.getNode(m.node_b), m.port_b).size() > 0)
 				return; // Input ports can only have 1 line connected
 				
 

@@ -11,13 +11,13 @@ public final class Node extends NetListObject {
 
 	Node() {}
 
-	public Port createPort(String name) {
+	/*public Port createPort(String name) {
 		Port p = new Port();
 		ports.put(name, p);
 		return p;
-	}
+	}*/
 
-	public void removePort(String name) {
+	/*public void removePort(String name) {
 		ports.remove(name);
 	}
 
@@ -25,12 +25,12 @@ public final class Node extends NetListObject {
 		return ports.get(name);
 	}
 
-	/**
+	**
 	 * Returns a list of strings of all the ports this node has.
-	 */
+	 *
 	public String[] getPorts() {
 		return ports.keySet().toArray(new String[0]);
-	}
+	}*/
 
 	public String getID() {
 		return id;

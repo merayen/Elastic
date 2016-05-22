@@ -3,17 +3,9 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.net.util.flow.PortBuffer;
-import net.merayen.elastic.net.util.flow.PortBufferIterator;
-import net.merayen.elastic.net.util.flow.portmanager.ManagedPortState;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.netlist.datapacket.AudioResponse;
-import net.merayen.elastic.netlist.datapacket.DataPacket;
-import net.merayen.elastic.netlist.datapacket.EndSessionResponse;
-import net.merayen.elastic.netlist.datapacket.MidiResponse;
-import net.merayen.elastic.netlist.datapacket.SessionCreatedResponse;
-import net.merayen.elastic.process.AudioProcessor;
 
 /*
  * Makes beeping sounds.
@@ -21,7 +13,7 @@ import net.merayen.elastic.process.AudioProcessor;
  * how much they should produce, like remember the amount requested, as incoming data might be much more than
  * we have requested due to ports being split.
  */
-public class Processor extends AudioProcessor {
+public class Processor extends LocalProcessor {
 	private float midi_amplitude = 1f;
 	private float midi_frequency;
 	private float midi_tangent_frequency;
@@ -31,26 +23,15 @@ public class Processor extends AudioProcessor {
 	int sample_rate;
 	List<Short> keys_down = new ArrayList<>();
 
-	private final Net net_node;
-
 	private double pos = 0;
 
-	public Processor(Node n, long session_id) {
-		super(n, session_id);
-		net_node = (Net)n;
-		sample_rate = net_node.getSampleRate();
-	}
-
 	@Override
-	protected void onCreate() { // TODO only allow creation from frequency port? Hmm
-		// We tell right nodes that we have created this session and that they should now request from us
-		respond("output", new SessionCreatedResponse());
+	protected void onInit() {
 
-		// TODO Request session on amplitude-port, if it is connected?
 	}
 
 	void tryToGenerate() {
-		boolean frequency_connected = ports.isConnected("frequency");
+		boolean frequency_connected = getInlet("frequency").isConnected("frequency");
 		boolean amplitude_connected = ports.isConnected("amplitude");
 		ManagedPortState frequency_state = getPortState("frequency");
 
@@ -99,7 +80,7 @@ public class Processor extends AudioProcessor {
 
 		standalone_to_generate = 0;
 
-		float amplitude_offset = ((Net)net_node).offset;
+		float amplitude_offset = ((Node)net_node).offset;
 
 		if(amplitude_connected) {
 			
@@ -231,7 +212,7 @@ public class Processor extends AudioProcessor {
 
 		PortBuffer[] ports = amplitude_connected ? new PortBuffer[]{frequency_buffer, amplitude_buffer} : new PortBuffer[]{frequency_buffer};
 
-		float amplitude_offset = ((Net)net_node).offset;
+		float amplitude_offset = ((Node)net_node).offset;
 
 		PortBufferIterator pbi = new PortBufferIterator(ports, new PortBufferIterator.IteratorFunc() {
 
@@ -275,5 +256,11 @@ public class Processor extends AudioProcessor {
 			if(dp instanceof EndSessionResponse)
 				terminate();
 		}
+	}
+
+	@Override
+	protected void onProcess() {
+		// TODO Auto-generated method stub
+		
 	}
 }

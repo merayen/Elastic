@@ -1,21 +1,31 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class LocalProcessor {
-	private class State {
-		// Is set to true when a processor wants to keep the session active
-		public boolean keep_alive = false;
-	}
-
 	public static class Port {}
 
-	public static class OutputPort extends Port {
-		public final float[] output_buffer;
-		int written; // Number of samples written yet
+	public static class Connection {
+		final LocalProcessor processor;
+		final String port;
 
-		OutputPort(int buffer_size) {
+		Connection(LocalProcessor processor, String port) {
+			this.processor = processor;
+			this.port = port;
+		}
+	}
+
+	public static class Outlet extends Port {
+		//public final String name;
+		public float[] output_buffer; // null if none is connected
+		public List<Connection> connections;
+		public int written; // Number of samples written yet. Readers must respect this
+		private int last_written;
+
+		Outlet(int buffer_size) {
+			//this.name = port;
 			output_buffer = new float[buffer_size];
 		}
 
@@ -27,26 +37,84 @@ public abstract class LocalProcessor {
 		}
 	}
 
-	public static class InputPort extends Port {
-		public final OutputPort output_port; // Output-port that we are connected to. null if not connected
+	//public static class Inlet extends Port {
+		public final String name;
+		public final Outlet output_port; // Output-port that we are connected to. null if not connected. Don't change it
+		public int read; // Samples read so far. Use this to track where you are
 
-		InputPort(OutputPort p) {
+		Inlet(Outlet p) {
+			//this.name = port;
 			output_port = p;
 		}
 	}
 
-	private static int id_counter;
+	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system 
+	private final Map<String, Outlet> outlets = new HashMap<>();
+	private final Map<String, Inlet> inlets = new HashMap<>();
+	boolean keep_alive = true;
 
-	private final int id = ++id_counter;
-	private final State state = new State();
-	private LocalNode localnode; // Our parent LocalNode that keeps us
-	protected final Map<String, PortResult> output_buffers = new HashMap<>();
+	protected abstract void onInit();
+	protected abstract void onProcess();
 
 	void LocalProcessor_setInfo(LocalNode localnode, int buffer_size) {
 		this.localnode = localnode;
 
 		for(LocalNode.Port port : localnode.ports) // TODO only make PortResult for output ports?
-			output_buffers.put(port.name, new PortResult(buffer_size));
+			outlets.put(port.name, new Outlet(port.name, buffer_size));
+	}
+
+	void addPort(String name, boolean outlet) {
+		if(outlets.containsKey(name))
+			throw new RuntimeException("Port already exists");
+
+		
+	}
+
+	protected Outlet getOutlet(String port) { // Feel free to cache port
+		return outlets.get(port);
+	}
+
+	protected boolean isOutletConnected(String port) {
+		Outlet o = outlets.get(port);
+		if(o != null)
+			return o.output_buffer != null;
+
+		return false;
+	}
+
+	protected boolean isInletConnected(String port) {
+		Inlet o = inlets.get(port);
+		if(o != null)
+			return o.output_port != null;
+
+		return false;
+	}
+
+	protected Inlet getInlet(String port) { // Feel free to cache port
+		return inlets.get(port);
+	}
+
+	/**
+	 * Called when there has been data made available on one or more ports.
+	 * Returns true if any data has been written
+	 */
+	boolean doProcess() {
+		if(!dataAvailable()) // Hmm, should rather 
+			return false;
+
+		for(Outlet o : outlets.values())
+			o.last_written = o.written;
+
+		onProcess();
+	}
+
+	private boolean dataAvailable() {
+		for(Inlet o : inlets.values()) {
+			if(o.output_port.last_written < o.output_port.written)
+				return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -64,10 +132,10 @@ public abstract class LocalProcessor {
 	 * Other nodes might never set this to true and is just a slave. 
 	 */
 	protected void setKeepAlive(boolean b) {
-		state.keep_alive = b;
+		keep_alive = b;
 	}
 
-	public boolean isKeepingAlive() {
-		return state.keep_alive;
+	public boolean isKeepAlive() {
+		return keep_alive;
 	}
 }

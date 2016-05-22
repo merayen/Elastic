@@ -33,8 +33,6 @@ public abstract class UINode extends UIObject {
 
 	public UINode() {
 		titlebar = new Titlebar();
-		translation.scale_x = 0.5f;
-		translation.scale_y = 0.5f;
 		add(titlebar);
 		inited = true;
 	}

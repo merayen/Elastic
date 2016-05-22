@@ -41,6 +41,6 @@ public class Glue extends GlueNode {
 	}
 
 	public float[] getChannelLevels() {
-		return ((Net)getNetNode()).getChannelLevels(); // Thread safe...?
+		return ((Node)getNetNode()).getChannelLevels(); // Thread safe...?
 	}
 }

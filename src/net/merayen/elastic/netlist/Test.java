@@ -17,19 +17,19 @@ public class Test {
 	private static NetList create() { // Just create some example node structure
 		NetList netlist = new NetList();
 		Node midi_in = netlist.createNode();
-		midi_in.createPort("output");
+		netlist.createPort(midi_in, "output");
 		midi_in.properties.put("some midi setting", "hokay");
 
 		Node gen = netlist.createNode();
-		gen.createPort("frequency");
+		netlist.createPort(gen, "frequency");
 		gen.properties.put("some gen setting", 1337);
 		netlist.connect(midi_in, "output", gen, "frequency");
 
 		Node gen2 = netlist.createNode();
-		gen2.createPort("frequency");
+		netlist.createPort(gen2, "frequency");
 		netlist.connect(gen2, "frequency", midi_in, "output");
 
-		if(netlist.getNodeByID(midi_in.id) != midi_in)
+		if(netlist.getNode(midi_in.id) != midi_in)
 			nope();
 
 		try {
@@ -39,7 +39,7 @@ public class Test {
 			// OK
 		}
 
-		if(gen.getPort("frequency") == null)
+		if(netlist.getPort(gen, "frequency") == null)
 			nope();
 
 		try { // Try connecting with non-existent port
@@ -87,6 +87,20 @@ public class Test {
 		}
 	}
 
+	private static void testScanner() {
+		NetList netlist = new NetList();
+		Node midi_in = netlist.createNode();
+		netlist.createPort(midi_in, "output");
+
+		Node generator = netlist.createNode();
+		netlist.createPort(generator, "frequency");
+		netlist.createPort(generator, "amplitude");
+		netlist.createPort(generator, "output");
+
+		Node output = netlist.createNode();
+		//output.createPort();
+	}
+
 	public static void test() {
 		NetList netlist = create();
 
@@ -97,6 +111,8 @@ public class Test {
 
 		if(!first_dump.equals(second_dump))
 			nope();
+
+		testScanner();
 
 		//System.out.println(primær_bæsj);
 		//System.out.println(sekundær_bæsj);

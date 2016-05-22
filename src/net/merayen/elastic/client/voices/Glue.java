@@ -39,7 +39,7 @@ public class Glue extends GlueNode {
 
 	public void changeVoiceCount(int voices) {
 		this.voices = voices;
-		((Net)this.getNetNode()).changeVoiceCount(voices);
+		((Node)this.getNetNode()).changeVoiceCount(voices);
 	}
 
 	private net.merayen.elastic.client.voices.UI ui() {

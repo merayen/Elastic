@@ -39,7 +39,7 @@ public class Glue extends GlueNode {
 
 	public void changeDelay(float seconds) {
 		delay_seconds = seconds;
-		((Net)this.getNetNode()).changeDelay(seconds);
+		((Node)this.getNetNode()).changeDelay(seconds);
 	}
 
 	private net.merayen.elastic.client.graph.UI ui() {

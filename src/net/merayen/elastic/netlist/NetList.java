@@ -1,9 +1,7 @@
 package net.merayen.elastic.netlist;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public final class NetList {
 	@SuppressWarnings("serial") public static class NetListException extends RuntimeException {}
@@ -15,9 +13,7 @@ public final class NetList {
 	final List<Node> nodes = new ArrayList<Node>();
 	final List<Line> lines = new ArrayList<Line>();
 
-	public NetList() {
-		
-	}
+	public NetList() {}
 
 	/**
 	 * Called when copying a NetList.
@@ -45,17 +41,28 @@ public final class NetList {
 		}
 	}
 
-	public synchronized Node createNode() {
+	public Node createNode() {
 		Node n = new Node();
 		nodes.add(n);
 		return n;
 	}
 
-	public void removeNode(String node_id) {
-		removeNode(getNodeByID(node_id));
+	public Node createNode(String node_id) {
+		for(Node n : nodes)
+			if(n.id.equals(node_id))
+				throw new RuntimeException("Node with ID '" + node_id + "' already exists");
+
+		Node n = new Node();
+		nodes.add(n);
+		n.id = node_id;
+		return n;
 	}
 
-	public synchronized void removeNode(Node node) {
+	public void removeNode(String node_id) {
+		removeNode(getNode(node_id));
+	}
+
+	public void removeNode(Node node) {
 		if(!nodes.contains(node))
 			throw new NodeNotFound();
 
@@ -66,15 +73,51 @@ public final class NetList {
 		while(nodes.remove(node)); // Should only be one
 	}
 
-	public synchronized List<Node> getNodes() {
+	public List<Node> getNodes() {
 		return new ArrayList<>(nodes);
 	}
 
-	public synchronized List<Line> getLines() {
+	public List<Line> getLines() {
 		return new ArrayList<>(lines);
 	}
 
-	public synchronized Node getNodeByID(String id) {
+	public Port createPort(String node, String port) {
+		return createPort(getNode(node), port);
+	}
+
+	public Port createPort(Node node, String port) {
+		Port p = new Port();
+		node.ports.put(port, p);
+		return p;
+	}
+
+	public void removePort(String node, String port) {
+		removePort(getNode(node), port);
+	}
+
+	public void removePort(Node node, String port) {
+		for(int i = lines.size(); i > -1; i--) { // Remove all connections to port
+			Line line = lines.get(i);
+			if((line.node_a == node && line.port_a.equals(port)) || (line.node_b == node && line.port_b.equals(port)))
+				lines.remove(i);
+		}
+
+		node.ports.remove(port);
+	}
+
+	public Port getPort(String node, String port) {
+		return getPort(getNode(node), port);
+	}
+
+	public Port getPort(Node node, String port) {
+		return node.ports.get(port);
+	}
+
+	public String[] getPorts(Node node) {
+		return node.ports.keySet().toArray(new String[0]);
+	}
+
+	public Node getNode(String id) {
 		for(Node node : nodes)
 			if(node.id.equals(id))
 				return node;
@@ -82,11 +125,11 @@ public final class NetList {
 		throw new RuntimeException(String.format("Node by id %s was not found", id));
 	}
 
-	public synchronized void connect(String node_a, String port_a, String node_b, String port_b) {
-		connect(getNodeByID(node_a), port_a, getNodeByID(node_b), port_b);
+	public void connect(String node_a, String port_a, String node_b, String port_b) {
+		connect(getNode(node_a), port_a, getNode(node_b), port_b);
 	}
 
-	public synchronized void connect(Node node_a, String port_a, Node node_b, String port_b) {
+	public void connect(Node node_a, String port_a, Node node_b, String port_b) {
 		if(node_a == node_b)
 			throw new RuntimeException("Node can not connect to itself");
 
@@ -100,11 +143,11 @@ public final class NetList {
 		lines.add(line);
 	}
 
-	public synchronized void disconnect(String node_a, String port_a, String node_b, String port_b) {
-		disconnect(getNodeByID(node_a), port_a, getNodeByID(node_b), port_b);
+	public void disconnect(String node_a, String port_a, String node_b, String port_b) {
+		disconnect(getNode(node_a), port_a, getNode(node_b), port_b);
 	}
 
-	public synchronized void disconnect(Node node_a, String port_a, Node node_b, String port_b) {
+	public void disconnect(Node node_a, String port_a, Node node_b, String port_b) {
 		if(!hasConnection(node_a, port_a, node_b, port_b))
 			throw new ConnectionNotFound();
 
@@ -120,12 +163,12 @@ public final class NetList {
 		}
 	}
 
-	public synchronized void disconnectAll(Node node, String port) {
+	public void disconnectAll(Node node, String port) {
 		for(Line l : getConnections(node, port))
 			lines.remove(l);
 	}
 
-	public synchronized List<Line> getConnections(Node node, String port) {
+	public List<Line> getConnections(Node node, String port) {
 		List<Line> result = new ArrayList<>();
 
 		for(Line l : lines)
@@ -139,6 +182,11 @@ public final class NetList {
 
 	public NetList copy() {
 		return new NetList(nodes, lines);
+	}
+
+	public void clear() {
+		lines.clear();
+		nodes.clear();
 	}
 
 	/*
@@ -155,7 +203,7 @@ public final class NetList {
 		return new ArrayList<Line>(lines);
 	}*/
 
-	private synchronized boolean hasConnection(Node node_a, String port_a, Node node_b, String port_b) {
+	private boolean hasConnection(Node node_a, String port_a, Node node_b, String port_b) {
 		for(Line l : getConnections(node_a, port_a))
 			if((l.node_a == node_a && l.port_a == port_a) && (l.node_b == node_b && l.port_b.equals(port_b)))
 				return true;

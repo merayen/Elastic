@@ -41,6 +41,6 @@ public class Glue extends GlueNode {
 	}
 
 	public Stats getStatistics() {
-		return ((Net)getNetNode()).stats;
+		return ((Node)getNetNode()).stats;
 	}
 }

@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import net.merayen.elastic.netlist.Node;
+
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
  * All nodes must implement this.
@@ -7,14 +9,6 @@ package net.merayen.elastic.backend.architectures.local;
  * LocalNodes receives parameter changes and behaves after that.
  */
 public abstract class LocalNode {
-	static public class Port {
-		public final String name;
-
-		Port(String name) {
-			this.name = name;
-		}
-	}
-
 	static public class OutputPort extends Port {
 		public final float[] buffer;
 
@@ -24,20 +18,20 @@ public abstract class LocalNode {
 		}
 	}
 
-	private String node_id; // Same node ID as in the rest of the system
+	private Node node; // The NetList-node we represent
 	private int buffer_size;
-	protected Port[] ports;
 	private Class<? extends LocalProcessor> processor_cls;
 	private ProcessorList processors = new ProcessorList();
 
 	protected abstract void onInit();
+	protected abstract void onProcess();
 
 	public LocalNode(Class<? extends LocalProcessor> cls) {
 		processor_cls = cls;
 	}
 
 	public String getID() {
-		return node_id;
+		return node.getID();
 	}
 
 	LocalProcessor launchProcessor() {
@@ -55,14 +49,10 @@ public abstract class LocalNode {
 		return localprocessor;
 	}
 
-	void compiler_setInfo(String id, int buffer_size, Class<? extends LocalProcessor> processor_cls) {
-		this.node_id = id;
+	void compiler_setInfo(Node node, int buffer_size, Class<? extends LocalProcessor> processor_cls) {
+		this.node = node;
 		this.buffer_size = buffer_size;
 		this.processor_cls = processor_cls;
-	}
-
-	void compiler_setPorts(Port[] ports) {
-		this.ports = ports;
 	}
 
 	/**

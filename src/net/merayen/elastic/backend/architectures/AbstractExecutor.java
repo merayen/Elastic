@@ -3,10 +3,10 @@ package net.merayen.elastic.backend.architectures;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class AbstractExecutor {
-	//private final List<Postmaster.Message> ingoing = new ArrayList<>(); // From the processor
-	//private final List<Postmaster.Message> outgoing = new ArrayList<>(); // To the processor
+	final Postmaster from_processing = new Postmaster(); // Messages sent from this executor
+	final Postmaster to_processing = new Postmaster(); // Messages queued to be read from the processing architecture
 
-	private final Postmaster from_processing = new Postmaster(); // Messages sent from this executor
+	protected abstract void onMessage(Postmaster.Message message);
 
 	/**
 	 * Call this to stop the processing.
@@ -21,16 +21,11 @@ public abstract class AbstractExecutor {
 	public abstract void update();
 
 	/**
-	 * Message to your processing backend.
-	 */
-	public abstract void handleMessage(Postmaster.Message message);
-
-	/**
 	 * Retrieves any messages sent from the processor.
 	 * Needs to be polled often.
 	 * Returns null if nothing.
 	 */
-	public final Postmaster.Message receiveMessage() {
+	Postmaster.Message receiveFromProcessor() {
 		return from_processing.receive();
 	}
 }

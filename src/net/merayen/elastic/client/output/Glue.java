@@ -41,6 +41,6 @@ public class Glue extends GlueNode {
 	}
 
 	public HashMap<String, Number> getStatistics() {
-		return ((Net)getNetNode()).getStatistics();
+		return ((Node)getNetNode()).getStatistics();
 	}
 }

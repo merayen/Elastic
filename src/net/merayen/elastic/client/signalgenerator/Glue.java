@@ -51,22 +51,22 @@ public class Glue extends GlueNode {
 		return ((net.merayen.elastic.client.signalgenerator.UI)this.getUINode());
 	}
 
-	private net.merayen.elastic.client.signalgenerator.Net net() {
-		return ((net.merayen.elastic.client.signalgenerator.Net)this.getNetNode());
+	private net.merayen.elastic.client.signalgenerator.Node net() {
+		return ((net.merayen.elastic.client.signalgenerator.Node)this.getNetNode());
 	}
 
 	public void changeFrequency(float frequency) {
 		this.frequency = frequency;
-		((Net)this.getNetNode()).frequency = frequency;
+		((Node)this.getNetNode()).frequency = frequency;
 	}
 
 	public void changeAmplitude(float amplitude) {
 		this.amplitude = amplitude;
-		((Net)getNetNode()).amplitude = amplitude;
+		((Node)getNetNode()).amplitude = amplitude;
 	}
 
 	public void changeOffset(float offset) {
 		this.offset = offset;
-		((Net)getNetNode()).offset = offset;
+		((Node)getNetNode()).offset = offset;
 	}
 }
