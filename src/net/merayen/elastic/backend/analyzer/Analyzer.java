@@ -7,10 +7,6 @@ import net.merayen.elastic.netlist.NetList;
  * we scan that NetList and sets properties on all the nodes,
  * depending how they are placed.
  * 
- * The analyzer sets properties on every node under namespace "analyzer.*".
- * These properties are used by a processor environment to determine how
- * each node should behave.
- * 
  * We also figure out which format is sent between the nodes.
  * 
  * This analyzer must be run before the NetList is sent to a processor architecture.
@@ -22,9 +18,10 @@ public class Analyzer {
 	 * Updates all the nodes with new analyzis properties.
 	 */
 	public static void analyze(NetList netlist) {
+		AnalyzeResult ar = new AnalyzeResult();
 		analyzeState(netlist); // ???
 		analyzeFormat(netlist);
-		analyzeSessions(netlist);
+		analyzeChains(ar, netlist);
 	}
 
 	/**
@@ -45,7 +42,7 @@ public class Analyzer {
 	/**
 	 * Analyzes all the sessions.
 	 */
-	private static void analyzeSessions(NetList netlist) {
+	private static void analyzeChains(AnalyzeResult ar, NetList netlist) {
 		
 	}
 }
