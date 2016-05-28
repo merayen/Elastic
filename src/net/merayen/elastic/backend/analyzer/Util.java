@@ -15,7 +15,11 @@ public class Util {
 	}
 
 	public boolean isOutput(Node node, String port) {
-		return (boolean)netlist.getPort(node, port).properties.get("output");
+		Port p = netlist.getPort(node, port);
+		if(p == null)
+			throw new RuntimeException("Port " + port + " does not exist");
+
+		return (boolean)p.properties.get("output");
 	}
 
 	public boolean isOutput(Port port) {
@@ -25,10 +29,9 @@ public class Util {
 	public List<String> getInputPorts(Node node) {
 		List<String> result = new ArrayList<>();
 
-		for(String port : netlist.getPorts(node)) {
+		for(String port : netlist.getPorts(node))
 			if(!isOutput(netlist.getPort(node, port)))
 				result.add(port);
-		}
 
 		return result;
 	}
@@ -36,10 +39,9 @@ public class Util {
 	public List<String> getOutputPorts(Node node) {
 		List<String> result = new ArrayList<>();
 
-		for(String port : netlist.getPorts(node)) {
+		for(String port : netlist.getPorts(node))
 			if(isOutput(netlist.getPort(node, port)))
 				result.add(port);
-		}
 
 		return result;
 	}

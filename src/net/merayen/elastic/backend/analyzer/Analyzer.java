@@ -1,5 +1,8 @@
 package net.merayen.elastic.backend.analyzer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.merayen.elastic.netlist.NetList;
 
 /**
@@ -12,23 +15,19 @@ import net.merayen.elastic.netlist.NetList;
  * This analyzer must be run before the NetList is sent to a processor architecture.
  */
 public class Analyzer {
-	private Analyzer() {}
+	private NetList netlist;
+
+	public Analyzer(NetList netlist) {
+		this.netlist = netlist;
+	}
 
 	/**
 	 * Updates all the nodes with new analyzis properties.
 	 */
-	public static void analyze(NetList netlist) {
-		AnalyzeResult ar = new AnalyzeResult();
-		analyzeState(netlist); // ???
-		analyzeFormat(netlist);
-		analyzeChains(ar, netlist);
-	}
-
-	/**
-	 * Analyzes in what state the nodes is in, like, a session generator etc.
-	 */
-	private static void analyzeState(NetList netlist) {
-		
+	public AnalyzeResult analyze() {
+		return new AnalyzeResult(
+			new ChainAnalyzer(netlist).analyze()
+		);
 	}
 
 	/**
@@ -38,11 +37,25 @@ public class Analyzer {
 	private static void analyzeFormat(NetList netlist) {
 		
 	}
+}
 
-	/**
-	 * Analyzes all the sessions.
-	 */
-	private static void analyzeChains(AnalyzeResult ar, NetList netlist) {
-		
+/**
+ * Splits the NetList into several, individual executable chains.
+ */
+class ChainAnalyzer {
+	private NetList netlist;
+	private Traverser traverser;
+
+	ChainAnalyzer(NetList netlist) {
+		this.netlist = netlist;
+		this.traverser = new Traverser(netlist);
+	}
+
+	List<NetList> analyze() {
+		List<NetList> result = new ArrayList<>();
+
+		//List<NetList> leftmost = traverser.getLeftMost(node);
+
+		return result;
 	}
 }

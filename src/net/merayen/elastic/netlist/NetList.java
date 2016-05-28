@@ -58,6 +58,23 @@ public final class NetList {
 		return n;
 	}
 
+	/**
+	 * Copies and inserts the node. Node can be from another NetList. Lines are
+	 * not copied. Ports and their properties are also copied, but watch out:
+	 * The properties are not deeply copied! Returns the new node.
+	 */
+	public Node adaptNode(Node node) {
+		for(Node n : nodes)
+			if(n.id.equals(node.id))
+				throw new RuntimeException("Could not adapt node: Node with same id already eixts");
+
+		Node new_node = node.copy();
+
+		nodes.add(new_node);
+
+		return new_node;
+	}
+
 	public void removeNode(String node_id) {
 		removeNode(getNode(node_id));
 	}

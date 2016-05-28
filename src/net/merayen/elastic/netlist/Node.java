@@ -39,7 +39,10 @@ public final class Node extends NetListObject {
 	public Node copy() {
 		Node n = new Node();
 		n.id = id;
-		n.ports.putAll(ports);
+
+		for(String p : ports.keySet())
+			n.ports.put(p, ports.get(p).copy());
+
 		n.properties.putAll(properties);
 		return n;
 	}
