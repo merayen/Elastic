@@ -4,7 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.merayen.elastic.util.Postmaster;
+
 public abstract class LocalProcessor {
+	public enum Type {
+		AUDIO(),
+		MIDI()
+	}
+
+	boolean need_update = true;
 	public static class Port {}
 
 	public static class Connection {
@@ -18,15 +26,17 @@ public abstract class LocalProcessor {
 	}
 
 	public static class Outlet extends Port {
-		//public final String name;
-		public float[] output_buffer; // null if none is connected
+		public final Type type;
+		// Only one of these are in use
+		public float[] buffer; // Audio/data. null if none is connected
+		public Object[] midi;
+		
 		public List<Connection> connections;
 		public int written; // Number of samples written yet. Readers must respect this
 		private int last_written;
 
 		Outlet(int buffer_size) {
-			//this.name = port;
-			output_buffer = new float[buffer_size];
+			buffer = new float[buffer_size];
 		}
 
 		/**
@@ -37,41 +47,85 @@ public abstract class LocalProcessor {
 		}
 	}
 
-	//public static class Inlet extends Port {
-		public final String name;
-		public final Outlet output_port; // Output-port that we are connected to. null if not connected. Don't change it
+	public static class Inlet extends Port {
+		public final Map<Long, Outlet> outlets = new HashMap<>(); // Format: <voice_no, Outlet>. Only multiple outlets if this port does consolidate voices
 		public int read; // Samples read so far. Use this to track where you are
 
-		Inlet(Outlet p) {
-			//this.name = port;
-			output_port = p;
-		}
+		Inlet() {}
 	}
 
-	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system 
-	private final Map<String, Outlet> outlets = new HashMap<>();
-	private final Map<String, Inlet> inlets = new HashMap<>();
+	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
+	private int buffer_size;
+
+	/**
+	 * Note that we can have multiple inlets and outlets on ports.
+	 * Multiple outlets: When port can create voices
+	 * Multiple inlets: When port can consolidate voices
+	 */
+	private final Map<String, Map<Long, Outlet>> outlets = new HashMap<>();
+	private final Map<String, Map<Long, Inlet>> inlets = new HashMap<>();
 	boolean keep_alive = true;
 
 	protected abstract void onInit();
 	protected abstract void onProcess();
+	protected abstract void onMessage(Postmaster.Message message); // For NodeParameterChange()
+
+	LocalProcessor() {}
 
 	void LocalProcessor_setInfo(LocalNode localnode, int buffer_size) {
 		this.localnode = localnode;
+		this.buffer_size = buffer_size;
 
-		for(LocalNode.Port port : localnode.ports) // TODO only make PortResult for output ports?
-			outlets.put(port.name, new Outlet(port.name, buffer_size));
+		//for(LocalNode.Port port : localnode.ports) // TODO only make PortResult for output ports?
+		//	outlets.put(port.name, new Outlet(port.name, buffer_size));
 	}
 
-	void addPort(String name, boolean outlet) {
+	void addOutputPort(String name) {
 		if(outlets.containsKey(name))
 			throw new RuntimeException("Port already exists");
 
-		
+		outlets.put(name, new HashMap<>());
 	}
 
-	protected Outlet getOutlet(String port) { // Feel free to cache port
-		return outlets.get(port);
+	void addInputPort(String name) {
+		if(inlets.containsKey(name))
+			throw new RuntimeException("Port already exists");
+
+		inlets.put(name, new HashMap<>());
+	}
+
+	void addOutlet(String name, long voice_id) {
+		if(!outlets.get(name).containsKey(voice_id))
+			throw new RuntimeException("Outlet has already been registered");
+
+		outlets.get(name).put(voice_id, new Outlet(buffer_size));
+	}
+
+	void addInlet(String name, long voice_id) {
+		if(!inlets.get(name).containsKey(voice_id))
+			throw new RuntimeException("Outlet has already been registered");
+
+		inlets.get(name).put(voice_id, new Inlet(buffer_size));
+	}
+
+	/**
+	 * Tries to retrieve a single outlet.
+	 * Only call this when your output is not polyphonic.
+	 */
+	protected Outlet getOutlet(String port) {
+		Map<Long, Outlet> p = outlets.get(port);
+
+		if(p == null || p.size() == 0)
+			return null;
+
+		if(p.size() != 1)
+			throw new RuntimeException("Multiple outlets, port might be a polyphonic port, where this call does not work");
+
+		return p.values().iterator().next();
+	}
+
+	protected Inlet getInlet() {
+		
 	}
 
 	protected boolean isOutletConnected(String port) {

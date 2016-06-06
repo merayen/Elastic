@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 import net.merayen.elastic.netlist.Line;
@@ -94,7 +95,7 @@ public class Traverser {
 	
 	/**
 	 * Gets all the groups in the NetList.
-	 * A group is nodes that are connected to each other.
+	 * A group is a collection of nodes that are connected to each other.
 	 */
 	public List<NetList> getGroups() {
 		List<Node> remaining_nodes = netlist.getNodes();
@@ -102,7 +103,12 @@ public class Traverser {
 		List<NetList> result = new ArrayList<>();
 
 		while(!remaining_nodes.isEmpty()) {
-			
+			// Pick a node by random
+			Node node = remaining_nodes.get(new Random().nextInt(remaining_nodes.size()));
+
+			List<Node> nodes = getAllInGroup(node);
+			remaining_nodes.removeAll(nodes);
+			result.add(copyNetList(netlist, nodes));
 		}
 
 		return result;
@@ -134,5 +140,32 @@ public class Traverser {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Rebuilds a netlist, with only the nodes in *nodes*.
+	 */
+	public NetList copyNetList(NetList netlist, List<Node> nodes) {
+		NetList new_netlist = new NetList();
+
+		for(Node node : nodes) {
+			if(!netlist.hasNode(node.getID()))
+				throw new RuntimeException("Node does not belong to NetList");
+
+			new_netlist.adaptNode(node);
+
+			for(String port : netlist.getPorts(node)) {
+				for(Line line : netlist.getConnections(node, port)) {
+					if(line.node_a == node && new_netlist.hasNode(line.node_b.getID()))
+						new_netlist.connect(node.getID(), port, line.node_b.getID(), line.port_b);
+					else if(line.node_b == node && new_netlist.hasNode(line.node_a.getID())) {
+						new_netlist.connect(node.getID(), port, line.node_a.getID(), line.port_a);
+					}
+				}
+			}
+			
+		}
+
+		return new_netlist;
 	}
 }

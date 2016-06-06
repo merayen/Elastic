@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.analyzer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.netlist.Line;
@@ -129,6 +130,44 @@ public class Test {
 			no();
 
 		if(!nodes.contains(netlist.getNode("test_a")) || !nodes.contains(netlist.getNode("test_b")))
+			no();
+
+		// Test creation of copying NetList() with certain Node()s only
+		List<Node> nodes_to_copy = new ArrayList<>();
+		nodes_to_copy.add(netlist.getNode("midi_in"));
+		nodes_to_copy.add(netlist.getNode("poly"));
+		nodes_to_copy.add(netlist.getNode("adsr"));
+		nodes_to_copy.add(netlist.getNode("sgen"));
+		// nodes_to_copy.add(netlist.getNode("depoly")); // Leaving this one out on purpose, should now create a NetList with 2 groups
+		nodes_to_copy.add(netlist.getNode("output"));
+		nodes_to_copy.add(netlist.getNode("sgen_direct"));
+
+ 		NetList new_netlist = t.copyNetList(netlist, nodes_to_copy);
+
+		if(new_netlist.getNodes().size() != nodes_to_copy.size())
+			no();
+
+		for(Node n : nodes_to_copy)
+			if(!new_netlist.hasNode(n.getID()))
+				no();
+
+		// Check that all connections are valid. output and sgen are no more connected to depoly as it has been removed
+		nodes_to_copy.remove(netlist.getNode("output"));
+		nodes_to_copy.remove(netlist.getNode("sgen"));
+		for(Node n : nodes_to_copy) {
+			Node node = netlist.getNode(n.getID());
+			for(String port : netlist.getPorts(node))
+				for(Line l : netlist.getConnections(n.getID(), port))
+					if(!new_netlist.isConnected(l.node_a.getID(), l.port_a, l.node_b.getID(), l.port_b))
+						no();
+		}
+
+		// We should now also have two groups, as depoly is not in the
+		// nodes_to_copy, and should have left a hole between output and the
+		// other nodes
+		List<NetList> groups = new Traverser(new_netlist).getGroups();
+
+		if(groups.size() != 2)
 			no();
 	}
 

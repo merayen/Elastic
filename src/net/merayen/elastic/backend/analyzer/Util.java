@@ -10,7 +10,7 @@ import net.merayen.elastic.netlist.Port;
 public class Util {
 	private final NetList netlist;
 
-	Util(NetList netlist) {
+	public Util(NetList netlist) {
 		this.netlist = netlist;
 	}
 
@@ -44,5 +44,10 @@ public class Util {
 				result.add(port);
 
 		return result;
+	}
+
+	public int getPolyNo(Node node, String port) {
+		Port p = netlist.getPort(node, port);
+		return (int)p.properties.get("poly_no");
 	}
 }

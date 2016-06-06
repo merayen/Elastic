@@ -9,15 +9,6 @@ import net.merayen.elastic.netlist.Node;
  * LocalNodes receives parameter changes and behaves after that.
  */
 public abstract class LocalNode {
-	static public class OutputPort extends Port {
-		public final float[] buffer;
-
-		OutputPort(String name, int buffer_size) {
-			super(name);
-			buffer = new float[buffer_size];
-		}
-	}
-
 	private Node node; // The NetList-node we represent
 	private int buffer_size;
 	private Class<? extends LocalProcessor> processor_cls;
@@ -26,7 +17,7 @@ public abstract class LocalNode {
 	protected abstract void onInit();
 	protected abstract void onProcess();
 
-	public LocalNode(Class<? extends LocalProcessor> cls) {
+	protected LocalNode(Class<? extends LocalProcessor> cls) {
 		processor_cls = cls;
 	}
 

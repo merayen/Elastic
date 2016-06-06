@@ -74,7 +74,8 @@ public class Test {
 		if(lines.size() != 2)
 			nope();
 
-		// ...should test what lines there is... but meh
+		if(!netlist.isConnected(midi_in, "output", gen, "frequency"))
+			nope();
 
 		return netlist;
 	}

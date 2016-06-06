@@ -2,8 +2,10 @@ package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import net.merayen.elastic.netlist.NetList;
+import net.merayen.elastic.netlist.Node;
 
 /**
  * After the compiler has created our local NetList for execution,
@@ -52,10 +54,33 @@ class ChainAnalyzer {
 	}
 
 	List<NetList> analyze() {
-		List<NetList> result = new ArrayList<>();
+		List<NetList> chains = new ArrayList<>();
 
-		//List<NetList> leftmost = traverser.getLeftMost(node);
+		List<NetList> groups = traverser.getGroups();
 
-		return result;
+		for(NetList group : groups)
+			chainifyGroup(chains, group);
+
+		return chains;
+	}
+
+	private void chainifyGroup(List<NetList> chains, NetList group) {
+		List<Node> leftmost = traverser.getLeftMost(group.getNodes().get(0));
+
+		if(leftmost.size() == 0) { // Is an infinite loop, this is a chain by itself
+			chains.add(group);
+			return;
+		}
+
+		walkRightward(leftmost.get(0));
+	}
+
+	/**
+	 * Walks from a leftmost node and rightward.
+	 */
+	private void walkRightward(Node leftnode) {
+		Walker walker = new Walker(netlist, leftnode);
+
+		
 	}
 }
