@@ -1,18 +1,18 @@
-- Design and implement data sending/receiving management system (data between ports)
-	- Create a helper class that buffers audio packets received and makes them available when the node is actually requesting
-	- Need to find out how big buffer we should allow, if one node requests data for like a 60 second offset, we start to eat a lot of memory
-		- Maybe node itself can define the length of the buffer, depending on the settings set on the node
-	- This is important as nodes will be reading datapackets in different time
-		- Like, node A requests data 1 second before node B, so node B needs to cache those data up
-		- The package sending management code needs to calculate the buffer here, maybe, combined with what the nodes requests
-	- Generally, we need to abstract ourself from Netlist node a little, making easy API access like:
-		- getData("input_port", int sample_offset, int sample_count)
-		- sendData("output_port", int sample_offset, int sample_count)
-		...where the abstracting code keeps all the AudioRequest and AudioResponse handling away
+- Think about that all nodes might need to support different parameters for each channel
+	- And that a left node might need to ask right node to open a channel
+	Like, a left node has 12 voices (channels), it needs to get 12 different values from its right node, and needs to request multiple channels
+	Asking for multiple channels might be some special RequestPacket type, that processing nodes just pass along whilst generator nodes actually opens more channels
+- AudioCircularBuffer: Implement posibility to drop channels, when the one filling this buffer notice that there are no more data for a certain channel
 - Make input on a signal generator actually work
 - Create own port for MIDI-data
 - Make MIDI-input node output MIDI
 - Make wavegenerator take MIDI
 - Create offset node (adds to the signal)
 - Create volume node (multiplies with the signal)
-- 
+- Give up on very dynamic sample rate
+	The requesting node was orignally deciding what sample rate it wants to receive from its left nodes.
+	This just adds complexity that might not be worth.
+	Implement an "event" system so that we can send events to all nodes in a NodeSystem?
+	Sample rate will be set globally with an event
+- "Event" system for netnodes (e.g change sample rate)
+- (Low prio) "Event" system for UI nodes (e.g to communicate with other nodes outside the connected lines)
