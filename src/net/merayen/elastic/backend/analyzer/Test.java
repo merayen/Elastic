@@ -172,13 +172,13 @@ public class Test {
 	}
 
 	private static void testUtil(NetList netlist) {
-		Util util = new Util(netlist);
+		NodeProperties nodeProperties = new NodeProperties(netlist);
 
-		List<String> ports = util.getInputPorts(netlist.getNode("sgen"));
+		List<String> ports = nodeProperties.getInputPorts(netlist.getNode("sgen"));
 		if(ports.size() != 2 || !ports.contains("frequency") || !ports.contains("amplitude"))
 			no();
 
-		ports = util.getOutputPorts(netlist.getNode("adsr"));
+		ports = nodeProperties.getOutputPorts(netlist.getNode("adsr"));
 		if(ports.size() != 2 || !ports.contains("output") || !ports.contains("fac"))
 			no();
 	}

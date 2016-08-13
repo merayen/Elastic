@@ -10,6 +10,10 @@ import net.merayen.elastic.util.Postmaster;
 public class Executor extends AbstractExecutor {
 	private final NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive
 
+	Executor(NetList netlist) {
+		// ??? Replace class with Supervisor() only?
+	}
+
 	@Override
 	protected void onMessage(Postmaster.Message message) {
 		if(message instanceof CreateNodeMessage) {

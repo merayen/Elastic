@@ -10,6 +10,9 @@ import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
+/**
+ * Compiles a NetList to our local NetList which can then be used for execution.
+ */
 public class Compiler extends ICompiler {
 	private final static String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.%s";
 
@@ -17,11 +20,16 @@ public class Compiler extends ICompiler {
 	public AbstractExecutor compile(NetList netlist, int buffer_size) {
 		long t = System.currentTimeMillis();
 
-		NetList local_netlist = netlist.copy();
+		netlist = netlist.copy();
+		transform(netlist);
 
 		System.out.printf("Compiling took: %d ms\n", System.currentTimeMillis() - t);
 
-		return new Executor(local_netlist);
+		return new AbstractExecutor(netlist);
+	}
+
+	private void transform(NetList netlist) {
+		
 	}
 
 	private static LocalNode createNode(NetList netlist, Node node, int buffer_size) {

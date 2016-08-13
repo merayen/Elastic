@@ -17,21 +17,21 @@ public class Walker {
 		}
 	}
 
-	private final Util util;
+	private final NodeProperties nodeProperties;
 	private final NetList netlist;
 	private Node current;
 
 	public Walker(NetList netlist, Node node) {
 		this.netlist = netlist;
 		this.current = node;
-		this.util = new Util(netlist);
+		this.nodeProperties = new NodeProperties(netlist);
 	}
 
 	/**
 	 * Walk to the left, through a port. 
 	 */
 	public void walkLeft(String port) {
-		if(util.isOutput(current, port))
+		if(nodeProperties.isOutput(current, port))
 			throw new WalkException("Can't walk left: Port is not input");
 
 		List<Line> lines = netlist.getConnections(current, port);
@@ -67,13 +67,13 @@ public class Walker {
 			throw new WalkException("Can not walk by this line, as it is not connected to current node");
 		}
 
-		if(!util.isOutput(current, our_port))
+		if(!nodeProperties.isOutput(current, our_port))
 			throw new WalkException("Can't walk right: Port is not output");
 
 		if(netlist.getPort(dest_node, dest_port) == null)
 			throw new WalkException("Should not happen");
 
-		if(util.isOutput(dest_node, dest_port))
+		if(nodeProperties.isOutput(dest_node, dest_port))
 			throw new RuntimeException("Should not happen");
 
 		current = dest_node;
@@ -91,15 +91,15 @@ public class Walker {
 	}
 
 	public List<String> getInputs() {
-		return util.getInputPorts(current);
+		return nodeProperties.getInputPorts(current);
 	}
 
 	public List<String> getOutputs() {
-		return util.getOutputPorts(current);
+		return nodeProperties.getOutputPorts(current);
 	}
 
 	public Line getInputConnection(String port) {
-		if(util.isOutput(current, port))
+		if(nodeProperties.isOutput(current, port))
 			throw new RuntimeException("Port must be an input-port");
 
 		List<Line> line = netlist.getConnections(current, port);
@@ -108,7 +108,7 @@ public class Walker {
 	}
 
 	public List<Line> getOutputConnections(String port) {
-		if(!util.isOutput(current, port))
+		if(!nodeProperties.isOutput(current, port))
 			throw new RuntimeException("Port must be an output-port");
 
 		return netlist.getConnections(current, port);

@@ -1,8 +1,5 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public enum Format {
 	AUDIO("audio"),
 	MIDI("midi");
@@ -28,6 +25,10 @@ public enum Format {
 			result[i] = formats[i].name;
 
 		return result;
+	}
+
+	public String toString() {
+		return name;
 	}
 
 	public static Format[] fromStrings(String[] formats) {

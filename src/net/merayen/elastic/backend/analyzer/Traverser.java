@@ -11,11 +11,11 @@ import net.merayen.elastic.netlist.Node;
 
 public class Traverser {
 	private final NetList netlist;
-	private final Util util;
+	private final NodeProperties nodeProperties;
 
 	public Traverser(NetList netlist) {
 		this.netlist = netlist;
-		this.util = new Util(netlist);
+		this.nodeProperties = new NodeProperties(netlist);
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class Traverser {
 
 			boolean has_left_connections = false;
 
-			for(String p : util.getInputPorts(n)) {
+			for(String p : nodeProperties.getInputPorts(n)) {
 				List<Line> connections = netlist.getConnections(n, p);
 
 				for(Line l : connections) {
@@ -72,7 +72,7 @@ public class Traverser {
 
 			boolean has_right_connections = false;
 
-			for(String p : util.getOutputPorts(n)) {
+			for(String p : nodeProperties.getOutputPorts(n)) {
 				List<Line> connections = netlist.getConnections(n, p);
 
 				for(Line l : connections) {
