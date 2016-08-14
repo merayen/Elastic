@@ -1,6 +1,8 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
+import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -121,7 +123,7 @@ class GeneratorNode extends LocalNode {
 	protected void onProcess() {
 		if(tick == 0) {
 			GeneratorProcessor gp = (GeneratorProcessor)this.getProcessor(spawnVoice("output"));
-			gp.lol();
+			gp.sendStuff();
 		} else if(tick == 1) {
 			
 		}
@@ -131,9 +133,12 @@ class GeneratorNode extends LocalNode {
 }
 
 class GeneratorProcessor extends LocalProcessor {
+	AudioOutlet output;
 
 	@Override
-	protected void onInit() {}
+	protected void onInit() {
+		output = (AudioOutlet)getOutlet("output");
+	}
 
 	@Override
 	protected void onProcess() {
@@ -143,8 +148,11 @@ class GeneratorProcessor extends LocalProcessor {
 	@Override
 	protected void onMessage(Message message) {}
 
-	void lol() {
-		
+	void sendStuff() {
+		for(int i = output.written; i < output.audio.length; i++)
+			output.audio[i] = i;
+
+		output.push();
 	}
 }
 

@@ -17,7 +17,6 @@ import net.merayen.elastic.util.Postmaster;
 
 public abstract class LocalProcessor {
 	private boolean need_update = true;
-	private boolean wired_up; // Is set to true after all outlets and inlets are wired up
 
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
 	int chain_id;
@@ -27,7 +26,7 @@ public abstract class LocalProcessor {
 	private final Map<String, Outlet> outlets = new HashMap<>();
 	private final Map<String, Inlet> inlets = new HashMap<>();
 
-	boolean active = true;
+	private boolean active = true;
 
 	protected abstract void onInit();
 
@@ -52,57 +51,7 @@ public abstract class LocalProcessor {
 	 * Creates all necessary Inlets and Outlets.
 	 * Called when all processors *are created* and ready to be connected to each others.
 	 */
-	void wireUp__delete() {
-		if(wired_up)
-			return;
-
-		// Add inlets and outlets
-		NodeProperties properties = new NodeProperties(localnode.netlist);
-		for(String port_name : localnode.netlist.getPorts(localnode.node)) {
-			List<Line> lines = localnode.netlist.getConnections(localnode.node, port_name);
-			if(lines.size() == 0)
-				continue; // We skip ports that are not connected
-
-			Port port = localnode.netlist.getPort(localnode.node, port_name);
-			Format format = properties.analyzer.getDecidedFormat(port);
-
-			if(properties.isOutput(port)) {
-				addOutlet(port_name, format);
-			} else {
-				// Figures out which port is connected
-				if(lines.size() != 1)
-					throw new RuntimeException("Input ports should only have 1 connection");
-
-				Line line = lines.get(0);
-				Node left_node;
-				String left_port;
-				if(line.node_a == localnode.node) {
-					left_node = line.node_b;
-					left_port = line.port_b;
-				} else {
-					left_node = line.node_a;
-					left_port = line.port_a;
-				}
-
-				LocalNode left_localnode = localnode.supervisor.getLocalNode(left_node.getID());
-				if(left_localnode == null)
-					throw new RuntimeException("Should not happen");
-
-				LocalProcessor lp = localnode.supervisor.getProcessor(left_localnode, session_id);
-				if(lp == null)
-					throw new RuntimeException("wireUp() has probably been called before all processors has been created");
-
-				lp.addInlet(port_name, lp.getOutlet(left_port));
-			}
-		}
-
-		wired_up = true;
-	}
-
 	void wireUp() {
-		if(wired_up)
-			return;
-
 		NodeProperties properties = new NodeProperties(localnode.netlist);
 		for(String port_name : properties.getOutputPorts(localnode.node)) { // We only connect output-ports as they do always have an input when connected
 			List<Line> lines = localnode.netlist.getConnections(localnode.node, port_name);
@@ -118,8 +67,6 @@ public abstract class LocalProcessor {
 					break;
 				}
 		}
-
-		wired_up = true;
 	}
 
 	private Outlet addOutlet(String port_name, Format format) {
@@ -142,14 +89,20 @@ public abstract class LocalProcessor {
 		List<Line> lines = localnode.netlist.getConnections(localnode.node, port_name);
 		for(Line line : lines) {
 			Node right_node;
-			if(line.node_a == localnode.node)
+			String right_port;
+			if(line.node_a == localnode.node) {
 				right_node = line.node_b;
-			else if(line.node_b == localnode.node)
+				right_port = line.port_b;
+			} else if(line.node_b == localnode.node) {
 				right_node = line.node_a;
-			else
+				right_port = line.port_a;
+			} else {
 				throw new RuntimeException("Should not happen");
+			}
 
-			//localnode.supervisor.getLocalNode(line.node_b.getID()).addInlet(line.node_b, port_name, outlet);
+			LocalNode right_localnode = localnode.supervisor.getLocalNode(right_node.getID());
+			LocalProcessor right_processor = localnode.supervisor.getProcessor(right_localnode, session_id);
+			right_processor.addInlet(right_port, outlet);
 		}
 
 		return outlet;

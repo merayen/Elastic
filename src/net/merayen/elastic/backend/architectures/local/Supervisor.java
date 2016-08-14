@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
@@ -36,32 +38,40 @@ class Supervisor {
 	 * Makes sure all outlets and inlets are connected.
 	 * Call after LocalProcessors has been created and needs to be reconnected.
 	 */
-	synchronized void wireUp() {
-		for(LocalProcessor lp : processor_list)
+	private void wireUp(List<LocalProcessor> list) {
+		for(LocalProcessor lp : list)
 			lp.wireUp();
+	}
+
+	private void initProcessors(List<LocalProcessor> list) {
+		for(LocalProcessor lp : list)
+			lp.onInit();
 	}
 
 	/**
 	 * Spawns a new session from a chain.
 	 */
-	int spawnSession(int chain_id) {
+	synchronized int spawnSession(int chain_id) {
 		session_id_counter++;
 
 		if(processor_list.getChainSessions(chain_id).size() >= 128)
-			throw new RuntimeException("Voice limite reached, can not spawn any more processors");
+			throw new RuntimeException("Voice limit reached, can not spawn any more processors");
 
+		List<LocalProcessor> to_wire_up = new ArrayList<>();
 		for(Node node : netlist.getNodes()) {
 			LocalNode local_node = local_properties.getLocalNode(node);
 			for(int c : local_node.getChainIds()) {
 				if(c == chain_id) {
 					LocalProcessor local_processor = local_node.spawnProcessor(chain_id, session_id_counter);
 					processor_list.add(local_processor);
+					to_wire_up.add(local_processor);
 					break;
 				}
 			}
 		}
 
-		wireUp();
+		wireUp(to_wire_up); // TODO only rewire the created ones
+		initProcessors(to_wire_up);
 
 		return session_id_counter;
 	}
@@ -76,7 +86,7 @@ class Supervisor {
 
 		// Then let all the processors process
 		for(LocalProcessor lp : processor_list)
-			lp.onProcess();
+			lp.doProcess();
 	}
 
 	public LocalNode getLocalNode(String id) {
