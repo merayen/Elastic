@@ -48,8 +48,9 @@ public abstract class LocalNode {
 
 	/**
 	 * Start a session from an output-port.
+	 * @return	The session_id of the new voice
 	 */
-	protected int spawnVoice(String port_name) {
+	protected synchronized int spawnVoice(String port_name) {
 		Port port = netlist.getPort(node, port_name);
 
 		if(!properties.isOutput(port))
@@ -58,7 +59,7 @@ public abstract class LocalNode {
 		String ident = properties.getPortChainIdent(port);
 
 		if(ident == null)
-			throw new RuntimeException("Port does not have a chain ident");
+			throw new RuntimeException("Port does not have a chain ident, and thus, a voice can not be spawned");
 
 		int chain_id = properties.analyzer.getPortChainCreateId(port);
 

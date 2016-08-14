@@ -111,8 +111,8 @@ public class NodeProperties {
 		if(!isOutput(port))
 			throw new RuntimeException("Only output ports can spawn voices");
 
-		if(port.properties.containsKey("chain_id"))
-			return (String)port.properties.get("chain_id");
+		if(port.properties.containsKey("chain_ident"))
+			return (String)port.properties.get("chain_ident");
 
 		return null;
 	}

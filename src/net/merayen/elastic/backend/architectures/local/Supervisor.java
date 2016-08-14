@@ -36,7 +36,7 @@ class Supervisor {
 	 * Makes sure all outlets and inlets are connected.
 	 * Call after LocalProcessors has been created and needs to be reconnected.
 	 */
-	void wireUp() {
+	synchronized void wireUp() {
 		for(LocalProcessor lp : processor_list)
 			lp.wireUp();
 	}
@@ -46,6 +46,9 @@ class Supervisor {
 	 */
 	int spawnSession(int chain_id) {
 		session_id_counter++;
+
+		if(processor_list.getChainSessions(chain_id).size() >= 128)
+			throw new RuntimeException("Voice limite reached, can not spawn any more processors");
 
 		for(Node node : netlist.getNodes()) {
 			LocalNode local_node = local_properties.getLocalNode(node);
@@ -67,6 +70,11 @@ class Supervisor {
 	 * Process a frame
 	 */
 	public void process() {
+		// First let the LocalNode process, so they may create their default sessions
+		for(Node node : netlist.getNodes())
+			local_properties.getLocalNode(node).onProcess();
+
+		// Then let all the processors process
 		for(LocalProcessor lp : processor_list)
 			lp.onProcess();
 	}

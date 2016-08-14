@@ -27,7 +27,7 @@ public abstract class LocalProcessor {
 	private final Map<String, Outlet> outlets = new HashMap<>();
 	private final Map<String, Inlet> inlets = new HashMap<>();
 
-	boolean keep_alive = true;
+	boolean active = true;
 
 	protected abstract void onInit();
 
@@ -203,24 +203,26 @@ public abstract class LocalProcessor {
 	}
 
 	/**
-	 * Every processor should set this.
-	 * If one or more processor has this active, the session is kept alive.
-	 * Not until every processor in the chain sets this to false, we will
-	 * actually end the session.void
+	 * active() and inactive() function calls. Every processor must be aware of these.
+	 * If one or more processor marks itself as active, the session is kept alive.
+	 * Not until every processor in the chain has called inactive(), we will
+	 * actually end the session.
 	 * 
 	 * It is important that every processor uses/is aware of this, as we might
 	 * otherwise get stuck sessions.
 	 * 
 	 * E.g: A sine generator with MIDI input at frequency sets this to *true* whenever
 	 * a key is pressed, and sets this to false at once on key up.
-	 * 
-	 * Other nodes might never set this to true and is just a slave. 
 	 */
-	protected void setKeepAlive(boolean b) {
-		keep_alive = b;
+	protected void inactive() {
+		active = false;
 	}
 
-	public boolean isKeepAlive() {
-		return keep_alive;
+	protected void active() {
+		active = true;
+	}
+
+	public boolean isActive() {
+		return active;
 	}
 }

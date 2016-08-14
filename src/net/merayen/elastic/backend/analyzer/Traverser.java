@@ -98,7 +98,7 @@ public class Traverser {
 	 * A group is a collection of nodes that are connected to each other.
 	 */
 	public List<NetList> getGroups() {
-		List<Node> remaining_nodes = netlist.getNodes();
+		List<Node> remaining_nodes = new ArrayList<>(netlist.getNodes());
 
 		List<NetList> result = new ArrayList<>();
 

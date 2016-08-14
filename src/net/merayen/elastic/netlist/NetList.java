@@ -1,6 +1,7 @@
 package net.merayen.elastic.netlist;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class NetList {
@@ -91,7 +92,7 @@ public final class NetList {
 	}
 
 	public List<Node> getNodes() {
-		return new ArrayList<>(nodes);
+		return Collections.unmodifiableList(nodes);
 	}
 
 	public List<Line> getLines() {

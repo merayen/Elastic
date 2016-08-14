@@ -103,9 +103,9 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 	public Set<Integer> getChainSessions(int chain_id) {
 		Set<Integer> session_ids = chains.get(chain_id);
 		if(session_ids == null)
-			throw new RuntimeException("No such session");
+			return new HashSet<>(0);
 
-		return new HashSet<Integer>(session_ids);
+		return new HashSet<>(session_ids);
 	}
 
 	public void removeSession(int session_id) {
