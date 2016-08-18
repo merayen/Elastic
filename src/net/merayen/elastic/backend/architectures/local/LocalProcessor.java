@@ -16,12 +16,12 @@ import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class LocalProcessor {
-	private boolean need_update = true;
 
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
 	int chain_id;
 	int session_id;
 	private int buffer_size;
+	private boolean prepare;
 
 	private final Map<String, Outlet> outlets = new HashMap<>();
 	private final Map<String, Inlet> inlets = new HashMap<>();
@@ -29,6 +29,12 @@ public abstract class LocalProcessor {
 	private boolean active = true;
 
 	protected abstract void onInit();
+
+	/**
+	 * Called before a frame is processed.
+	 * Clear all your states and get ready to process next frame.
+	 */
+	protected abstract void onPrepare();
 
 	/**
 	 * Gets called when this processor has received data or is just scheduled to run.
@@ -103,6 +109,8 @@ public abstract class LocalProcessor {
 			LocalNode right_localnode = localnode.supervisor.getLocalNode(right_node.getID());
 			LocalProcessor right_processor = localnode.supervisor.getProcessor(right_localnode, session_id);
 			right_processor.addInlet(right_port, outlet);
+
+			outlet.connected_processors.add(right_processor);
 		}
 
 		return outlet;
@@ -128,23 +136,29 @@ public abstract class LocalProcessor {
 		return inlet;
 	}
 
-	/**
-	 * Called when there has been data made available on one or more ports.
-	 * Returns true if any data has been written
-	 */
 	void doProcess() {
-		if(need_update || dataAvailable())
-			onProcess();
+		if(prepare) {
+			prepare = false;
 
-		need_update = false;
+			onPrepare();
+
+			// Reset port states
+			for(Outlet o : outlets.values())
+				o.reset();
+
+			for(Inlet i : inlets.values())
+				i.reset();
+		}
+
+		onProcess();
 	}
 
-	private boolean dataAvailable() {
-		for(Inlet inlet : inlets.values())
-			if(inlet.read < inlet.outlet.written)
-				return true;
-
-		return false;
+	/**
+	 * Schedule processing again.
+	 * Usually called by inlets when they have received data or LocalNode wants this processor to react to something.
+	 */
+	public void schedule() {
+		localnode.supervisor.schedule(this);
 	}
 
 	protected Outlet getOutlet(String name) {
@@ -171,11 +185,18 @@ public abstract class LocalProcessor {
 		active = false;
 	}
 
+	/**
+	 * @see inactive
+	 */
 	protected void active() {
 		active = true;
 	}
 
 	public boolean isActive() {
 		return active;
+	}
+
+	void prepare() {
+		prepare = true; // Will prepare next time process() is called
 	}
 }

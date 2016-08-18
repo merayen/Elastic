@@ -27,7 +27,7 @@ class MessageHandler {
 	}
 
 	/**
-	 * Messages sent from LogicNode to further into backend is handled here.
+	 * Messages sent from LogicNode further into backend is handled here.
 	 */
 	void handleFromLogicToBackend(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) { // Update our NetList with the new value
@@ -43,7 +43,7 @@ class MessageHandler {
 
 			port.properties.put("output", m.output);
 			port.properties.put("format", Format.toStrings(m.format));
-			port.properties.put("poly_no", m.poly_no);
+			port.properties.put("poly_no", m.poly_no); // TODO rename to chain_ident
 		}
 
 		backend_context.dispatch.executeMessage(message);

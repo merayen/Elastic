@@ -31,7 +31,7 @@ public class Walker {
 	 * Walk to the left, through a port. 
 	 */
 	public void walkLeft(String port) {
-		if(nodeProperties.isOutput(current, port))
+		if(nodeProperties.isOutput(netlist.getPort(current, port)))
 			throw new WalkException("Can't walk left: Port is not input");
 
 		List<Line> lines = netlist.getConnections(current, port);
@@ -67,13 +67,13 @@ public class Walker {
 			throw new WalkException("Can not walk by this line, as it is not connected to current node");
 		}
 
-		if(!nodeProperties.isOutput(current, our_port))
+		if(!nodeProperties.isOutput(netlist.getPort(current, our_port)))
 			throw new WalkException("Can't walk right: Port is not output");
 
 		if(netlist.getPort(dest_node, dest_port) == null)
 			throw new WalkException("Should not happen");
 
-		if(nodeProperties.isOutput(dest_node, dest_port))
+		if(nodeProperties.isOutput(netlist.getPort(dest_node, dest_port)))
 			throw new RuntimeException("Should not happen");
 
 		current = dest_node;
@@ -99,7 +99,7 @@ public class Walker {
 	}
 
 	public Line getInputConnection(String port) {
-		if(nodeProperties.isOutput(current, port))
+		if(nodeProperties.isOutput(netlist.getPort(current, port)))
 			throw new RuntimeException("Port must be an input-port");
 
 		List<Line> line = netlist.getConnections(current, port);
@@ -108,7 +108,7 @@ public class Walker {
 	}
 
 	public List<Line> getOutputConnections(String port) {
-		if(!nodeProperties.isOutput(current, port))
+		if(!nodeProperties.isOutput(netlist.getPort(current, port)))
 			throw new RuntimeException("Port must be an output-port");
 
 		return netlist.getConnections(current, port);

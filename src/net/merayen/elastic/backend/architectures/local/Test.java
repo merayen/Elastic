@@ -1,8 +1,8 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
-import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -15,7 +15,7 @@ import net.merayen.elastic.util.Postmaster.Message;
 public class Test {
 	private Test() {}
 
-	private static void no() {
+	static void no() {
 		throw new RuntimeException("Nope");
 	}
 
@@ -38,7 +38,7 @@ public class Test {
 		// Generator, session 0 and 1
 		Node generator_node = netlist.createNode();
 		port = netlist.createPort(generator_node, "output");
-		properties.setOutput(port, true);
+		properties.setOutput(port);
 		properties.setPortChainIdent(port, "asdf");
 		properties.analyzer.setPortChainIds(port, new int[]{1});
 		properties.analyzer.setPortChainCreateId(port, 1); // Can create sessions
@@ -51,30 +51,35 @@ public class Test {
 		properties.analyzer.setPortChainIds(port, new int[]{1});
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		port = netlist.createPort(middle_node, "output");
-		properties.setOutput(port, true);
+		properties.setOutput(port);
 		properties.analyzer.setPortChainCreateId(port, 0); // Can not create sessions on its own
 		properties.analyzer.setPortChainIds(port, new int[]{1});
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		local_properties.setLocalNode(middle_node, new MiddleNode());
 
-		// Consumer
+		// Consumer, on session 0 and 1
 		Node consumer_node = netlist.createNode();
 		port = netlist.createPort(consumer_node, "input");
 		properties.analyzer.setPortChainIds(port, new int[]{1});
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		port = netlist.createPort(consumer_node, "output");
-		properties.setOutput(port, true);
+		properties.setOutput(port);
 		properties.analyzer.setPortChainCreateId(port, 0); // Can not create sessions on its own
 		properties.analyzer.setPortChainIds(port, new int[]{0});
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(consumer_node, new ConsumerNode());
+		local_properties.setLocalNode(consumer_node, new ConsumerNode(1));
 
 		// Consumer 2, on main-session
 		Node consumer2_node = netlist.createNode();
 		port = netlist.createPort(consumer2_node, "input");
 		properties.analyzer.setPortChainIds(port, new int[]{0});
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(consumer2_node, new ConsumerNode());
+		port = netlist.createPort(consumer2_node, "output");
+		properties.setOutput(port);
+		properties.analyzer.setPortChainCreateId(port, 0); // Can not create sessions on its own
+		properties.analyzer.setPortChainIds(port, new int[]{});
+		//properties.analyzer.setDecidedFormat(port, Format.AUDIO);
+		local_properties.setLocalNode(consumer2_node, new ConsumerNode(2));
 
 		// Connect nodes
 		netlist.connect(generator_node, "output", middle_node, "input");
@@ -141,9 +146,7 @@ class GeneratorProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onProcess() {
-		System.out.println("ja");
-	}
+	protected void onProcess() {}
 
 	@Override
 	protected void onMessage(Message message) {}
@@ -152,7 +155,14 @@ class GeneratorProcessor extends LocalProcessor {
 		for(int i = output.written; i < output.audio.length; i++)
 			output.audio[i] = i;
 
+		output.written += output.audio.length - output.written;
 		output.push();
+	}
+
+	@Override
+	protected void onPrepare() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -163,30 +173,53 @@ class MiddleNode extends LocalNode {
 	}
 
 	@Override
-	protected void onInit() {
-		
-	}
+	protected void onInit() {}
 
 	@Override
 	protected void onProcess() {}
 }
 
 class MiddleProcessor extends LocalProcessor {
+	AudioInlet input;
+	AudioOutlet output;
 
 	@Override
-	protected void onInit() {}
+	protected void onInit() {
+		input = (AudioInlet)getInlet("input");
+		output = (AudioOutlet)getOutlet("output");
+	}
 
 	@Override
-	protected void onProcess() {}
+	protected void onProcess() {
+		int avail = input.available();
+		if(avail > 0) {
+			System.out.println("MiddleProcessor: Got data :D Sending it to next");
+			for(int i = output.written; i < input.outlet.written; i++)
+				output.audio[i] = ((AudioOutlet)input.outlet).audio[i];
+
+			output.written = input.outlet.written;
+			output.push();
+		} else {
+			Test.no(); // We should always have gotten data on input when asked to process
+		}
+	}
 
 	@Override
 	protected void onMessage(Message message) {}
+
+	@Override
+	protected void onPrepare() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class ConsumerNode extends LocalNode {
+	int number;
 
-	protected ConsumerNode() {
+	protected ConsumerNode(int number) {
 		super(ConsumerProcessor.class);
+		this.number = number;
 	}
 
 	@Override
@@ -194,16 +227,54 @@ class ConsumerNode extends LocalNode {
 
 	@Override
 	protected void onProcess() {}
+
+	void addVoiceData(int session_id, float[] audio, int start, int stop) {
+		((ConsumerProcessor)this.getProcessor(0)).emit(audio, start, stop);
+	}
 }
 
 class ConsumerProcessor extends LocalProcessor {
+	AudioInlet input;
+	AudioOutlet output;
+	int sent;
 
 	@Override
-	protected void onInit() {}
+	protected void onInit() {
+		input = getInlet("input") != null ? (AudioInlet)getInlet("input") : null;
+		output = getOutlet("output") != null ? (AudioOutlet)getOutlet("output") : null;
+	}
 
 	@Override
-	protected void onProcess() {}
+	protected void onProcess() {
+		int avail = input.available();
+		if(avail > 0) {
+			System.out.printf("Consumer %d session %d: Got %d samples (%s)\n", ((ConsumerNode)localnode).number, session_id, avail, this);
+			((ConsumerNode)localnode).addVoiceData(this.session_id, ((AudioOutlet)input.outlet).audio, sent, ((AudioOutlet)input.outlet).written);
+		} else {
+			Test.no();
+		}
+	}
 
 	@Override
 	protected void onMessage(Message message) {}
+
+	@Override
+	protected void onPrepare() {
+		if(output != null)
+			for(int i = 0; i < output.audio.length; i++)
+				output.audio[i] = 0;
+	}
+
+	void emit(float[] audio, int start, int stop) {
+		if(output != null) {
+			System.out.printf("Consumer %d session %d: re-emits %d samples (%s)\n", ((ConsumerNode)localnode).number, session_id, stop-start, this);
+
+			for(int i = start; i < stop; i++)
+				output.audio[i] += audio[i];
+	
+			output.written = stop;
+	
+			output.push(); // Wrong, should collect all voices before sending, but meh, just a test
+		}
+	}
 }

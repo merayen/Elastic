@@ -3,6 +3,7 @@ package net.merayen.elastic.netlist;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 public final class NetList {
 	@SuppressWarnings("serial") public static class NetListException extends RuntimeException {}
@@ -211,6 +212,14 @@ public final class NetList {
 				result.add(l);
 
 		return result;
+	}
+
+	public String getPortName(Node node, Port port) {
+		for(Entry<String, Port> x : node.ports.entrySet())
+			if(x.getValue() == port)
+				return x.getKey();
+
+		return null;
 	}
 
 	public boolean isConnected(String node_a, String port_a, String node_b, String port_b) {

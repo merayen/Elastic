@@ -58,20 +58,12 @@ public class NodeProperties {
 		this.netlist = netlist;
 	}
 
-	public void setOutput(Port port, boolean yes) {
-		port.properties.put("output", yes);
-	}
-
-	public boolean isOutput(Node node, String port) {
-		Port p = netlist.getPort(node, port);
-		if(p == null)
-			throw new RuntimeException("Port " + port + " does not exist");
-
-		return (boolean)p.properties.get("output");
+	public void setOutput(Port port) { // Can not be changed afterwards. Drop and recreate port
+		port.properties.put("output", true);
 	}
 
 	public boolean isOutput(Port port) {
-		if(port.properties.containsKey("output"))
+		if(port.properties.get("output") != null)
 			return (boolean)port.properties.get("output");
 
 		return false;
@@ -99,22 +91,40 @@ public class NodeProperties {
 	 * The ident, which is just a string, is local for every node, and can be whatever-value that the
 	 * node can use to create voices.
 	 * If not set, or null, port is just a slave and can not create sessions.
+	 * There can be multiple ports sharing the same ident.
 	 */
 	public void setPortChainIdent(Port port, String ident) {
 		if(!isOutput(port))
-			throw new RuntimeException("Only output ports can spawn voices");
+			throw new RuntimeException("Only output-ports can have an ident to spawn voices");
 
 		port.properties.put("chain_ident", ident);
 	}
 
 	public String getPortChainIdent(Port port) {
 		if(!isOutput(port))
-			throw new RuntimeException("Only output ports can spawn voices");
+			throw new RuntimeException("Only output-ports can have an ident to spawn voices");
 
 		if(port.properties.containsKey("chain_ident"))
 			return (String)port.properties.get("chain_ident");
 
 		return null;
+	}
+
+	public void setChainConsumer(Port port) {
+		if(isOutput(port))
+			throw new RuntimeException("Port must be input to consume chains");
+
+		port.properties.put("chain_consumer", true);
+	}
+
+	public boolean isChainConsumer(Port port) {
+		if(isOutput(port))
+			throw new RuntimeException("Port must be input to consume chains");
+
+		if(port.properties.get("chain_consumer") != null)
+			return (boolean)port.properties.get("chain_consumer");
+
+		return false;
 	}
 
 	public List<String> getInputPorts(Node node) {
@@ -135,5 +145,19 @@ public class NodeProperties {
 				result.add(port);
 
 		return result;
+	}
+
+	/**
+	 * Sees if the port is "passive", meaning that it doesn't spawn or consume voices.
+	 */
+	public boolean isPassivePort(Port port) {
+		boolean output = isOutput(port);
+		if(output && getPortChainIdent(port) != null)
+			return false;
+
+		if(!output && isChainConsumer(port))
+			return false;
+
+		return true;
 	}
 }

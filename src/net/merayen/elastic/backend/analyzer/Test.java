@@ -7,6 +7,7 @@ import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.netlist.Serializer;
 
 public class Test {
 	private Test() {}
@@ -30,7 +31,14 @@ public class Test {
 	}
 
 	private static void testAnalyzer(NetList netlist) {
-		AnalyzeResult ar = new Analyzer(netlist).analyze();
+		NodeProperties properties = new NodeProperties(netlist);
+		Analyzer.analyze(netlist);
+
+		Node node = netlist.getNode("poly");
+		if(properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).length != 1)
+			no();
+
+		System.out.println(Serializer.dump(netlist));
 	}
 
 	private static void testWalker(NetList netlist) {
@@ -190,45 +198,54 @@ public class Test {
 		return n;
 	}
 
-	private static Port addPort(NetList netlist, Node node, String port, boolean output, int poly_no) {
+	private static Port addPort(NetList netlist, Node node, String port, boolean output, String chain_ident) {
+		NodeProperties properties = new NodeProperties(netlist);
 		Port p = netlist.createPort(node, port);
-		p.properties.put("output", output);
-		p.properties.put("poly_no", poly_no);
+		if(output)
+			properties.setOutput(p);
+		
+		if(chain_ident == null)
+			; // Normal port
+		else if(chain_ident.equals("chain_consumer"))
+			properties.setChainConsumer(p);
+		else
+			properties.setPortChainIdent(p, chain_ident);
+
 		return p;
 	}
 
 	private static void populateNetList(NetList netlist) {
 		// Group 1
 		Node midi_in = createNode(netlist, "midi_in", 1);
-		addPort(netlist, midi_in, "output", true, 0);
+		addPort(netlist, midi_in, "output", true, null);
 
 		Node poly = createNode(netlist, "poly", 1);
-		addPort(netlist, poly, "input", false, 0);
-		addPort(netlist, poly, "output", true, 1);
+		addPort(netlist, poly, "input", false, null);
+		addPort(netlist, poly, "output", true, "adsf");
 
 		Node adsr = createNode(netlist, "adsr", 1);
-		addPort(netlist, adsr, "input", false, 0);
-		addPort(netlist, adsr, "output", true, 0);
-		addPort(netlist, adsr, "fac", true, 0);
+		addPort(netlist, adsr, "input", false, null);
+		addPort(netlist, adsr, "output", true, null);
+		addPort(netlist, adsr, "fac", true, null);
 
 		Node sgen = createNode(netlist, "sgen", 1);
-		addPort(netlist, sgen, "frequency", false, 0);
-		addPort(netlist, sgen, "amplitude", false, 0);
-		addPort(netlist, sgen, "output", true, 0);
+		addPort(netlist, sgen, "frequency", false, null);
+		addPort(netlist, sgen, "amplitude", false, null);
+		addPort(netlist, sgen, "output", true, null);
 
 		Node sgen_direct = createNode(netlist, "sgen_direct", 1);
-		addPort(netlist, sgen_direct, "frequency", false, 0);
-		addPort(netlist, sgen_direct, "amplitude", false, 0);
-		addPort(netlist, sgen_direct, "output", true, 0);
+		addPort(netlist, sgen_direct, "frequency", false, null);
+		addPort(netlist, sgen_direct, "amplitude", false, null);
+		addPort(netlist, sgen_direct, "output", true, null);
 
 		//Node mix = createNode(netlist, "mix", 1);
 
 		Node depoly = createNode(netlist, "depoly", 1);
-		addPort(netlist, depoly, "input", false, -1);
-		addPort(netlist, depoly, "output", true, 0);
+		addPort(netlist, depoly, "input", false, "chain_consumer");
+		addPort(netlist, depoly, "output", true, null);
 
 		Node output = createNode(netlist, "output", 1);
-		addPort(netlist, output, "input", false, -1);
+		addPort(netlist, output, "input", false, null);
 
 		netlist.connect(midi_in, "output", poly, "input");
 		netlist.connect(poly, "output", adsr, "input");		// Starting session 1
@@ -241,12 +258,12 @@ public class Test {
 
 		// Group 2 - testing loops
 		Node test_a = createNode(netlist, "test_a", 1);
-		addPort(netlist, test_a, "input", false, 0);
-		addPort(netlist, test_a, "output", true, 0);
+		addPort(netlist, test_a, "input", false, null);
+		addPort(netlist, test_a, "output", true, null);
 
 		Node test_b = createNode(netlist, "test_b", 1);
-		addPort(netlist, test_b, "input", false, 0);
-		addPort(netlist, test_b, "output", true, 0);
+		addPort(netlist, test_b, "input", false, null);
+		addPort(netlist, test_b, "output", true, null);
 
 		netlist.connect(test_a, "output", test_b, "input");
 		netlist.connect(test_b, "output", test_a, "input");

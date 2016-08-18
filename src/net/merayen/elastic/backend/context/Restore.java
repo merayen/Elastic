@@ -43,7 +43,7 @@ class Restore {
 					port,
 					(boolean)p.properties.get("output"),
 					Format.fromStrings((String[])p.properties.get("format")),
-					(int)p.properties.get("poly_no")
+					(int)p.properties.get("poly_no") // TODO rename to chain_ident
 				));
 			}
 		}

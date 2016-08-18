@@ -16,7 +16,12 @@ public abstract class Inlet {
 	}
 
 	public int available() {
-		return outlet.written - read;
+		int balance = outlet.written - read;
+
+		if(balance < 0)
+			throw new RuntimeException("Should not happen. Processor has read too much");
+
+		return balance;
 	}
 
 	public abstract Format getFormat();
