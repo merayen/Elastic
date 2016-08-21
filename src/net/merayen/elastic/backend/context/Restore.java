@@ -36,8 +36,8 @@ class Restore {
 				result.add(new NodeParameterMessage(node.getID(), key, node.properties.get(key)));
 
 			// Restore the Node()'s ports
-			for(String port : node.getPorts()) {
-				Port p = node.getPort(port);
+			for(String port : netlist.getPorts(node)) {
+				Port p = netlist.getPort(node, port);
 				result.add(new CreateNodePortMessage(
 					node.getID(),
 					port,

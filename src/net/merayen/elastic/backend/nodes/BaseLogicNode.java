@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.nodes;
 
+import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.*;
@@ -18,6 +19,7 @@ public abstract class BaseLogicNode {
 
 	private String id; // Same ID as the one in NetList
 	private Node node; // NetList-node that this LogicNode represents
+	private NetList netlist;
 	private LogicNodeList logicnode_list; // Only used for look-up needs
 
 	/**
@@ -40,7 +42,7 @@ public abstract class BaseLogicNode {
 		if(def.name == null || def.name.length() == 0)
 			throw new RuntimeException("Invalid port name");
 
-		if(node.getPort(def.name) != null)
+		if(netlist.getPort(node, def.name) != null)
 			throw new RuntimeException(String.format("Port %s already exist on node", def.name));
 
 		if(def.format.length == 0)
@@ -56,10 +58,10 @@ public abstract class BaseLogicNode {
 	}
 
 	protected void removePort(String name) {
-		if(node.getPort(name) == null)
+		if(netlist.getPort(node, name) == null)
 			throw new RuntimeException(String.format("Port %s does not exist on Node", name));
 
-		node.removePort(name);
+		netlist.removePort(node, name);
 
 		// Notify both ways
 		Postmaster.Message message = new RemoveNodePortMessage(id, name);
@@ -86,9 +88,10 @@ public abstract class BaseLogicNode {
 	/**
 	 * Only used by the 
 	 */
-	void setInfo(String id, LogicNodeList logicnode_list, Node node) {
+	void setInfo(String id, LogicNodeList logicnode_list, NetList netlist, Node node) {
 		this.id = id;
 		this.logicnode_list = logicnode_list;
+		this.netlist = netlist;
 		this.node = node;
 	}
 

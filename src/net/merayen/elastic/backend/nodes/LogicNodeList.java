@@ -55,7 +55,7 @@ public class LogicNodeList {
 			throw new RuntimeException(e);
 		}
 
-		logicnode.setInfo(node.getID(), this, node);
+		logicnode.setInfo(node.getID(), this, netlist, node);
 
 		nodes.add(logicnode);
 
