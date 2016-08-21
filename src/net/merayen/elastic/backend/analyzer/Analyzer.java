@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,43 +74,18 @@ public class Analyzer {
  * Splits the NetList into several, individual executable chains.
  */
 class ChainAnalyzer {
-	/*private class NodeInfo { // Used for keeping track
-		final Node node;
-		//final Map<String, Port> remaining_ports = new ArrayList<>(); // Remaining ports to analyze. Only outputs
-
-		NodeInfo(Node node) {
-			this.node = node;
-
-			for(String port_name : properties.getOutputPorts(node)) {
-				Port port = netlist.getPort(node, port_name);
-				remaining_ports.put(port_name, port);
-			}
-		}
-
-		boolean isDone() {
-			return true^false;//return remaining_ports.size() == 0;
-		}
-	}*/
-
 	private final NetList netlist;
-	//private final List<NodeInfo> nodes = new ArrayList<>(); // Format: <Node().getID(), NodeInfo> 
 	private final NodeProperties properties;
 
 	private int chain_id_counter;
 
 	ChainAnalyzer(NetList netlist) {
 		this.netlist = netlist;
-		properties = new NodeProperties(netlist);
+		this.properties = new NodeProperties(netlist);
 
-		//init();
 		chainifySources();
 		traverse();
 	}
-
-	/*private void init() {
-		for(Node node : netlist.getNodes())
-			nodes.put(node.getID(), new NodeInfo(node));
-	}*/
 
 	/**
 	 * Lays out all the chain_ids on source-ports.
@@ -125,7 +101,7 @@ class ChainAnalyzer {
 					if(!idents.containsKey(ident))
 						idents.put(ident, ++chain_id_counter);
 
-					properties.analyzer.setPortChainIds(port, new int[]{idents.get(ident)});
+					properties.analyzer.getPortChainIds(port).add(idents.get(ident));
 				}
 			}
 		}
@@ -135,14 +111,6 @@ class ChainAnalyzer {
 	 * Traverses through all nodes and ports and assigns chain_ids to every port based on what chainifySources() did.
 	 */
 	private void traverse() {
-		/*Random random = new Random();
-		while(!nodes.isEmpty()) {
-			NodeInfo nodeinfo = nodes.get(0);
-
-			for(Entry<String, Port> x : nodeinfo.remaining_ports.entrySet())
-				traversePort();
-			
-		}*/
 		for(Node node : netlist.getNodes()) {
 			for(String port_name : properties.getOutputPorts(node)) {
 				Port port = netlist.getPort(node, port_name);
@@ -153,19 +121,25 @@ class ChainAnalyzer {
 				}
 			}
 		}
+
+		// TODO set all other ports to be chain_id=0, as they will be main-session
 	}
 
 	/**
-	 * Spreads out a 
+	 * Spreads out a chain over nodes and their ports.
 	 */
-	private void traversePort(Node node, String port) {
-		Set<Line> lines = explode(node, netlist.getPort(node, port));
-		for(Line line : lines)
-			System.out.printf("%s: %s\n\t\t%s: %s\n\n", line.node_a.getID(), line.port_a, line.node_b.getID(), line.port_b);
+	private void traversePort(Node source_node, String source_port) {
+		Set<Integer> new_chain_ids = properties.analyzer.getPortChainIds(netlist.getPort(source_node, source_port));
+
+		Set<Port> chain_ports = explode(source_node, netlist.getPort(source_node, source_port));
+
+		for(Port port : chain_ports)
+			properties.analyzer.getPortChainIds(port).addAll(new_chain_ids);
+
 	}
 
-	private Set<Line> explode(Node source_node, Port source_port) {
-		Set<Line> result = new HashSet<>();
+	private Set<Port> explode(Node source_node, Port source_port) {
+		Set<Port> result = new HashSet<>();
 		Set<Port> ports_traversed = new HashSet<>(); // List of all ports we are done traversing. Keeps us from going in loop
 		Set<Node> nodes_traversed = new HashSet<>(); // All nodes we have traversed, so that we don't check nodes multiple times
 		HashMap<Port, Node> to_check = new HashMap<>(); // Ports to check
@@ -176,7 +150,7 @@ class ChainAnalyzer {
 			Node node = null;
 			Port port = null;
 			String port_name = null;
-			for(Entry<Port, Node> x :to_check.entrySet()) {// Ugh, only way to get random from map?
+			for(Entry<Port, Node> x : to_check.entrySet()) {// Ugh, only way to get random from map?
 				port = x.getKey();
 				node = to_check.remove(port);
 				port_name = netlist.getPortName(node, port);
@@ -187,14 +161,18 @@ class ChainAnalyzer {
 
 			List<Line> lines = netlist.getConnections(node, port_name);
 
-			result.addAll(lines);
-
 			// Add all connected ports we should check
 			for(Line line : lines) {
+				Port port_a = netlist.getPort(line.node_a, line.port_a);
+				Port port_b = netlist.getPort(line.node_b, line.port_b);
+
+				result.add(port_a);
+				result.add(port_b);
+
 				if(!ports_traversed.contains(netlist.getPort(line.node_a, line.port_a)))
-					to_check.put(netlist.getPort(line.node_a, line.port_a), line.node_a);
+					to_check.put(port_a, line.node_a);
 				else if(!ports_traversed.contains(netlist.getPort(line.node_b, line.port_b)))
-					to_check.put(netlist.getPort(line.node_b, line.port_b), line.node_b);
+					to_check.put(port_b, line.node_b);
 			}
 
 			if(!nodes_traversed.contains(node) && properties.isPassivePort(port)) { // It is a passive port, means we check the ports on the nodes to spread the chain

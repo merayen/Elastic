@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import net.merayen.elastic.backend.analyzer.Analyzer;
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -8,10 +7,10 @@ import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
-	private final NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive
+	private final NetList netlist; // Our local copy of the NetList that we build by the messages we receive
 
 	Executor(NetList netlist) {
-		// ??? Replace class with Supervisor() only?
+		this.netlist = netlist.copy();
 	}
 
 	@Override
@@ -48,13 +47,6 @@ public class Executor extends AbstractExecutor {
 	 */
 	private void restart() {
 		// TODO stop the processor, analyze NetList, build the chains, and start
-	}
-
-	/**
-	 * Analyzes the current NetList and adds data to it.
-	 */
-	private void analyze() {
-		Analyzer.analyze(netlist);
 	}
 
 	/**

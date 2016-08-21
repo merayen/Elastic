@@ -35,7 +35,7 @@ public class Test {
 		Analyzer.analyze(netlist);
 
 		Node node = netlist.getNode("poly");
-		if(properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).length != 1)
+		if(properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).size() != 1)
 			no();
 
 		System.out.println(Serializer.dump(netlist));

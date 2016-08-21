@@ -40,7 +40,7 @@ public class Test {
 		port = netlist.createPort(generator_node, "output");
 		properties.setOutput(port);
 		properties.setPortChainIdent(port, "asdf");
-		properties.analyzer.setPortChainIds(port, new int[]{1});
+		properties.analyzer.getPortChainIds(port).add(1);
 		properties.analyzer.setPortChainCreateId(port, 1); // Can create sessions
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		local_properties.setLocalNode(generator_node, new GeneratorNode());
@@ -48,36 +48,35 @@ public class Test {
 		// middle-node, session 0 and 1
 		Node middle_node = netlist.createNode();
 		port = netlist.createPort(middle_node, "input");
-		properties.analyzer.setPortChainIds(port, new int[]{1});
+		properties.analyzer.getPortChainIds(port).add(1);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		port = netlist.createPort(middle_node, "output");
 		properties.setOutput(port);
 		properties.analyzer.setPortChainCreateId(port, 0); // Can not create sessions on its own
-		properties.analyzer.setPortChainIds(port, new int[]{1});
+		properties.analyzer.getPortChainIds(port).add(1);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		local_properties.setLocalNode(middle_node, new MiddleNode());
 
 		// Consumer, on session 0 and 1
 		Node consumer_node = netlist.createNode();
 		port = netlist.createPort(consumer_node, "input");
-		properties.analyzer.setPortChainIds(port, new int[]{1});
+		properties.analyzer.getPortChainIds(port).add(1);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		port = netlist.createPort(consumer_node, "output");
 		properties.setOutput(port);
 		properties.analyzer.setPortChainCreateId(port, 0); // Can not create sessions on its own
-		properties.analyzer.setPortChainIds(port, new int[]{0});
+		properties.analyzer.getPortChainIds(port).add(0);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		local_properties.setLocalNode(consumer_node, new ConsumerNode(1));
 
 		// Consumer 2, on main-session
 		Node consumer2_node = netlist.createNode();
 		port = netlist.createPort(consumer2_node, "input");
-		properties.analyzer.setPortChainIds(port, new int[]{0});
+		properties.analyzer.getPortChainIds(port).add(0);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		port = netlist.createPort(consumer2_node, "output");
 		properties.setOutput(port);
 		properties.analyzer.setPortChainCreateId(port, 0); // Can not create sessions on its own
-		properties.analyzer.setPortChainIds(port, new int[]{});
 		//properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		local_properties.setLocalNode(consumer2_node, new ConsumerNode(2));
 

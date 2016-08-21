@@ -1,7 +1,9 @@
 package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.netlist.NetList;
@@ -34,13 +36,13 @@ public class NodeProperties {
 		/**
 		 * Contains all the chain_ids this port is included in.
 		 * Both input- and output-ports.
+		 * Modify the returned Set to make changes.
 		 */
-		public void setPortChainIds(Port port, int[] chain_ids) {
-			port.properties.put("analyzer.chain_ids", chain_ids);
-		}
+		public Set<Integer> getPortChainIds(Port port) {
+			if(port.properties.get("analyzer.chain_ids") == null)
+				port.properties.put("analyzer.chain_ids", new HashSet<Integer>());
 
-		public int[] getPortChainIds(Port port) {
-			return (int[])port.properties.get("analyzer.chain_ids");
+			return (Set<Integer>)port.properties.get("analyzer.chain_ids");
 		}
 
 		public void setDecidedFormat(Port port, Format format) {
