@@ -50,9 +50,9 @@ class Supervisor {
 			lp.onInit();
 	}
 
-	private void prepareProcessors() {
+	private void prepareProcessors(ProcessMessage message) {
 		for(LocalProcessor lp : processor_list)
-			lp.prepare();
+			lp.prepare(message.data.get(lp.localnode.getID()));
 	}
 
 	int spawnSession(int chain_id) {
@@ -104,8 +104,8 @@ class Supervisor {
 	 * Process a frame.
 	 * Calls onProcess() on all processors until everyone is satisfied
 	 */
-	public synchronized void process() {
-		prepareProcessors();
+	public synchronized void process(ProcessMessage message) {
+		prepareProcessors(message);
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for(Node node : netlist.getNodes())

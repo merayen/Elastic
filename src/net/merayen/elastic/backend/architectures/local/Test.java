@@ -7,6 +7,7 @@ import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.util.Postmaster.Message;
 
 /**
@@ -89,15 +90,16 @@ public class Test {
 	}
 
 	private static void check(Supervisor supervisor) {
+		ProcessMessage message = new ProcessMessage();
 		if(supervisor.processor_list.getAllProcessors().size() != 2) // Only main-session is running
 			no();
 
-		supervisor.process(); // GeneratorNode will now create a session
+		supervisor.process(message); // GeneratorNode will now create a session
 
 		if(supervisor.processor_list.getAllProcessors().size() != 5) // main-session with 2 processors and the additional session with 3
 			no();
 
-		supervisor.process();
+		supervisor.process(message);
 	}
 
 	public static void test() {

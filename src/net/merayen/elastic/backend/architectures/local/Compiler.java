@@ -28,7 +28,7 @@ public class Compiler extends ICompiler {
 
 		System.out.printf("Compiling took: %d ms\n", System.currentTimeMillis() - t);
 
-		return new Executor(netlist);
+		return new Executor(netlist, supervisor);
 	}
 
 	private void createNode(Node node) { // Not tested

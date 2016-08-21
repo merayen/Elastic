@@ -22,6 +22,7 @@ public abstract class LocalProcessor {
 	int session_id;
 	private int buffer_size;
 	private boolean prepare;
+	private Map<String, Object> input_data;
 
 	private final Map<String, Outlet> outlets = new HashMap<>();
 	private final Map<String, Inlet> inlets = new HashMap<>();
@@ -196,7 +197,8 @@ public abstract class LocalProcessor {
 		return active;
 	}
 
-	void prepare() {
+	void prepare(Map<String, Object> input_data) {
 		prepare = true; // Will prepare next time process() is called
+		this.input_data = input_data;
 	}
 }

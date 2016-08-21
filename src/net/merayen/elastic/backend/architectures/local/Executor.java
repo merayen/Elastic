@@ -8,19 +8,39 @@ import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
 	private final NetList netlist; // Our local copy of the NetList that we build by the messages we receive
+	private final Supervisor supervisor;
 
-	Executor(NetList netlist) {
+	Executor(NetList netlist, Supervisor supervisor) {
 		this.netlist = netlist.copy();
+		System.out.println("Executor started");
+		this.supervisor = supervisor;
 	}
 
 	@Override
 	protected void onMessage(Postmaster.Message message) {
-		if(message instanceof CreateNodeMessage) {
+		if(message instanceof ProcessMessage) {
+			supervisor.process((ProcessMessage)message);
+
+		} else if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
 
 			Node node = netlist.createNode(m.node_id);
 			node.properties.put("name", m.name);
 			node.properties.put("version", m.version);
+
+			restart();
+
+		} else if(message instanceof CreateNodePortMessage) {
+			CreateNodePortMessage m = (CreateNodePortMessage)message;
+
+			netlist.createPort(m.node_id, m.port);
+
+			restart();
+
+		} else if(message instanceof RemoveNodePortMessage) {
+			RemoveNodePortMessage m = (RemoveNodePortMessage)message;
+
+			netlist.removePort(m.node_id, m.port);
 
 			restart();
 
@@ -47,13 +67,7 @@ public class Executor extends AbstractExecutor {
 	 */
 	private void restart() {
 		// TODO stop the processor, analyze NetList, build the chains, and start
-	}
-
-	/**
-	 * Puts the processor system in use and processes ...
-	 */
-	public void process() {
-		
+		System.out.println("Executor should restart TODO");
 	}
 
 	@Override
@@ -63,10 +77,10 @@ public class Executor extends AbstractExecutor {
 
 	@Override
 	public void update() {
-		try {
-			Thread.sleep(100);
+		/*try {
+			wait();
 		} catch(InterruptedException e) {
 			throw new RuntimeException(e);
-		}
+		}*/
 	}
 }
