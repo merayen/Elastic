@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.analyzer;
 
 import java.util.List;
 
+import net.merayen.elastic.backend.nodes.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
@@ -52,6 +53,14 @@ public class Test {
 		// Group 2 - testing loops
 		Node test_a = createNode(netlist, "test_a", 1);
 		addPort(netlist, test_a, "input", false, 0);
+		addPort(netlist, test_a, "output", true, 0);
+
+		Node test_b = createNode(netlist, "test_b", 1);
+		addPort(netlist, test_b, "input", false, 0);
+		addPort(netlist, test_b, "output", true, 0);
+
+		netlist.connect(test_a, "output", test_b, "input");
+		netlist.connect(test_a, "input", test_b, "output");
 
 		testUtil(netlist);
 
@@ -65,6 +74,10 @@ public class Test {
 
 		List<Node> nodes = t.getLeftMost(netlist.getNode("output"));
 		if(nodes.size() != 1 || !nodes.contains(netlist.getNode("midi_in")))
+			no();
+
+		nodes = t.getLeftMost(netlist.getNode("test_a"));
+		if(nodes.size() != 0)
 			no();
 	}
 
@@ -82,8 +95,8 @@ public class Test {
 
 	private static Node createNode(NetList netlist, String name, Integer version) {
 		Node n = netlist.createNode(name);
-		n.properties.put("name", name);
-		n.properties.put("version", version);
+		n.properties.put(NodeProperties.NAME.key, name);
+		n.properties.put(NodeProperties.VERSION.key, version);
 		return n;
 	}
 
