@@ -1,30 +1,37 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.ArrayList;
-
-import java.util.List;
-
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.backend.architectures.ICompiler;
-import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
+/**
+ * Compiles a NetList to our local NetList which can then be used for execution.
+ */
 public class Compiler extends ICompiler {
 	private final static String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.%s";
+	private Supervisor supervisor;
+	private int buffer_size;
+	private NetList netlist;
 
 	@Override
-	public AbstractExecutor compile(NetList netlist, int buffer_size) {
+	public AbstractExecutor compile(NetList source_netlist, int buffer_size) {
 		long t = System.currentTimeMillis();
 
-		NetList local_netlist = netlist.copy();
+		this.buffer_size = buffer_size;
+
+		netlist = source_netlist.copy();
+		supervisor = new Supervisor(netlist);
+
+		for(Node node : netlist.getNodes())
+			createNode(node);
 
 		System.out.printf("Compiling took: %d ms\n", System.currentTimeMillis() - t);
 
-		return new Executor(local_netlist);
+		return new Executor(netlist, supervisor);
 	}
 
-	private static LocalNode createNode(NetList netlist, Node node, int buffer_size) {
+	private void createNode(Node node) { // Not tested
 		String name = (String)node.properties.get("name");
 		Integer version = (Integer)node.properties.get("version");
 
@@ -46,35 +53,7 @@ public class Compiler extends ICompiler {
 			throw new RuntimeException(e);
 		}
 
-		localnode.compiler_setInfo(node.getID(), buffer_size, localprocessor_cls);
-
-		return localnode;
-	}
-
-	/**
-	 * Creates ports on our LocalNode and sets up lines.
-	 * TODO Maybe differentiate between input and output ports?
-	 */
-	private static void routeNode(LocalNetList local_netlist, NetList netlist, Node node) {
-		LocalNode local_node = local_netlist.get(node.getID());
-		List<LocalNode.Port> local_ports = new ArrayList<>();
-
-		for(String port : node.getPorts()) {
-			List<LocalNode.Line> local_lines = new ArrayList<>();
-
-			for(Line line : netlist.getConnections(node, port)) {
-
-				if(node.getID().equals(line.node_a.getID())) // Add line from this node perspective
-					local_lines.add(new LocalNode.Line(local_netlist.get(line.node_b.getID()), port));
-				else
-					local_lines.add(new LocalNode.Line(local_netlist.get(line.node_a.getID()), port));
-
-			}
-
-			local_ports.add(new LocalNode.Port(port, local_lines.toArray(new LocalNode.Line[0])));
-		}
-
-		local_node.compiler_setPorts(local_ports.toArray(new LocalNode.Port[0]));
+		localnode.compiler_setInfo(supervisor, node, buffer_size);
 	}
 
 	private static Class<?> loadClass(String class_path) {

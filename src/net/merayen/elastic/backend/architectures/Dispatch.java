@@ -25,7 +25,22 @@ public class Dispatch {
 		@Override
 		public void run() {
 			while(running) {
-				executor.update();
+				try {
+					synchronized (this) {
+						wait();
+					}
+				} catch (InterruptedException e) {
+					return;
+				}
+
+				Postmaster.Message message;
+				while (true) {
+					message = executor.to_processing.receive();
+					if(message != null)
+						executor.onMessage(message);
+					else
+						break;
+				}
 			}
 		}
 	}
@@ -44,6 +59,9 @@ public class Dispatch {
 
 	public void executeMessage(Postmaster.Message message) {
 		executor.to_processing.send(message);
+		synchronized (runner) {
+			runner.notify();
+		}
 	}
 
 	public Postmaster.Message receiveMessageFromProcessor() {

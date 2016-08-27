@@ -1,126 +1,179 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.architectures.local.lets.FormatMaps;
+import net.merayen.elastic.backend.architectures.local.lets.Inlet;
+import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+import net.merayen.elastic.backend.nodes.Format;
+import net.merayen.elastic.netlist.Line;
+import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.util.Postmaster;
+
 public abstract class LocalProcessor {
-	public static class Port {}
 
-	public static class Connection {
-		final LocalProcessor processor;
-		final String port;
+	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
+	int chain_id;
+	int session_id;
+	private int buffer_size;
+	private boolean prepare;
+	private Map<String, Object> input_data;
 
-		Connection(LocalProcessor processor, String port) {
-			this.processor = processor;
-			this.port = port;
-		}
-	}
-
-	public static class Outlet extends Port {
-		//public final String name;
-		public float[] output_buffer; // null if none is connected
-		public List<Connection> connections;
-		public int written; // Number of samples written yet. Readers must respect this
-		private int last_written;
-
-		Outlet(int buffer_size) {
-			//this.name = port;
-			output_buffer = new float[buffer_size];
-		}
-
-		/**
-		 * Return how many samples that have been output into this buffer so far.
-		 */
-		public int available() {
-			return written;
-		}
-	}
-
-	//public static class Inlet extends Port {
-		public final String name;
-		public final Outlet output_port; // Output-port that we are connected to. null if not connected. Don't change it
-		public int read; // Samples read so far. Use this to track where you are
-
-		Inlet(Outlet p) {
-			//this.name = port;
-			output_port = p;
-		}
-	}
-
-	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system 
 	private final Map<String, Outlet> outlets = new HashMap<>();
 	private final Map<String, Inlet> inlets = new HashMap<>();
-	boolean keep_alive = true;
+
+	private boolean active = true;
 
 	protected abstract void onInit();
+
+	/**
+	 * Called before a frame is processed.
+	 * Clear all your states and get ready to process next frame.
+	 */
+	protected abstract void onPrepare();
+
+	/**
+	 * Gets called when this processor has received data or is just scheduled to run.
+	 * Do all your processing in this method.
+	 */
 	protected abstract void onProcess();
 
-	void LocalProcessor_setInfo(LocalNode localnode, int buffer_size) {
+	protected abstract void onMessage(Postmaster.Message message); // For NodeParameterChange()
+
+	LocalProcessor() {}
+
+	void LocalProcessor_setInfo(LocalNode localnode, int chain_id, int session_id) {
 		this.localnode = localnode;
-
-		for(LocalNode.Port port : localnode.ports) // TODO only make PortResult for output ports?
-			outlets.put(port.name, new Outlet(port.name, buffer_size));
-	}
-
-	void addPort(String name, boolean outlet) {
-		if(outlets.containsKey(name))
-			throw new RuntimeException("Port already exists");
-
-		
-	}
-
-	protected Outlet getOutlet(String port) { // Feel free to cache port
-		return outlets.get(port);
-	}
-
-	protected boolean isOutletConnected(String port) {
-		Outlet o = outlets.get(port);
-		if(o != null)
-			return o.output_buffer != null;
-
-		return false;
-	}
-
-	protected boolean isInletConnected(String port) {
-		Inlet o = inlets.get(port);
-		if(o != null)
-			return o.output_port != null;
-
-		return false;
-	}
-
-	protected Inlet getInlet(String port) { // Feel free to cache port
-		return inlets.get(port);
+		this.chain_id = chain_id;
+		this.session_id = session_id;
+		this.buffer_size = localnode.buffer_size;
 	}
 
 	/**
-	 * Called when there has been data made available on one or more ports.
-	 * Returns true if any data has been written
+	 * Creates all necessary Inlets and Outlets.
+	 * Called when all processors *are created* and ready to be connected to each others.
 	 */
-	boolean doProcess() {
-		if(!dataAvailable()) // Hmm, should rather 
-			return false;
+	void wireUp() {
+		NodeProperties properties = new NodeProperties(localnode.netlist);
+		for(String port_name : properties.getOutputPorts(localnode.node)) { // We only connect output-ports as they do always have an input when connected
+			List<Line> lines = localnode.netlist.getConnections(localnode.node, port_name);
+			if(lines.size() == 0)
+				continue; // We skip ports that are not connected
 
-		for(Outlet o : outlets.values())
-			o.last_written = o.written;
+			Port port = localnode.netlist.getPort(localnode.node, port_name);
+
+			// We only add port if it is part of the chain
+			for(int port_chain_id : properties.analyzer.getPortChainIds(port))
+				if(port_chain_id == chain_id) {
+					addOutlet(port_name, properties.analyzer.getDecidedFormat(port));
+					break;
+				}
+		}
+	}
+
+	private Outlet addOutlet(String port_name, Format format) {
+		if(outlets.containsKey(port_name) || inlets.containsKey(port_name))
+			throw new RuntimeException("Outlet/Inlet already on this processor");
+
+		Class<? extends Outlet> cls = FormatMaps.outlet_formats.get(format);
+
+		Outlet outlet;
+		try {
+			outlet = cls.getConstructor(int.class).newInstance(buffer_size);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+
+		outlets.put(port_name, outlet);
+
+		// Register inlets on nodes connected to this output-port
+		List<Line> lines = localnode.netlist.getConnections(localnode.node, port_name);
+		for(Line line : lines) {
+			Node right_node;
+			String right_port;
+			if(line.node_a == localnode.node) {
+				right_node = line.node_b;
+				right_port = line.port_b;
+			} else if(line.node_b == localnode.node) {
+				right_node = line.node_a;
+				right_port = line.port_a;
+			} else {
+				throw new RuntimeException("Should not happen");
+			}
+
+			LocalNode right_localnode = localnode.supervisor.getLocalNode(right_node.getID());
+			LocalProcessor right_processor = localnode.supervisor.getProcessor(right_localnode, session_id);
+			right_processor.addInlet(right_port, outlet);
+
+			outlet.connected_processors.add(right_processor);
+		}
+
+		return outlet;
+	}
+
+	private Inlet addInlet(String name, Outlet connected_outlet) {
+		if(inlets.containsKey(name) || outlets.containsKey(name))
+			throw new RuntimeException("Inlet/Outlet already on this processor");
+
+		Format format = connected_outlet.getFormat();
+		Class<? extends Inlet> cls = FormatMaps.inlet_formats.get(format);
+
+		Inlet inlet;
+		try {
+			inlet = cls.getConstructor(Outlet.class).newInstance(connected_outlet);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+
+		inlets.put(name, inlet);
+
+		return inlet;
+	}
+
+	void doProcess() {
+		if(prepare) {
+			prepare = false;
+
+			onPrepare();
+
+			// Reset port states
+			for(Outlet o : outlets.values())
+				o.reset();
+
+			for(Inlet i : inlets.values())
+				i.reset();
+		}
 
 		onProcess();
 	}
 
-	private boolean dataAvailable() {
-		for(Inlet o : inlets.values()) {
-			if(o.output_port.last_written < o.output_port.written)
-				return true;
-		}
+	/**
+	 * Schedule processing again.
+	 * Usually called by inlets when they have received data or LocalNode wants this processor to react to something.
+	 */
+	public void schedule() {
+		localnode.supervisor.schedule(this);
+	}
 
-		return false;
+	protected Outlet getOutlet(String name) {
+		return outlets.get(name);
+	}
+
+	protected Inlet getInlet(String name) {
+		return inlets.get(name);
 	}
 
 	/**
-	 * Every processor should set this.
-	 * If one or more processor has this active, the session is kept alive.
-	 * Not until every processor in the chain sets this to false, we will
+	 * active() and inactive() function calls. Every processor must be aware of these.
+	 * If one or more processor marks itself as active, the session is kept alive.
+	 * Not until every processor in the chain has called inactive(), we will
 	 * actually end the session.
 	 * 
 	 * It is important that every processor uses/is aware of this, as we might
@@ -128,14 +181,24 @@ public abstract class LocalProcessor {
 	 * 
 	 * E.g: A sine generator with MIDI input at frequency sets this to *true* whenever
 	 * a key is pressed, and sets this to false at once on key up.
-	 * 
-	 * Other nodes might never set this to true and is just a slave. 
 	 */
-	protected void setKeepAlive(boolean b) {
-		keep_alive = b;
+	protected void inactive() {
+		active = false;
 	}
 
-	public boolean isKeepAlive() {
-		return keep_alive;
+	/**
+	 * @see inactive
+	 */
+	protected void active() {
+		active = true;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	void prepare(Map<String, Object> input_data) {
+		prepare = true; // Will prepare next time process() is called
+		this.input_data = input_data;
 	}
 }

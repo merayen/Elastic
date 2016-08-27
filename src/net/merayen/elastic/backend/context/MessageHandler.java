@@ -27,7 +27,7 @@ class MessageHandler {
 	}
 
 	/**
-	 * Messages sent from LogicNode to further into backend is handled here.
+	 * Messages sent from LogicNode further into backend is handled here.
 	 */
 	void handleFromLogicToBackend(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) { // Update our NetList with the new value
@@ -39,11 +39,11 @@ class MessageHandler {
 		else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
 
-			Port port = backend_context.netlist.getNode(m.node_id).createPort(m.port);
+			Port port = backend_context.netlist.createPort(m.node_id, m.port);
 
 			port.properties.put("output", m.output);
 			port.properties.put("format", Format.toStrings(m.format));
-			port.properties.put("poly_no", m.poly_no);
+			port.properties.put("poly_no", m.poly_no); // TODO rename to chain_ident
 		}
 
 		backend_context.dispatch.executeMessage(message);
@@ -70,8 +70,8 @@ class MessageHandler {
 		else if(message instanceof NodeConnectMessage) {
 			NodeConnectMessage m = (NodeConnectMessage)message;
 
-			boolean output_a = (boolean)netlist.getNode(m.node_a).getPort(m.port_a).properties.get("output");
-			boolean output_b = (boolean)netlist.getNode(m.node_b).getPort(m.port_b).properties.get("output");
+			boolean output_a = (boolean)netlist.getPort(m.node_a, m.port_a).properties.get("output");
+			boolean output_b = (boolean)netlist.getPort(m.node_b, m.port_b).properties.get("output");
 
 			if(output_a == output_b)
 				return; // Only inputs and outputs can be connected

@@ -45,7 +45,7 @@ public class ElasticSystem {
 	/**
 	 * Needs to be called often.
 	 */
-	public void update() {
+	public void update() { // TODO perhaps don't do this, but rather trigger on events
 		long t = System.currentTimeMillis() + 10;
 
 		while(t >= System.currentTimeMillis() && routeMessages());
