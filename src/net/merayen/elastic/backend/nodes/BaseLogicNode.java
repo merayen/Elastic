@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.nodes;
 
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
 
@@ -81,7 +80,9 @@ public abstract class BaseLogicNode {
 	}
 
 	void create(String name, Integer version) {
-		sendMessageToUI(new CreateNodeMessage(id, name, version)); // Acknowledges creation of Node to the UI
+		CreateNodeMessage m = new CreateNodeMessage(id, name, version);
+		sendMessageToUI(m); // Acknowledges creation of Node to the UI
+		sendMessageToBackend(m); // Notify the backend too
 		onCreate();
 	}
 

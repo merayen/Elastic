@@ -44,7 +44,7 @@ public class Test {
 		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
 		system.sendMessageToBackend(new CreateNodeMessage("output", 1));
 
-		operate(100, 10);
+		waitFor(() -> nodes.size() == 3);
 
 		// Place the nodes
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 50f));
@@ -54,13 +54,14 @@ public class Test {
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(2).node_id, "input"));
 		//system.sendMessageToBackend(new NodeConnectMessage("signalgenerator", 1));
 
-		operate(1000, 10);
+		final long t = System.currentTimeMillis() + 1 * 1000;
+		waitFor(() -> System.currentTimeMillis() > t);
 
-		/*// Test dumping
+		// Test dumping
 		String dump = system.dump().toJSONString();
 		System.out.println(dump);
 
-		system.end();
+		/*system.end();
 
 		// Test restoring the dump
 		try {
@@ -70,21 +71,24 @@ public class Test {
 		}*/
 
 		// Now just run
-		operate(10000000, 10);
+		final long u = System.currentTimeMillis() + 3600 * 1000;
+		waitFor(() -> System.currentTimeMillis() > u);
 
 		system.end();
 	}
 
-	private void operate(long ms, long sleep) {
-		long t = System.currentTimeMillis() + ms;
-		while(t > System.currentTimeMillis()) {
-			system.update();
+	interface Func {
+		public boolean noe();
+	}
 
-			try {
-				Thread.sleep(sleep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+	private void waitFor(Func func) {
+		try {
+			while(!func.noe()) {
+				system.update();
+				Thread.sleep(10);
 			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }

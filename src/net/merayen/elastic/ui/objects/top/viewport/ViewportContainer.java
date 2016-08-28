@@ -151,11 +151,6 @@ public class ViewportContainer extends UIObject {
 		}
 
 		updateLayout();
-		if(asdf++ % 100 == 0) {
-			System.out.println("ViewportContainer layout ");//
-			for(Object o : layout.getLayout())
-				System.out.println("\t" + o);
-		}
 
 		task_executor.update();
 	}

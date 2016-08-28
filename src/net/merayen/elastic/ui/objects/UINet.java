@@ -162,7 +162,6 @@ public class UINet extends UIObject {
 		 */
 		dragging_port = port;
 		dragging_port_source = source_port;
-		System.out.println("Setting dragging port: " + source_port + " | " + port);
 	}
 
 	public UIPort getDraggingPort() {

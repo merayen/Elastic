@@ -24,7 +24,7 @@ public class NodeViewController extends Controller {
 
 	@Override
 	protected void onMessageFromBackend(Postmaster.Message message) {
-		System.out.printf("UI got message: %s\n", message.getClass().getSimpleName());
+		//System.out.printf("UI got message: %s\n", message.getClass().getSimpleName());
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;

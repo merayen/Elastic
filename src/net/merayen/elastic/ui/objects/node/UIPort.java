@@ -20,9 +20,6 @@ public class UIPort extends UIObject {
 	public final static Color MIDI_PORT = new Color(200, 150, 100);
 	public final static Color AUX_PORT = new Color(150, 150, 150);
 
-	private static int debug_id_count;
-	private int debug_id = debug_id_count++;
-
 	private int task_remove_port;
 
 	private MouseHandler port_drag;
@@ -155,7 +152,6 @@ public class UIPort extends UIObject {
 	}*/
 
 	private void createTempPort(UIPort p) {
-		System.out.println("Creating temp port " + debug_id);
 		temp_port = new UIPortTemporary();
 		add(temp_port);
 		temp_port.addTempPort(p);
@@ -167,7 +163,6 @@ public class UIPort extends UIObject {
 	}
 
 	private void removeTempPort() {
-		System.out.println("Removing temp port " + debug_id);
 		temp_port.removeTempPort();
 		remove(temp_port);
 		temp_port = null;
