@@ -52,7 +52,6 @@ public class Test {
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(2).node_id, "input"));
-		//system.sendMessageToBackend(new NodeConnectMessage("signalgenerator", 1));
 
 		final long t = System.currentTimeMillis() + 1 * 1000;
 		waitFor(() -> System.currentTimeMillis() > t);

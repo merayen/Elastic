@@ -55,6 +55,7 @@ class MessageHandler {
 
 	/**
 	 * Handles messages sent from UI.
+	 * TODO Should we accumulate messages here, wait like 10ms, run the analyzer if necessary and then spread the messages around again? This is to not call the analyzer for every message
 	 */
 	void handleFromUI(Postmaster.Message message) {
 		LogicNodeList logicnode_list = backend_context.logicnode_list;
