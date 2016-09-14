@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-//import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
 
+/**
+ * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
+ * @author merayen
+ *
+ */
 class Supervisor {
+	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s.LNode";
 	final NetList netlist;
-	//private final NodeProperties properties;
+	private final NodeProperties node_properties;
 	private final LocalNodeProperties local_properties = new LocalNodeProperties();
 	final ProcessorList processor_list = new ProcessorList();
 	private int session_id_counter;
@@ -21,7 +27,29 @@ class Supervisor {
 
 	public Supervisor(NetList netlist) {
 		this.netlist = netlist; // Our own, compiled NetList
-		//properties = new NodeProperties(netlist);
+		node_properties = new NodeProperties(netlist);
+		load();
+	}
+
+	private void load() {
+		for(Node node : netlist.getNodes()) {
+			LocalNode localnode = local_properties.getLocalNode(node);
+
+			if(localnode == null) { // LocalNode could already be loaded and assigned when doing tests 
+				try {
+					@SuppressWarnings("unchecked")
+					Class<? extends LocalNode> cls = (Class<? extends LocalNode>)Class.forName(String.format(CLASS_PATH, node_properties.getName(node)));
+					localnode = cls.newInstance();
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+
+				local_properties.setLocalNode(node, localnode);
+			}
+
+			localnode.compiler_setInfo(this, node, 256);
+			localnode.init();
+		}
 	}
 
 	void begin() {
@@ -30,9 +58,10 @@ class Supervisor {
 	}
 
 	public void handleMessage(Postmaster.Message message) {
-		if(message instanceof CreateNodeMessage) {
-			CreateNodeMessage m = (CreateNodeMessage)message;
-			// TODO create LocalNode and update any running voices
+		if(message instanceof NodeParameterMessage) {
+			NodeParameterMessage m = (NodeParameterMessage)message;
+			LocalNode localnode = local_properties.getLocalNode(netlist.getNode(m.node_id));
+			localnode.onParameter(m.key, m.value);
 		}
 	}
 

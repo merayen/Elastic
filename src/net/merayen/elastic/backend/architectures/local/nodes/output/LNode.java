@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.output;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 
-public class Node extends LocalNode {
+public class LNode extends LocalNode {
 	// Tuning parameters
 	private int output_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
 	private int process_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
@@ -17,7 +17,7 @@ public class Node extends LocalNode {
 
 	private AverageStat<Integer> avg_buffer_size = new AverageStat<Integer>(100);*/
 
-	public Node() {
+	public LNode() {
 		super(Processor.class);
 	}
 
@@ -29,6 +29,18 @@ public class Node extends LocalNode {
 
 	@Override
 	protected void onProcess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onParameter(String key, Object value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -21,4 +21,12 @@ public class NodeMessage extends Postmaster.Message {
 		this.key = key;
 		this.value = value;
 	}
+
+	public NodeMessage(String node_id, String key, String value) {
+		super(Long.MAX_VALUE);
+
+		this.node_id = node_id;
+		this.key = key;
+		this.value = value;
+	}
 }

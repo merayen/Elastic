@@ -47,14 +47,12 @@ public class Dispatch {
 
 	public final Architecture architecture;
 	private final Handler handler;
-	private final ICompiler compiler;
 	private AbstractExecutor executor;
 	private Runner runner;
 
 	public Dispatch(Architecture architecture, Handler handler) {
 		this.architecture = architecture;
 		this.handler = handler;
-		this.compiler = architecture.instance.getCompiler();
 	}
 
 	public void executeMessage(Postmaster.Message message) {
@@ -75,7 +73,7 @@ public class Dispatch {
 		if(executor != null)
 			throw new RuntimeException("Already started");
 
-		executor = compiler.compile(netlist, buffer_size);
+		executor = architecture.instance.getExecutor();
 		runner = new Runner(executor);
 		runner.start();
 	}

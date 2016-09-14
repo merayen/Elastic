@@ -6,6 +6,7 @@ import java.util.List;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.util.Postmaster.Message;
 
 /*
  * Makes beeping sounds.
@@ -13,7 +14,8 @@ import net.merayen.elastic.netlist.Node;
  * how much they should produce, like remember the amount requested, as incoming data might be much more than
  * we have requested due to ports being split.
  */
-public class Processor extends LocalProcessor {
+public class LProcessor extends LocalProcessor {
+
 	private float midi_amplitude = 1f;
 	private float midi_frequency;
 	private float midi_tangent_frequency;
@@ -30,7 +32,7 @@ public class Processor extends LocalProcessor {
 
 	}
 
-	void tryToGenerate() {
+	/*void tryToGenerate() {
 		boolean frequency_connected = getInlet("frequency").isConnected("frequency");
 		boolean amplitude_connected = ports.isConnected("amplitude");
 		ManagedPortState frequency_state = getPortState("frequency");
@@ -61,14 +63,14 @@ public class Processor extends LocalProcessor {
 			ar.samples = r;
 			send("output", ar);
 		}
-	}
+	}*/
 
 	/**
 	 * Generate sine wave without the frequency port.
 	 * We then generate data synchronously.
 	 * Called by the Net-node. 
 	 */
-	public float[] generateStandalone() {
+	/*public float[] generateStandalone() {
 		if(standalone_to_generate == 0)
 			return null;
 
@@ -95,13 +97,13 @@ public class Processor extends LocalProcessor {
 		pos %= Math.PI * 2 * 1000;
 
 		return r;
-	}
+	}*/
 
 	/**
 	 * Generate sine wave from frequency port connected to a MIDI source.
 	 * Amplitude may or may not be connected.
 	 */
-	private float[] generateWithMidi() {
+	/*private float[] generateWithMidi() {
 		boolean amplitude_connected = net_node.isConnected("amplitude");
 		PortBuffer frequency_buffer = getPortBuffer("frequency");
 		PortBuffer amplitude_buffer = getPortBuffer("amplitude");
@@ -141,7 +143,7 @@ public class Processor extends LocalProcessor {
 					for(int i = 0; i < sample_count; i++)
 						output[offset + i] =
 							a[packet_offsets[0] + i]  * f[packet_offsets[2] + i] + // TODO retrieve the fac_value from fac-port, if connected
-							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);*/
+							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);* /
 					// TODO
 					throw new RuntimeException("Not implemented");
 				} else {
@@ -159,9 +161,9 @@ public class Processor extends LocalProcessor {
 		}
 
 		return output;
-	}
+	}*/
 
-	private void updateFromMidi(short[] midi) {
+	/*private void updateFromMidi(short[] midi) {
 		if(midi[0] == MidiStatuses.KEY_DOWN) {
 			keys_down.add(midi[1]);
  
@@ -190,13 +192,13 @@ public class Processor extends LocalProcessor {
 		}
 
 		midi_frequency = (float)(midi_tangent_frequency * Math.pow(2, midi_pitch_factor / 6f));
-	}
+	}*/
 
 	private float midiNoteToFreq(short n) {
 		return (float)(440 * Math.pow(2, (n - 69) / 12.0f));
 	}
 
-	private float[] generateFromFrequency() {
+	/*private float[] generateFromFrequency() {
 		boolean amplitude_connected = net_node.isConnected("amplitude");
 		PortBuffer frequency_buffer = this.getPortBuffer("frequency");
 		PortBuffer amplitude_buffer = this.getPortBuffer("amplitude");
@@ -224,7 +226,7 @@ public class Processor extends LocalProcessor {
 					for(int i = 0; i < sample_count; i++)
 						output[offset + i] =
 							a[packet_offsets[0] + i]  * f[packet_offsets[2] + i] + // TODO retrieve the fac_value from fac-port, if connected
-							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);*/
+							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);* /
 					// TODO
 					throw new RuntimeException("Not implemented");
 				} else {
@@ -238,7 +240,7 @@ public class Processor extends LocalProcessor {
 		pbi.forward();
 
 		return output;
-	}
+	}*/
 
 	@Override
 	public void onDestroy() {
@@ -246,20 +248,32 @@ public class Processor extends LocalProcessor {
 		//	send("output", new EndSessionResponse());
 	}
 
-	@Override
+	/*@Override
 	protected void onReceive(String port_name) {
 		tryToGenerate();
-	}
+	}*/
 
-	protected void onReceiveControl(String port_name, DataPacket dp) {
+	/*protected void onReceiveControl(String port_name, DataPacket dp) {
 		if(port_name.equals("frequency")) {
 			if(dp instanceof EndSessionResponse)
 				terminate();
 		}
-	}
+	}*/
 
 	@Override
 	protected void onProcess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onPrepare() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onMessage(Message message) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -20,12 +20,12 @@ public class Test {
 		throw new RuntimeException("Nope");
 	}
 
-	private static void initLocalNodes(Supervisor supervisor) {
+	/*private static void initLocalNodes(Supervisor supervisor) {
 		LocalNodeProperties local_properties = new LocalNodeProperties();
 
 		for(Node node : supervisor.netlist.getNodes())
 			local_properties.getLocalNode(node).compiler_setInfo(supervisor, node, 256);
-	}
+	}*/
 
 	/**
 	 * Creates a fake NetList of LocalNodes. Also fakes the Analyzer(), just setting data directly.
@@ -69,6 +69,7 @@ public class Test {
 		properties.analyzer.getPortChainIds(port).add(0);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
 		local_properties.setLocalNode(consumer_node, new ConsumerNode(1));
+		//properties.setName(consumer_node, "");
 
 		// Consumer 2, on main-session
 		Node consumer2_node = netlist.createNode();
@@ -105,7 +106,7 @@ public class Test {
 	public static void test() {
 		NetList netlist = createNetList();
 		Supervisor supervisor = new Supervisor(netlist);
-		initLocalNodes(supervisor);
+		//initLocalNodes(supervisor);
 		supervisor.begin();
 
 		check(supervisor);
@@ -136,6 +137,12 @@ class GeneratorNode extends LocalNode {
 
 		tick++;
 	}
+
+	@Override
+	protected void onDestroy() {}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }
 
 class GeneratorProcessor extends LocalProcessor {
@@ -165,6 +172,12 @@ class GeneratorProcessor extends LocalProcessor {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class MiddleNode extends LocalNode {
@@ -178,6 +191,12 @@ class MiddleNode extends LocalNode {
 
 	@Override
 	protected void onProcess() {}
+
+	@Override
+	protected void onDestroy() {}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }
 
 class MiddleProcessor extends LocalProcessor {
@@ -209,7 +228,10 @@ class MiddleProcessor extends LocalProcessor {
 	protected void onMessage(Message message) {}
 
 	@Override
-	protected void onPrepare() {
+	protected void onPrepare() {}
+
+	@Override
+	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -232,6 +254,12 @@ class ConsumerNode extends LocalNode {
 	void addVoiceData(int session_id, float[] audio, int start, int stop) {
 		((ConsumerProcessor)this.getProcessor(0)).emit(audio, start, stop);
 	}
+
+	@Override
+	protected void onDestroy() {}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }
 
 class ConsumerProcessor extends LocalProcessor {
@@ -277,5 +305,11 @@ class ConsumerProcessor extends LocalProcessor {
 	
 			output.push(); // Wrong, should collect all voices before sending, but meh, just a test
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		
 	}
 }

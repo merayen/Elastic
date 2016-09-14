@@ -16,7 +16,6 @@ import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class LocalProcessor {
-
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
 	int chain_id;
 	int session_id;
@@ -40,12 +39,13 @@ public abstract class LocalProcessor {
 	/**
 	 * Gets called when this processor has received data or is just scheduled to run.
 	 * Do all your processing in this method.
+	 * See if there is any data available.
 	 */
 	protected abstract void onProcess();
 
 	protected abstract void onMessage(Postmaster.Message message); // For NodeParameterChange()
 
-	LocalProcessor() {}
+	protected abstract void onDestroy();
 
 	void LocalProcessor_setInfo(LocalNode localnode, int chain_id, int session_id) {
 		this.localnode = localnode;

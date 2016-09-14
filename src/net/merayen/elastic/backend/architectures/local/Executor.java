@@ -1,73 +1,67 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import net.merayen.elastic.backend.analyzer.Analyzer;
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.netlist.NetList;
-import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
-	private final NetList netlist; // Our local copy of the NetList that we build by the messages we receive
-	private final Supervisor supervisor;
+	private NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive
+	private NetList upcoming_netlist; // Is set to true when netlist has been changed and needing to analyze and prepare on next ProcessMessage()
+	private Supervisor supervisor;
 
-	Executor(NetList netlist, Supervisor supervisor) {
-		this.netlist = netlist.copy();
-		System.out.println("Executor started");
-		this.supervisor = supervisor;
-	}
+	Executor() {}
 
 	@Override
 	protected void onMessage(Postmaster.Message message) {
 		if(message instanceof ProcessMessage) {
+			if(upcoming_netlist != null) {
+				loadNetList(upcoming_netlist);
+				upcoming_netlist = null;
+			}
+
 			supervisor.process((ProcessMessage)message);
 
 		} else if(message instanceof CreateNodeMessage) {
-			CreateNodeMessage m = (CreateNodeMessage)message;
-
-			Node node = netlist.createNode(m.node_id);
-			node.properties.put("name", m.name);
-			node.properties.put("version", m.version);
-
-			restart();
+			NetListMessages.apply(getUpcomingNetList(), message);
 
 		} else if(message instanceof CreateNodePortMessage) {
-			CreateNodePortMessage m = (CreateNodePortMessage)message;
-
-			netlist.createPort(m.node_id, m.port);
-
-			restart();
+			NetListMessages.apply(getUpcomingNetList(), message);
 
 		} else if(message instanceof RemoveNodePortMessage) {
-			RemoveNodePortMessage m = (RemoveNodePortMessage)message;
-
-			netlist.removePort(m.node_id, m.port);
-
-			restart();
+			NetListMessages.apply(getUpcomingNetList(), message);
 
 		} else if(message instanceof NodeConnectMessage) {
-			NodeConnectMessage m = (NodeConnectMessage)message;
-			netlist.connect(m.node_a, m.port_a, m.node_b, m.port_b);
-
-			restart();
+			NetListMessages.apply(getUpcomingNetList(), message);
 
 		} else if(message instanceof NodeDisconnectMessage) {
-			NodeDisconnectMessage m = (NodeDisconnectMessage)message;
-			netlist.disconnect(m.node_a, m.port_a, m.node_b, m.port_b);
-
-			restart();
+			NetListMessages.apply(getUpcomingNetList(), message);
 
 		} else if(message instanceof NodeParameterMessage) {
-			// Notify all chains, that again will notify their Node
+			if(supervisor != null)
+				supervisor.handleMessage(message);
 		}
+
+		System.out.printf("Executor got message %s\n", message.getClass().getName());
 	}
 
 	/**
 	 * Restarts ourself. Happens usually when we are messaged a message that
 	 * requires blank sheet.
 	 */
-	private void restart() {
-		// TODO stop the processor, analyze NetList, build the chains, and start
-		System.out.println("Executor should restart TODO");
+	private void loadNetList(NetList netlist) {
+		Analyzer.analyze(netlist);
+		supervisor = new Supervisor(netlist);
+		System.out.println("Local architecture restarted");
+	}
+
+	private NetList getUpcomingNetList() {
+		if(upcoming_netlist == null)
+			upcoming_netlist = netlist.copy();
+
+		return upcoming_netlist;
 	}
 
 	@Override

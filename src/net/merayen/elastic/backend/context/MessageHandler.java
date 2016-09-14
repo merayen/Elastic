@@ -1,11 +1,10 @@
 package net.merayen.elastic.backend.context;
 
+import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.Dispatch;
-import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.backend.nodes.LogicNodeList;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
 import net.merayen.elastic.system.intercom.CreateNodePortMessage;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
@@ -14,6 +13,7 @@ import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.NetListMessages;
 
 /**
  * Helper class for BackendContext.
@@ -34,16 +34,11 @@ class MessageHandler {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			Node node = backend_context.netlist.getNode(m.node_id);
 			node.properties.put(m.key, m.value);
-		}
 
-		else if(message instanceof CreateNodePortMessage) {
-			CreateNodePortMessage m = (CreateNodePortMessage)message;
-
-			Port port = backend_context.netlist.createPort(m.node_id, m.port);
-
-			port.properties.put("output", m.output);
-			port.properties.put("format", Format.toStrings(m.format));
-			port.properties.put("poly_no", m.poly_no); // TODO rename to chain_ident
+		} else if(message instanceof CreateNodeMessage) {
+			
+		} else {
+			NetListMessages.apply(backend_context.netlist, message);
 		}
 
 		backend_context.dispatch.executeMessage(message);
@@ -60,6 +55,7 @@ class MessageHandler {
 	void handleFromUI(Postmaster.Message message) {
 		LogicNodeList logicnode_list = backend_context.logicnode_list;
 		NetList netlist = backend_context.netlist;
+		NodeProperties np = backend_context.node_properties;
 		Dispatch dispatch = backend_context.dispatch;
 		Postmaster from_backend = backend_context.from_backend;
 
@@ -71,8 +67,8 @@ class MessageHandler {
 		else if(message instanceof NodeConnectMessage) {
 			NodeConnectMessage m = (NodeConnectMessage)message;
 
-			boolean output_a = (boolean)netlist.getPort(m.node_a, m.port_a).properties.get("output");
-			boolean output_b = (boolean)netlist.getPort(m.node_b, m.port_b).properties.get("output");
+			boolean output_a = np.isOutput(netlist.getPort(m.node_a, m.port_a));
+			boolean output_b = np.isOutput(netlist.getPort(m.node_b, m.port_b));
 
 			if(output_a == output_b)
 				return; // Only inputs and outputs can be connected
@@ -85,7 +81,6 @@ class MessageHandler {
 
 			if(!output_b && netlist.getConnections(netlist.getNode(m.node_b), m.port_b).size() > 0)
 				return; // Input ports can only have 1 line connected
-				
 
 			netlist.connect(m.node_a, m.port_a, m.node_b, m.port_b);
 			logicnode_list.handleMessageFromUI(message);
@@ -110,7 +105,7 @@ class MessageHandler {
 			NetListRefreshRequestMessage m = (NetListRefreshRequestMessage)message;
 			from_backend.send(new ResetNetListMessage(m.group_id)); // We must clear the NetList in UI before restoring it again
 
-			for(Postmaster.Message mess :  Restore.restore(netlist, m.group_id))
+			for(Postmaster.Message mess :  NetListMessages.disassemble(netlist, m.group_id))
 				from_backend.send(mess);
 		}
 	}

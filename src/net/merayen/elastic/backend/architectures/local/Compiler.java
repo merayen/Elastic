@@ -15,20 +15,18 @@ public class Compiler extends ICompiler {
 	private NetList netlist;
 
 	@Override
-	public AbstractExecutor compile(NetList source_netlist, int buffer_size) {
+	public AbstractExecutor compile(int buffer_size) {
 		long t = System.currentTimeMillis();
 
 		this.buffer_size = buffer_size;
-
-		netlist = source_netlist.copy();
-		supervisor = new Supervisor(netlist);
+		supervisor = new Supervisor();
 
 		for(Node node : netlist.getNodes())
 			createNode(node);
 
 		System.out.printf("Compiling took: %d ms\n", System.currentTimeMillis() - t);
 
-		return new Executor(netlist, supervisor);
+		return new Executor(supervisor);
 	}
 
 	private void createNode(Node node) { // Not tested

@@ -54,10 +54,39 @@ public class NodeProperties {
 		}
 	}
 
+	public class Parameters {
+		private Parameters() {}
+
+		public void set(Node node, String key, Object value) {
+			node.properties.put("parameters." + key, value);
+		}
+
+		public Object get(Node node, String key) {
+			return node.properties.get("parameters." + key);
+		}
+	}
+
 	public final Analyzer analyzer = new Analyzer();
+	public final Parameters parameters = new Parameters();
 
 	public NodeProperties(NetList netlist) {
 		this.netlist = netlist;
+	}
+
+	public String getName(Node node) {
+		return (String)node.properties.get("name");
+	}
+
+	public void setName(Node node, String name) {
+		node.properties.put("name", name);
+	}
+
+	public int getVersion(Node node) {
+		return (int)node.properties.get("version");
+	}
+
+	public void setVersion(Node node, int version) {
+		node.properties.put("name", version);
 	}
 
 	public void setOutput(Port port) { // Can not be changed afterwards. Drop and recreate port
@@ -104,7 +133,7 @@ public class NodeProperties {
 
 	public String getPortChainIdent(Port port) {
 		if(!isOutput(port))
-			throw new RuntimeException("Only output-ports can have an ident to spawn voices");
+			return null;
 
 		if(port.properties.containsKey("chain_ident"))
 			return (String)port.properties.get("chain_ident");

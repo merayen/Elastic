@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
 public class LocalNodeProperties {

@@ -3,6 +3,7 @@ package net.merayen.elastic.backend.context;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.Info;
+import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
 import net.merayen.elastic.backend.nodes.LogicNodeList;
@@ -14,7 +15,8 @@ import net.merayen.elastic.util.Postmaster;
  * Glues together NetList, MainNodes and the processing backend (architecture)
  */
 public class BackendContext {
-	final NetList netlist = new NetList();
+	final NetList netlist = new NetList(); // Main NetList that the UI and the architecture builds from
+	final NodeProperties node_properties = new NodeProperties(netlist);
 	LogicNodeList logicnode_list;
 	Dispatch dispatch;
 	MessageHandler message_handler = new MessageHandler(this);
@@ -60,7 +62,7 @@ public class BackendContext {
 		return null; // TODO
 	}
 
-	public void executeMessage(Postmaster.Message message) { // TODO maybe move this logic somewhere, to a controller or something
+	public void executeMessage(Postmaster.Message message) {
 		message_handler.handleFromUI(message);
 	}
 

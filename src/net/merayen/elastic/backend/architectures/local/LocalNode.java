@@ -25,6 +25,8 @@ public abstract class LocalNode {
 
 	protected abstract void onInit();
 	protected abstract void onProcess();
+	protected abstract void onParameter(String key, Object value);
+	protected abstract void onDestroy();
 
 	protected LocalNode(Class<? extends LocalProcessor> cls) {
 		processor_cls = cls;
