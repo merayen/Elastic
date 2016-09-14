@@ -42,16 +42,17 @@ public class Test {
 
 		system.sendMessageToBackend(new CreateNodeMessage("test", 100));
 		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
+		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
 		system.sendMessageToBackend(new CreateNodeMessage("output", 1));
 
-		waitFor(() -> nodes.size() == 3);
+		waitFor(() -> nodes.size() == 4);
 
 		// Place the nodes
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 50f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "ui.java.translation.x", 200f));
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(3).node_id, "ui.java.translation.x", 200f));
 
 		// Connect signal generator to output
-		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(2).node_id, "input"));
+		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(3).node_id, "input"));
 
 		final long t = System.currentTimeMillis() + 1 * 1000;
 		waitFor(() -> System.currentTimeMillis() > t);
