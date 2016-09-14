@@ -17,11 +17,7 @@ public class Executor extends AbstractExecutor {
 	@Override
 	protected void onMessage(Postmaster.Message message) {
 		if(message instanceof ProcessMessage) {
-			if(upcoming_netlist != null) {
-				loadNetList(upcoming_netlist);
-				upcoming_netlist = null;
-			}
-
+			applyNetList();
 			supervisor.process((ProcessMessage)message);
 
 		} else if(message instanceof CreateNodeMessage) {
@@ -40,8 +36,8 @@ public class Executor extends AbstractExecutor {
 			NetListMessages.apply(getUpcomingNetList(), message);
 
 		} else if(message instanceof NodeParameterMessage) {
-			if(supervisor != null)
-				supervisor.handleMessage(message);
+			applyNetList();
+			supervisor.handleMessage(message);
 		}
 
 		System.out.printf("Executor got message %s\n", message.getClass().getName());
@@ -51,10 +47,16 @@ public class Executor extends AbstractExecutor {
 	 * Restarts ourself. Happens usually when we are messaged a message that
 	 * requires blank sheet.
 	 */
-	private void loadNetList(NetList netlist) {
-		Analyzer.analyze(netlist);
-		supervisor = new Supervisor(netlist);
-		System.out.println("Local architecture restarted");
+	private void applyNetList() {
+		if(upcoming_netlist != null) {
+			netlist = upcoming_netlist;
+			upcoming_netlist = null;
+
+			Analyzer.analyze(netlist);
+			supervisor = new Supervisor(netlist);
+			System.out.println("Local architecture restarted");
+			
+		}
 	}
 
 	private NetList getUpcomingNetList() {

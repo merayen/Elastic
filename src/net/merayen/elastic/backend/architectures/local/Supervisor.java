@@ -16,7 +16,7 @@ import net.merayen.elastic.util.Postmaster;
  *
  */
 class Supervisor {
-	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s.LNode";
+	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.LNode";
 	final NetList netlist;
 	private final NodeProperties node_properties;
 	private final LocalNodeProperties local_properties = new LocalNodeProperties();
@@ -35,12 +35,14 @@ class Supervisor {
 		for(Node node : netlist.getNodes()) {
 			LocalNode localnode = local_properties.getLocalNode(node);
 
-			if(localnode == null) { // LocalNode could already be loaded and assigned when doing tests 
+			if(localnode == null) { // LocalNode could already be loaded and assigned when doing tests
+				String path = String.format(CLASS_PATH, node_properties.getName(node), node_properties.getVersion(node));
 				try {
 					@SuppressWarnings("unchecked")
-					Class<? extends LocalNode> cls = (Class<? extends LocalNode>)Class.forName(String.format(CLASS_PATH, node_properties.getName(node)));
+					Class<? extends LocalNode> cls = (Class<? extends LocalNode>)Class.forName(path);
 					localnode = cls.newInstance();
 				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+					System.out.printf("Could not load Node %s\n", path);
 					throw new RuntimeException(e);
 				}
 

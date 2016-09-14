@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.architectures.local.nodes.output;
+package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 
@@ -18,7 +18,7 @@ public class LNode extends LocalNode {
 	private AverageStat<Integer> avg_buffer_size = new AverageStat<Integer>(100);*/
 
 	public LNode() {
-		super(Processor.class);
+		super(LProcessor.class);
 	}
 
 	@Override

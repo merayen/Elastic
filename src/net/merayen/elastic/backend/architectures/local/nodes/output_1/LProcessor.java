@@ -1,7 +1,6 @@
-package net.merayen.elastic.backend.architectures.local.nodes.output;
+package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.util.Postmaster.Message;
 
 /**

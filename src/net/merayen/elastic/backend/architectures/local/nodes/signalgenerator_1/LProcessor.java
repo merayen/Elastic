@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator;
+package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import java.util.ArrayList;
 import java.util.List;

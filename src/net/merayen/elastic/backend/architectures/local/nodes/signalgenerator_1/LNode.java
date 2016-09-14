@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator;
+package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 
@@ -17,24 +17,20 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onInit() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	protected void onProcess() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	protected void onParameter(String key, Object value) {
-		// TODO Auto-generated method stub
-		
+		System.out.printf("Signalgenerator arc %s=%s\n", key, value);
 	}
 
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		
 	}
 }
