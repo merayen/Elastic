@@ -10,6 +10,7 @@ import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
+import net.merayen.elastic.ui.objects.node.UIPortTemporary;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
@@ -33,7 +34,7 @@ public class UINet extends UIObject {
 
 	List<Connection> connections = new ArrayList<Connection>();
 
-	private UIPort dragging_port;
+	private UIPortTemporary temporary_port; // Invisible port that is dragged
 	private UIPort dragging_port_source;
 
 	@Override
@@ -62,6 +63,12 @@ public class UINet extends UIObject {
 
 			}
 		}
+
+		StringBuilder sb = new StringBuilder();
+		for(Connection c : connections)
+			sb.append(String.format("%s <-> %s", c.a, c.b));
+
+		((Top)this.search.getTop()).debug.set("UI port connections", String.format("%d: %s", connections.size(), sb));
 	}
 
 	/**
@@ -69,6 +76,7 @@ public class UINet extends UIObject {
 	 * Use connect() afterwards to actually connect two ports.
 	 */
 	public void addLine(UIPort a, UIPort b) {
+		removeLine(a, b);
 		connections.add(new Connection(a, b));
 	}
 
@@ -77,7 +85,7 @@ public class UINet extends UIObject {
 			Connection c = connections.get(i);
 			if((c.a == a && c.b == b) || (c.a == b && c.b == a)) {
 				connections.remove(i);
-				return;
+				//return;
 			}
 		}
 	}
@@ -155,17 +163,26 @@ public class UINet extends UIObject {
 		return false;
 	}
 
-	public void setDraggingPort(UIPort source_port, UIPort port) {
+	public void setDraggingPort(UIPort source_port, UIPortTemporary temporary_port) {
 		/*
 		 * Call this when a port is dragging a line from it.
 		 * This port can then be retrieved by a hovering port by calling getOtherPort()
 		 */
-		dragging_port = port;
+		this.temporary_port = temporary_port;
+		/*if(dragging_port_source != null)
+			for(int i = connections.size() - 1; i > -1; i--)
+				if(connections.get(i).a instanceof UIPortTemporary || connections.get(i).b instanceof UIPortTemporary)
+					connections.remove(i);*/
+
 		dragging_port_source = source_port;
 	}
 
-	public UIPort getDraggingPort() {
+	public UIPort getDraggingSourcePort() {
 		return dragging_port_source;
+	}
+
+	public UIPortTemporary getTemporaryPort() {
+		return temporary_port;
 	}
 
 	/**
@@ -186,7 +203,7 @@ public class UINet extends UIObject {
 
 	public void reset() {
 		connections.clear();
-		dragging_port = null;
+		//dragging_port = null;
 		dragging_port_source = null;
 	}
 

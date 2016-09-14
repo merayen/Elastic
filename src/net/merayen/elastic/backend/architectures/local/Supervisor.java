@@ -12,8 +12,6 @@ import net.merayen.elastic.util.Postmaster;
 
 /**
  * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
- * @author merayen
- *
  */
 class Supervisor {
 	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.LNode";

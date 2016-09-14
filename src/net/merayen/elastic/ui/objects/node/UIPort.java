@@ -41,10 +41,27 @@ public class UIPort extends UIObject {
 		port_drag.setHandler(new MouseHandler.Handler() {
 
 			@Override
+			public void onMouseOver() {
+				UIPortTemporary temp_port = getUINetObject().getTemporaryPort();
+				if(temp_port != null)
+					temp_port.target = self; // Set us as the current receiver of the line. If user drops the line here, we will be connected
+			}
+
+			@Override
+			public void onMouseOut() {
+				UIPortTemporary temp_port = getUINetObject().getTemporaryPort();
+				if(temp_port != null && temp_port.target == self)
+					temp_port.target = null;
+			}
+
+			@Override
 			public void onMouseUp(Point position) {
-				// Check with the Net-UIObject to see if a line is being drawn
-				UIPort source_port = getUINetObject().getDraggingPort(); // Retrieving the port, the port the line is being dragged from
-				if(source_port == null) return; // Not dragging a line from a port
+				/*// Check with the Net-UIObject to see if a line is being drawn
+				UIPort source_port = getUINetObject().getDraggingSourcePort(); // Retrieving the port, the port the line is being dragged from
+				UIPortTemporary temp_port = getUINetObject().getTemporaryPort(); // Retrieving the port, the port the line is being dragged from
+
+				if(source_port == null || temp_port == null) return; // Not connecting anything
+
 				if(!self.output) // Is input port, we do not allow multiple connections
 					getUINetObject().disconnectAll(self);
 
@@ -52,12 +69,13 @@ public class UIPort extends UIObject {
 					if(source_port.output)
 						return; // We do not allow connecting output ports together
 
-				dropDraggingPort(source_port);
+				dropDraggingPort(source_port);*/
 			}
 
 			@Override
-			public void onMouseDrop(Point start_point, Point offset) {
-				task_remove_port = 2; // Delay removal of port some frames
+			public void onMouseDrop(Point start_point, Point offset) { // Called on UIPortTemporary
+				tryConnect();
+				removeTempPort();
 			}
 
 			@Override
@@ -66,12 +84,11 @@ public class UIPort extends UIObject {
 			}
 
 			@Override
-			public void onMouseDown(Point position) {
-				// Create a new port and notifies the net
+			public void onMouseDown(Point position) { // Creates a UITemporaryPort that we drag from
 				if(!self.output) {// Input ports can only have 1 line connected
 					HashSet<UIPort> connected_ports = getUINetObject().getAllConnectedPorts(self);
 					if(connected_ports.size() > 0) {
-						getUINetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be upto 1 connected)
+						getUINetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be up to 1 connected)
 
 						// Reconnect temporary port from the port we were already connected to
 						for(UIPort p : connected_ports)
@@ -119,8 +136,12 @@ public class UIPort extends UIObject {
 	}
 
 	protected void onUpdate() {
-		if(task_remove_port > 0 && --task_remove_port == 0)
+		//if(task_remove_port > 0 && --task_remove_port == 0)
+		//	removeTempPort();
+		/*if(task_remove_port > 0) {
 			removeTempPort();
+			task_remove_port = 0;
+		}*/
 	}
 
 	public void node_setHandler(Handler handler) {
@@ -168,24 +189,21 @@ public class UIPort extends UIObject {
 		temp_port = null;
 	}
 
-	private void dropDraggingPort(UIPort port) {
-		if(port == (UIPort)temp_port) return;
-		if(port == this) return;
-		if(port.getParent() == getParent()) return;
+	private void tryConnect() {
+		UIPort source_port = getUINetObject().getDraggingSourcePort();
+		UIPortTemporary temp_port = getUINetObject().getTemporaryPort();
+		UIPort target_port = temp_port.target;
 
-		boolean ok = true;
-		if(handler != null)
-			ok = handler.onConnect((UIPort)port);
+		if(target_port != null) {
+			if(target_port == source_port) return;
+			if(target_port.getParent() == source_port.getParent()) return;
 
-		if(!ok)
-			return;
-
-		// If we are an input port, clear any line that is already connected to us (should only every be 1 line)
-		//if(this.getNetObject().get)
-		try {
-			getUINetObject().connect(this, (UIPort)port);
-		} catch (NetList.AlreadyConnected e) {
-			// Okido
+			// If we are an input port, clear any line that is already connected to us (should only be 1 line)
+			try {
+				getUINetObject().connect(source_port, target_port);
+			} catch (NetList.AlreadyConnected e) {
+				// Okido
+			}
 		}
 	}
 }

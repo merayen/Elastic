@@ -39,7 +39,7 @@ public final class NetList {
 			if(node_a == null || node_b == null)
 				throw new RuntimeException("Should not happen");
 
-			this.lines.add(new Line(node_a, line.port_a, node_b, line.port_b));
+			this.lines.add(new Line(getNode(node_a.id), line.port_a, getNode(node_b.id), line.port_b));
 		}
 	}
 

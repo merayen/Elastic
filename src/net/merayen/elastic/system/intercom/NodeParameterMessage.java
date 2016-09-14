@@ -3,9 +3,9 @@ package net.merayen.elastic.system.intercom;
 import net.merayen.elastic.util.Postmaster;
 
 /**
- * Sent from UI when wanting to change a node parameter.
- * Sent from backend when wanting to change a node paremeter.
- * The other party is always forwarded the message to be informed about the change.
+ * Sent from between UI, LogicNode and the backend.
+ * Parameters represents the state of nodes and is stored and is guaranteed to be loaded into every node.
+ * See NodeDataMessage() to send data that is not a part of the state of the Node.
  */
 public class NodeParameterMessage extends Postmaster.Message {
 	public final String node_id;

@@ -40,7 +40,7 @@ public class Executor extends AbstractExecutor {
 			supervisor.handleMessage(message);
 		}
 
-		System.out.printf("Executor got message %s\n", message.getClass().getName());
+		System.out.printf("Executor got message %s\n", message);
 	}
 
 	/**

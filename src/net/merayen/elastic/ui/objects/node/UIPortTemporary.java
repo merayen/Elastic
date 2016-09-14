@@ -1,5 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
+import net.merayen.elastic.ui.objects.top.Top;
+
 public class UIPortTemporary extends UIPort {
 	/*
 	 * This port is created when user starts to drag a line from a port.
@@ -7,6 +9,7 @@ public class UIPortTemporary extends UIPort {
 	 * Only to be used by UIPort internally!
 	 */
 	private UIPort source_port;
+	public UIPort target; // Set by the port which the port is hanging over
 
 	public UIPortTemporary() {
 		super("temporary_dragging_port", false);
@@ -22,5 +25,10 @@ public class UIPortTemporary extends UIPort {
 	public void removeTempPort() {
 		getUINetObject().removeLine(source_port, this);
 		getUINetObject().setDraggingPort(null, null);
+	}
+
+	@Override
+	public void onDraw() {
+		((Top)search.getTop()).debug.set("UIPortTemporary target", target);
 	}
 }
