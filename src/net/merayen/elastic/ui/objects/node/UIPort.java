@@ -50,20 +50,6 @@ public class UIPort extends UIObject {
 			public void onMouseUp(Point position) {
 				if(temp_port != null)
 					removeTempPort();
-				/*// Check with the Net-UIObject to see if a line is being drawn
-				UIPort source_port = getUINetObject().getDraggingSourcePort(); // Retrieving the port, the port the line is being dragged from
-				UIPortTemporary temp_port = getUINetObject().getTemporaryPort(); // Retrieving the port, the port the line is being dragged from
-
-				if(source_port == null || temp_port == null) return; // Not connecting anything
-
-				if(!self.output) // Is input port, we do not allow multiple connections
-					getUINetObject().disconnectAll(self);
-
-				if(self.output)
-					if(source_port.output)
-						return; // We do not allow connecting output ports together
-
-				dropDraggingPort(source_port);*/
 			}
 
 			@Override
@@ -127,15 +113,6 @@ public class UIPort extends UIObject {
 
 	protected void onEvent(net.merayen.elastic.ui.event.IEvent event) {
 		port_drag.handle(event);
-	}
-
-	protected void onUpdate() {
-		//if(task_remove_port > 0 && --task_remove_port == 0)
-		//	removeTempPort();
-		/*if(task_remove_port > 0) {
-			removeTempPort();
-			task_remove_port = 0;
-		}*/
 	}
 
 	public UINode getNode()  {
