@@ -10,17 +10,9 @@ import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.util.MouseHandler;
 
 public class UIPort extends UIObject {
-	public static abstract class Handler { // Only to be used by ui Node()!
-		public boolean onConnect(UIPort connecting_port) {return true;} // Port has been connected
-		public void onDisconnect() {} // A line has been removed from the port
-	}
-	private Handler handler;
-
 	public final static Color AUDIO_PORT = new Color(150, 200, 150);
 	public final static Color MIDI_PORT = new Color(200, 150, 100);
 	public final static Color AUX_PORT = new Color(150, 150, 150);
-
-	private int task_remove_port;
 
 	private MouseHandler port_drag;
 	public String title = "";
@@ -56,6 +48,8 @@ public class UIPort extends UIObject {
 
 			@Override
 			public void onMouseUp(Point position) {
+				if(temp_port != null)
+					removeTempPort();
 				/*// Check with the Net-UIObject to see if a line is being drawn
 				UIPort source_port = getUINetObject().getDraggingSourcePort(); // Retrieving the port, the port the line is being dragged from
 				UIPortTemporary temp_port = getUINetObject().getTemporaryPort(); // Retrieving the port, the port the line is being dragged from
@@ -144,13 +138,6 @@ public class UIPort extends UIObject {
 		}*/
 	}
 
-	public void node_setHandler(Handler handler) {
-		/*
-		 * Only to be set by Node()
-		 */
-		this.handler = handler;
-	}
-
 	public UINode getNode()  {
 		/*
 		 * Gets the UI-node that contains this port.
@@ -173,9 +160,13 @@ public class UIPort extends UIObject {
 	}*/
 
 	private void createTempPort(UIPort p) {
+		if(temp_port != null)
+			removeTempPort();
+
 		temp_port = new UIPortTemporary();
 		add(temp_port);
 		temp_port.addTempPort(p);
+		temp_port.target = this;
 	}
 
 	private void moveTempPort(Point position) { // Relative coordinates

@@ -61,23 +61,24 @@ public class MouseHandler {
 					handler_class.onMouseDown(p_relative);
 
 					drag_start = new net.merayen.elastic.ui.Point(p_relative);
-					handler_class.onMouseDrag(p_relative, new net.merayen.elastic.ui.Point(0, 0));
+					//handler_class.onMouseDrag(p_relative, new net.merayen.elastic.ui.Point(0, 0));
 				} else {
 					handler_class.onMouseOutsideDown(p_absolute);
 				}
 			}
 			else if(e.action == MouseEvent.action_type.UP) {
-				if(hit)
-					handler_class.onMouseUp(p_relative);
-					if(mouse_down)
-						handler_class.onMouseClick(p_relative);
-
-				handler_class.onGlobalMouseUp(p_absolute);
-
 				if(mouse_dragging && mouse_down) {
 					mouse_dragging = false;
 					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.ui.Point(p_relative.x - drag_start.x, p_relative.y - drag_start.y));
 				}
+
+				if(hit) {
+					handler_class.onMouseUp(p_relative);
+					if(mouse_down)
+						handler_class.onMouseClick(p_relative);
+				}
+
+				handler_class.onGlobalMouseUp(p_absolute);
 
 				mouse_down = false;
 			}
