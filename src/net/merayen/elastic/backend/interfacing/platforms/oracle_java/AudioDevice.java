@@ -29,4 +29,14 @@ public class AudioDevice extends AbstractAudioDevice {
 	public int getBalance() {
 		return 0; // TODO
 	}
+
+	@Override
+	public void write(float[][] audio) {
+
+	}
+
+	@Override
+	public void read(float[][] output_audio) {
+
+	}
 }
