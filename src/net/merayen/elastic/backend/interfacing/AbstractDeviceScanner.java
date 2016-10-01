@@ -49,4 +49,8 @@ public abstract class AbstractDeviceScanner {
 
 		handler.onDeviceRemoved(device);
 	}
+
+	public Map<String, AbstractDevice> getDevices() {
+		return new HashMap<>(devices);
+	}
 }
