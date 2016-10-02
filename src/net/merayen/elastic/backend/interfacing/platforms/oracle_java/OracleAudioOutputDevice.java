@@ -42,6 +42,9 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public int getBalance() {
+		AudioOutputDevice.Configuration c = (Configuration)configuration;
+
+		//return (line.getBufferSize() - line.available() - line.) / (c.depth / 8) / c.channels;
 		return 0;
 	}
 
@@ -80,6 +83,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	protected void onStop() {
+		line.drain();
 		if(line.isActive())
 			line.stop();
 	}

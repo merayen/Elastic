@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.interfacing;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Different platforms has different backends.
@@ -21,7 +21,7 @@ public abstract class AbstractDeviceScanner {
 		public void onDeviceRemoved(AbstractDevice device);
 	}
 
-	private final Map<String, AbstractDevice> devices = new HashMap<>();
+	private final List<AbstractDevice> devices = new ArrayList<>();
 	private final Handler handler;
 
 	protected AbstractDeviceScanner(Handler handler) {
@@ -29,19 +29,19 @@ public abstract class AbstractDeviceScanner {
 	}
 
 	protected void addDevice(AbstractDevice device) {
-		if(devices.containsKey(device.id))
+		if(getDevice(device.id) != null)
 			throw new RuntimeException("Device already registered: Buggy platform scanner");
 
-		devices.put(device.id, device);
+		devices.add(device);
 
 		handler.onDeviceAdded(device);
 	}
 
 	protected void removeDevice(String id) {
-		if(!devices.containsKey(id))
-			throw new RuntimeException("Device not registered: Buggy platform scanner");
+		AbstractDevice device = getDevice(id);
 
-		AbstractDevice device = devices.get(id);
+		if(device == null)
+			throw new RuntimeException("Device not registered: Buggy platform scanner");
 
 		device.kill();
 
@@ -50,7 +50,15 @@ public abstract class AbstractDeviceScanner {
 		handler.onDeviceRemoved(device);
 	}
 
-	public Map<String, AbstractDevice> getDevices() {
-		return new HashMap<>(devices);
+	public List<AbstractDevice> getDevices() {
+		return new ArrayList<>(devices);
+	}
+
+	public AbstractDevice getDevice(String id) {
+		for(AbstractDevice ad : devices)
+			if(ad.id.equals(id))
+				return ad;
+
+		return null;
 	}
 }

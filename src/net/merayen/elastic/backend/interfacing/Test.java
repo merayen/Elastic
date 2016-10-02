@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.interfacing;
 
-import java.util.Map;
-
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 
 public class Test {
@@ -19,29 +17,22 @@ public class Test {
 			}
 		});
 
-		Map<String, AbstractDevice> devices = ads.getDevices();
-		for(AbstractDevice ad : devices.values()) {
+		for(AbstractDevice ad : ads.getDevices()) {
 			if(ad instanceof AudioOutputDevice) {
-				System.out.println(ad);
+				System.out.println(ad.getID());
 				AudioOutputDevice aod = (AudioOutputDevice)ad;
-				aod.configure(44100, 2, 16);
+				aod.configure(44100, 4, 16);
 				ad.begin();
 
-				aod.write(makeSound(44100, 3, new float[]{1000, 1005}, 0.1f));
+				aod.write(makeSound(44100, 1f, new float[]{1000, 1001, 1002, 1003}, 0.1f));
 
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				ad.stop();
+				aod.stop();
 			}
 		}
 	}
 
-	private static float[] makeSound(int sampleRate, int seconds, float[] frequencies, float amplitude) { // For debugging only
-		float[] out = new float[sampleRate * seconds * frequencies.length];
+	private static float[] makeSound(int sampleRate, float seconds, float[] frequencies, float amplitude) { // For debugging only
+		float[] out = new float[(int)(sampleRate * seconds * frequencies.length)];
 
 		for(byte channel = 0; channel < frequencies.length; channel++) {
 			for(int i = 0; i < sampleRate * seconds; i++)

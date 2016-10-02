@@ -40,6 +40,10 @@ public abstract class AbstractDevice {
 		this.vendor = vendor;
 	}
 
+	public String getID() {
+		return id;
+	}
+
 	/**
 	 * Called by the device scanner to indicate that this devices has been disconnected.
 	 * A new DeviceDescriptor must be created if the device gets connected/available again!
