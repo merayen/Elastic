@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.interfacing;
 
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 
 public class Test {
@@ -19,7 +21,11 @@ public class Test {
 
 		for(AbstractDevice ad : ads.getDevices()) {
 			if(ad instanceof AudioOutputDevice) {
-				System.out.println(ad.getID());
+				System.out.println("OUTPUT: " + ad.getID());
+
+				//for(AbstractDevice.Configuration c : ad.getAvailableConfigurations())
+				//	System.out.println(((AudioDevice.Configuration)c).getDescription());*/
+
 				AudioOutputDevice aod = (AudioOutputDevice)ad;
 				aod.configure(44100, 4, 16);
 				ad.begin();
@@ -27,6 +33,12 @@ public class Test {
 				aod.write(makeSound(44100, 1f, new float[]{1000, 1001, 1002, 1003}, 0.1f));
 
 				aod.stop();
+
+			} else if(ad instanceof AudioInputDevice) {
+				System.out.println("INPUT: " + ad.getID());
+
+				//for(AbstractDevice.Configuration c : ad.getAvailableConfigurations())
+				//	System.out.println(((AudioDevice.Configuration)c).getDescription());
 			}
 		}
 	}

@@ -1,5 +1,9 @@
 package net.merayen.elastic.backend.interfacing;
 
+import java.util.List;
+
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
+
 /**
  * Represents a hardware device, like a audio interface, midi keyboard etc.
  */
@@ -24,6 +28,11 @@ public abstract class AbstractDevice {
 	protected abstract void onStop();
 
 	protected abstract void onKill();
+
+	/**
+	 * Returns all the available configurations this device supports
+	 */
+	public abstract List<Configuration> getAvailableConfigurations();
 
 	/**
 	 * For inputs:

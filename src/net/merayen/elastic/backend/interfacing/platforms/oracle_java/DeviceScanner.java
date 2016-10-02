@@ -9,6 +9,8 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 
 /**

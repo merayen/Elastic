@@ -1,12 +1,19 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
+import net.merayen.elastic.backend.interfacing.AbstractDevice;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 
 /**
@@ -14,6 +21,7 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
  */
 public class OracleAudioOutputDevice extends AudioOutputDevice {
 	private final SourceDataLine line;
+
 	private byte[] buffer = new byte[0];
 
 	public OracleAudioOutputDevice(Mixer mixer, SourceDataLine line) {
@@ -91,5 +99,17 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	@Override
 	protected void onKill() {
 		line.close();
+	}
+
+	@Override
+	public List<AbstractDevice.Configuration> getAvailableConfigurations() {
+		List<AbstractDevice.Configuration> result = new ArrayList<>();
+
+		DataLine.Info omg = ((DataLine.Info)line.getLineInfo());
+		for(AudioFormat af : omg.getFormats())
+			if(af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED && af.isBigEndian()) // Only support PCM_SIGNED and big-endianness for now
+			result.add(new AudioDevice.Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
+
+		return result;
 	}
 }

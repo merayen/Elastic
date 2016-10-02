@@ -1,9 +1,6 @@
 package net.merayen.elastic.backend.interfacing.devicetypes;
 
-import net.merayen.elastic.backend.interfacing.AbstractDevice;
-
-public abstract class AudioInputDevice extends AbstractDevice {
-
+public abstract class AudioInputDevice extends AudioDevice {
 	public AudioInputDevice(String id, String description, String vendor) {
 		super(id, description, vendor);
 	}

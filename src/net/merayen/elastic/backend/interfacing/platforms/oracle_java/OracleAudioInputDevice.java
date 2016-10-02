@@ -1,10 +1,16 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 
 /**
@@ -14,7 +20,7 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 	private final TargetDataLine line;
 
 	public OracleAudioInputDevice(Mixer mixer, TargetDataLine line) {
-		super("oracle_java:" + line, "Lalala", mixer.getMixerInfo().getVendor());
+		super("oracle_java:" + mixer.getMixerInfo().getVendor() + "/" + mixer.getMixerInfo().getName(), "Lalala", mixer.getMixerInfo().getVendor());
 		this.line = line;
 	}
 
@@ -43,5 +49,17 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 	protected void onKill() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<AbstractDevice.Configuration> getAvailableConfigurations() {
+		List<AbstractDevice.Configuration> result = new ArrayList<>();
+
+		DataLine.Info omg = ((DataLine.Info)line.getLineInfo());
+		for(AudioFormat af : omg.getFormats())
+			if(af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED && af.isBigEndian()) // Only support PCM_SIGNED and big-endianness for now
+				result.add(new AudioDevice.Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
+
+		return result;
 	}
 }

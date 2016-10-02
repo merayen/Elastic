@@ -12,7 +12,7 @@ public class Swing implements Surface {
 	 */	
 	public class LolFrame extends javax.swing.JFrame implements java.awt.event.ActionListener {
 		private Runnable close_function;
-		public final javax.swing.Timer timer = new javax.swing.Timer(1000/10, this);
+		public final javax.swing.Timer timer = new javax.swing.Timer(1000/60, this);
 
 		public LolFrame(Runnable close_function) {
 			this.close_function = close_function;
@@ -35,7 +35,7 @@ public class Swing implements Surface {
 			});
 
 			setTitle("Elastic");
-			setSize(1500, 300);
+			setSize(1000, 1000);
 			setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 			setVisible(true);
 		}
