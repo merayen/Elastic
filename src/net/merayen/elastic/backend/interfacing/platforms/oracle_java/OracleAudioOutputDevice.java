@@ -15,6 +15,7 @@ import javax.sound.sampled.SourceDataLine;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
+import net.merayen.elastic.backend.util.AudioUtil;
 
 /**
  * Wrapper for Oracle Java implementation of an audio device.
@@ -87,6 +88,13 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		convertToBytes(audio, buffer, c.channels, c.depth);
 
 		line.write(buffer, 0, buffer.length);
+	}
+
+	@Override
+	public void onWrite(float[][] audio) {
+		float[] output = new float[audio[0].length * ((AudioDevice.Configuration)configuration).channels];
+		AudioUtil.mergeChannels(audio, output, audio[0].length, ((AudioDevice.Configuration)configuration).channels);
+		onWrite(output);
 	}
 
 	@Override

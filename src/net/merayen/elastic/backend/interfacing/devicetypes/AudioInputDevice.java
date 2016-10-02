@@ -4,4 +4,9 @@ public abstract class AudioInputDevice extends AudioDevice {
 	public AudioInputDevice(String id, String description, String vendor) {
 		super(id, description, vendor);
 	}
+
+	@Override
+	public boolean isOutput() {
+		return false;
+	}
 }

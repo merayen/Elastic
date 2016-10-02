@@ -14,6 +14,6 @@ public abstract class DataType {
 		else if(device instanceof AudioOutputDevice)
 			return Audio.mix(samples, data);
 
-		throw new RuntimeException("Forgotten to implement support for this DataType?");
+		throw new RuntimeException("Forgotten to implement support for " + device.getClass().getSimpleName() + " DataType?");
 	}
 }

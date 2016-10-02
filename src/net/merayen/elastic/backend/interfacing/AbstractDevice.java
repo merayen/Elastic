@@ -43,6 +43,8 @@ public abstract class AbstractDevice {
 	 */
 	public abstract int getBalance();
 
+	public abstract boolean isOutput();
+
 	public AbstractDevice(String id, String description, String vendor) {
 		this.id = id;
 		this.description = description;

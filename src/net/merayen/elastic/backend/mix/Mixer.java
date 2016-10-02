@@ -8,8 +8,10 @@ import java.util.Map;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
 import net.merayen.elastic.backend.interfacing.Platform;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
+import net.merayen.elastic.backend.mix.datatypes.Audio;
 import net.merayen.elastic.backend.mix.datatypes.DataType;
 
 /**
@@ -25,10 +27,8 @@ public class Mixer {
 
 	// Default mixer settings. These will be applied on all input and output devices, if possible
 	private int sample_rate = 44100;
+	private int audio_channels = 1;
 	private int audio_depth = 16;
-	private boolean configuration_dirty;
-
-	private int channel_count; // Current count of channels detected from 
 
 	private final AbstractDeviceScanner device_scanner;
 	private final Map<String, List<DataType>> output_buffer = new HashMap<>(); // Format: Map<device_id, List<DataType to be mixed>>
@@ -39,24 +39,40 @@ public class Mixer {
 
 			@Override
 			public void onDeviceRemoved(AbstractDevice device) {
-				synchronized (output_buffer) {
-					output_buffer.remove(device.id);
+				if(device.isOutput()) {
+					synchronized (output_buffer) {
+						output_buffer.remove(device.id);
+					}
+				} else {
+					synchronized (input_buffer) {
+						input_buffer.remove(device.id);
+					}
 				}
 			}
 
 			@Override
 			public void onDeviceAdded(AbstractDevice device) {
-				synchronized (output_buffer) {
-					output_buffer.put(device.id, new ArrayList<>());
+				if(device.isOutput()) {
+					synchronized (output_buffer) {
+						output_buffer.put(device.id, new ArrayList<>());
+					}
+				} else {
+					synchronized (input_buffer) {
+						input_buffer.remove(device.id);
+					}
 				}
 			}
 		});
+
+		reconfigure();
 	}
 
-	public void reconfigure(int sample_rate, int depth) {
+	public void reconfigure(int sample_rate, int channels, int depth) {
 		this.sample_rate = sample_rate;
+		this.audio_channels = channels;
 		this.audio_depth = depth;
-		this.configuration_dirty = true;
+
+		reconfigure();
 	}
 
 	/**
@@ -65,9 +81,13 @@ public class Mixer {
 	private void reconfigure() {
 		for(AbstractDevice device : device_scanner.getDevices())
 			if(device instanceof AudioOutputDevice)
-				((AudioOutputDevice)device).configure(sample_rate, Math.max(1, channel_count), audio_depth);
+				((AudioOutputDevice)device).configure(sample_rate, audio_channels, audio_depth);
 			else if(device instanceof AudioInputDevice)
-				((AudioInputDevice)device).configure(sample_rate, Math.max(1, channel_count), audio_depth);
+				((AudioInputDevice)device).configure(sample_rate, audio_channels, audio_depth);
+	}
+
+	public List<AbstractDevice> getAvailableDevices() {
+		return device_scanner.getDevices();
 	}
 
 	public void send(String device_id, DataType data) {
@@ -78,6 +98,13 @@ public class Mixer {
 
 		synchronized(output_buffer) {
 			output_buffer.get(device_id).add(data);
+		}
+	}
+
+	public void stop() {
+		for(AbstractDevice device : device_scanner.getDevices()) {
+			if(device.isRunning())
+				device.stop();
 		}
 	}
 
@@ -96,7 +123,7 @@ public class Mixer {
 	 * @param samples How many samples to output and to read from input
 	 */
 	public void dispatch(int samples) {
-		DataType[] outgoing = mixOutgoing(samples);
+		sendToDevices(mixOutgoing(samples));
 
 		// Clear buffer
 		synchronized(output_buffer) {
@@ -112,18 +139,28 @@ public class Mixer {
 		// TODO
 	}
 
-	private DataType[] mixOutgoing(int samples) {
-		DataType[] out;
+	private Map<AbstractDevice, DataType> mixOutgoing(int samples) {
+		Map<AbstractDevice, DataType> out = new HashMap<>();
 
 		synchronized(output_buffer) {
-			out = new DataType[output_buffer.size()];
-
-			int i = 0;
 			for(Map.Entry<String, List<DataType>> o : output_buffer.entrySet()) {
-				out[i++] = DataType.mix(samples, device_scanner.getDevice(o.getKey()), o.getValue());
+
+				if(o.getValue().size() > 0) {
+					AbstractDevice device = device_scanner.getDevice(o.getKey());
+					out.put(device, DataType.mix(samples, device, o.getValue()));
+				}
 			}
 		}
 
 		return out;
+	}
+
+	private void sendToDevices(Map<AbstractDevice, DataType> data) {
+		for(Map.Entry<AbstractDevice, DataType> o : data.entrySet()) {
+			if(!o.getKey().isRunning())
+				o.getKey().begin();
+
+			((AudioOutputDevice)o.getKey()).write(((Audio)o.getValue()).audio);
+		}
 	}
 }

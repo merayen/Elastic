@@ -16,12 +16,18 @@ public class Audio extends DataType {
 		for(DataType a : audio)
 			channels = Math.max(channels, ((Audio)a).audio.length);
 
+		// Error checking
+		for(DataType d : audio)
+			for(float[] f : ((Audio)d).audio)
+				if(f.length != samples)
+					throw new RuntimeException(String.format("Expected %d samples, but got %d samples in one of the channels in one of the Audio-objects", samples, f.length));
+
 		float[][] out = new float[channels][samples];
 
 		for(DataType o : audio) {
 			Audio a = (Audio)o;
-			for(int channel_no = 0; channel_no < a.audio.length; channel_no++)
-				for(int i = 0; i < a.audio[channel_no].length; i++)
+			for(int channel_no = 0; channel_no < channels; channel_no++)
+				for(int i = 0; i < samples; i++)
 					out[channel_no][i] += a.audio[channel_no][i] / 10f; // Divides by 10 to get some headroom
 		}
 
