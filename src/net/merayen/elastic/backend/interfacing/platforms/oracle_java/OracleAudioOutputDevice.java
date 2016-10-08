@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
@@ -13,7 +12,6 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.util.AudioUtil;
 
@@ -40,10 +38,10 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	protected void onBegin() {
-		AudioOutputDevice.Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)configuration;
 
 		try {
-			line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true));
+			line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), 1024);
 		} catch (LineUnavailableException e) {
 			throw new RuntimeException("Can not open audio output line with current configuration");
 		}
@@ -51,7 +49,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public int getBalance() {
-		AudioOutputDevice.Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)configuration;
 
 		//return (line.getBufferSize() - line.available() - line.) / (c.depth / 8) / c.channels;
 		return 0;
@@ -77,7 +75,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public void onWrite(float[] audio) {
-		AudioOutputDevice.Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)configuration;
 
 		if(!line.isActive())
 			line.start();
@@ -92,9 +90,16 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public void onWrite(float[][] audio) {
-		float[] output = new float[audio[0].length * ((AudioDevice.Configuration)configuration).channels];
-		AudioUtil.mergeChannels(audio, output, audio[0].length, ((AudioDevice.Configuration)configuration).channels);
+		float[] output = new float[audio[0].length * ((Configuration)configuration).channels];
+		AudioUtil.mergeChannels(audio, output, audio[0].length, ((Configuration)configuration).channels);
 		onWrite(output);
+	}
+
+	public void directWrite(byte[] audio) {
+		if(!line.isActive())
+			line.start();
+
+		line.write(audio, 0, audio.length);
 	}
 
 	@Override
@@ -116,7 +121,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		DataLine.Info omg = ((DataLine.Info)line.getLineInfo());
 		for(AudioFormat af : omg.getFormats())
 			if(af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED && af.isBigEndian()) // Only support PCM_SIGNED and big-endianness for now
-			result.add(new AudioDevice.Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
+			result.add(new Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
 
 		return result;
 	}

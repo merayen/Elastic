@@ -8,7 +8,7 @@ public abstract class AudioOutputDevice extends AudioDevice {
 	public abstract void onWrite(float[] audio);
 	public abstract void onWrite(float[][] audio);
 
-	public void write(float[] audio) {
+	public final void write(float[] audio) {
 		if(!isRunning())
 			throw new RuntimeException("Can not write audio to device: Not running");
 
@@ -18,7 +18,7 @@ public abstract class AudioOutputDevice extends AudioDevice {
 		onWrite(audio);
 	}
 
-	public void write(float[][] audio) {
+	public final void write(float[][] audio) {
 		if(!isRunning())
 			throw new RuntimeException("Can not write audio to device: Not running");
 
@@ -32,7 +32,7 @@ public abstract class AudioOutputDevice extends AudioDevice {
 	}
 
 	@Override
-	public boolean isOutput() {
+	public final boolean isOutput() {
 		return true;
 	}
 }
