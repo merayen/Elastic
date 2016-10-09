@@ -13,6 +13,7 @@ import javax.sound.sampled.SourceDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
 import net.merayen.elastic.backend.util.AudioUtil;
 
 /**
@@ -48,11 +49,10 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	}
 
 	@Override
-	public int getBalance() {
-		Configuration c = (Configuration)configuration;
-
-		//return (line.getBufferSize() - line.available() - line.) / (c.depth / 8) / c.channels;
-		return 0;
+	public int available() {
+		//Configuration c = (Configuration)configuration;
+		//return (line.available()/* - line.getBufferSize()*/) / c.channels / (c.depth / 8);
+		return line.getBufferSize() - line.available();
 	}
 
 	private void convertToBytes(float[] audio, byte[] out, int channels, int depth) {

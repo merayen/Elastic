@@ -41,7 +41,7 @@ public abstract class AbstractDevice {
 	 * For outputs:
 	 * Return how many samples we have that are waiting to be sent. If it is 0 or a negative number, we might have stuttering
 	 */
-	public abstract int getBalance();
+	public abstract int available();
 
 	public abstract boolean isOutput();
 

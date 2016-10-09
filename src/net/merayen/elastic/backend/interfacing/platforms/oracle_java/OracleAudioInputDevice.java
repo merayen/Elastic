@@ -38,9 +38,11 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 	}
 
 	@Override
-	public int getBalance() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int available() {
+		return /*line.getBufferSize() - */line.available();
+		//Configuration c = (Configuration)configuration;
+		//return line.available() / c.channels / (c.depth / 8);
+		//return (line.available() - line.getBufferSize()) / c.channels / (c.depth / 8);
 	}
 
 	@Override
@@ -80,7 +82,8 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 		int read = line.read(buffer, 0, buffer.length);
 
 		if(read != audio.length * c.channels * c.depth / 8)
-			System.out.println("Nope: " + read);
+			//System.out.println("Nope: " + read);
+			throw new RuntimeException("Nope");
 
 		/*for(byte b : buffer)
 			if(b != 0)
