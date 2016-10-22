@@ -65,10 +65,14 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 		for(byte channel = 0; channel < channels; channel++) {
 			for(int i = 0; i < sample_count; i++) {
-				long v = (long)(audio[i * channels + channel] * Math.pow(2, depth));
+				float u = audio[i * channels + channel] * 0.4f;
+				if(u > 0.4f) u = 0.4f;
+				else if(u < -0.4f) u = -0.4f;
+				//long v = (long)(audio[i * channels + channel] * Math.pow(2, depth));
+				long v = (long)(u * Math.pow(2, depth));
 
 				for(int j = 0; j < bytes_depth; j++)
-					out[channel * bytes_depth + i * frame_size + j] = (byte)((v >> (bytes_depth - j - 1) * 8));
+					out[channel * bytes_depth + i * frame_size + j] = (byte)((v >> (bytes_depth - j - 1) * 8)); // Flawed. Problems with signs?
 			}
 		}
 	}

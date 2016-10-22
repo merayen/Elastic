@@ -81,6 +81,8 @@ public class Test {
 			}
 		}
 
+		System.out.println("TEST: " + (1 & 0x7F));
+
 		aod.configure(48000, 1, 16);
 		aod.begin();
 
@@ -104,24 +106,29 @@ public class Test {
 		System.out.println("INPUT data available now: " + aid.available());
 
 		//byte[] silence = new byte[]{-50,50,50,50,50,-50,-50,-50,-50,-50,50,50,50,50,50,-50,-50,-50,-50,-50,50,50,50,50,50,-50,-50,-50,-50,-50,50,50};
-		byte[] silence = new byte[1024];
+		//byte[] silence = new byte[1024];
 		float[] audio = new float[512];
 		byte[] directAudio = new byte[512*2];
 		int bal = 0;
 		int tx = 0, rx = 0;
 		long i = 0;
-		while(i++ > -1) {
-			((OracleAudioInputDevice)aid).directRead(directAudio);
-			rx += directAudio.length;
-			/*double min = Double.MAX_VALUE, max = Double.MIN_VALUE;
+		double dc2 = 0;
+		while(i++ < 100) {
+			aid.read(audio);
+			rx += audio.length;
+			//((OracleAudioInputDevice)aid).directRead(directAudio);
+			//rx += directAudio.length;
+			double min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
 			double dc = 0;
 			for(float f : audio) {
 				min = Math.min(f, min);
 				max = Math.max(f, max);
 				dc += f;
+				dc2 += f;
 			}
 
-			System.out.println(min + "\t" + max + "\t\tDC: " + dc);*/
+			vu(-min, max);
+			System.out.printf("%.4f\t%.4f\tDC=%.4f, DC2=%.4f\n", min, max, dc, dc2);
 
 			/*int leftover = aid.getBalance();
 			if(leftover > 32) {
@@ -134,8 +141,10 @@ public class Test {
 				//tx += silence.length;
 			}*/
 
-			((OracleAudioOutputDevice)aod).directWrite(directAudio);
-			tx += directAudio.length;
+			aod.write(audio);
+			tx += audio.length;
+			//((OracleAudioOutputDevice)aod).directWrite(directAudio);
+			//tx += directAudio.length;
 
 			/*try {
 				Thread.sleep(1);
@@ -143,11 +152,14 @@ public class Test {
 				break;
 			}*/
 
-			if(i % 100 == 0) {
+			/*if(i % 100 == 0) {
 				System.out.printf("Rx=%dk, Tx=%dk, balance=%d\n", rx / 1000, tx / 1000, tx - rx);
 				rx = tx = 0;
-			}
+			}*/
 		}
+
+		aid.kill();
+		aod.kill();
 	}
 
 	private static void testNoe() {
@@ -164,5 +176,18 @@ public class Test {
 					throw new RuntimeException("nei");
 			}
 		}
+	}
+
+	private static void vu(double min, double max) {
+		final float width = 50;
+		for(int i = 0; i < width; i++)
+			System.out.print(i / width < 1 - min ? " " : "=");
+
+		System.out.print(" | ");
+
+		for(int i = 0; i < width; i++)
+			System.out.print(i / width <= max ? "=" : " ");
+
+		System.out.print("|");
 	}
 }

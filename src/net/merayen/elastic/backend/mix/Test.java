@@ -21,12 +21,12 @@ public class Test {
 		mixer.reconfigure(44100, 2, 16);
 
 		mixer.send(output_device, new Audio(new float[][]{
-			SoundTest.makeSound(44100, 20f, new float[]{1000}, 1f),
-			SoundTest.makeSound(44100, 20f, new float[]{1005}, 1f),
-			SoundTest.makeSound(44100, 20f, new float[]{5008}, 1f),
-			SoundTest.makeSound(44100, 20f, new float[]{2010}, 1f)
+			SoundTest.makeSound(44100, 2f, new float[]{1000}, 1f),
+			SoundTest.makeSound(44100, 2f, new float[]{1005}, 1f),
+			SoundTest.makeSound(44100, 2f, new float[]{5008}, 1f),
+			SoundTest.makeSound(44100, 2f, new float[]{2010}, 1f)
 		}));
-		mixer.dispatch(44100 * 20);
+		mixer.dispatch(44100 * 2);
 		mixer.stop();
 	}
 }

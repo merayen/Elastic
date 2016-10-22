@@ -12,7 +12,6 @@ import javax.sound.sampled.TargetDataLine;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
 
 /**
  * Wrapper for Oracle Java implementation of an audio device.
@@ -53,8 +52,7 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 
 	@Override
 	protected void onKill() {
-		// TODO Auto-generated method stub
-		
+		line.close();
 	}
 
 	@Override
@@ -102,6 +100,9 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 	private void convertToFloat(byte[] in, float[] out) {
 		Configuration c = (Configuration)configuration;
 
+		if(c.depth != 16)
+			throw new RuntimeException("Does not support anything else than 16 bit input audio now");
+
 		int bytes_depth = c.depth / 8;
 		double div = Math.pow(2, c.depth);
 
@@ -116,10 +117,12 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 			//for(int j = 0; j < bytes_depth; j++)
 			//	d |= (in[bytes_depth * i + j]/* & 0xFF*/) << (bytes_depth * 8 - j * 8 - 8);
 
-			d |= (long)in[bytes_depth * i]) << 8;
+			//d |= (long)in[bytes_depth * i]) << 8;
 
-			out[i] = (float)(d / div);
+			//out[i] = (float)(d / div);
 			//out[i] = ((long)in[bytes_depth * i] & 0xFF) * 10000 + ((long)in[bytes_depth * i + 1] & 0xFF);//(float)(d / div/* - div / 2*/);
+
+			out[i] = (float)(((in[bytes_depth * i] * Math.pow(2, 8)) + ((int)in[bytes_depth * i + 1] & 0xFF)) / (div / 2)); // This is wrong. has DC offset
 		}
 	}
 }

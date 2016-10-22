@@ -2,8 +2,6 @@ package net.merayen.elastic.backend.interfacing;
 
 import java.util.List;
 
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
-
 /**
  * Represents a hardware device, like a audio interface, midi keyboard etc.
  */
@@ -58,8 +56,9 @@ public abstract class AbstractDevice {
 	/**
 	 * Called by the device scanner to indicate that this devices has been disconnected.
 	 * A new DeviceDescriptor must be created if the device gets connected/available again!
+	 * Should most likely not be called manually, unless testing.
 	 */
-	void kill() {
+	public void kill() {
 		if(running)
 			stop();
 
