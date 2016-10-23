@@ -6,7 +6,6 @@ import net.merayen.elastic.backend.nodes.LogicNodeList;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
-import net.merayen.elastic.system.intercom.CreateNodePortMessage;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.NodeConnectMessage;
 import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
@@ -61,7 +60,7 @@ class MessageHandler {
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
-			logicnode_list.createNode(m.name, m.version);
+			logicnode_list.createNode(m.name, m.version); // 
 		}
 
 		else if(message instanceof NodeConnectMessage) {
@@ -82,9 +81,10 @@ class MessageHandler {
 			if(!output_b && netlist.getConnections(netlist.getNode(m.node_b), m.port_b).size() > 0)
 				return; // Input ports can only have 1 line connected
 
-			netlist.connect(m.node_a, m.port_a, m.node_b, m.port_b);
+			NetListMessages.apply(netlist, message);
+
 			logicnode_list.handleMessageFromUI(message);
-			dispatch.executeMessage(message);
+			dispatch.executeMessage(message); // Notify the architecture too
 			from_backend.send(message); // Send back to UI to acknowledge connect
 		}
 

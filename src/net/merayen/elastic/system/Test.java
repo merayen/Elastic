@@ -15,7 +15,7 @@ public class Test {
 
 	private ElasticSystem system;
 
-	public Test() {
+	private Test() {
 		system = new ElasticSystem();
 
 		try {

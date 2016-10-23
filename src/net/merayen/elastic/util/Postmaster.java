@@ -1,6 +1,7 @@
 package net.merayen.elastic.util;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 /**
  * Queues events from the backend to the UI.
@@ -22,7 +23,7 @@ public class Postmaster {
 		}
 	}
 
-	private ConcurrentLinkedQueue<Message> queue = new ConcurrentLinkedQueue<>();
+	private ArrayDeque<Message> queue = new ArrayDeque<>();
 
 	public void send(Message message) {
 		if(System.currentTimeMillis() % 10 == 0)
@@ -31,22 +32,37 @@ public class Postmaster {
 		if(queue.size() >= 1000)
 			System.out.println("Postmaster is scarily flooded");
 
-		queue.add(message);
+		synchronized (queue) {
+			queue.add(message);
+		}
+	}
+
+	public void send(Collection<Message> messages) {
+		synchronized (queue) {
+			queue.addAll(messages);
+		}
 	}
 
 	public Message receive() {
 		clean(); // Bad, if many messages in queue?
-		return queue.poll();
+
+		synchronized (queue) {
+			return queue.poll();
+		}
 	}
 
 	public void clear() {
-		queue.clear();
+		synchronized (queue) {
+			queue.clear();
+		}
 	}
 
 	private void clean() {
-		long t = System.currentTimeMillis();
-		for(Message o : queue)
-			if(o.timeout < t)
-				queue.remove(o);
+		synchronized (queue) {
+			long t = System.currentTimeMillis();
+			for(Message o : queue)
+				if(o.timeout < t)
+					queue.remove(o);
+		}
 	}
 }
