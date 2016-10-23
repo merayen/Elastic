@@ -30,9 +30,9 @@ public final class NetList {
 			Node node_b = null;
 
 			for(Node node : this.nodes) {
-				if(node.equals(line.node_a))
+				if(node.id.equals(line.node_a.id))
 					node_a = node;
-				if(node.equals(line.node_b))
+				if(node.id.equals(line.node_b.id))
 					node_b = node;
 			}
 
