@@ -38,6 +38,7 @@ public class NodeProperties {
 		 * Both input- and output-ports.
 		 * Modify the returned Set to make changes.
 		 */
+		@SuppressWarnings("unchecked")
 		public Set<Integer> getPortChainIds(Port port) {
 			if(port.properties.get("analyzer.chain_ids") == null)
 				port.properties.put("analyzer.chain_ids", new HashSet<Integer>());

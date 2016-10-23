@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.analyzer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,7 +89,13 @@ class ChainAnalyzer {
 	 * Lays out all the chain_ids on source-ports.
 	 */
 	private void chainifySources() {
-		for(Node node : netlist.getNodes()) {
+		Node[] nodes = (Node[])netlist.getNodes().toArray(new Node[0]);
+
+		// We sort so that the chain_id_counter is somewhat predictable between several runs.
+		// This is only for Test.java, so that it knows which chain_id the specific nodes has gotten.
+		Arrays.sort(nodes, (a,b) -> a.getID().compareTo(b.getID()));
+
+		for(Node node : nodes) {
 			Map<String, Integer> idents = new HashMap<>(); // Port-idents for this node
 
 			for(String port_name : properties.getOutputPorts(node)) {
@@ -119,7 +126,17 @@ class ChainAnalyzer {
 			}
 		}
 
-		// TODO set all other ports to be chain_id=0, as they will be main-session
+		// Assign all ports that have connections that do not have any chains, to the "main" chain 0.
+		for(Node node : netlist.getNodes()) {
+			for(String port_name : netlist.getPorts(node)) {
+				if(!netlist.getConnections(node, port_name).isEmpty()) {
+					Port port = netlist.getPort(node, port_name);
+					Set<Integer> chain_ids = properties.analyzer.getPortChainIds(port);
+					if(chain_ids.isEmpty())
+						chain_ids.add(0);
+				}
+			}
+		}
 	}
 
 	/**
@@ -158,22 +175,28 @@ class ChainAnalyzer {
 
 			List<Line> lines = netlist.getConnections(node, port_name);
 
+			if(node == netlist.getNode("adsr_tail2"))
+				System.console();
+
 			// Add all connected ports we should check
 			for(Line line : lines) {
 				Port port_a = netlist.getPort(line.node_a, line.port_a);
 				Port port_b = netlist.getPort(line.node_b, line.port_b);
 
-				result.add(port_a);
-				result.add(port_b);
+				if(!properties.isOutput(port_a) || properties.getPortChainIdent(port_a) == null) // active output-ports can *not* have chains spread through them!
+					result.add(port_a);
 
-				if(!ports_traversed.contains(netlist.getPort(line.node_a, line.port_a)))
+				if(!properties.isOutput(port_b) || properties.getPortChainIdent(port_b) == null) // ...look above
+					result.add(port_b);
+
+				if(!ports_traversed.contains(netlist.getPort(line.node_a, line.port_a)) && properties.isPassivePort(port_a))
 					to_check.put(port_a, line.node_a);
-				else if(!ports_traversed.contains(netlist.getPort(line.node_b, line.port_b)))
+				else if(!ports_traversed.contains(netlist.getPort(line.node_b, line.port_b)) && properties.isPassivePort(port_b))
 					to_check.put(port_b, line.node_b);
 			}
 
 			if(!nodes_traversed.contains(node) && properties.isPassivePort(port)) { // It is a passive port, means we check the ports on the nodes to spread the chain
-				// Scan all the ports on the node to see if chain can be spread through it
+				// Scan all the ports (left and right) on the node to see if chain can spread through it
 				for(String p : netlist.getPorts(node)) {
 					Port node_port = netlist.getPort(node, p);
 					if(!ports_traversed.contains(node_port))

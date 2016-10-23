@@ -1,7 +1,9 @@
 package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
@@ -30,12 +32,104 @@ public class Test {
 		testAnalyzer(netlist);
 	}
 
+	@SuppressWarnings("serial")
 	private static void testAnalyzer(NetList netlist) {
 		NodeProperties properties = new NodeProperties(netlist);
 		Analyzer.analyze(netlist);
 
-		Node node = netlist.getNode("poly");
-		if(properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).size() != 1)
+		Node node;
+
+		Set<Integer> main_session = new HashSet<Integer>(){{add(0);}};
+		Set<Integer> first_session = new HashSet<Integer>(){{add(2);}};
+		Set<Integer> second_session = new HashSet<Integer>(){{add(1);}};
+		Set<Integer> third_session = new HashSet<Integer>(){{add(3);}};
+		Set<Integer> first_second_session = new HashSet<Integer>(){{add(2); add(1);}};
+		Set<Integer> first_second_third_session = new HashSet<Integer>(){{add(2); add(1); add(3);}};
+
+
+		// === midi ===
+		node = netlist.getNode("midi_in");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(main_session))
+			no();
+
+
+		// === poly ===
+		node = netlist.getNode("poly");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(main_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_session))
+			no();
+
+
+		// === adsr ===
+		node = netlist.getNode("adsr");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "attack")).equals(first_second_third_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "decay")).equals(first_second_third_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_second_third_session))
+			no();
+
+
+		// === adsr_tail ===
+		node = netlist.getNode("adsr_tail");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_second_third_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(first_second_third_session))
+			no();
+
+
+		// === adsr_tail2 ===
+		node = netlist.getNode("adsr_tail2");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(second_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(main_session))
+			no();
+
+
+		// === adsr_tail2 ===
+		node = netlist.getNode("adsr_tail3");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(main_session))
+			no();
+
+
+		// === poly_feedback ===
+		node = netlist.getNode("poly_feedback");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(first_second_third_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(third_session))
+			no();
+
+
+		// === sgen ===
+		node = netlist.getNode("sgen");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "frequency")).equals(first_second_third_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "amplitude")).isEmpty()) // Not even connected, no chain_ids
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_second_third_session))
+			no();
+
+		// === depoly ===
+		node = netlist.getNode("depoly");
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(first_second_third_session))
+			no();
+
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(main_session))
+			no();
+
+		// === output ===
+		node = netlist.getNode("output");
+		System.out.println(properties.analyzer.getPortChainIds(netlist.getPort(node, "input")));
+		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(main_session))
 			no();
 
 		System.out.println(Serializer.dump(netlist));
@@ -54,31 +148,31 @@ public class Test {
 			no();
 
 		List<Line> lines = w.getOutputConnections("output");
-		if(lines.size() != 2)
+		if(lines.size() != 1)
 			no();
 
-		for(Line l : lines) { // Walks to sgen_direct
-			if(l.node_a == netlist.getNode("sgen_direct")) {
+		for(Line l : lines) { // Walks to poly
+			if(l.node_a == netlist.getNode("poly")) {
 				w.walkRight(l);
-			} else if(l.node_b == netlist.getNode("sgen_direct")) {
+			} else if(l.node_b == netlist.getNode("poly")) {
 				w.walkRight(l);
 			}
 		}
 
-		// Testing with sgen_direct
-		if(w.getCurrent() != netlist.getNode("sgen_direct"))
+		// Testing with poly
+		if(w.getCurrent() != netlist.getNode("poly"))
 			no();
 
-		if(w.getInputs().size() != 2 || !w.getInputs().contains("frequency") || !w.getInputs().contains("amplitude"))
+		if(w.getInputs().size() != 1 || !w.getInputs().contains("input"))
 			no();
 
-		if(w.getInputConnection("frequency") != netlist.getConnections(w.getCurrent(), "frequency").get(0))
-			no();
+		//if(w.getInputConnection("frequency") != netlist.getConnections(w.getCurrent(), "frequency").get(0))
+		//	no();
 
-		if(w.getOutputConnections("output").size() != 1 || w.getOutputConnections("output").get(0) != netlist.getConnections(w.getCurrent(), "output").get(0))
-			no();
+		//if(w.getOutputConnections("output").size() != 1 || w.getOutputConnections("output").get(0) != netlist.getConnections(w.getCurrent(), "output").get(0))
+		//	no();
 
-		// Walk to output-node
+		// Walk all the way to output-node
 		while(w.getCurrent() != netlist.getNode("output"))
 			w.walkRight(w.getOutputConnections("output").get(0));
 
@@ -96,9 +190,9 @@ public class Test {
 			no();
 
 		// Jump directly to sgen_direct
-		w.jumpTo(netlist.getNode("sgen_direct"));
+		w.jumpTo(netlist.getNode("adsr"));
 
-		if(w.getCurrent() != netlist.getNode("sgen_direct"))
+		if(w.getCurrent() != netlist.getNode("adsr"))
 			no();
 	}
 
@@ -106,7 +200,7 @@ public class Test {
 		Traverser t = new Traverser(netlist);
 
 		List<Node> nodes = t.getLeftMost(netlist.getNode("output"));
-		if(nodes.size() != 1 || !nodes.contains(netlist.getNode("midi_in")))
+		if(nodes.size() != 2 || !nodes.contains(netlist.getNode("midi_in")) || !nodes.contains(netlist.getNode("adsr_tail3")))
 			no();
 
 		nodes = t.getRightMost(netlist.getNode("midi_in"));
@@ -122,7 +216,11 @@ public class Test {
 			netlist.getNode("sgen"),
 			netlist.getNode("depoly"),
 			netlist.getNode("output"),
-			netlist.getNode("sgen_direct")
+			//netlist.getNode("sgen_direct"),
+			netlist.getNode("poly_feedback"),
+			netlist.getNode("adsr_tail"),
+			netlist.getNode("adsr_tail2"),
+			netlist.getNode("adsr_tail3"),
 		};
 
 		if(nodes.size() != expected.length)
@@ -148,7 +246,11 @@ public class Test {
 		nodes_to_copy.add(netlist.getNode("sgen"));
 		// nodes_to_copy.add(netlist.getNode("depoly")); // Leaving this one out on purpose, should now create a NetList with 2 groups
 		nodes_to_copy.add(netlist.getNode("output"));
-		nodes_to_copy.add(netlist.getNode("sgen_direct"));
+		//nodes_to_copy.add(netlist.getNode("sgen_direct"));
+		nodes_to_copy.add(netlist.getNode("poly_feedback"));
+		nodes_to_copy.add(netlist.getNode("adsr_tail"));
+		nodes_to_copy.add(netlist.getNode("adsr_tail2"));
+		nodes_to_copy.add(netlist.getNode("adsr_tail3"));
 
  		NetList new_netlist = t.copyNetList(netlist, nodes_to_copy);
 
@@ -191,10 +293,10 @@ public class Test {
 			no();
 	}
 
-	private static Node createNode(NetList netlist, String name, Integer version) {
+	private static Node createNode(NetList netlist, String name) {
 		Node n = netlist.createNode(name);
 		n.properties.put("name", name);
-		n.properties.put("version", version);
+		n.properties.put("version", 1);
 		return n;
 	}
 
@@ -216,36 +318,54 @@ public class Test {
 
 	private static void populateNetList(NetList netlist) {
 		// Group 1
-		Node midi_in = createNode(netlist, "midi_in", 1);
-		addPort(netlist, midi_in, "output", true, null);
+		Node midi_in = createNode(netlist, "midi_in");
+		addPort(netlist, midi_in, "output", true, null); // chain 0
 
-		Node poly = createNode(netlist, "poly", 1);
-		addPort(netlist, poly, "input", false, null);
-		addPort(netlist, poly, "output", true, "adsf");
+		Node poly = createNode(netlist, "poly");
+		addPort(netlist, poly, "input", false, null); // chain 0
+		addPort(netlist, poly, "output", true, "adsf"); // chain 1
 
-		Node adsr = createNode(netlist, "adsr", 1);
-		addPort(netlist, adsr, "input", false, null);
-		addPort(netlist, adsr, "output", true, null);
+		Node adsr = createNode(netlist, "adsr");
+		addPort(netlist, adsr, "input", false, null); // chain 1
+		addPort(netlist, adsr, "attack", false, null); // chain 2,3
+		addPort(netlist, adsr, "decay", false, null); // chain 2,3
+		addPort(netlist, adsr, "output", true, null); // chain 2,3
 		addPort(netlist, adsr, "fac", true, null);
 
-		Node sgen = createNode(netlist, "sgen", 1);
-		addPort(netlist, sgen, "frequency", false, null);
+		Node sgen = createNode(netlist, "sgen");
+		addPort(netlist, sgen, "frequency", false, null); // chain 2,3
 		addPort(netlist, sgen, "amplitude", false, null);
 		addPort(netlist, sgen, "output", true, null);
 
-		Node sgen_direct = createNode(netlist, "sgen_direct", 1);
+		/*Node sgen_direct = createNode(netlist, "sgen_direct");
 		addPort(netlist, sgen_direct, "frequency", false, null);
 		addPort(netlist, sgen_direct, "amplitude", false, null);
-		addPort(netlist, sgen_direct, "output", true, null);
+		addPort(netlist, sgen_direct, "output", true, null);*/
 
 		//Node mix = createNode(netlist, "mix", 1);
 
-		Node depoly = createNode(netlist, "depoly", 1);
-		addPort(netlist, depoly, "input", false, "chain_consumer");
-		addPort(netlist, depoly, "output", true, null);
+		Node depoly = createNode(netlist, "depoly");
+		addPort(netlist, depoly, "input", false, "chain_consumer"); // chain 2,3
+		addPort(netlist, depoly, "output", true, null); // chain 0
 
-		Node output = createNode(netlist, "output", 1);
-		addPort(netlist, output, "input", false, null);
+		Node output = createNode(netlist, "output");
+		addPort(netlist, output, "input", false, null); // chain 0
+
+		Node poly_feedback = createNode(netlist, "poly_feedback"); // Node used to feedback a chain into another chain
+		addPort(netlist, poly_feedback, "input", false, null);
+		addPort(netlist, poly_feedback, "output", true, "adsf");
+
+		// Tail for the adsr's decay-port
+		Node adsr_tail = createNode(netlist, "adsr_tail");
+		addPort(netlist, adsr_tail, "input", false, null);
+		addPort(netlist, adsr_tail, "output", true, null);
+
+		Node adsr_tail2 = createNode(netlist, "adsr_tail2"); // Spawns voices
+		addPort(netlist, adsr_tail2, "input", false, null);
+		addPort(netlist, adsr_tail2, "output", true, "asdf");
+
+		Node adsr_tail3 = createNode(netlist, "adsr_tail3");
+		addPort(netlist, adsr_tail3, "output", true, null);
 
 		netlist.connect(midi_in, "output", poly, "input");
 		netlist.connect(poly, "output", adsr, "input");		// Starting session 1
@@ -253,17 +373,24 @@ public class Test {
 		netlist.connect(sgen, "output", depoly, "input");	// Session 1
 		netlist.connect(depoly, "output", output, "input"); // Ending session 1
 
-		netlist.connect(midi_in, "output", sgen_direct, "frequency");
-		netlist.connect(sgen_direct, "output", sgen, "amplitude");
+		netlist.connect(sgen, "output", poly_feedback, "input");
+		netlist.connect(poly_feedback, "output", adsr, "attack");
+
+		netlist.connect(adsr_tail, "output", adsr, "decay");
+		netlist.connect(adsr_tail2, "output", adsr_tail, "input");
+		netlist.connect(adsr_tail3, "output", adsr_tail2, "input");
+
+		/*netlist.connect(midi_in, "output", sgen_direct, "frequency");
+		netlist.connect(sgen_direct, "output", sgen, "amplitude");*/
 
 		// Group 2 - testing loops
-		Node test_a = createNode(netlist, "test_a", 1);
-		addPort(netlist, test_a, "input", false, null);
-		addPort(netlist, test_a, "output", true, null);
+		Node test_a = createNode(netlist, "test_a");
+		addPort(netlist, test_a, "input", false, null); // chain 0
+		addPort(netlist, test_a, "output", true, null); // chain 0
 
-		Node test_b = createNode(netlist, "test_b", 1);
-		addPort(netlist, test_b, "input", false, null);
-		addPort(netlist, test_b, "output", true, null);
+		Node test_b = createNode(netlist, "test_b");
+		addPort(netlist, test_b, "input", false, null); // chain 0
+		addPort(netlist, test_b, "output", true, null); // chain 0
 
 		netlist.connect(test_a, "output", test_b, "input");
 		netlist.connect(test_b, "output", test_a, "input");
