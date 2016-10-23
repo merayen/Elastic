@@ -71,8 +71,7 @@ public final class Serializer {
 		for(Object _n : nodes) {
 			JSONObject n = (JSONObject)_n;
 
-			Node node = netlist.createNode();
-			node.id = (String)n.get("id");
+			Node node = netlist.createNode((String)n.get("id"));
 
 			JSONObject j_props = (JSONObject)n.get("properties");
 			for(Object k : j_props.keySet())

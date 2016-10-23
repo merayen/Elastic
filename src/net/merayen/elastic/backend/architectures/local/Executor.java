@@ -20,32 +20,21 @@ public class Executor extends AbstractExecutor {
 			applyNetList();
 			supervisor.process((ProcessMessage)message);
 
-		} else if(message instanceof CreateNodeMessage) {
-			NetListMessages.apply(getUpcomingNetList(), message);
-
-		} else if(message instanceof CreateNodePortMessage) {
-			NetListMessages.apply(getUpcomingNetList(), message);
-
-		} else if(message instanceof RemoveNodePortMessage) {
-			NetListMessages.apply(getUpcomingNetList(), message);
-
-		} else if(message instanceof NodeConnectMessage) {
-			NetListMessages.apply(getUpcomingNetList(), message);
-
-		} else if(message instanceof NodeDisconnectMessage) {
-			NetListMessages.apply(getUpcomingNetList(), message);
-
 		} else if(message instanceof NodeParameterMessage) {
 			applyNetList();
 			supervisor.handleMessage(message);
+
+		} else if(message instanceof NetListMessage) {
+			NetListMessages.apply(getUpcomingNetList(), message);
+
 		}
 
 		System.out.printf("Executor got message %s\n", message);
 	}
 
 	/**
-	 * Restarts ourself. Happens usually when we are messaged a message that
-	 * requires blank sheet.
+	 * Restarts ourself. Happens usually after when we have been messaged a message that
+	 * requires us to start with a blank sheet.
 	 */
 	private void applyNetList() {
 		if(upcoming_netlist != null) {

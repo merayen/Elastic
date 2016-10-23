@@ -5,11 +5,13 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class Node extends NetListObject {
-	String id = new Integer(UUID.randomUUID().hashCode()).toString();
+	final String id;
 
 	final Map<String,Port> ports = new HashMap<>();
 
-	Node() {}
+	Node(String id) {
+		this.id = id;
+	}
 
 	/*public Port createPort(String name) {
 		Port p = new Port();
@@ -37,8 +39,7 @@ public final class Node extends NetListObject {
 	}
 
 	public Node copy() {
-		Node n = new Node();
-		n.id = id;
+		Node n = new Node(id);
 
 		for(String p : ports.keySet())
 			n.ports.put(p, ports.get(p).copy());

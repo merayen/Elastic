@@ -2,7 +2,7 @@ package net.merayen.elastic.system.intercom;
 
 import net.merayen.elastic.util.Postmaster;
 
-public class NodeConnectMessage extends Postmaster.Message {
+public class NodeConnectMessage extends NetListMessage {
 	public final String node_a;
 	public final String port_a;
 	public final String node_b;

@@ -1,8 +1,6 @@
 package net.merayen.elastic.system.intercom;
 
-import net.merayen.elastic.util.Postmaster;
-
-public class RemoveNodePortMessage extends Postmaster.Message {
+public class RemoveNodePortMessage extends NetListMessage {
 	public final String node_id;
 	public final String port;
 

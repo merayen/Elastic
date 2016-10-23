@@ -1,8 +1,6 @@
 package net.merayen.elastic.system.intercom;
 
-import net.merayen.elastic.util.Postmaster;
-
-public class NodeDisconnectMessage extends Postmaster.Message {
+public class NodeDisconnectMessage extends NetListMessage {
 	public final String node_a;
 	public final String port_a;
 	public final String node_b;

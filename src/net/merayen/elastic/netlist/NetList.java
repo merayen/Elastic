@@ -3,6 +3,7 @@ package net.merayen.elastic.netlist;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 public final class NetList {
@@ -44,9 +45,7 @@ public final class NetList {
 	}
 
 	public Node createNode() {
-		Node n = new Node();
-		nodes.add(n);
-		return n;
+		return createNode(new Integer(UUID.randomUUID().hashCode()).toString());
 	}
 
 	public Node createNode(String node_id) {
@@ -54,9 +53,8 @@ public final class NetList {
 			if(n.id.equals(node_id))
 				throw new RuntimeException("Node with ID '" + node_id + "' already exists");
 
-		Node n = new Node();
+		Node n = new Node(node_id);
 		nodes.add(n);
-		n.id = node_id;
 		return n;
 	}
 
