@@ -61,7 +61,7 @@ public class ElasticSystem {
 
 		Postmaster.Message message = backend.receiveFromBackend();
 		if(message != null) {
-			System.out.printf("Message to UI: %s\n", message);
+			//System.out.printf("Message to UI: %s\n", message);
 			ui.sendMessageToUI(message);
 
 			if(listener != null)
@@ -72,7 +72,7 @@ public class ElasticSystem {
 
 		message = ui.receiveMessageFromUI();
 		if(message != null) {
-			System.out.printf("Message from UI: %s\n", message);
+			//System.out.printf("Message from UI: %s\n", message);
 			backend.executeMessage(message);
 
 			if(listener != null)

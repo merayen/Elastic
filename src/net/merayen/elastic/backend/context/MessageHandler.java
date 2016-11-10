@@ -10,6 +10,7 @@ import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.NodeConnectMessage;
 import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.NetListMessages;
@@ -99,6 +100,10 @@ class MessageHandler {
 
 		else if(message instanceof NodeParameterMessage) {
 			logicnode_list.handleMessageFromUI(message); // Gets reviewed by LogicNode, which again may edit and forward the Message further into the backend
+		}
+
+		else if(message instanceof ProcessMessage) {
+			dispatch.executeMessage(message);
 		}
 
 		else if(message instanceof NetListRefreshRequestMessage) {

@@ -3,6 +3,7 @@ package net.merayen.elastic.backend.architectures.local;
 import net.merayen.elastic.backend.analyzer.Analyzer;
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.netlist.NetList;
+import net.merayen.elastic.netlist.Serializer;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
@@ -29,7 +30,7 @@ public class Executor extends AbstractExecutor {
 
 		}
 
-		System.out.printf("Executor got message %s\n", message);
+		//System.out.printf("Executor got message %s\n", message);
 	}
 
 	/**
@@ -42,9 +43,13 @@ public class Executor extends AbstractExecutor {
 			upcoming_netlist = null;
 
 			Analyzer.analyze(netlist);
+			System.out.print("Analyze: " + Serializer.dump(netlist));
+			if(supervisor != null)
+				supervisor.end();
+
 			supervisor = new Supervisor(netlist);
+			supervisor.begin();
 			System.out.println("Local architecture restarted");
-			
 		}
 	}
 

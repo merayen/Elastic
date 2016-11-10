@@ -21,12 +21,12 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onProcess() {
-		// TODO Auto-generated method stub
+		System.out.println("Signalgenerator " + getID() + " is processing");
 	}
 
 	@Override
 	protected void onParameter(String key, Object value) {
-		System.out.printf("Signalgenerator arc %s=%s\n", key, value);
+		//System.out.printf("Signalgenerator arc %s=%s\n", key, value);
 	}
 
 	@Override
