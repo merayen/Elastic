@@ -160,7 +160,12 @@ class Supervisor {
 		return processor_list.getProcessor(localnode, session_id);
 	}
 
-	public Set<Integer> getSessions(LocalNode localnode) {
-		return processor_list.getSessions();
+	public List<LocalProcessor> getProcessors(LocalNode localnode) {
+		List<LocalProcessor> result = new ArrayList<>();
+		for(LocalProcessor lp : processor_list.getAllProcessors())
+			if(lp.localnode == localnode)
+				result.add(lp);
+
+		return result;
 	}
 }

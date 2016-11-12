@@ -13,4 +13,8 @@ public class AudioOutlet extends Outlet {
 	public Format getFormat() {
 		return Format.AUDIO;
 	}
+
+	public Class<? extends Inlet> getInletClass() {
+		return AudioInlet.class;
+	}
 }

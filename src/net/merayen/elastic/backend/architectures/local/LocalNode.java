@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
@@ -97,7 +98,11 @@ public abstract class LocalNode {
 		onInit();
 	}
 
-	public LocalProcessor getProcessor(int session_id) {
+	protected LocalProcessor getProcessor(int session_id) {
 		return supervisor.getProcessor(this, session_id);
+	}
+
+	protected List<LocalProcessor> getProcessors() {
+		return supervisor.getProcessors(this);
 	}
 }

@@ -16,4 +16,9 @@ public class MidiOutlet extends Outlet {
 	public Format getFormat() {
 		return Format.MIDI;
 	}
+
+	@Override
+	public Class<? extends Inlet> getInletClass() {
+		return MidiInlet.class;
+	}
 }

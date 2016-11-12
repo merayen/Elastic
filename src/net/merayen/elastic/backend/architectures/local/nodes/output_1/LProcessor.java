@@ -1,6 +1,8 @@
 package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
+import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.util.Postmaster.Message;
 
 /**
@@ -13,6 +15,11 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		// TODO output directly to interface
+		Inlet inlet = getInlet("input");
+		if(inlet != null) {
+			AudioInlet ai = (AudioInlet)inlet;
+			System.out.printf("Output LProcessor processing. First: %f, written: %d\n", ai.outlet.audio[0], ai.outlet.written);
+		}
 	}
 
 	@Override

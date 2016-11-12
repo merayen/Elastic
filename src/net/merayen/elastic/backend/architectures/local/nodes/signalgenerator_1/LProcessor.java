@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
+import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.util.Postmaster.Message;
@@ -260,10 +262,24 @@ public class LProcessor extends LocalProcessor {
 		}
 	}*/
 
+	private int n;
+
 	@Override
 	protected void onProcess() {
-		// TODO Auto-generated method stub
-		
+		Outlet outlet = this.getOutlet("output");
+		if(outlet != null) {
+			AudioOutlet ao = (AudioOutlet)outlet;
+			System.out.println("Signalgenerator LProcessor processing " + outlet);
+
+			for(int i = 0; i < ao.audio.length; i++)
+				ao.audio[i] = i + n;
+
+			ao.written += ao.audio.length;
+
+			n++;
+
+			outlet.push();
+		}
 	}
 
 	@Override

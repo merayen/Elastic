@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
+import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 
 /**
  * TODO change mode when frequency-port is connected/disconnected
@@ -22,6 +23,8 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onProcess() {
 		System.out.println("Signalgenerator " + getID() + " is processing");
+		for(LocalProcessor lp : getProcessors())
+			lp.schedule();
 	}
 
 	@Override

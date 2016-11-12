@@ -25,4 +25,6 @@ public abstract class Outlet {
 	}
 
 	public abstract Format getFormat();
+
+	public abstract Class<? extends Inlet> getInletClass();
 }

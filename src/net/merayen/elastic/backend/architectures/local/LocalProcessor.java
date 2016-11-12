@@ -126,7 +126,7 @@ public abstract class LocalProcessor {
 
 		Inlet inlet;
 		try {
-			inlet = cls.getConstructor(Outlet.class).newInstance(connected_outlet);
+			inlet = connected_outlet.getInletClass().getConstructor(Outlet.class).newInstance(connected_outlet);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
