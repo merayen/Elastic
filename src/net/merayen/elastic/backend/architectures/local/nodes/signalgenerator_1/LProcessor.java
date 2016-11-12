@@ -2,9 +2,11 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
+import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.netlist.Node;
@@ -266,15 +268,30 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		Outlet outlet = this.getOutlet("output");
-		if(outlet != null) {
+		Outlet outlet = getOutlet("output");
+		Inlet frequency = getInlet("frequency");
+		Inlet amplitude = getInlet("amplitude");
+
+		int available = available();
+
+		if(frequency == null && amplitude == null && available > 10) {
+			available = new Random().nextInt(available / 2) + 1;
+		}
+
+		if(outlet != null && available > 0) {
 			AudioOutlet ao = (AudioOutlet)outlet;
 			System.out.println("Signalgenerator LProcessor processing " + outlet);
 
-			for(int i = 0; i < ao.audio.length; i++)
+			for(int i = ao.written; i < ao.written + available; i++)
 				ao.audio[i] = i + n;
 
-			ao.written += ao.audio.length;
+			ao.written += available;
+
+			if(frequency != null)
+				frequency.read += available;
+
+			if(amplitude != null)
+				amplitude.read += available;
 
 			n++;
 

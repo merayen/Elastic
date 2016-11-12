@@ -18,7 +18,7 @@ public class LProcessor extends LocalProcessor {
 		Inlet inlet = getInlet("input");
 		if(inlet != null) {
 			AudioInlet ai = (AudioInlet)inlet;
-			System.out.printf("Output LProcessor processing. First: %f, written: %d\n", ai.outlet.audio[0], ai.outlet.written);
+			System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
 		}
 	}
 
@@ -30,7 +30,7 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onPrepare() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Output onPrepare()");
 	}
 
 	@Override

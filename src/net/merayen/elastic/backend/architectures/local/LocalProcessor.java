@@ -122,7 +122,6 @@ public abstract class LocalProcessor {
 			throw new RuntimeException("Inlet/Outlet already on this processor");
 
 		Format format = connected_outlet.getFormat();
-		Class<? extends Inlet> cls = FormatMaps.inlet_formats.get(format);
 
 		Inlet inlet;
 		try {
@@ -200,5 +199,21 @@ public abstract class LocalProcessor {
 	void prepare(Map<String, Object> input_data) {
 		prepare = true; // Will prepare next time process() is called
 		this.input_data = input_data;
+	}
+
+	/**
+	 * Convenience function to retrieve samples available.
+	 * Checks all connected input-ports and returns the minimum available samples.
+	 * Function is based on synchronous processing of the input-ports.
+	 * If you are not doing that, then don't use this.
+	 * If not inlets are connected at all, we return the full buffer size, as we are not dependent on any inlets.
+	 */
+	protected int available() {
+		int available = buffer_size;
+		for(Inlet inlet : inlets.values()) {
+			available = Math.min(available, inlet.available());
+		}
+
+		return available;
 	}
 }
