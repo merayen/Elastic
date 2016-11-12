@@ -31,6 +31,9 @@ public class Test {
 			public void onMessageToUI(Message message) {
 				if(message instanceof CreateNodeMessage) {
 					nodes.add((CreateNodeMessage)message);
+					System.out.println("Gørr "  + nodes.size());
+				} else if(message instanceof ResetNetListMessage) {
+					nodes.clear();
 				}
 			}
 
