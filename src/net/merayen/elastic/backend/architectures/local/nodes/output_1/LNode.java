@@ -29,8 +29,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onProcess() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Output " + getID() + " is processing");
 	}
 
 	@Override

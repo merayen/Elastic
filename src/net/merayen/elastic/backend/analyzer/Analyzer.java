@@ -30,6 +30,7 @@ public class Analyzer {
 		this.netlist = netlist;
 		clean();
 		new ChainAnalyzer(netlist);
+		new FormatDecision(netlist);
 	}
 
 	public static void analyze(NetList netlist) {
@@ -209,5 +210,28 @@ class ChainAnalyzer {
 		}
 
 		return result;
+	}
+}
+
+class FormatDecision {
+	private final NetList netlist;
+	private final NodeProperties np;
+
+	FormatDecision(NetList netlist) {
+		this.netlist = netlist;
+		this.np = new NodeProperties(netlist);
+
+		scan();
+	}
+
+	private void scan() {
+		for(Node n : netlist.getNodes()) {
+			for(String p : netlist.getPorts(n)) {
+				Port port = netlist.getPort(n, p);
+				if(np.isOutput(port)) {
+					System.out.println("Output port: " + np.getAvailableFormats(port));
+				}
+			}
+		}
 	}
 }

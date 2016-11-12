@@ -21,7 +21,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onProcess() {
-		// TODO Auto-generated method stub
+		System.out.println("Signalgenerator " + getID() + " is processing");
 	}
 
 	@Override

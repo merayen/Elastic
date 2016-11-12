@@ -57,6 +57,10 @@ class Supervisor {
 		spawnMainSession();
 	}
 
+	void end() {
+		// TODO end every node and processor
+	}
+
 	public void handleMessage(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;

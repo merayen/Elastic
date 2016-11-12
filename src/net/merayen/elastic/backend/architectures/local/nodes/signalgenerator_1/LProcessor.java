@@ -29,7 +29,7 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onInit() {
-
+		System.out.println("Signalgenerator LProcessor onInit()");
 	}
 
 	/*void tryToGenerate() {

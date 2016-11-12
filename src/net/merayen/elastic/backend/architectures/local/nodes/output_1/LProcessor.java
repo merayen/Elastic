@@ -17,8 +17,7 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onInit() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Output LProcessor onInit()");
 	}
 
 	@Override

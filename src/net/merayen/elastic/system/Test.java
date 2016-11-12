@@ -31,6 +31,9 @@ public class Test {
 			public void onMessageToUI(Message message) {
 				if(message instanceof CreateNodeMessage) {
 					nodes.add((CreateNodeMessage)message);
+					System.out.println("Gørr "  + nodes.size());
+				} else if(message instanceof ResetNetListMessage) {
+					nodes.clear();
 				}
 			}
 
@@ -72,7 +75,19 @@ public class Test {
 
 		// Now just run
 		final long u = System.currentTimeMillis() + 3600 * 1000;
-		waitFor(() -> System.currentTimeMillis() > u);
+
+		waitFor(new Func() {
+			long s = System.currentTimeMillis();
+
+			@Override
+			public boolean noe() {
+				if(s + 1000 < System.currentTimeMillis()) {
+					s = System.currentTimeMillis();
+					system.sendMessageToBackend(new ProcessMessage());
+				}
+				return System.currentTimeMillis() > u;
+			}
+		});
 
 		system.end();
 	}
