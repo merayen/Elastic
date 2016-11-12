@@ -2,6 +2,7 @@ package net.merayen.elastic.system;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.context.BackendContext;
 import net.merayen.elastic.ui.Supervisor;
 import net.merayen.elastic.util.Postmaster;
@@ -61,7 +62,9 @@ public class ElasticSystem {
 
 		Postmaster.Message message = backend.receiveFromBackend();
 		if(message != null) {
-			System.out.printf("Message to UI: %s\n", message);
+			if(Config.DEBUG)
+				System.out.printf("Message to UI: %s\n", message);
+
 			ui.sendMessageToUI(message);
 
 			if(listener != null)
@@ -72,7 +75,9 @@ public class ElasticSystem {
 
 		message = ui.receiveMessageFromUI();
 		if(message != null) {
-			System.out.printf("Message from UI: %s\n", message);
+			if(Config.DEBUG)
+				System.out.printf("Message from UI: %s\n", message);
+
 			backend.executeMessage(message);
 
 			if(listener != null)

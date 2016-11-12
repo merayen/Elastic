@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.analyzer.Analyzer;
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.netlist.NetList;
@@ -29,7 +30,8 @@ public class Executor extends AbstractExecutor {
 
 		}
 
-		System.out.printf("Executor got message %s\n", message);
+		if(Config.DEBUG)
+			System.out.printf("Executor got message %s\n", message);
 	}
 
 	/**
