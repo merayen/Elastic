@@ -1,7 +1,6 @@
 package net.merayen.elastic.backend.nodes.list.test_100;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 
 public class LogicNode extends BaseLogicNode {
@@ -10,7 +9,6 @@ public class LogicNode extends BaseLogicNode {
 	protected void onCreate() {
 		BaseLogicNode.PortDefinition input = new BaseLogicNode.PortDefinition();
 		input.name = "input";
-		input.format = new Format[]{Format.AUDIO};
 		createPort(input);
 	}
 

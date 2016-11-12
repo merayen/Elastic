@@ -9,17 +9,15 @@ public class LogicNode extends BaseLogicNode {
 	protected void onCreate() {
 		createPort(new BaseLogicNode.PortDefinition() {{
 			name = "frequency";
-			format = new Format[]{Format.AUDIO, Format.MIDI};
 		}});
 
 		createPort(new BaseLogicNode.PortDefinition() {{
 			name = "amplitude";
-			format = new Format[]{Format.AUDIO};
 		}});
 
 		createPort(new BaseLogicNode.PortDefinition() {{
 			name = "output";
-			format = new Format[]{Format.AUDIO};
+			format = Format.AUDIO;
 			output = true;
 		}});
 	}

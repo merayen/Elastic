@@ -89,14 +89,14 @@ class Supervisor {
 	}
 
 	int spawnSession(int chain_id) {
-		session_id_counter++;
-		return spawnSession(chain_id, session_id_counter);
+		spawnSession(chain_id, ++session_id_counter);
+		return session_id_counter;
 	}
 
 	/**
 	 * Spawns a new session from a chain.
 	 */
-	synchronized private int spawnSession(int chain_id, int session_id) {
+	synchronized private void spawnSession(int chain_id, int session_id) {
 		if(processor_list.getChainSessions(chain_id).size() >= 128)
 			throw new RuntimeException("Voice limit reached, can not spawn any more processors");
 
@@ -115,8 +115,6 @@ class Supervisor {
 
 		wireUp(to_wire_up); // TODO only rewire the created ones
 		initProcessors(to_wire_up);
-
-		return session_id;
 	}
 
 	/**

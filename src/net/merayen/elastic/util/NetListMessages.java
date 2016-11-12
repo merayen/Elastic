@@ -38,7 +38,7 @@ public class NetListMessages {
 					node.getID(),
 					port,
 					np.isOutput(p),
-					np.getAvailableFormats(p),
+					np.getFormat(p),
 					np.getPortChainIdent(p) // TODO rename to chain_ident
 				));
 			}
@@ -91,10 +91,10 @@ public class NetListMessages {
 			if(m.chain_ident != null)
 				np.setPortChainIdent(port, m.chain_ident);
 
-			if(m.output)
+			if(m.output) {
 				np.setOutput(port);
-
-			np.setAvailableFormats(port, m.format);
+				np.setFormat(port, m.format);
+			}
 
 		} else if(message instanceof RemoveNodeMessage) {
 			RemoveNodeMessage m = (RemoveNodeMessage)message;

@@ -10,7 +10,6 @@ public class LogicNode extends BaseLogicNode {
 	protected void onCreate() {
 		createPort(new BaseLogicNode.PortDefinition() {{
 			name = "input";
-			format = new Format[]{Format.AUDIO};
 		}});
 	}
 

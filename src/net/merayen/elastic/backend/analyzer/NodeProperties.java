@@ -11,6 +11,8 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 
 public class NodeProperties {
+	private static final Format[] NO_FORMATS = new Format[0];
+
 	private final NetList netlist;
 
 	/**
@@ -47,7 +49,7 @@ public class NodeProperties {
 		}
 
 		public void setDecidedFormat(Port port, Format format) {
-			port.properties.put("analyzer.decided_format", format.toString());
+			port.properties.put("analyzer.decided_format", format.name);
 		}
 
 		public Format getDecidedFormat(Port port) {
@@ -101,21 +103,17 @@ public class NodeProperties {
 		return false;
 	}
 
-	public void setAvailableFormats(Port port, Format[] formats) {
-		if(formats.length == 0)
-			throw new RuntimeException("All ports need to have a format available");
+	public void setFormat(Port port, Format format) {
+		if(!isOutput(port))
+			throw new RuntimeException("Only output-port can have a format set");
 
-		if(formats.length > 1 && isOutput(port))
-			throw new RuntimeException("Output ports can only have 1 output format available");
-
-		port.properties.put("available_formats", formats);
-
-		if(isOutput(port))
-			analyzer.setDecidedFormat(port, formats[0]); // Output ports can only have 1 decided format anyway
+		port.properties.put("format", format.name);
 	}
 
-	public Format[] getAvailableFormats(Port port) {
-		return (Format[])port.properties.get("available_formats");
+	public Format getFormat(Port port) {
+		String format = (String)port.properties.get("format");
+
+		return format != null ? Format.get(format) : null;
 	}
 
 	/**

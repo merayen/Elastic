@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.merayen.elastic.backend.nodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -229,7 +230,27 @@ class FormatDecision {
 			for(String p : netlist.getPorts(n)) {
 				Port port = netlist.getPort(n, p);
 				if(np.isOutput(port)) {
-					System.out.println("Output port: " + np.getAvailableFormats(port));
+					Format format = np.getFormat(port);
+					if(format != null) {
+
+						List<Line> lines = netlist.getConnections(n, p);
+
+						if(lines.size() > 0) { // If output-port is not connected, we don't set any output-formats on it, as it wont be used at all
+							// Set the decided format for the output-port
+							np.analyzer.setDecidedFormat(port, format);
+	
+							// Set the decided format for all the receiving input-ports based on the output, if possible
+							for(Line l : lines)
+								if(n == l.node_a)
+									np.analyzer.setDecidedFormat(netlist.getPort(l.node_b, l.port_b), format);
+								else if(n == l.node_b)
+									np.analyzer.setDecidedFormat(netlist.getPort(l.node_a, l.port_a), format);
+								else
+									throw new RuntimeException("Should not happen");
+						}
+					} else {
+						System.out.printf("Error: Analyzer.FormatDecision expected a format on the output-port. Port will not function. Node %s, port %s\n", np.getName(n), p);
+					}
 				}
 			}
 		}

@@ -12,7 +12,7 @@ public abstract class BaseLogicNode {
 	public static class PortDefinition {
 		public String name; // Name of the port
 		public boolean output; // If port is output or not
-		public Format[] format; // Array of formats you support
+		public Format format; // Format the port uses. Only for output-ports
 		public String chain_ident; // TODO rename to chain_ident
 	}
 
@@ -44,11 +44,11 @@ public abstract class BaseLogicNode {
 		if(netlist.getPort(node, def.name) != null)
 			throw new RuntimeException(String.format("Port %s already exist on node", def.name));
 
-		if(def.format.length == 0)
-			throw new RuntimeException("No format defined");
+		if(def.output && def.format == null)
+			throw new RuntimeException("Output-ports must have a format");
 
-		if(def.output && def.format.length != 1)
-			throw new RuntimeException("Output port can only have 1 format");
+		if(!def.output && def.format != null)
+			throw new RuntimeException("Input-ports can not have a format set, as it will depend on the output-port it is connected to");
 
 		// Notify both ways
 		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format, def.chain_ident); // TODO rename to chain_ident
