@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
+import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.netlist.Node;
@@ -19,11 +21,24 @@ import net.merayen.elastic.util.Postmaster.Message;
  * we have requested due to ports being split.
  */
 public class LProcessor extends LocalProcessor {
+	private enum Mode {
+		RAW,
+		RAW_AMP,
+		MIDI,
+		FREQUENCY,
+		MIDI_AMP,
+		FREQUENCY_AMP,
+		MALFUNCTION // E.g, wrong line has been connected. We output only zeroes in this case (and should send a warning)
+	}
 
 	private float midi_amplitude = 1f;
 	private float midi_frequency;
 	private float midi_tangent_frequency;
 	private float midi_pitch_factor;
+
+	private float amplitude = 0.2f;
+
+	private Mode mode;
 
 	int standalone_to_generate;
 	int sample_rate;
@@ -33,7 +48,37 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onInit() {
-		System.out.println("Signalgenerator LProcessor onInit()");
+		Inlet frequency = getInlet("frequency");
+		Inlet amplitude = getInlet("amplitude");
+		Outlet output = getOutlet("output");
+
+		if(frequency == null && amplitude == null) {
+			mode = Mode.RAW;
+		} else if(frequency == null && amplitude != null) {
+			if(amplitude instanceof AudioInlet) {
+				mode = Mode.RAW_AMP;
+			} else {
+				mode = Mode.MALFUNCTION;
+			}
+		} else if(frequency != null && amplitude == null) {
+			if(frequency instanceof AudioInlet) {
+				mode = Mode.FREQUENCY;
+			} else if(frequency instanceof MidiInlet) {
+				mode = Mode.MIDI;
+			} else {
+				mode = Mode.MALFUNCTION; // We don't understand the input on the frequency-port
+			}
+		} else if(frequency != null && amplitude != null) {
+			if((frequency instanceof AudioInlet) && (amplitude instanceof AudioInlet)) {
+				mode = Mode.FREQUENCY_AMP;
+			} else if((frequency instanceof MidiInlet) && (amplitude instanceof AudioInlet)) {
+				mode = Mode.MIDI_AMP;
+			} else {
+				mode = Mode.MALFUNCTION;
+			}
+		}
+
+		System.out.printf("Signalgenerator LProcessor onInit(). Mode: %s\n", mode.name());
 	}
 
 	/*void tryToGenerate() {

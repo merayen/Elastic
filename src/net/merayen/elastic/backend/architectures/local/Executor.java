@@ -45,7 +45,6 @@ public class Executor extends AbstractExecutor {
 			upcoming_netlist = null;
 
 			Analyzer.analyze(netlist);
-			System.out.print("Analyze: " + Serializer.dump(netlist));
 			if(supervisor != null)
 				supervisor.end();
 
