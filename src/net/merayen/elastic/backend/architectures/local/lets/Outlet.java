@@ -9,8 +9,11 @@ import net.merayen.elastic.backend.nodes.Format;
 public abstract class Outlet {
 	public int written; // Number of samples written yet. Readers must respect this
 	public final List<LocalProcessor> connected_processors = new ArrayList<>();
+	public final int buffer_size;
 
-	public Outlet(int buffer_size) {}
+	public Outlet(int buffer_size) {
+		this.buffer_size = buffer_size;
+	}
 
 	public void reset() {
 		written = 0;
@@ -22,6 +25,13 @@ public abstract class Outlet {
 	public void push() {
 		for(LocalProcessor lp : connected_processors)
 			lp.schedule();
+	}
+
+	public boolean satisfied() {
+		if(written > buffer_size)
+			throw new RuntimeException("LocalProcessor has written too much into the Outlet");
+
+		return written == buffer_size;
 	}
 
 	public abstract Format getFormat();

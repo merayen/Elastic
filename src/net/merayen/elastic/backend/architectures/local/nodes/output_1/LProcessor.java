@@ -19,6 +19,7 @@ public class LProcessor extends LocalProcessor {
 		if(inlet != null) {
 			AudioInlet ai = (AudioInlet)inlet;
 			System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
+			inlet.read += inlet.available();
 		}
 	}
 

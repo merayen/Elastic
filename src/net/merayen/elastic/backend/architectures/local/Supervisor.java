@@ -128,7 +128,8 @@ class Supervisor {
 	 * Called by a LocalProcessor to schedule it for processing.
 	 */
 	void schedule(LocalProcessor localprocessor) {
-		scheduled.add(localprocessor);
+		if(!scheduled.contains(localprocessor))
+			scheduled.add(localprocessor);
 	}
 
 	/**
@@ -150,6 +151,10 @@ class Supervisor {
 			for(LocalProcessor lp : to_process)
 				lp.doProcess();
 		}
+
+		for(LocalProcessor lp : processor_list.getAllProcessors())
+			if(!lp.frameFinished())
+				System.out.printf("Node failed to process: %s. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read?\n", lp.localnode.getClass().getName());
 	}
 
 	public LocalNode getLocalNode(String id) {

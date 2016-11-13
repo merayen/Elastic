@@ -153,6 +153,19 @@ public abstract class LocalProcessor {
 		onProcess();
 	}
 
+	boolean frameFinished() {
+		boolean done = true;
+		for(Inlet inlet : inlets.values())
+			if(!inlet.satisfied())
+				done = false;
+
+		for(Outlet outlet : outlets.values())
+			if(!outlet.satisfied())
+				done = false;
+
+		return done;
+	}
+
 	/**
 	 * Schedule processing again.
 	 * Usually called by inlets when they have received data or LocalNode wants this processor to react to something.

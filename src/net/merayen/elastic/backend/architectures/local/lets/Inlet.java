@@ -24,5 +24,9 @@ public abstract class Inlet {
 		return balance;
 	}
 
+	public boolean satisfied() {
+		return available() == 0;
+	}
+
 	public abstract Format getFormat();
 }

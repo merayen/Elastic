@@ -274,10 +274,6 @@ public class LProcessor extends LocalProcessor {
 
 		int available = available();
 
-		if(frequency == null && amplitude == null && available > 10) {
-			available = new Random().nextInt(available / 2) + 1;
-		}
-
 		if(outlet != null && available > 0) {
 			AudioOutlet ao = (AudioOutlet)outlet;
 			System.out.println("Signalgenerator LProcessor processing " + outlet);
