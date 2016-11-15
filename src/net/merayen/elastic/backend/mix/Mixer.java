@@ -90,6 +90,16 @@ public class Mixer {
 		return device_scanner.getDevices();
 	}
 
+	public List<AbstractDevice> getOpenDevices() {
+		List<AbstractDevice> result = new ArrayList<>();
+
+		for(AbstractDevice ad : device_scanner.getDevices())
+			if(ad.isRunning())
+				result.add(ad);
+
+		return result;
+	}
+
 	public void send(String device_id, DataType data) {
 		AbstractDevice ad = device_scanner.getDevice(device_id);
 

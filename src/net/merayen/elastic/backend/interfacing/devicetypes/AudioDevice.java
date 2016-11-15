@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.interfacing.devicetypes;
 
-import java.util.List;
-
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 
 public abstract class AudioDevice extends AbstractDevice {
