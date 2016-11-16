@@ -7,6 +7,10 @@ import net.merayen.elastic.backend.util.SoundTest;
 
 public class Test {
 	public static void test() {
+		new Test();
+	}
+
+	private Test() {
 		Mixer mixer = new Mixer();
 
 		String output_device = null;
@@ -28,5 +32,32 @@ public class Test {
 		}));
 		mixer.dispatch(44100 * 2);
 		mixer.stop();
+
+		testSynchronization();
+	}
+
+	private Synchronization sync;
+	public void testSynchronization() {
+		Mixer mixer = new Mixer();
+		sync = new Synchronization(mixer, 10, new Synchronization.Handler() {
+
+			@Override
+			public void needData(long samples_lag) {
+				System.out.printf("Need data! Lag: %d\n", samples_lag);
+				sync.push(10);
+			}
+		});
+
+		long t = System.currentTimeMillis() + 5000;
+		while(t > System.currentTimeMillis()) {
+			try {
+				Thread.sleep(500);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		mixer.stop();
+		sync.end();
 	}
 }

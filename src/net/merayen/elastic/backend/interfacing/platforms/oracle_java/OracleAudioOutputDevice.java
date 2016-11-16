@@ -108,7 +108,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	protected void onStop() {
-		line.drain();
+		//line.drain();
 		if(line.isActive())
 			line.stop();
 	}
