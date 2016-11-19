@@ -38,7 +38,7 @@ public class Test {
 
 		mixer.reconfigure(44100, 2, 16);
 
-		final int BUFFER_SIZE = 1024*2;
+		final int BUFFER_SIZE = 1024;
 
 		sync = new Synchronization(mixer, 44100, BUFFER_SIZE, new Synchronization.Handler() {
 

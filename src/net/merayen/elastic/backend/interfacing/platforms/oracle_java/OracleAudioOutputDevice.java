@@ -23,6 +23,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	public final SourceDataLine line;
 
 	private byte[] buffer = new byte[0];
+	private long written_frame_position;
 
 	public OracleAudioOutputDevice(Mixer mixer, SourceDataLine line) {
 		super("oracle_java:" + /*mixer.getMixerInfo().getVendor() + "/" + */mixer.getMixerInfo().getName(), "Lalala", mixer.getMixerInfo().getVendor());
@@ -51,10 +52,11 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	@Override
 	public int available() {
 		Configuration c = (Configuration)configuration;
-		//return (line.available()/* - line.getBufferSize()*/) / c.channels / (c.depth / 8);
-		int buff = line.getBufferSize();
+		/*int buff = line.getBufferSize();
 		int avail = line.available();
-		return (buff - avail) / c.channels / (c.depth / 8);
+		return (buff - avail) / c.channels / (c.depth / 8);*/
+
+		return (int)(written_frame_position - line.getLongFramePosition());
 	}
 
 	@Override
@@ -62,6 +64,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		Configuration c = (Configuration)configuration;
 		int to_write = samples * (c.depth / 8) * c.channels;
 		line.write(new byte[to_write], 0, to_write);
+		written_frame_position += samples;
 	}
 
 	private void convertToBytes(float[] audio, byte[] out, int channels, int depth) {
@@ -97,6 +100,8 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 			buffer = new byte[audio.length * c.depth / 8];
 
 		convertToBytes(audio, buffer, c.channels, c.depth);
+
+		written_frame_position += audio.length / c.channels;
 
 		line.write(buffer, 0, buffer.length);
 	}

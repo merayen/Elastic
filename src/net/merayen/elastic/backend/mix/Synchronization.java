@@ -47,11 +47,11 @@ public class Synchronization {
 				if(in_available != Integer.MAX_VALUE) { // We have active input-source, we use that as a time-source
 					// TODO
 				} else if(out_available != Integer.MAX_VALUE) { // Only outputs, we use them as clock
-					if(!processing && out_available < buffer_size * 4) { // TODO automatically minimize the data in the output buffer based on how much time the processing takes
+					if(!processing && out_available < buffer_size) { // TODO automatically minimize the data in the output buffer based on how much time the processing takes
 						//if(out_available < 1024) System.out.println(out_available);
 						processing = true;
 						handler.needData();
-					} else if(processing && out_available < buffer_size) { // Dangerous small amount of data left. We fake a frame so that no outputs/inputs starve/overflows
+					} else if(processing && out_available < buffer_size / 2) { // Dangerous small amount of data left. We fake a frame so that no outputs/inputs starve/overflows
 						handler.behind();
 						dropFrame();
 					}
