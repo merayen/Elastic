@@ -12,6 +12,7 @@ import javax.sound.sampled.TargetDataLine;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
 
 /**
  * Wrapper for Oracle Java implementation of an audio device.
@@ -38,16 +39,22 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 
 	@Override
 	public int available() {
-		return /*line.getBufferSize() - */line.available();
-		//Configuration c = (Configuration)configuration;
+		//return /*line.getBufferSize() - */line.available();
+		Configuration c = (Configuration)configuration;
 		//return line.available() / c.channels / (c.depth / 8);
-		//return (line.available() - line.getBufferSize()) / c.channels / (c.depth / 8);
+		return (line.available() - line.getBufferSize()) / c.channels / (c.depth / 8);
+	}
+
+	@Override
+	public void spool(int samples) {
+		Configuration c = (Configuration)configuration;
+		int to_read = samples * (c.depth / 8) * c.channels;
+		line.read(new byte[to_read], 0, to_read);
 	}
 
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

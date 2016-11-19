@@ -11,6 +11,7 @@ import net.merayen.elastic.backend.interfacing.Platform;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
+import net.merayen.elastic.backend.interfacing.platforms.oracle_java.OracleAudioOutputDevice;
 import net.merayen.elastic.backend.mix.datatypes.Audio;
 import net.merayen.elastic.backend.mix.datatypes.DataType;
 
@@ -111,10 +112,14 @@ public class Mixer {
 		}
 	}
 
-	public void stop() {
+	/**
+	 * Ends this mixer, closing all lines.
+	 * Mixer can not be reused after this.
+	 */
+	public void end() {
 		for(AbstractDevice device : device_scanner.getDevices()) {
 			if(device.isRunning())
-				device.stop();
+				device.kill();
 		}
 	}
 
@@ -135,6 +140,10 @@ public class Mixer {
 	public void dispatch(int samples) {
 		sendToDevices(mixOutgoing(samples));
 
+		// Read incoming data, or wait until it is ready
+		// XXX reads every device for now
+		// TODO
+
 		// Clear buffer
 		synchronized(output_buffer) {
 			for(List<DataType> o : output_buffer.values())
@@ -143,11 +152,16 @@ public class Mixer {
 
 		for(List<DataType> o : input_buffer.values())
 			o.clear();
-
-		// Read incoming data, or wait until it is ready
-		// XXX reads every device for now
-		// TODO
 	}
+
+	/*
+	 * Called by Synchronization() when needing to fill the outgoing pipes.
+	 * Current buffer is not cleared, only the backend device is being read/written to.
+	 * Synchronization() uses this function to make sure that no lines are starving or overflowing.
+	 */
+	/*void spool(AbstractDevice ad, int samples) {
+		ad.spool(samples);
+	}*/
 
 	private Map<AbstractDevice, DataType> mixOutgoing(int samples) {
 		Map<AbstractDevice, DataType> out = new HashMap<>();
@@ -166,11 +180,15 @@ public class Mixer {
 	}
 
 	private void sendToDevices(Map<AbstractDevice, DataType> data) {
+		long t = System.currentTimeMillis();
+		int avail = 0;
 		for(Map.Entry<AbstractDevice, DataType> o : data.entrySet()) {
 			if(!o.getKey().isRunning())
 				o.getKey().begin();
 
+			avail = ((OracleAudioOutputDevice)o.getKey()).line.available();
 			((AudioOutputDevice)o.getKey()).write(((Audio)o.getValue()).audio);
 		}
+		System.out.println("Send: " + (System.currentTimeMillis() - t) + "  " + data.size() + "  " + ((Audio)data.values().iterator().next()).audio[0].length + "  " + avail);
 	}
 }

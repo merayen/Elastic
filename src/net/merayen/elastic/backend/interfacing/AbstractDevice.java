@@ -28,6 +28,11 @@ public abstract class AbstractDevice {
 	protected abstract void onKill();
 
 	/**
+	 * Either reads or writes silence to device. This one is usually called to assert that no lines are starving/overflowing
+	 */
+	public abstract void spool(int samples);
+
+	/**
 	 * Returns all the available configurations this device supports
 	 */
 	public abstract List<Configuration> getAvailableConfigurations();
