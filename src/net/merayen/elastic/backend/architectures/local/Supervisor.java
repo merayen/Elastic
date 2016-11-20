@@ -85,9 +85,9 @@ class Supervisor {
 			lp.wireUp();
 	}
 
-	private void initProcessors(List<LocalProcessor> list) {
+	private void initProcessors(List<LocalProcessor> list, int sample_offset) {
 		for(LocalProcessor lp : list)
-			lp.onInit();
+			lp.init(sample_offset);
 	}
 
 	private void prepareProcessors(ProcessMessage message) {
@@ -95,15 +95,16 @@ class Supervisor {
 			lp.prepare(message.data.get(lp.localnode.getID()));
 	}
 
-	int spawnSession(int chain_id) {
-		spawnSession(chain_id, ++session_id_counter);
+	int spawnSession(int chain_id, int sample_offset) {
+		spawnSession(chain_id, ++session_id_counter, sample_offset);
 		return session_id_counter;
 	}
 
 	/**
 	 * Spawns a new session from a chain.
+	 * sample_offset is the offset into the process frame which the session gets spawned.
 	 */
-	synchronized private void spawnSession(int chain_id, int session_id) {
+	synchronized private void spawnSession(int chain_id, int session_id, int sample_offset) {
 		if(processor_list.getChainSessions(chain_id).size() >= 128)
 			throw new RuntimeException("Voice limit reached, can not spawn any more processors");
 
@@ -120,15 +121,15 @@ class Supervisor {
 			}
 		}
 
-		wireUp(to_wire_up); // TODO only rewire the created ones
-		initProcessors(to_wire_up);
+		wireUp(to_wire_up);
+		initProcessors(to_wire_up, sample_offset);
 	}
 
 	/**
 	 * Spawns the main session, which always has the session_id 0.
 	 */
 	void spawnMainSession() {
-		spawnSession(0, 0);
+		spawnSession(0, 0, 0);
 	}
 
 	/**
@@ -161,7 +162,7 @@ class Supervisor {
 
 		for(LocalProcessor lp : processor_list.getAllProcessors())
 			if(!lp.frameFinished())
-				System.out.printf("Node failed to process: %s. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read?\n", lp.localnode.getClass().getName());
+				System.out.printf("Node failed to process: %s. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.localnode.getClass().getName());
 	}
 
 	public LocalNode getLocalNode(String id) {

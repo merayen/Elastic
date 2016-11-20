@@ -128,14 +128,12 @@ class GeneratorNode extends LocalNode {
 
 	@Override
 	protected void onProcess() {
-		if(tick == 0) {
-			GeneratorProcessor gp = (GeneratorProcessor)this.getProcessor(spawnVoice("output"));
+		if(tick++ == 0) {
+			GeneratorProcessor gp = (GeneratorProcessor)getProcessor(spawnVoice("output", 0));
 			gp.sendStuff();
 		} else if(tick == 1) {
 			
 		}
-
-		tick++;
 	}
 
 	@Override

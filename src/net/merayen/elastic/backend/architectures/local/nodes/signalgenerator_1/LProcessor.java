@@ -96,7 +96,7 @@ public class LProcessor extends LocalProcessor {
 	private void generateRaw() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 
-		for(int i = 0; i < outlet.buffer_size; i++) {
+		for(int i = outlet.written; i < outlet.buffer_size; i++) {
 			outlet.audio[i] = (float)Math.sin(pos) * amplitude;
 			pos += frequency / sample_rate;
 		}

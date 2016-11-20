@@ -28,6 +28,7 @@ public abstract class LocalProcessor {
 	private final Map<String, Inlet> inlets = new HashMap<>();
 
 	private boolean active = true;
+	private boolean has_emitted;
 
 	protected abstract void onInit();
 
@@ -138,6 +139,20 @@ public abstract class LocalProcessor {
 		return inlet;
 	}
 
+	/**
+	 * @param sample_offset is the sample count offset in the current processing frame when this processors spawned. Processor should only process from there. 
+	 */
+	void init(int sample_offset) {
+		// Jump the buffers to the offset when the voice was created
+		for(Inlet inlet : inlets.values())
+			inlet.read = sample_offset;
+
+		for(Outlet outlet : outlets.values())
+			outlet.written = sample_offset;
+
+		onInit();
+	}
+
 	protected LocalNode getLocalNode() {
 		return localnode;
 	}
@@ -218,6 +233,7 @@ public abstract class LocalProcessor {
 	void prepare(Map<String, Object> input_data) {
 		prepare = true; // Will prepare next time process() is called
 		this.input_data = input_data;
+		has_emitted = false;
 	}
 
 	/**
@@ -234,5 +250,19 @@ public abstract class LocalProcessor {
 			available = Math.min(available, inlet.available());
 
 		return available;
+	}
+
+	/**
+	 * Emits data to LocalNode.
+	 * The format is locally for this node, so it can be anything.
+	 * Only to be called once when done with a frame.
+	 */
+	protected void emit(Object data) {
+		if(has_emitted)
+			throw new RuntimeException("Only 1 call to emit() is allowed per frame");
+
+		localnode.receiveFromLocalProcessor(this, data);
+
+		has_emitted = true;
 	}
 }

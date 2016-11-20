@@ -1,7 +1,9 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
@@ -14,6 +16,8 @@ import net.merayen.elastic.netlist.Port;
  * All nodes must implement this.
  * Its processors are the ones actually performing the work.
  * LocalNodes receives parameter changes and behaves after that.
+ * 
+ * TODO implement ingoing data
  */
 public abstract class LocalNode {
 	Supervisor supervisor;
@@ -24,8 +28,13 @@ public abstract class LocalNode {
 	private final Class<? extends LocalProcessor> processor_cls;
 	private final NodeProperties properties = new NodeProperties(netlist);
 	private final Set<Integer> chain_ids = new HashSet<>(); // chain_ids this node is member of. Calculated from the ports
+	private final Map<Integer, Object> outgoing = new HashMap<>(); // Data that is the result from the processing (read from the outside)
 
 	protected abstract void onInit();
+
+	/**
+	 * Gets called on the beginning of processing a frame.
+	 */
 	protected abstract void onProcess();
 	protected abstract void onParameter(String key, Object value);
 	protected abstract void onDestroy();
@@ -55,7 +64,7 @@ public abstract class LocalNode {
 	 * Start a session from an output-port.
 	 * @return	The session_id of the new voice
 	 */
-	protected synchronized int spawnVoice(String port_name) {
+	protected synchronized int spawnVoice(String port_name, int sample_offset) {
 		Port port = netlist.getPort(node, port_name);
 
 		if(!properties.isOutput(port))
@@ -68,7 +77,7 @@ public abstract class LocalNode {
 
 		int chain_id = properties.analyzer.getPortChainCreateId(port);
 
-		return supervisor.spawnSession(chain_id);
+		return supervisor.spawnSession(chain_id, sample_offset);
 	}
 
 	/**
@@ -106,5 +115,9 @@ public abstract class LocalNode {
 
 	protected List<LocalProcessor> getProcessors() {
 		return supervisor.getProcessors(this);
+	}
+
+	synchronized void receiveFromLocalProcessor(LocalProcessor lp, Object data) {
+
 	}
 }
