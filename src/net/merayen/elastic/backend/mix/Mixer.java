@@ -190,6 +190,6 @@ public class Mixer {
 			((AudioOutputDevice)o.getKey()).write(((Audio)o.getValue()).audio);
 		}
 		Audio a = (Audio)data.values().iterator().next();
-		System.out.println("Send: " + (System.currentTimeMillis() - t) + "  " + data.size() + "  " + a.audio[0].length * a.audio.length * 2 + "  " + avail);
+		//System.out.println("Send: " + (System.currentTimeMillis() - t) + "  " + data.size() + "  " + a.audio[0].length * a.audio.length * 2 + "  " + avail);
 	}
 }

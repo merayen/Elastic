@@ -105,7 +105,7 @@ public class Test {
 
 	public static void test() {
 		NetList netlist = createNetList();
-		Supervisor supervisor = new Supervisor(netlist);
+		Supervisor supervisor = new Supervisor(netlist, 44100, 256);
 		//initLocalNodes(supervisor);
 		supervisor.begin();
 

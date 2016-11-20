@@ -19,7 +19,8 @@ public abstract class LocalProcessor {
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
 	int chain_id;
 	int session_id;
-	private int buffer_size;
+	protected int buffer_size;
+	protected int sample_rate;
 	private boolean prepare;
 	private Map<String, Object> input_data;
 
@@ -52,6 +53,7 @@ public abstract class LocalProcessor {
 		this.chain_id = chain_id;
 		this.session_id = session_id;
 		this.buffer_size = localnode.buffer_size;
+		this.sample_rate = localnode.sample_rate;
 	}
 
 	/**
@@ -134,6 +136,10 @@ public abstract class LocalProcessor {
 		inlets.put(name, inlet);
 
 		return inlet;
+	}
+
+	protected LocalNode getLocalNode() {
+		return localnode;
 	}
 
 	void doProcess() {
@@ -223,9 +229,9 @@ public abstract class LocalProcessor {
 	 */
 	protected int available() {
 		int available = buffer_size;
-		for(Inlet inlet : inlets.values()) {
+
+		for(Inlet inlet : inlets.values())
 			available = Math.min(available, inlet.available());
-		}
 
 		return available;
 	}

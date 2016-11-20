@@ -37,17 +37,21 @@ public class LProcessor extends LocalProcessor {
 	private float midi_pitch_factor;
 
 	private float amplitude = 0.2f;
+	private float frequency = 1000;
+
+	private LNode lnode;
 
 	private Mode mode;
 
 	int standalone_to_generate;
-	int sample_rate;
 	List<Short> keys_down = new ArrayList<>();
 
 	private double pos = 0;
 
 	@Override
 	protected void onInit() {
+		lnode = (LNode)getLocalNode();
+
 		Inlet frequency = getInlet("frequency");
 		Inlet amplitude = getInlet("amplitude");
 		Outlet output = getOutlet("output");
@@ -79,6 +83,26 @@ public class LProcessor extends LocalProcessor {
 		}
 
 		System.out.printf("Signalgenerator LProcessor onInit(). Mode: %s\n", mode.name());
+	}
+
+	@Override
+	public void onProcess() {
+		if(mode == Mode.RAW)
+			generateRaw();
+		else
+			throw new RuntimeException("Not implemented");
+	}
+
+	private void generateRaw() {
+		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
+
+		for(int i = 0; i < outlet.buffer_size; i++) {
+			outlet.audio[i] = (float)Math.sin(pos) * amplitude;
+			pos += frequency / sample_rate;
+		}
+
+		outlet.written = outlet.buffer_size;
+		outlet.push();
 	}
 
 	/*void tryToGenerate() {
@@ -309,7 +333,7 @@ public class LProcessor extends LocalProcessor {
 		}
 	}*/
 
-	private int n;
+	/*private int n;
 
 	@Override
 	protected void onProcess() {
@@ -338,7 +362,7 @@ public class LProcessor extends LocalProcessor {
 
 			outlet.push();
 		}
-	}
+	}*/
 
 	@Override
 	protected void onPrepare() {

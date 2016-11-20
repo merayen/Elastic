@@ -4,7 +4,6 @@ import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.analyzer.Analyzer;
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.netlist.NetList;
-import net.merayen.elastic.netlist.Serializer;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
@@ -48,7 +47,7 @@ public class Executor extends AbstractExecutor {
 			if(supervisor != null)
 				supervisor.end();
 
-			supervisor = new Supervisor(netlist);
+			supervisor = new Supervisor(netlist, 44100, 512);
 			supervisor.begin();
 			System.out.println("Local architecture restarted");
 		}

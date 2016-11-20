@@ -15,7 +15,11 @@ import net.merayen.elastic.util.Postmaster;
  */
 class Supervisor {
 	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.LNode";
+
 	final NetList netlist;
+	private final int sample_rate;
+	private final int buffer_size;
+
 	private final NodeProperties node_properties;
 	private final LocalNodeProperties local_properties = new LocalNodeProperties();
 	final ProcessorList processor_list = new ProcessorList();
@@ -23,8 +27,11 @@ class Supervisor {
 
 	private List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution
 
-	public Supervisor(NetList netlist) {
+	public Supervisor(NetList netlist, int sample_rate, int buffer_size) {
 		this.netlist = netlist; // Our own, compiled NetList
+		this.sample_rate = sample_rate;
+		this.buffer_size = buffer_size;
+
 		node_properties = new NodeProperties(netlist);
 		load();
 	}
@@ -47,7 +54,7 @@ class Supervisor {
 				local_properties.setLocalNode(node, localnode);
 			}
 
-			localnode.compiler_setInfo(this, node, 256);
+			localnode.compiler_setInfo(this, node, sample_rate, buffer_size);
 			localnode.init();
 		}
 	}

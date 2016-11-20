@@ -6,7 +6,7 @@ public class LNode extends LocalNode {
 	// Tuning parameters
 	private int output_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
 	private int process_buffer_size = 128; // Always try to stay minimum these many samples ahead (makes delay)
-	private int sample_rate = 44100; // TODO get this from event
+	//private int sample_rate = 44100; // TODO get this from event
 
 	// These attributes changes if the input audio changes (we re-init the audio output device)
 	private int channels = 0;
