@@ -74,13 +74,6 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 		return result;
 	}
 
-	public List<LocalProcessor> getSessionProcessors(int session_id) {
-		if(sessions.containsKey(session_id))
-			return sessions.get(session_id);
-
-		return new ArrayList<>(0);
-	}
-
 	public Set<Integer> getSessions() {
 		return sessions.keySet();
 	}
@@ -118,5 +111,10 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 
 	public Iterator<LocalProcessor> iterator() { // Bad performance? Check getAllProcessors()
 		return getAllProcessors().iterator(); 
+	}
+
+	void clear() {
+		chains.clear();
+		sessions.clear();
 	}
 }

@@ -23,8 +23,8 @@ public abstract class LocalNode {
 	Supervisor supervisor;
 	NetList netlist;
 	Node node; // The NetList-node we represent
-	int sample_rate;
-	int buffer_size;
+	public int sample_rate;
+	public int buffer_size;
 	private final Class<? extends LocalProcessor> processor_cls;
 	private final NodeProperties properties = new NodeProperties(netlist);
 	private final Set<Integer> chain_ids = new HashSet<>(); // chain_ids this node is member of. Calculated from the ports
@@ -33,10 +33,24 @@ public abstract class LocalNode {
 	protected abstract void onInit();
 
 	/**
+	 * Called when Node gets a new processor under itself.
+	 * In this function the LocalNode can set parameters on the LocalProcessor() before the LocalProcessor()'s onInit gets called.
+	 */
+	protected abstract void onSpawnProcessor(LocalProcessor lp);
+
+	/**
 	 * Gets called on the beginning of processing a frame.
 	 */
-	protected abstract void onProcess();
+	protected abstract void onProcess(Map<String, Object> data);
+
 	protected abstract void onParameter(String key, Object value);
+
+	/**
+	 * Called when a frame has been processed.
+	 * LocalNode should here process the data received from the processors, forward them, if this is applicable.
+	 */
+	protected abstract void onFinishFrame();
+
 	protected abstract void onDestroy();
 
 	public LocalNode(Class<? extends LocalProcessor> cls) {
@@ -115,9 +129,5 @@ public abstract class LocalNode {
 
 	protected List<LocalProcessor> getProcessors() {
 		return supervisor.getProcessors(this);
-	}
-
-	synchronized void receiveFromLocalProcessor(LocalProcessor lp, Object data) {
-
 	}
 }

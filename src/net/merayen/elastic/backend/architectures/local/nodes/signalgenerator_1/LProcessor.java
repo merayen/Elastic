@@ -22,6 +22,7 @@ import net.merayen.elastic.util.Postmaster.Message;
  */
 public class LProcessor extends LocalProcessor {
 	private enum Mode {
+		NOTHING,
 		RAW,
 		RAW_AMP,
 		MIDI,
@@ -39,6 +40,9 @@ public class LProcessor extends LocalProcessor {
 	private float amplitude = 0.2f;
 	private float frequency = 1000;
 
+	private int lol_static;
+	private int lol = new Random().nextInt(Integer.MAX_VALUE);
+
 	private LNode lnode;
 
 	private Mode mode;
@@ -50,12 +54,16 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onInit() {
+		lol = lol_static++;
+		System.out.println("Generator onInit() " + lol);
 		lnode = (LNode)getLocalNode();
 
 		Inlet frequency = getInlet("frequency");
 		Inlet amplitude = getInlet("amplitude");
 		Outlet output = getOutlet("output");
 
+		if(output == null)
+			mode = Mode.NOTHING;
 		if(frequency == null && amplitude == null) {
 			mode = Mode.RAW;
 		} else if(frequency == null && amplitude != null) {
@@ -87,6 +95,7 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	public void onProcess() {
+		System.out.println("Generator process() " + lol);
 		if(mode == Mode.RAW)
 			generateRaw();
 		else
@@ -317,6 +326,7 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	public void onDestroy() {
+		System.out.println("Generator onDestroy() " + lol);
 		//if(!dead)
 		//	send("output", new EndSessionResponse());
 	}

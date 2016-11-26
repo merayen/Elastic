@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.architectures.local.nodes.test_100;
+package net.merayen.elastic.backend.architectures.local.nodes.voices;
 
 import java.util.Map;
 
@@ -7,12 +7,19 @@ import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 
 public class LNode extends LocalNode {
 
-	public LNode() {
-		super(LProcessor.class);
+	public LNode(Class<? extends LocalProcessor> cls) {
+		super(cls);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void onInit() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onSpawnProcessor(LocalProcessor lp) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -30,19 +37,13 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void onSpawnProcessor(LocalProcessor lp) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	protected void onFinishFrame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		
 	}

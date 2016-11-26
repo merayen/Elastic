@@ -21,8 +21,10 @@ public abstract class LocalProcessor {
 	int session_id;
 	protected int buffer_size;
 	protected int sample_rate;
+
+	int voice_stop;
+
 	private boolean prepare;
-	private Map<String, Object> input_data;
 
 	private final Map<String, Outlet> outlets = new HashMap<>();
 	private final Map<String, Inlet> inlets = new HashMap<>();
@@ -45,7 +47,7 @@ public abstract class LocalProcessor {
 	 */
 	protected abstract void onProcess();
 
-	protected abstract void onMessage(Postmaster.Message message); // For NodeParameterChange()
+	protected abstract void onMessage(Postmaster.Message message); // For NodeParameterChange() Really? Shouldn't it be interpreted by the LocalNode instead?
 
 	protected abstract void onDestroy();
 
@@ -55,6 +57,8 @@ public abstract class LocalProcessor {
 		this.session_id = session_id;
 		this.buffer_size = localnode.buffer_size;
 		this.sample_rate = localnode.sample_rate;
+
+		voice_stop = buffer_size;
 	}
 
 	/**
@@ -71,11 +75,12 @@ public abstract class LocalProcessor {
 			Port port = localnode.netlist.getPort(localnode.node, port_name);
 
 			// We only add port if it is part of the chain
-			for(int port_chain_id : properties.analyzer.getPortChainIds(port))
+			for(int port_chain_id : properties.analyzer.getPortChainIds(port)) {
 				if(port_chain_id == chain_id) {
 					addOutlet(port_name, properties.analyzer.getDecidedFormat(port));
 					break;
 				}
+			}
 		}
 	}
 
@@ -123,8 +128,6 @@ public abstract class LocalProcessor {
 	private Inlet addInlet(String name, Outlet connected_outlet) {
 		if(inlets.containsKey(name) || outlets.containsKey(name))
 			throw new RuntimeException("Inlet/Outlet already on this processor");
-
-		Format format = connected_outlet.getFormat();
 
 		Inlet inlet;
 		try {
@@ -213,7 +216,8 @@ public abstract class LocalProcessor {
 	 * otherwise get stuck sessions.
 	 * 
 	 * E.g: A sine generator with MIDI input at frequency sets this to *true* whenever
-	 * a key is pressed, and sets this to false at once on key up.
+	 * a key is pressed, and sets this to false at once on key up, though some other nodes
+	 * later in the chain may still keep themselves alive.
 	 */
 	protected void inactive() {
 		active = false;
@@ -230,10 +234,8 @@ public abstract class LocalProcessor {
 		return active;
 	}
 
-	void prepare(Map<String, Object> input_data) {
+	void prepare() {
 		prepare = true; // Will prepare next time process() is called
-		this.input_data = input_data;
-		has_emitted = false;
 	}
 
 	/**
@@ -250,19 +252,5 @@ public abstract class LocalProcessor {
 			available = Math.min(available, inlet.available());
 
 		return available;
-	}
-
-	/**
-	 * Emits data to LocalNode.
-	 * The format is locally for this node, so it can be anything.
-	 * Only to be called once when done with a frame.
-	 */
-	protected void emit(Object data) {
-		if(has_emitted)
-			throw new RuntimeException("Only 1 call to emit() is allowed per frame");
-
-		localnode.receiveFromLocalProcessor(this, data);
-
-		has_emitted = true;
 	}
 }

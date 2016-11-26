@@ -34,13 +34,8 @@ public class Dispatch {
 				}
 
 				Postmaster.Message message;
-				while (true) {
-					message = executor.to_processing.receive();
-					if(message != null)
-						executor.onMessage(message);
-					else
-						break;
-				}
+				while ((message = executor.to_processing.receive()) != null)
+					executor.onMessage(message);
 			}
 		}
 	}

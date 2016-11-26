@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
+import java.util.Map;
+
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 
@@ -21,7 +23,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess() {
+	protected void onProcess(Map<String, Object> data) {
 		System.out.println("Signalgenerator " + getID() + " is processing");
 		for(LocalProcessor lp : getProcessors())
 			lp.schedule();
@@ -35,5 +37,17 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected void onSpawnProcessor(LocalProcessor lp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onFinishFrame() {
+		// TODO Auto-generated method stub
+		
 	}
 }

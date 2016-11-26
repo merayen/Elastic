@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
@@ -12,6 +11,7 @@ import net.merayen.elastic.util.Postmaster;
 
 /**
  * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
+ * TODO this class does 2 things now. Should perhaps only schedule and run the nodes, as it is a supervisor.
  */
 class Supervisor {
 	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.LNode";
@@ -24,6 +24,8 @@ class Supervisor {
 	private final LocalNodeProperties local_properties = new LocalNodeProperties();
 	final ProcessorList processor_list = new ProcessorList();
 	private int session_id_counter;
+
+	private boolean dead;
 
 	private List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution
 
@@ -60,12 +62,25 @@ class Supervisor {
 	}
 
 	void begin() {
-		// Launch all main-session nodes
 		spawnMainSession();
 	}
 
-	void end() {
-		// TODO end every node and processor
+	/**
+	 * Destroys everything and clears ourselves.
+	 * Not much use of this instance after this call. Dispose it and create a new one.
+	 */
+	void clear() {
+		dead = true;
+
+		for(int session_id : processor_list.getSessions())
+			removeSession(session_id);
+
+		processor_list.clear();
+
+		for(Node node : netlist.getNodes()) {
+			local_properties.getLocalNode(node).onDestroy();
+			local_properties.setLocalNode(node, null);
+		}
 	}
 
 	public void handleMessage(Postmaster.Message message) {
@@ -87,12 +102,10 @@ class Supervisor {
 
 	private void initProcessors(List<LocalProcessor> list, int sample_offset) {
 		for(LocalProcessor lp : list)
-			lp.init(sample_offset);
-	}
+			lp.localnode.onSpawnProcessor(lp);
 
-	private void prepareProcessors(ProcessMessage message) {
-		for(LocalProcessor lp : processor_list)
-			lp.prepare(message.data.get(lp.localnode.getID()));
+		for(LocalProcessor lp : list)
+			lp.init(sample_offset);
 	}
 
 	int spawnSession(int chain_id, int sample_offset) {
@@ -132,12 +145,23 @@ class Supervisor {
 		spawnSession(0, 0, 0);
 	}
 
+	/*
+	 * Lazily removes a session.
+	 * None of the LocalProcessors are actually deleted now, but rather collected later on.
+	 */
+	/*void removeSession(int session_id) {
+		List<LocalProcessor> processors = processor_list.getSessionProcessors(session_id);
+	}*/
+
 	/**
 	 * Called by a LocalProcessor to schedule it for processing.
 	 */
-	void schedule(LocalProcessor localprocessor) {
-		if(!scheduled.contains(localprocessor))
-			scheduled.add(localprocessor);
+	void schedule(LocalProcessor lp) {
+		if(lp.localnode.supervisor != this)
+			throw new RuntimeException("Should not happen");
+
+		if(!scheduled.contains(lp))
+			scheduled.add(lp);
 	}
 
 	/**
@@ -145,11 +169,14 @@ class Supervisor {
 	 * Calls onProcess() on all processors until everyone is satisfied
 	 */
 	public synchronized void process(ProcessMessage message) {
-		prepareProcessors(message);
+		if(dead)
+			throw new RuntimeException("Should not be called when after clear()");
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
-		for(Node node : netlist.getNodes())
-			local_properties.getLocalNode(node).onProcess();
+		for(Node node : netlist.getNodes()) {
+			LocalNode ln = local_properties.getLocalNode(node);
+			ln.onProcess(message.data.get(node.getID()));
+		}
 
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors
 			List<LocalProcessor> to_process = scheduled;
@@ -160,9 +187,27 @@ class Supervisor {
 				lp.doProcess();
 		}
 
+		// Make sure every processor has completely read and written to their buffers
 		for(LocalProcessor lp : processor_list.getAllProcessors())
 			if(!lp.frameFinished())
 				System.out.printf("Node failed to process: %s. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.localnode.getClass().getName());
+
+		// Notify all LocalNodes that we have processed.
+		for(Node node : netlist.getNodes())
+			local_properties.getLocalNode(node).onFinishFrame();
+
+		// Clean up dead sessions
+		for(int session_id : new ArrayList<>(processor_list.getSessions())) {
+			List<LocalProcessor> processors = processor_list.getProcessors(session_id);
+
+			boolean active = false;
+
+			for(LocalProcessor lp : processors)
+				active |= lp.isActive();
+
+			if(!active)
+				removeSession(session_id);
+		}
 	}
 
 	public LocalNode getLocalNode(String id) {
@@ -180,5 +225,13 @@ class Supervisor {
 				result.add(lp);
 
 		return result;
+	}
+
+	private void removeSession(int session_id) {
+		System.out.println("Supervisor: Removing session " + session_id);
+		for(LocalProcessor lp : processor_list.getProcessors(session_id))
+			lp.onDestroy();
+
+		processor_list.removeSession(session_id);
 	}
 }

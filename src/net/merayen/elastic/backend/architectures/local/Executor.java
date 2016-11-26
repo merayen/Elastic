@@ -9,7 +9,7 @@ import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
-	private NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive
+	private NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive. Contains properties only for us
 	private NetList upcoming_netlist; // Is set to true when netlist has been changed and needing to analyze and prepare on next ProcessMessage()
 	private Supervisor supervisor;
 
@@ -45,7 +45,7 @@ public class Executor extends AbstractExecutor {
 
 			Analyzer.analyze(netlist);
 			if(supervisor != null)
-				supervisor.end();
+				supervisor.clear();
 
 			supervisor = new Supervisor(netlist, 44100, 512);
 			supervisor.begin();
@@ -54,15 +54,17 @@ public class Executor extends AbstractExecutor {
 	}
 
 	private NetList getUpcomingNetList() {
-		if(upcoming_netlist == null)
+		if(upcoming_netlist == null) {
 			upcoming_netlist = netlist.copy();
+			new LocalNodeProperties().clear(upcoming_netlist);
+		}
 
 		return upcoming_netlist;
 	}
 
 	@Override
 	public void stop() {
-		
+		supervisor.clear();
 	}
 
 	@Override

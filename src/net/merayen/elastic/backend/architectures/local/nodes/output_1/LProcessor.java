@@ -11,26 +11,38 @@ import net.merayen.elastic.util.Postmaster.Message;
  */
 public class LProcessor extends LocalProcessor {
 	private boolean valid = true;
+	int channel_id = -1; // Set by the LNode when voice is created
+	int written;
 
 	@Override
 	protected void onProcess() {
-		// TODO output directly to interface
 		Inlet inlet = getInlet("input");
+
 		if(inlet != null) {
 			AudioInlet ai = (AudioInlet)inlet;
-			System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
-			inlet.read += inlet.available();
+			LNode lnode = (LNode)getLocalNode();
+
+			int start = ai.read;
+			int stop = ai.outlet.written;
+
+			for(int i = start; i < stop; i++)
+				lnode.output[channel_id][i] = ai.outlet.audio[i];
+			//System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
+
+			inlet.read += stop - start;
+			written += stop - start;
 		}
 	}
 
 	@Override
 	protected void onInit() {
-		System.out.println("Output LProcessor onInit()");
+		((LNode)getLocalNode()).output[channel_id] = new float[buffer_size]; // Clean our buffer
 	}
 
 	@Override
 	protected void onPrepare() {
 		// TODO Auto-generated method stub
+		written = 0;
 		System.out.println("Output onPrepare()");
 	}
 
@@ -42,7 +54,6 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		
+		((LNode)getLocalNode()).output[channel_id] = null; // Clean our buffer
 	}
 }

@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import java.util.Map;
+
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
@@ -127,7 +129,7 @@ class GeneratorNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess() {
+	protected void onProcess(Map<String, Object> data) {
 		if(tick++ == 0) {
 			GeneratorProcessor gp = (GeneratorProcessor)getProcessor(spawnVoice("output", 0));
 			gp.sendStuff();
@@ -141,6 +143,18 @@ class GeneratorNode extends LocalNode {
 
 	@Override
 	protected void onParameter(String key, Object value) {}
+
+	@Override
+	protected void onSpawnProcessor(LocalProcessor lp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onFinishFrame() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class GeneratorProcessor extends LocalProcessor {
@@ -188,13 +202,25 @@ class MiddleNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess() {}
+	protected void onProcess(Map<String, Object> data) {}
 
 	@Override
 	protected void onDestroy() {}
 
 	@Override
 	protected void onParameter(String key, Object value) {}
+
+	@Override
+	protected void onSpawnProcessor(LocalProcessor lp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onFinishFrame() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class MiddleProcessor extends LocalProcessor {
@@ -247,7 +273,7 @@ class ConsumerNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess() {}
+	protected void onProcess(Map<String, Object> data) {}
 
 	void addVoiceData(int session_id, float[] audio, int start, int stop) {
 		((ConsumerProcessor)this.getProcessor(0)).emit(audio, start, stop);
@@ -258,6 +284,18 @@ class ConsumerNode extends LocalNode {
 
 	@Override
 	protected void onParameter(String key, Object value) {}
+
+	@Override
+	protected void onSpawnProcessor(LocalProcessor lp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onFinishFrame() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class ConsumerProcessor extends LocalProcessor {
