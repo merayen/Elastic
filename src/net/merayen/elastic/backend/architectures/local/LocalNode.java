@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.util.pack.Dict;
 
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
@@ -28,7 +28,9 @@ public abstract class LocalNode {
 	private final Class<? extends LocalProcessor> processor_cls;
 	private final NodeProperties properties = new NodeProperties(netlist);
 	private final Set<Integer> chain_ids = new HashSet<>(); // chain_ids this node is member of. Calculated from the ports
-	private final Map<Integer, Object> outgoing = new HashMap<>(); // Data that is the result from the processing (read from the outside)
+
+	public Dict ingoing = new Dict(); // Data sent to this node from LogicNodes
+	public final Dict outgoing = new Dict(); // Data that is the result from the processing (read from the outside)
 
 	protected abstract void onInit();
 
@@ -41,7 +43,7 @@ public abstract class LocalNode {
 	/**
 	 * Gets called on the beginning of processing a frame.
 	 */
-	protected abstract void onProcess(Map<String, Object> data);
+	protected abstract void onProcess(Dict data);
 
 	protected abstract void onParameter(String key, Object value);
 

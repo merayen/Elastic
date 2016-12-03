@@ -11,7 +11,7 @@ public class Dispatch {
 		/**
 		 * Message received from the backend.
 		 */
-		public void onMessage(Postmaster.Message message);
+		public void onMessageFromProcessing(Postmaster.Message message);
 	}
 
 	class Runner extends Thread {
@@ -36,6 +36,9 @@ public class Dispatch {
 				Postmaster.Message message;
 				while ((message = executor.to_processing.receive()) != null)
 					executor.onMessage(message);
+
+				while((message = executor.from_processing.receive()) != null)
+					handler.onMessageFromProcessing(message);
 			}
 		}
 	}

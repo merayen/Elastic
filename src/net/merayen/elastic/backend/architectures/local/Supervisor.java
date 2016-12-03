@@ -8,6 +8,7 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.pack.Dict;
 
 /**
  * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
@@ -166,16 +167,17 @@ class Supervisor {
 
 	/**
 	 * Process a frame.
-	 * Calls onProcess() on all processors until everyone is satisfied
+	 * Calls onProcess() on all processors until everyone is satisfied.
+	 * Returns a new ProcessMessage() with the output data.
 	 */
-	public synchronized void process(ProcessMessage message) {
+	public synchronized ProcessMessage process(ProcessMessage message) {
 		if(dead)
 			throw new RuntimeException("Should not be called when after clear()");
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for(Node node : netlist.getNodes()) {
 			LocalNode ln = local_properties.getLocalNode(node);
-			ln.onProcess(message.data.get(node.getID()));
+			ln.onProcess((Dict)message.dict.data.get(node.getID()));
 		}
 
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors
@@ -192,9 +194,16 @@ class Supervisor {
 			if(!lp.frameFinished())
 				System.out.printf("Node failed to process: %s. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.localnode.getClass().getName());
 
+		ProcessMessage response = new ProcessMessage();
+
 		// Notify all LocalNodes that we have processed.
-		for(Node node : netlist.getNodes())
-			local_properties.getLocalNode(node).onFinishFrame();
+		for(Node node : netlist.getNodes()) {
+			LocalNode ln = local_properties.getLocalNode(node);
+
+			ln.onFinishFrame();
+
+			response.dict.data.put(node.getID(), ln.outgoing);
+		}
 
 		// Clean up dead sessions
 		for(int session_id : new ArrayList<>(processor_list.getSessions())) {
@@ -208,6 +217,8 @@ class Supervisor {
 			if(!active)
 				removeSession(session_id);
 		}
+
+		return new ProcessMessage(); // TODO
 	}
 
 	public LocalNode getLocalNode(String id) {

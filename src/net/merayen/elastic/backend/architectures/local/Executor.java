@@ -19,7 +19,8 @@ public class Executor extends AbstractExecutor {
 	protected void onMessage(Postmaster.Message message) {
 		if(message instanceof ProcessMessage) {
 			applyNetList();
-			supervisor.process((ProcessMessage)message);
+			ProcessMessage pm = supervisor.process((ProcessMessage)message);
+			sendFromProcessing(pm);
 
 		} else if(message instanceof NodeParameterMessage) {
 			applyNetList();
@@ -65,14 +66,5 @@ public class Executor extends AbstractExecutor {
 	@Override
 	public void stop() {
 		supervisor.clear();
-	}
-
-	@Override
-	public void update() {
-		/*try {
-			wait();
-		} catch(InterruptedException e) {
-			throw new RuntimeException(e);
-		}*/
 	}
 }

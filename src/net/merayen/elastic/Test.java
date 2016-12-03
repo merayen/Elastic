@@ -13,7 +13,7 @@ public class Test {
 		//net.merayen.elastic.backend.context.Test.test();
 		net.merayen.elastic.backend.analyzer.Test.test();
 		//net.merayen.elastic.backend.interfacing.Test.test();
-		//net.merayen.elastic.backend.mix.Test.test();
+		net.merayen.elastic.backend.mix.Test.test();
 		//net.merayen.elastic.ui.objects.top.viewport.Test.test();
 		net.merayen.elastic.system.Test.test();
 		//net.merayen.elastic.ui.Test.test();

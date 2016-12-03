@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.util.pack.Dict;
 
 /**
  * TODO change mode when frequency-port is connected/disconnected
@@ -23,7 +24,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {
+	protected void onProcess(Dict data) {
 		System.out.println("Signalgenerator " + getID() + " is processing");
 		for(LocalProcessor lp : getProcessors())
 			lp.schedule();

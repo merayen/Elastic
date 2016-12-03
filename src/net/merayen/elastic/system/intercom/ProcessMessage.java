@@ -1,8 +1,6 @@
 package net.merayen.elastic.system.intercom;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import net.merayen.elastic.util.pack.*;
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -10,9 +8,8 @@ import net.merayen.elastic.util.Postmaster;
  * Backend responds with a new ProcessMessage with the processed data.
  */
 public class ProcessMessage extends Postmaster.Message {
-
 	/**
-	 * Format: <node-id, <data-identifier, the data>>
+	 * Format: (node-id, (data-identifier, the data))
 	 */
-	public final Map<String, Map<String, Object>> data = new HashMap<>();
+	public final Dict dict = new Dict();
 }

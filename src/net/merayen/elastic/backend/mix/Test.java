@@ -78,7 +78,7 @@ public class Test {
 			}
 		});
 
-		long t = System.currentTimeMillis() + 15000;
+		long t = System.currentTimeMillis() + 5000;
 		while(t > System.currentTimeMillis()) {
 			try {
 				Thread.sleep(500);

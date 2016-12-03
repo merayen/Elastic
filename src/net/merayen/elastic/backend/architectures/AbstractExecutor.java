@@ -15,17 +15,15 @@ public abstract class AbstractExecutor {
 	public abstract void stop();
 
 	/**
-	 * Gets called very endlessly.
-	 * You need to call Thread.sleep(...)
-	 */
-	public abstract void update();
-
-	/**
 	 * Retrieves any messages sent from the processor.
 	 * Needs to be polled often.
 	 * Returns null if nothing.
 	 */
 	Postmaster.Message receiveFromProcessor() {
 		return from_processing.receive();
+	}
+
+	protected void sendFromProcessing(Postmaster.Message message) {
+		from_processing.send(message);
 	}
 }

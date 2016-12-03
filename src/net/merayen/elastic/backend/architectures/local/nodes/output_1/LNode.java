@@ -6,6 +6,9 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.util.pack.Dict;
+import net.merayen.elastic.util.pack.FloatArray;
+import net.merayen.elastic.util.pack.PackArray;
 
 public class LNode extends LocalNode {
 	public LNode() {
@@ -22,7 +25,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {
+	protected void onProcess(Dict data) {
 		System.out.println("Output " + getID() + " is processing");
 	}
 
@@ -62,6 +65,13 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onFinishFrame() {
-		
+		PackArray channels = new PackArray();
+		channels.data = new FloatArray[output.length];
+
+		for(int channel_id = 0; channel_id < output.length; channel_id++)
+			if(output[channel_id] != null)
+				((FloatArray[])channels.data)[channel_id] = new FloatArray(output[channel_id]);
+
+		outgoing.data.put("audio", channels);
 	}
 }

@@ -33,7 +33,7 @@ public class BackendContext {
 		BackendContext context = new BackendContext();
 		context.dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
 			@Override
-			public void onMessage(Postmaster.Message message) {
+			public void onMessageFromProcessing(Postmaster.Message message) {
 				
 			}
 		});
