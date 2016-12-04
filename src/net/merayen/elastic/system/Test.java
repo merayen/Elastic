@@ -6,8 +6,7 @@ import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;
-import net.merayen.elastic.backend.mix.datatypes.Audio;
-import net.merayen.elastic.backend.util.SoundTest;
+import net.merayen.elastic.backend.nodes.Environment;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -19,8 +18,19 @@ public class Test {
 	private ElasticSystem system;
 	private Synchronization sync;
 
+	private final int SAMPLE_RATE = 44100;
+	private final int DEPTH = 16;
+	private final int BUFFER_SIZE = 256;
+
 	private Test() {
-		system = new ElasticSystem();
+		Environment env = createEnvironment(() -> {
+			System.out.println("Uhm");
+			system.sendMessageToBackend(new ProcessMessage());
+		});
+
+		system = new ElasticSystem(env);
+
+		env.synchronization.start();
 
 		try {
 			Thread.sleep(1000); // Give some time for the UI to create the viewports and the NodeView
@@ -86,18 +96,16 @@ public class Test {
 	}
 
 	private void startProcessing() {
-		Mixer mixer = new Mixer();
+		/*Mixer mixer = new Mixer();
 
 		String output_device = getFirstOutputDevice(mixer);
 
-		mixer.reconfigure(44100, 2, 16);
+		mixer.reconfigure(SAMPLE_RATE, 2, DEPTH);
 
-		int BUFFER_SIZE = 256;
-
-		sync = new Synchronization(mixer, 44100, BUFFER_SIZE, new Synchronization.Handler() {
+		sync = new Synchronization(mixer, SAMPLE_RATE, BUFFER_SIZE, new Synchronization.Handler() {
 			private long last = System.currentTimeMillis();
 			private long start = System.currentTimeMillis();
-			private float[] audio = SoundTest.makeSound(44100, 15f, new float[]{1000}, 1f);
+			private float[] audio = SoundTest.makeSound(SAMPLE_RATE, 15f, new float[]{1000}, 1f);
 			private float[] output = new float[BUFFER_SIZE];
 			private int position;
 
@@ -131,7 +139,7 @@ public class Test {
 				System.out.println("Lagging behind");
 				//sync.push();
 			}
-		});
+		});*/
 
 		final long u = System.currentTimeMillis() + 3600 * 1000;
 
@@ -140,13 +148,33 @@ public class Test {
 
 			@Override
 			public boolean noe() {
-				if(s + 1000 < System.currentTimeMillis()) {
+				/*if(s + 1000 < System.currentTimeMillis()) {
 					s = System.currentTimeMillis();
 					system.sendMessageToBackend(new ProcessMessage());
-				}
+				}*/
 				return System.currentTimeMillis() > u;
 			}
 		});
+	}
+
+	private Environment createEnvironment(Runnable needDataFunc) {
+		Mixer mixer = new Mixer();
+		mixer.reconfigure(SAMPLE_RATE, 2, DEPTH);
+
+		Synchronization sync = new Synchronization(mixer, SAMPLE_RATE, BUFFER_SIZE, new Synchronization.Handler() {
+			@Override
+			public void needData() {
+				needDataFunc.run();
+			}
+
+			@Override
+			public void behind() {
+				//System.out.println("Lagging behind");
+				//sync.push();
+			}
+		});
+
+		return new Environment(mixer, sync);
 	}
 
 	private String getFirstOutputDevice(Mixer mixer) {

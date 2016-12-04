@@ -8,7 +8,7 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
-import net.merayen.elastic.util.pack.Dict;
+import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
@@ -177,7 +177,7 @@ class Supervisor {
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for(Node node : netlist.getNodes()) {
 			LocalNode ln = local_properties.getLocalNode(node);
-			ln.onProcess((Dict)message.dict.data.get(node.getID()));
+			ln.onProcess((PackDict)message.dict.data.get(node.getID()));
 		}
 
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors

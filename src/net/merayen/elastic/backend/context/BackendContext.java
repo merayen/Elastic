@@ -6,9 +6,13 @@ import net.merayen.elastic.Info;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
+import net.merayen.elastic.backend.mix.Mixer;
+import net.merayen.elastic.backend.mix.Synchronization;
+import net.merayen.elastic.backend.nodes.Environment;
 import net.merayen.elastic.backend.nodes.LogicNodeList;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Serializer;
+import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -17,37 +21,42 @@ import net.merayen.elastic.util.Postmaster;
 public class BackendContext {
 	final NetList netlist = new NetList(); // Main NetList that the UI and the architecture builds from
 	final NodeProperties node_properties = new NodeProperties(netlist);
+
+	final Environment env;
+
 	LogicNodeList logicnode_list;
 	Dispatch dispatch;
 	MessageHandler message_handler = new MessageHandler(this);
 
 	final Postmaster from_backend = new Postmaster();
 
-	private BackendContext() {}
+	private BackendContext(Environment env) {
+		this.env = env;
+	}
 
 	/**
 	 * Create a new default context, and starts it automatically.
 	 * Remember to call end()!
 	 */
-	public static BackendContext create() {
-		BackendContext context = new BackendContext();
+	public static BackendContext create(Environment env) {
+		BackendContext context = new BackendContext(env);
 		context.dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
 			@Override
 			public void onMessageFromProcessing(Postmaster.Message message) {
-				
+				context.message_handler.fromProcessingToLogic(message);
 			}
 		});
 
 		context.dispatch.launch(context.netlist, 8); // TODO 8? Make it customizable/load it from somewhere
 
-		context.logicnode_list = new LogicNodeList(context.netlist, new LogicNodeList.IHandler() {
+		context.logicnode_list = new LogicNodeList(context.netlist, env, new LogicNodeList.IHandler() {
 			@Override
 			public void sendMessageToUI(net.merayen.elastic.util.Postmaster.Message message) { // Message sent from LogicNodes to the UI
 				context.message_handler.handleFromLogicToUI(message);
 			}
 
 			@Override
-			public void sendMessageToBackend(net.merayen.elastic.util.Postmaster.Message message) { // Messages sent further into the backend, from the LogicNodes
+			public void sendMessageToProcessor(net.merayen.elastic.util.Postmaster.Message message) { // Messages sent further into the backend, from the LogicNodes
 				context.message_handler.handleFromLogicToBackend(message);
 			}
 		});
@@ -84,10 +93,6 @@ public class BackendContext {
 
 	public NetList getNetList() {
 		return netlist.copy();
-	}
-
-	public void removeNode(String node_id) {
-		logicnode_list.removeNode(node_id);
 	}
 
 	private void debug() {

@@ -11,5 +11,5 @@ public class ProcessMessage extends Postmaster.Message {
 	/**
 	 * Format: (node-id, (data-identifier, the data))
 	 */
-	public final Dict dict = new Dict();
+	public final PackDict dict = new PackDict();
 }

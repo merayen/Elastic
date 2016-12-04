@@ -73,10 +73,12 @@ public class Test {
 
 			@Override
 			public void behind() {
-				System.out.println("Lagging behind");
+				//System.out.println("Lagging behind");
 				//sync.push();
 			}
 		});
+
+		sync.start();
 
 		long t = System.currentTimeMillis() + 5000;
 		while(t > System.currentTimeMillis()) {

@@ -33,7 +33,7 @@ public class Test {
 			nope();
 
 		try {
-			netlist.removeNode(new Node("fjklsehdfjks"));
+			netlist.remove(new Node("fjklsehdfjks"));
 			nope();
 		} catch(NodeNotFound e) {
 			// OK

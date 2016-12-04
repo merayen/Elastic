@@ -4,6 +4,7 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.pack.PackDict;
 
 public abstract class BaseLogicNode {
 	/**
@@ -16,7 +17,10 @@ public abstract class BaseLogicNode {
 		public String chain_ident; // TODO rename to chain_ident
 	}
 
+	private Environment env;
+
 	private String id; // Same ID as the one in NetList
+	private Supervisor supervisor;
 	private Node node; // NetList-node that this LogicNode represents
 	private NetList netlist;
 	private LogicNodeList logicnode_list; // Only used for look-up needs
@@ -36,6 +40,18 @@ public abstract class BaseLogicNode {
 
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
+
+	/**
+	 * Called when a ProcessMessage()-request has been received. All LogicNodes must prepare data to be sent to processor.
+	 * Change the data-argument directly. 
+	 */
+	protected abstract void onPrepareFrame(PackDict data);
+
+	/**
+	 * Called when the processor has processed.
+	 * The result data is put into the data argument.
+	 */
+	protected abstract void onFinishFrame(PackDict data);
 
 	protected void createPort(PortDefinition def) {
 		if(def.name == null || def.name.length() == 0)
@@ -89,20 +105,22 @@ public abstract class BaseLogicNode {
 	/**
 	 * Only used by the 
 	 */
-	void setInfo(String id, LogicNodeList logicnode_list, NetList netlist, Node node) {
+	void setInfo(String id, Supervisor supervisor, Node node) {
 		this.id = id;
-		this.logicnode_list = logicnode_list;
-		this.netlist = netlist;
+		this.supervisor = supervisor;
+		this.logicnode_list = supervisor.logicnode_list;
+		this.netlist = supervisor.netlist;
 		this.node = node;
+		this.env = env;
 	}
 
 	void notifyConnect(String port) {
-		// TODO logic that keeps track if this is the first connecting line
+		// TODO logic that keeps track if this is the first connecting line. Why?
 		onConnect(port);
 	}
 
 	void notifyDisconnect(String port) {
-		// TODO logic that keeps track if this is the last line disappearing
+		// TODO logic that keeps track if this is the last line disappearing. Why?
 		onDisconnect(port);
 	}
 
@@ -110,11 +128,22 @@ public abstract class BaseLogicNode {
 		return id;
 	}
 
-	protected void sendMessageToUI(Postmaster.Message message) {
-		logicnode_list.sendMessageToUI(message);
+	protected Environment getEnv() {
+		return env;
 	}
 
-	protected void sendMessageToBackend(Postmaster.Message message) {
+	/**
+	 * Send message to UI (frontend).
+	 * 
+	 */
+	protected void sendMessageToUI(Postmaster.Message message) {
+		logicnode_list.sendMessage(message);
+	}
+
+	/**
+	 * Send message to processor.
+	 */
+	protected void sendMessageToProcessor(Postmaster.Message message) {
 		logicnode_list.sendMessageToBackend(message);
 	}
 

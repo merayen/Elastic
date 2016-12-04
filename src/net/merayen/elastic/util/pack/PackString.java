@@ -1,16 +1,15 @@
 package net.merayen.elastic.util.pack;
 
-public class ByteArray extends PackType {
-	public byte[] data;
+public class PackString extends PackType {
+	public String data;
 
-	public ByteArray(byte[] in) {
-		data = in;
+	public PackString(String str) {
+		data = str;
 	}
 
 	@Override
 	public byte[] onDump() {
-		// TODO Auto-generated method stub
-		return null;
+		return new byte[0];
 	}
 
 	@Override

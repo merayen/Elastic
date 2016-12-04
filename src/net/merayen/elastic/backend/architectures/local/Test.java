@@ -11,7 +11,7 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.util.Postmaster.Message;
-import net.merayen.elastic.util.pack.Dict;
+import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * Emulates the Analyzer() and fakes nodes for testing Supervisor().
@@ -130,7 +130,7 @@ class GeneratorNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(Dict data) {
+	protected void onProcess(PackDict data) {
 		if(tick++ == 0) {
 			GeneratorProcessor gp = (GeneratorProcessor)getProcessor(spawnVoice("output", 0));
 			gp.sendStuff();
@@ -203,7 +203,7 @@ class MiddleNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Dict data) {}
+	protected void onProcess(PackDict data) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -274,7 +274,7 @@ class ConsumerNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Dict data) {}
+	protected void onProcess(PackDict data) {}
 
 	void addVoiceData(int session_id, float[] audio, int start, int stop) {
 		((ConsumerProcessor)this.getProcessor(0)).emit(audio, start, stop);

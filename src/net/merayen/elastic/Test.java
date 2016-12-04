@@ -7,6 +7,7 @@ public class Test {
 		net.merayen.elastic.backend.buffer.FloatCircularBuffer.test();
 		//net.merayen.elastic.buffer.AudioCircularBuffer.test();
 		net.merayen.elastic.netlist.Test.test();
+		net.merayen.elastic.system.intercom.Test.test();
 		net.merayen.elastic.backend.architectures.local.Test.test();
 		//net.merayen.elastic.backend.nodes.Test.test();
 		//net.merayen.elastic.backend.architectures.Test.test();

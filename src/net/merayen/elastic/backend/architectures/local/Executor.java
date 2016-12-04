@@ -11,7 +11,7 @@ import net.merayen.elastic.util.Postmaster;
 public class Executor extends AbstractExecutor {
 	private NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive. Contains properties only for us
 	private NetList upcoming_netlist; // Is set to true when netlist has been changed and needing to analyze and prepare on next ProcessMessage()
-	private Supervisor supervisor;
+	private Supervisor supervisor = new Supervisor(new NetList(), 44100, 512);
 
 	Executor() {}
 

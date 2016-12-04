@@ -27,10 +27,11 @@ public class Synchronization {
 	}
 
 	private class Poller implements Runnable {
-		volatile boolean running = true;
+		volatile boolean running;
 
 		@Override
 		public void run() {
+			running = true;
 			while(running) {
 				int in_available = Integer.MAX_VALUE;
 				int out_available = Integer.MAX_VALUE;
@@ -100,6 +101,10 @@ public class Synchronization {
 		this.sample_rate = sample_rate;
 
 		poller = new Poller();
+	}
+
+	public void start() {
+		System.out.println("Start " + this);
 		new Thread(poller).start();
 	}
 
@@ -108,6 +113,9 @@ public class Synchronization {
 	 * We will acknowledge that and plan next call.
 	 */
 	public synchronized void push() {
+		if(!poller.running)
+			return;
+
 		if(!processing)
 			throw new RuntimeException("Calling push() when not been requested is not allowed");
 
@@ -117,6 +125,7 @@ public class Synchronization {
 	}
 
 	public void end() {
+		System.out.println("End " + this);
 		poller.running = false;
 	}
 

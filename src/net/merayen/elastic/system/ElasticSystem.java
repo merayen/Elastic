@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.context.BackendContext;
+import net.merayen.elastic.backend.nodes.Environment;
 import net.merayen.elastic.ui.Supervisor;
 import net.merayen.elastic.util.Postmaster;
 
@@ -22,17 +23,9 @@ public class ElasticSystem {
 	Supervisor ui;
 	BackendContext backend;
 
-	public ElasticSystem() {
-		backend = BackendContext.create(); // Start blank, for now. Need some default file
+	public ElasticSystem(Environment env) {
+		backend = BackendContext.create(env); // Start blank, for now. Need some default file
 		ui = new Supervisor();
-	}
-
-	public static ElasticSystem load(JSONObject dump) {
-		ElasticSystem es = new ElasticSystem();
-
-		// TODO send messages to backend
-
-		return es;
 	}
 
 	@SuppressWarnings("unchecked")

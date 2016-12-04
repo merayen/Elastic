@@ -1,7 +1,11 @@
 package net.merayen.elastic.backend.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.Dispatch;
+import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.backend.nodes.LogicNodeList;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -21,6 +25,8 @@ import net.merayen.elastic.util.NetListMessages;
  */
 class MessageHandler {
 	private final BackendContext backend_context;
+
+	private Postmaster to_backend_queue = new Postmaster(); // All messages from UI are accumulated here when processing frame, as we can not change any state. Is executed when done processing
 
 	MessageHandler(BackendContext bc) {
 		this.backend_context = bc;
@@ -61,7 +67,7 @@ class MessageHandler {
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
-			logicnode_list.createNode(m.name, m.version); // 
+			logicnode_list.createNode(m.name, m.version);
 		}
 
 		else if(message instanceof NodeConnectMessage) {
@@ -85,8 +91,8 @@ class MessageHandler {
 			NetListMessages.apply(netlist, message);
 
 			logicnode_list.handleMessageFromUI(message);
-			dispatch.executeMessage(message); // Notify the architecture too
-			from_backend.send(message); // Send back to UI to acknowledge connect
+			//dispatch.executeMessage(message); // Notify the architecture too
+			//from_backend.send(message); // Send back to UI to acknowledge connect
 		}
 
 		else if(message instanceof NodeDisconnectMessage) {
@@ -94,8 +100,8 @@ class MessageHandler {
 			netlist.disconnect(m.node_a, m.port_a, m.node_b, m.port_b);
 
 			logicnode_list.handleMessageFromUI(message);
-			dispatch.executeMessage(message);
-			from_backend.send(message); // Send back to UI to acknowledge disconnect
+			//dispatch.executeMessage(message);
+			//from_backend.send(message); // Send back to UI to acknowledge disconnect
 		}
 
 		else if(message instanceof NodeParameterMessage) {
@@ -103,7 +109,7 @@ class MessageHandler {
 		}
 
 		else if(message instanceof ProcessMessage) {
-			dispatch.executeMessage(message);
+			logicnode_list.handleMessageFromUI(message);
 		}
 
 		else if(message instanceof NetListRefreshRequestMessage) {

@@ -75,11 +75,11 @@ public final class NetList {
 		return new_node;
 	}
 
-	public void removeNode(String node_id) {
-		removeNode(getNode(node_id));
+	public void remove(String node_id) {
+		remove(getNode(node_id));
 	}
 
-	public void removeNode(Node node) {
+	public void remove(Node node) {
 		if(!nodes.contains(node))
 			throw new NodeNotFound();
 

@@ -3,7 +3,7 @@ package net.merayen.elastic.util.pack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Dict extends PackType {
+public class PackDict extends PackType {
 	public Map<String, PackType> data = new HashMap<>();
 
 	@Override

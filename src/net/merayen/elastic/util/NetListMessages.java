@@ -67,7 +67,7 @@ public class NetListMessages {
 
 		for(Node node : netlist.getNodes()) // Remove nodes that are not in the group group_id
 			if(!((String)node.properties.get("group")).equals(group_id))
-				filtered.removeNode(node);
+				filtered.remove(node);
 
 		return disassemble(filtered);
 	}
@@ -98,7 +98,7 @@ public class NetListMessages {
 
 		} else if(message instanceof RemoveNodeMessage) {
 			RemoveNodeMessage m = (RemoveNodeMessage)message;
-			netlist.removeNode(m.node_id);
+			netlist.remove(m.node_id);
 
 		} else if(message instanceof RemoveNodePortMessage) {
 			RemoveNodePortMessage m = (RemoveNodePortMessage)message;

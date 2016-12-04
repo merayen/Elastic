@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.util.pack.Dict;
+import net.merayen.elastic.util.pack.PackDict;
 import net.merayen.elastic.util.pack.FloatArray;
 import net.merayen.elastic.util.pack.PackArray;
 
@@ -25,7 +25,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(Dict data) {
+	protected void onProcess(PackDict data) {
 		System.out.println("Output " + getID() + " is processing");
 	}
 
