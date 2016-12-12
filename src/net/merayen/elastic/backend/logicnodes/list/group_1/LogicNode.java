@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.nodes.list.group_1;
+package net.merayen.elastic.backend.logicnodes.list.group_1;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 

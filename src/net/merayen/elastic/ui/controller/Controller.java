@@ -25,7 +25,7 @@ public abstract class Controller {
 	protected abstract void onMessageFromUI(Postmaster.Message message);
 
 	public void sendToBackend(Postmaster.Message message) {
-		gate.to_backend.send(message);
+		gate.sendMessageToBackend(message);
 	}
 
 	public Top getTopObject() {

@@ -12,19 +12,44 @@ import net.merayen.elastic.ui.util.DrawContext;
 import net.merayen.elastic.util.Postmaster;
 
 /**
- * This runs in the main-thread, and represents everything UI, at least locally.
+ * This runs in the main-thread (???), and represents everything UI, at least locally.
  * (Remote UI might be an option later on)
  */
 public class Supervisor {
+	public interface Handler {
+		/**
+		 * Called by the UI thread. DO NOT DO ANY TIME-CONSUMING STUFF IN THIS CALL.
+		 * It will hang the UI.
+		 * Rather, queue the message and notify() whatever needs to react on the message.
+		 */
+		public void onMessageToBackend(Postmaster.Message message);
+
+		/**
+		 * Called by the UI-thread when ready to receive message.
+		 * Call Supervisor().sendMessageToUI(...) in a loop until you have no messages.
+		 */
+		public void onReadyForMessages();
+	}
+
+	private final Handler handler;
 	SurfaceHandler surfacehandler;
 	private final Top top;
 	private final Gate.UIGate ui_gate; // Only to be used by the UI-thread
 	private final Gate.BackendGate backend_gate; // Only to be used by the main-thread
 	private final Gate gate;
 
-	public Supervisor() {
+	public Supervisor(Handler handler) {
+		this.handler = handler;
+
 		top = new Top();
-		gate = new Gate(top);
+
+		Supervisor self = this;
+		gate = new Gate(top, new Gate.Handler() {
+			@Override
+			public void onMessageToBackend(Postmaster.Message message) {
+				self.handler.onMessageToBackend(message);
+			}
+		});
 		ui_gate = gate.getUIGate();
 		top.setUIGate(ui_gate);
 		backend_gate = gate.getBackendGate();
@@ -35,6 +60,7 @@ public class Supervisor {
 	void draw(DrawContext dc) {
 		internalDraw(dc, top);
 		internalUpdate(dc.incoming_events); // TODO maybe do it in another thread ?
+		internalExecuteIncomingMessages();
 		ui_gate.update();
 	}
 
@@ -89,14 +115,10 @@ public class Supervisor {
 		}
 	}
 
-	/**
-	 * Must be called often by the main thread to check for any new messages.
-	 */
-	public Postmaster.Message receiveMessageFromUI() {
-		return backend_gate.receive();
+	private void internalExecuteIncomingMessages() {
+		handler.onReadyForMessages();
 	}
 
-	// Called by main-thread
 	public void sendMessageToUI(Postmaster.Message message) {
 		backend_gate.send(message);
 	}

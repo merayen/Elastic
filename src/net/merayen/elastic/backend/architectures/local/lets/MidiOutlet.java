@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.architectures.local.lets;
 
-import net.merayen.elastic.backend.nodes.Format;
+import net.merayen.elastic.backend.logicnodes.Format;
 
 public class MidiOutlet extends Outlet {
 	/**

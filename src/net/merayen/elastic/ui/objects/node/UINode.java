@@ -119,12 +119,13 @@ public abstract class UINode extends UIObject {
 	public void executeMessage(Postmaster.Message message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
+
 			if(m.key.equals("ui.java.translation.x") && !titlebar.isDragging())
 				translation.x = (Float)m.value;
 			else if(m.key.equals("ui.java.translation.y") && !titlebar.isDragging())
 				translation.y = (Float)m.value;
-			else
-				onMessage(m);
+			//else
+			onMessage(m);
 
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;

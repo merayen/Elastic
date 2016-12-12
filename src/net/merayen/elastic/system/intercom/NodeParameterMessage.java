@@ -17,4 +17,9 @@ public class NodeParameterMessage extends Postmaster.Message {
 		this.key = key;
 		this.value = value;
 	}
+
+	public String toString() {
+		String v = value.toString().substring(0, Math.min(value.toString().length(), 100));
+		return super.toString() + String.format(" (node_id=%s, key=%s, value=%s", node_id, key, v);
+	}
 }

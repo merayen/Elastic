@@ -9,8 +9,6 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 
 /**
@@ -24,7 +22,8 @@ public class DeviceScanner extends AbstractDeviceScanner {
 
 	private void scan() {
 		addJavaAudio();
-		// TODO scan for external sources too, like VST / AUs. Logic should be centralized, not live inside this oracle_java
+		// TODO scan for external sources too, like VST / AUs
+		// TODO add support for file output?
 	}
 
 	private void addJavaAudio() {

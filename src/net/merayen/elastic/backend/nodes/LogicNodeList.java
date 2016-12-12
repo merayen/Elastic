@@ -1,17 +1,12 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.system.intercom.*;
-import net.merayen.elastic.util.Postmaster;
 
 class LogicNodeList {
-	private static final String CLASS_PATH = "net.merayen.elastic.backend.nodes.list.%s_%d.%s";
+	private static final String CLASS_PATH = "net.merayen.elastic.backend.logicnodes.list.%s_%d.%s";
 
 	private final Supervisor supervisor;
 	private final Map<String, BaseLogicNode> nodes = new HashMap<>();
@@ -42,10 +37,6 @@ class LogicNodeList {
 
 		logicnode.create(name, version);
 	}
-
-	/*public BaseLogicNode get(String node_id) {
-		return nodes.get(node_id);
-	}*/
 
 	void remove(String node_id) {
 		nodes.remove(node_id);

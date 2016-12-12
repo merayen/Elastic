@@ -70,11 +70,16 @@ public class Gate {
 			gate.from_backend.send(message);
 		}
 
-		public Postmaster.Message receive() {
+		/*public Postmaster.Message receive() {
 			return gate.to_backend.receive();
-		}
+		}*/
 	}
 
+	public interface Handler {
+		public void onMessageToBackend(Postmaster.Message message);
+	}
+
+	private final Handler handler;
 	private boolean inited;
 	List<Controller> controllers = new ArrayList<>();
 	private JSONObject to_load;
@@ -87,10 +92,11 @@ public class Gate {
 	private final Postmaster from_backend = new Postmaster(); // Incoming from backend
 	//private final Postmaster to_ui = new Postmaster(); // Processed by the controllers, but since Controller acts directly with UIObjects, we have no buffer 
 	private final Postmaster from_ui = new Postmaster(); // Messages sent from UI awaiting to be processed by a Controller
-	final Postmaster to_backend = new Postmaster(); // Processed by Controller, awaiting to be read by backend
+	//final Postmaster to_backend = new Postmaster(); // Processed by Controller, awaiting to be read by backend
 
-	public Gate(Top top) {
+	public Gate(Top top, Handler handler) {
 		this.top = top;
+		this.handler = handler;
 		ui_gate = new UIGate(this);
 		backend_gate = new BackendGate(this);
 
@@ -144,5 +150,9 @@ public class Gate {
 		}
 
 		inited = true;
+	}
+
+	void sendMessageToBackend(Postmaster.Message message) {
+		handler.onMessageToBackend(message);
 	}
 }

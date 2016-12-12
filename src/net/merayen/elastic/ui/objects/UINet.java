@@ -21,7 +21,7 @@ import net.merayen.elastic.util.Postmaster;
 public class UINet extends UIObject {
 
 	/**
-	 * Class keeps all the connections in the UI. Gets gradually build from the messages send from backend. 
+	 * Class keeps all the connections in the UI. Gets gradually build from the messages sent from backend. 
 	 */
 	private class Connection {
 		public UIPort a, b;

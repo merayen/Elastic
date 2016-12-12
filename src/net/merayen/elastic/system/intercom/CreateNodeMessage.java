@@ -26,4 +26,8 @@ public class CreateNodeMessage extends NetListMessage {
 		this.name = name;
 		this.version = version;
 	}
+
+	public String toString() {
+		return super.toString() + String.format(" (node_id=%s, name=%s, version=%d", node_id, name, version);
+	}
 }

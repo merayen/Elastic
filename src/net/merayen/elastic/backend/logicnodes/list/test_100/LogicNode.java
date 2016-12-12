@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.nodes.list.test_100;
+package net.merayen.elastic.backend.logicnodes.list.test_100;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;

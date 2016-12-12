@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.nodes.Format;
+import net.merayen.elastic.backend.logicnodes.Format;
 
 public abstract class Outlet {
 	public int written; // Number of samples written yet. Readers must respect this

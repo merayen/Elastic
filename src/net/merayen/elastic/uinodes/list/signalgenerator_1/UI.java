@@ -40,9 +40,12 @@ public class UI extends UINode {
 		return "Generates audio waves.";
 	}
 
+	boolean shown;
 	public void onDraw() {
 		super.onDraw();
-
+		if(!shown)
+			System.out.printf("Signal generator draw() %s: t=%s\n", this, translation);
+		shown = true;
 		if(getPort("output") != null)
 			getPort("output").translation.x = width;
 
@@ -55,6 +58,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
+		System.out.printf("Signal generator onMessage() %s: %s\n", this, message);
 		if(message.key.equals("data.frequency")) {
 			frequency = (float)message.value;
 			frequency_slider.setValue(frequency / 8000);

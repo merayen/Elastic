@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
+import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;
-import net.merayen.elastic.backend.nodes.Environment;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -16,7 +16,6 @@ public class Test {
 	}
 
 	private ElasticSystem system;
-	private Synchronization sync;
 
 	private final int SAMPLE_RATE = 44100;
 	private final int DEPTH = 16;
@@ -51,11 +50,13 @@ public class Test {
 					ProcessMessage pm = (ProcessMessage)message;
 					System.out.printf("Process response\n");
 				}
+
+				//System.out.println("Message from Backend to UI: " + message);
 			}
 
 			@Override
 			public void onMessageToBackend(Message message) {
-				
+				System.out.println("Message from UI to Backend: " + message);
 			}
 		});
 

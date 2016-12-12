@@ -23,7 +23,7 @@ public class Postmaster {
 		}
 	}
 
-	private ArrayDeque<Message> queue = new ArrayDeque<>();
+	private final ArrayDeque<Message> queue = new ArrayDeque<>();
 
 	public void send(Message message) {
 		if(System.currentTimeMillis() % 10 == 0)
@@ -49,6 +49,19 @@ public class Postmaster {
 		synchronized (queue) {
 			return queue.poll();
 		}
+	}
+
+	public Message[] receiveAll() {
+		clean();
+
+		Message[] result;
+
+		synchronized (queue) {
+			result = queue.toArray(new Message[0]);
+			queue.clear();
+		}
+
+		return result;
 	}
 
 	public void clear() {

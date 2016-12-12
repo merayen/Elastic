@@ -151,6 +151,7 @@ public class NodeView extends View {
 	}
 
 	public void reset() {
+		System.out.printf("NodeView reset(): %s\n", this);
 		net.reset();
 
 		for(UINode node : nodes)

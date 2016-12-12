@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.nodes;
+package net.merayen.elastic.backend.logicnodes;
 
 public enum Format {
 	AUDIO("audio"),

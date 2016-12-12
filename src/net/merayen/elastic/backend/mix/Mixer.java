@@ -8,7 +8,6 @@ import java.util.Map;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
 import net.merayen.elastic.backend.interfacing.Platform;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.interfacing.platforms.oracle_java.OracleAudioOutputDevice;
@@ -18,9 +17,9 @@ import net.merayen.elastic.backend.mix.datatypes.DataType;
 /**
  * Accumulates and mixes outgoing and incoming data.
  * Mixes both audio and midi.
- * Does not support different sample rates 
+ * Does not support different sample rates.
  */
-public class Mixer {
+public class Mixer { // Rename to e.g "IODispatch"?
 	public interface Handler {
 		public void onDeviceRemoved(String id);
 		public void onDeviceAdded(String id);
@@ -101,6 +100,9 @@ public class Mixer {
 		return result;
 	}
 
+	/**
+	 * Writes data parallel. All calls must contain a fixed length of data.
+	 */
 	public void send(String device_id, DataType data) {
 		AbstractDevice ad = device_scanner.getDevice(device_id);
 

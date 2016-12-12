@@ -1,8 +1,10 @@
 package net.merayen.elastic.backend.nodes;
 
+import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.pack.PackDict;
 
@@ -17,7 +19,7 @@ public abstract class BaseLogicNode {
 		public String chain_ident; // TODO rename to chain_ident
 	}
 
-	private Environment env;
+	protected LogicEnvironment env;
 
 	private String id; // Same ID as the one in NetList
 	private Supervisor supervisor;
@@ -53,6 +55,10 @@ public abstract class BaseLogicNode {
 	 */
 	protected abstract void onFinishFrame(PackDict data);
 
+	/**
+	 * Call this to create a port.
+	 * All LogicNodes needs to this on creation. This will add the ports in the UI and the processor.
+	 */
 	protected void createPort(PortDefinition def) {
 		if(def.name == null || def.name.length() == 0)
 			throw new RuntimeException("Invalid port name");
@@ -66,10 +72,14 @@ public abstract class BaseLogicNode {
 		if(!def.output && def.format != null)
 			throw new RuntimeException("Input-ports can not have a format set, as it will depend on the output-port it is connected to");
 
-		// Notify both ways
+		// Everything OK
 		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format, def.chain_ident); // TODO rename to chain_ident
-		sendMessageToUI(message);
-		sendMessageToBackend(message);
+
+		NetListMessages.apply(netlist, message); // Apply the port to the NetList
+
+		supervisor.sendMessageToUI(message);
+		supervisor.sendMessageToProcessor(message);
+
 	}
 
 	protected void removePort(String name) {
@@ -80,25 +90,25 @@ public abstract class BaseLogicNode {
 
 		// Notify both ways
 		Postmaster.Message message = new RemoveNodePortMessage(id, name);
-		sendMessageToUI(message);
-		sendMessageToBackend(message);
+		supervisor.sendMessageToUI(message);
+		supervisor.sendMessageToProcessor(message);
 	}
 
 	protected void set(String key, Object value) {
 		NodeParameterMessage message = new NodeParameterMessage(id, key, value);
-		sendMessageToBackend(message);
-		sendMessageToUI(message);
+		supervisor.sendMessageToProcessor(message);
+		supervisor.sendMessageToUI(message);
 	}
 
 	protected void set(NodeParameterMessage message) {
-		sendMessageToBackend(message);
+		sendMessageToProcessor(message);
 		sendMessageToUI(message);
 	}
 
 	void create(String name, Integer version) {
 		CreateNodeMessage m = new CreateNodeMessage(id, name, version);
-		sendMessageToUI(m); // Acknowledges creation of Node to the UI
-		sendMessageToBackend(m); // Notify the backend too
+		supervisor.sendMessageToUI(m); // Acknowledges creation of Node to the UI
+		supervisor.sendMessageToProcessor(m); // Notify the backend too
 		onCreate();
 	}
 
@@ -128,7 +138,7 @@ public abstract class BaseLogicNode {
 		return id;
 	}
 
-	protected Environment getEnv() {
+	protected LogicEnvironment getEnv() {
 		return env;
 	}
 
@@ -137,14 +147,14 @@ public abstract class BaseLogicNode {
 	 * 
 	 */
 	protected void sendMessageToUI(Postmaster.Message message) {
-		logicnode_list.sendMessage(message);
+		supervisor.sendMessageToUI(message);
 	}
 
 	/**
 	 * Send message to processor.
 	 */
 	protected void sendMessageToProcessor(Postmaster.Message message) {
-		logicnode_list.sendMessageToBackend(message);
+		supervisor.sendMessageToProcessor(message);
 	}
 
 	// TODO implement functions for introspection into NetList

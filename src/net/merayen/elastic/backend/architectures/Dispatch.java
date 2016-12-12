@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.architectures;
 
-import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -67,7 +66,7 @@ public class Dispatch {
 	/**
 	 * Sends the NetList to the chosen architecture and begins processing.
 	 */
-	public void launch(NetList netlist, int buffer_size) {
+	public void launch(int buffer_size) {
 		if(executor != null)
 			throw new RuntimeException("Already started");
 

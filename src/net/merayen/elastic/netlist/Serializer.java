@@ -14,6 +14,7 @@ public final class Serializer {
 	 * Dumps a NetList to JSON
 	 */
 	public static JSONObject dump(NetList netlist) { // TODO make it work
+		// TODO remove any properties that should not be serialized
 		JSONObject result = new JSONObject();
 
 		JSONArray nodes = new JSONArray();

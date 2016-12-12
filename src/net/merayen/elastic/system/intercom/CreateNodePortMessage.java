@@ -1,6 +1,6 @@
 package net.merayen.elastic.system.intercom;
 
-import net.merayen.elastic.backend.nodes.Format;
+import net.merayen.elastic.backend.logicnodes.Format;
 
 public class CreateNodePortMessage extends NetListMessage {
 	public final String node_id;
@@ -15,5 +15,9 @@ public class CreateNodePortMessage extends NetListMessage {
 		this.output = output;
 		this.format = format; // Only for output-ports
 		this.chain_ident = chain_ident;
+	}
+
+	public String toString() {
+		return super.toString() + String.format(" (node_id=%s, port=%s, output=%b)", node_id, port, output);
 	}
 }

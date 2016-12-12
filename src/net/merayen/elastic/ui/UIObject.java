@@ -3,7 +3,6 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.util.Postmaster;
