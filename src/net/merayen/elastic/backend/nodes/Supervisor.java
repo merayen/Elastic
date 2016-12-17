@@ -95,6 +95,8 @@ public class Supervisor {
 				NodeDisconnectMessage m = (NodeDisconnectMessage)message;
 				logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
 				logicnode_list.get(m.node_b).notifyDisconnect(m.port_b);
+
+				handler.sendMessageToUI(new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b)); // Acknowledge disconnection
 	
 			} else if(message instanceof ProcessMessage) {
 				ProcessMessage m = (ProcessMessage)message;
