@@ -51,7 +51,7 @@ public class NetListMessages {
 		// Restore the Node()'s properties
 		for(Node node : netlist.getNodes())
 			for(String key : node.properties.keySet())
-				if(!key.equals("name") && !key.equals("version")) // Ignore these ones, as they are sent with CreateNodeMessage()
+				if(key.startsWith("p."))
 					result.add(new NodeParameterMessage(node.getID(), key, node.properties.get(key)));
 
 		return result;

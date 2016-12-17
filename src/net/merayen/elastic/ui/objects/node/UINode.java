@@ -120,9 +120,9 @@ public abstract class UINode extends UIObject {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 
-			if(m.key.equals("ui.java.translation.x") && !titlebar.isDragging())
+			if(m.key.equals("p.ui.java.translation.x") && !titlebar.isDragging())
 				translation.x = (Float)m.value;
-			else if(m.key.equals("ui.java.translation.y") && !titlebar.isDragging())
+			else if(m.key.equals("p.ui.java.translation.y") && !titlebar.isDragging())
 				translation.y = (Float)m.value;
 			//else
 			onMessage(m);

@@ -61,11 +61,11 @@ public class NodeProperties {
 		private Parameters() {}
 
 		public void set(Node node, String key, Object value) {
-			node.properties.put("parameters." + key, value);
+			node.properties.put("p." + key, value);
 		}
 
 		public Object get(Node node, String key) {
-			return node.properties.get("parameters." + key);
+			return node.properties.get("p." + key);
 		}
 	}
 

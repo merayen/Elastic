@@ -24,7 +24,7 @@ public class NodeViewController extends Controller {
 
 	@Override
 	protected void onMessageFromBackend(Postmaster.Message message) {
-		System.out.printf("UI NodeViewController is processing message: %s\n", message);
+		System.out.printf("UI NodeViewController %s is processing message: %s%s\n", this.toString().split("@")[1], message.getClass().getSimpleName(), message.toString().split("@")[1]);
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
