@@ -172,7 +172,7 @@ class Supervisor {
 	 */
 	public synchronized ProcessMessage process(ProcessMessage message) {
 		if(dead)
-			throw new RuntimeException("Should not be called when after clear()");
+			throw new RuntimeException("Should not be called after clear()");
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for(Node node : netlist.getNodes()) {
@@ -218,7 +218,7 @@ class Supervisor {
 				removeSession(session_id);
 		}
 
-		return new ProcessMessage(); // TODO
+		return response;
 	}
 
 	public LocalNode getLocalNode(String id) {

@@ -71,11 +71,12 @@ public class Postmaster {
 	}
 
 	private void clean() {
-		synchronized (queue) {
+		return;
+		/*synchronized (queue) {
 			long t = System.currentTimeMillis();
 			for(Message o : queue)
 				if(o.timeout < t)
 					queue.remove(o);
-		}
+		}*/
 	}
 }

@@ -52,7 +52,7 @@ public class NetListMessages {
 		for(Node node : netlist.getNodes())
 			for(String key : node.properties.keySet())
 				if(key.startsWith("p."))
-					result.add(new NodeParameterMessage(node.getID(), key, node.properties.get(key)));
+					result.add(new NodeParameterMessage(node.getID(), key.substring(2), node.properties.get(key)));
 
 		return result;
 	}

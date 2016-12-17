@@ -12,7 +12,7 @@ import net.merayen.elastic.backend.interfacing.AbstractDevice;
 public class Synchronization {
 	public interface Handler {
 		/**
-		 * Called when there is time to process a new frame.
+		 * Called when it is time to process a new frame.
 		 * Don't do your processing or any other time-consuming tasks in this function, but rather notify another thread.
 		 * Synchronization() needs to keep running its tight loop to make sure all lines are synchronized.
 		 */

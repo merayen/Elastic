@@ -6,6 +6,7 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * This is the "central control". All node-related messages from UI and processor is sent into this class.
@@ -64,7 +65,12 @@ public class Supervisor {
 
 			} else if(message instanceof NodeParameterMessage) {
 				NodeParameterMessage m = (NodeParameterMessage)message;
+
+				NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
+
 				logicnode_list.get(m.node_id).onParameterChange(m);
+
+				return;
 	
 			} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 				NodeConnectMessage m = (NodeConnectMessage)message;
@@ -99,12 +105,7 @@ public class Supervisor {
 				handler.sendMessageToUI(new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b)); // Acknowledge disconnection
 	
 			} else if(message instanceof ProcessMessage) {
-				ProcessMessage m = (ProcessMessage)message;
-				if(is_processing)
-					throw new RuntimeException("Already processing");
-
-				is_processing = true;
-				handler.sendMessageToProcessor(message); // Forward process message to processor
+				doProcessFrame((ProcessMessage)message);
 			}
 
 			// Apply the changes to the NetList itself
@@ -155,5 +156,26 @@ public class Supervisor {
 	 */
 	public NetList getNetList() {
 		return netlist.copy();
+	}
+
+	private void doProcessFrame(ProcessMessage message) {
+		if(is_processing)
+			throw new RuntimeException("Already processing");
+
+		is_processing = true;
+
+		// Build a new ProcessMessage with data from the logic nodes to the processor.
+		ProcessMessage m = new ProcessMessage();
+
+		for(Node n : netlist.getNodes()) {
+			BaseLogicNode bln = logicnode_list.get(n.getID());
+
+			PackDict p = new PackDict();
+			bln.onPrepareFrame(p);
+
+			m.dict.data.put(n.getID(), p);
+		}
+
+		handler.sendMessageToProcessor(m); // Forward process message to processor
 	}
 }
