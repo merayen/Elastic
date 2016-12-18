@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
@@ -21,7 +20,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onInit() {
-		
+
 	}
 
 	@Override
@@ -66,11 +65,12 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onFinishFrame() {
 		PackArray channels = new PackArray();
-		channels.data = new FloatArray[output.length];
+		FloatArray[] fa;
+		channels.data = fa = new FloatArray[output.length];
 
 		for(int channel_id = 0; channel_id < output.length; channel_id++)
 			if(output[channel_id] != null)
-				((FloatArray[])channels.data)[channel_id] = new FloatArray(output[channel_id]);
+				fa[channel_id] = new FloatArray(output[channel_id]);
 
 		outgoing.data.put("audio", channels);
 	}

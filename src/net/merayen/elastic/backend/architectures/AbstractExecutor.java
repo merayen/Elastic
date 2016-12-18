@@ -3,7 +3,16 @@ package net.merayen.elastic.backend.architectures;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class AbstractExecutor {
-	final Postmaster from_processing = new Postmaster(); // Messages sent from this executor
+	public interface Handler {
+		/**
+		 * Called when processor sends a message.
+		 * Do not do any time consuming tasks in this callback, rather queue the message and notify someone to react on it.
+		 */
+		public void onMessageFromProcessor(Postmaster.Message message);
+	}
+
+	private Handler handler;
+
 	final Postmaster to_processing = new Postmaster(); // Messages queued to be read from the processing architecture
 
 	protected abstract void onMessage(Postmaster.Message message);
@@ -14,16 +23,14 @@ public abstract class AbstractExecutor {
 	 */
 	public abstract void stop();
 
-	/**
-	 * Retrieves any messages sent from the processor.
-	 * Needs to be polled often.
-	 * Returns null if nothing.
-	 */
-	Postmaster.Message receiveFromProcessor() {
-		return from_processing.receive();
+	protected void sendFromProcessing(Postmaster.Message message) {
+		handler.onMessageFromProcessor(message);
 	}
 
-	protected void sendFromProcessing(Postmaster.Message message) {
-		from_processing.send(message);
+	void setHandler(Handler handler) {
+		if(this.handler != null)
+			throw new RuntimeException("Should not happen");
+
+		this.handler = handler;
 	}
 }

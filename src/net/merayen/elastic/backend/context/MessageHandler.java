@@ -17,6 +17,7 @@ public class MessageHandler {
 	private final BackendContext backend_context;
 	private final Postmaster to_ui = new Postmaster();
 	private final Postmaster to_backend = new Postmaster();
+	private final Postmaster from_processor = new Postmaster();
 
 	MessageHandler(BackendContext bc) {
 		this.backend_context = bc;
@@ -51,7 +52,8 @@ public class MessageHandler {
 				refresh_messages.addAll(NetListMessages.disassemble(backend_context.logicnode_supervisor.getNetList(), m.group_id)); // All these messages will rebuild the receiver's NetList
 
 				to_ui.send(refresh_messages); // Send all messages in a chunk so no other messages can get in-between.
-				break;
+
+				continue; // Message handled by us directly, not sent further into the backend
 			}
 
 			backend_context.logicnode_supervisor.handleMessageFromUI(message);
@@ -62,9 +64,18 @@ public class MessageHandler {
 		return to_ui.receiveAll();
 	}
 
-	void handleFromProcessor(Postmaster.Message message) {
-		if(message instanceof ProcessMessage)
-			backend_context.logicnode_supervisor.handleResponseFromProcessing((ProcessMessage)message);
-		else {} // XXX handle misc messages from processor? (crash message etc)
+	void queueFromProcessor(Postmaster.Message message) {
+		from_processor.send(message);
+	}
+
+	void executeMessagesFromProcessor() {
+		Postmaster.Message message;
+		while((message = from_processor.receive()) != null) {
+			if(message instanceof ProcessMessage) {
+				backend_context.logicnode_supervisor.handleResponseFromProcessor((ProcessMessage)message);
+			} else {
+				// XXX handle misc messages from processor? (crash message etc)
+			}
+		}
 	}
 }

@@ -10,7 +10,6 @@ import net.merayen.elastic.util.Postmaster.Message;
  * Accumulates audio and then the Net-node will acquire data when needed.
  */
 public class LProcessor extends LocalProcessor {
-	private boolean valid = true;
 	int channel_id = -1; // Set by the LNode when voice is created
 	int written;
 

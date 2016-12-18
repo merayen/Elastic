@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures;
 
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.Postmaster.Message;
 
 /**
  * Used by the backend to communicate with the processor
@@ -10,7 +11,7 @@ public class Dispatch {
 		/**
 		 * Message received from the backend.
 		 */
-		public void onMessageFromProcessing(Postmaster.Message message);
+		public void onMessageFromProcessor(Postmaster.Message message);
 	}
 
 	class Runner extends Thread {
@@ -35,9 +36,6 @@ public class Dispatch {
 				Postmaster.Message message;
 				while ((message = executor.to_processing.receive()) != null)
 					executor.onMessage(message);
-
-				while((message = executor.from_processing.receive()) != null)
-					handler.onMessageFromProcessing(message);
 			}
 		}
 	}
@@ -59,10 +57,6 @@ public class Dispatch {
 		}
 	}
 
-	public Postmaster.Message receiveMessageFromProcessor() {
-		return executor.from_processing.receive();
-	}
-
 	/**
 	 * Sends the NetList to the chosen architecture and begins processing.
 	 */
@@ -71,6 +65,13 @@ public class Dispatch {
 			throw new RuntimeException("Already started");
 
 		executor = architecture.instance.getExecutor();
+		executor.setHandler(new AbstractExecutor.Handler() {
+
+			@Override
+			public void onMessageFromProcessor(Message message) {
+				handler.onMessageFromProcessor(message);
+			}
+		});
 		runner = new Runner(executor);
 		runner.start();
 	}

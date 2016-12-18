@@ -18,6 +18,11 @@ public class Supervisor {
 	public interface Handler {
 		public void sendMessageToUI(Postmaster.Message message);
 		public void sendMessageToProcessor(Postmaster.Message message);
+
+		/**
+		 * Called when processing a frame has been finished.
+		 */
+		public void onProcessDone();
 	}
 
 	private final Object PROCESS_LOCK = new Object();
@@ -95,14 +100,18 @@ public class Supervisor {
 				logicnode_list.get(m.node_a).notifyConnect(m.port_a);
 				logicnode_list.get(m.node_b).notifyConnect(m.port_b);
 
-				handler.sendMessageToUI(new NodeConnectMessage(m.node_a, m.port_a, m.node_b, m.port_b)); // Acknowledge connection
+				NodeConnectMessage connect_message = new NodeConnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
+				handler.sendMessageToUI(connect_message); // Acknowledge connection
+				handler.sendMessageToProcessor(connect_message);
 	
 			} else if(message instanceof NodeDisconnectMessage) { // Notifies LogicNodes about changing of connections
 				NodeDisconnectMessage m = (NodeDisconnectMessage)message;
 				logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
 				logicnode_list.get(m.node_b).notifyDisconnect(m.port_b);
 
-				handler.sendMessageToUI(new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b)); // Acknowledge disconnection
+				NodeDisconnectMessage disconnect_message = new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
+				handler.sendMessageToUI(disconnect_message); // Acknowledge disconnection
+				handler.sendMessageToProcessor(disconnect_message); // Acknowledge disconnection
 	
 			} else if(message instanceof ProcessMessage) {
 				doProcessFrame((ProcessMessage)message);
@@ -133,20 +142,24 @@ public class Supervisor {
 	/**
 	 * Messages sent from processing should be sent into this function.
 	 */
-	public void handleResponseFromProcessing(ProcessMessage message) {
+	public void handleResponseFromProcessor(ProcessMessage message) {
 		synchronized (PROCESS_LOCK) {
 			if(!is_processing)
 				throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
 	
 			// Call all LogicNodes to work on the frame
+			for(Node node : netlist.getNodes()) {
+				BaseLogicNode bln = logicnode_list.get(node.getID());
+				bln.onFinishFrame((PackDict)message.dict.data.get(node.getID()));
+			}
+
+			handler.onProcessDone();
+
 			// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
-			
 			is_processing = false;
 			Postmaster.Message m;
 			while((m = while_processing_queue.receive()) != null) {
 				handleMessageFromUI(m);
-				if(m instanceof ProcessMessage)
-					break;
 			}
 		}
 	}

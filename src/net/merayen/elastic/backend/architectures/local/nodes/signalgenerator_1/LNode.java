@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
-import java.util.Map;
-
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.pack.PackDict;
@@ -43,7 +41,6 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onSpawnProcessor(LocalProcessor lp) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

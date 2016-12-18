@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import net.merayen.elastic.Config;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
@@ -24,7 +25,8 @@ public class NodeViewController extends Controller {
 
 	@Override
 	protected void onMessageFromBackend(Postmaster.Message message) {
-		System.out.printf("UI NodeViewController %s is processing message: %s%s\n", this.toString().split("@")[1], message.getClass().getSimpleName(), message.toString().split("@")[1]);
+		if(Config.ui.debug.messages)
+			System.out.printf("UI NodeViewController %s is processing message: %s%s\n", this.toString().split("@")[1], message.getClass().getSimpleName(), message.toString().split("@")[1]);
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;

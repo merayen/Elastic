@@ -13,12 +13,13 @@ public class Executor extends AbstractExecutor {
 	private NetList upcoming_netlist; // Is set to true when netlist has been changed and needing to analyze and prepare on next ProcessMessage()
 	private Supervisor supervisor = new Supervisor(new NetList(), 44100, 512);
 
-	Executor() {}
-
 	@Override
 	protected void onMessage(Postmaster.Message message) {
 		if(message instanceof ProcessMessage) {
 			applyNetList();
+			if(Config.processor.debug.verbose)
+				System.out.printf("Executor: Processing with a NetList of %d nodes, %d connections\n", netlist.getNodes().size(), netlist.getLines().size());
+
 			ProcessMessage pm = supervisor.process((ProcessMessage)message);
 			sendFromProcessing(pm);
 
@@ -31,8 +32,8 @@ public class Executor extends AbstractExecutor {
 
 		}
 
-		if(Config.DEBUG)
-			System.out.printf("Executor got message %s\n", message);
+		if(Config.processor.debug.messages)
+			System.out.printf("Executor: Got message %s\n", message);
 	}
 
 	/**
@@ -50,7 +51,9 @@ public class Executor extends AbstractExecutor {
 
 			supervisor = new Supervisor(netlist, 44100, 512);
 			supervisor.begin();
-			System.out.println("Local architecture restarted");
+
+			if(Config.processor.debug.verbose)
+				System.out.println("Executor: Local architecture restarted");
 		}
 	}
 
@@ -58,6 +61,9 @@ public class Executor extends AbstractExecutor {
 		if(upcoming_netlist == null) {
 			upcoming_netlist = netlist.copy();
 			new LocalNodeProperties().clear(upcoming_netlist);
+
+			if(Config.processor.debug.verbose)
+				System.out.println("Executor: Upcoming NetList created");
 		}
 
 		return upcoming_netlist;

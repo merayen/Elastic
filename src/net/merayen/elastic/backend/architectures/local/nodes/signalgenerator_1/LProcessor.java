@@ -10,8 +10,6 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.util.Postmaster.Message;
 
 /*
@@ -55,7 +53,7 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onInit() {
 		lol = lol_static++;
-		System.out.println("Generator onInit() " + lol);
+		//System.out.println("Generator onInit() " + lol);
 		lnode = (LNode)getLocalNode();
 
 		Inlet frequency = getInlet("frequency");
@@ -90,12 +88,12 @@ public class LProcessor extends LocalProcessor {
 			}
 		}
 
-		System.out.printf("Signalgenerator LProcessor onInit(). Mode: %s\n", mode.name());
+		System.out.printf("Signalgenerator LProcessor onInit() %d. Mode: %s\n", lol, mode.name());
 	}
 
 	@Override
 	public void onProcess() {
-		System.out.println("Generator process() " + lol);
+		//System.out.println("Generator process() " + lol);
 		if(mode == Mode.RAW)
 			generateRaw();
 		else

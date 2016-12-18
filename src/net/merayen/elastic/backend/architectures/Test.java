@@ -15,7 +15,7 @@ public class Test {
 
 		Dispatch dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
 			@Override
-			public void onMessageFromProcessing(Message message) {
+			public void onMessageFromProcessor(Message message) {
 				
 			}
 		});

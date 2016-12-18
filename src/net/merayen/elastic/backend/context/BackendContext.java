@@ -18,6 +18,7 @@ public class BackendContext {
 
 	Supervisor logicnode_supervisor;
 	Dispatch dispatch;
+
 	public MessageHandler message_handler = new MessageHandler(this);
 
 	private BackendContext(Environment env) {
@@ -32,8 +33,8 @@ public class BackendContext {
 		BackendContext context = new BackendContext(env);
 		context.dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
 			@Override
-			public void onMessageFromProcessing(Postmaster.Message message) {
-				context.message_handler.handleFromProcessor(message);
+			public void onMessageFromProcessor(Postmaster.Message message) {
+				context.message_handler.queueFromProcessor(message);
 			}
 		});
 
@@ -48,6 +49,13 @@ public class BackendContext {
 			@Override
 			public void sendMessageToProcessor(net.merayen.elastic.util.Postmaster.Message message) { // Messages sent further into the backend, from the LogicNodes
 				context.message_handler.handleFromLogicToProcessor(message);
+			}
+
+			@Override
+			public void onProcessDone() {
+				// TODO push the mixer or whatever
+				env.synchronization.push();
+				System.out.println("A frame has been processed.");
 			}
 		});
 
@@ -75,6 +83,7 @@ public class BackendContext {
 
 	public void update() {
 		message_handler.executeMessagesToBackend();
+		message_handler.executeMessagesFromProcessor();
 	}
 
 	public void end() {
