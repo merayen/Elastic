@@ -25,7 +25,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onProcess(PackDict data) {
-		System.out.println("Output " + getID() + " is processing");
+		//System.out.println("Output " + getID() + " is processing");
 	}
 
 	@Override

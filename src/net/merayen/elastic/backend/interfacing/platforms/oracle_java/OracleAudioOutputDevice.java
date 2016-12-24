@@ -61,6 +61,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public void spool(int samples) {
+		System.out.println("Spooling");
 		Configuration c = (Configuration)configuration;
 		int to_write = samples * (c.depth / 8) * c.channels;
 		line.write(new byte[to_write], 0, to_write);

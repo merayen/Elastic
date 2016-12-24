@@ -10,7 +10,6 @@ import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
 import net.merayen.elastic.backend.interfacing.Platform;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
-import net.merayen.elastic.backend.interfacing.platforms.oracle_java.OracleAudioOutputDevice;
 import net.merayen.elastic.backend.mix.datatypes.Audio;
 import net.merayen.elastic.backend.mix.datatypes.DataType;
 
@@ -182,16 +181,16 @@ public class Mixer { // Rename to e.g "IODispatch"?
 	}
 
 	private void sendToDevices(Map<AbstractDevice, DataType> data) {
-		long t = System.currentTimeMillis();
-		int avail = 0;
+		//long t = System.currentTimeMillis();
+		//int avail = 0;
 		for(Map.Entry<AbstractDevice, DataType> o : data.entrySet()) {
 			if(!o.getKey().isRunning())
 				o.getKey().begin();
 
-			avail = ((OracleAudioOutputDevice)o.getKey()).line.available();
-			((AudioOutputDevice)o.getKey()).write(((Audio)o.getValue()).audio);
+			if(o.getKey() instanceof AudioOutputDevice) {
+				//avail = ((OracleAudioOutputDevice)o.getKey()).line.available();
+				((AudioOutputDevice)o.getKey()).write(((Audio)o.getValue()).audio);
+			}
 		}
-		Audio a = (Audio)data.values().iterator().next();
-		//System.out.println("Send: " + (System.currentTimeMillis() - t) + "  " + data.size() + "  " + a.audio[0].length * a.audio.length * 2 + "  " + avail);
 	}
 }

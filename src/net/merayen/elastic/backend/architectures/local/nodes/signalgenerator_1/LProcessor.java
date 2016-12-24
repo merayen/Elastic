@@ -30,10 +30,10 @@ public class LProcessor extends LocalProcessor {
 		MALFUNCTION // E.g, wrong line has been connected. We output only zeroes in this case (and should send a warning)
 	}
 
-	private float midi_amplitude = 1f;
+	/*private float midi_amplitude = 1f;
 	private float midi_frequency;
 	private float midi_tangent_frequency;
-	private float midi_pitch_factor;
+	private float midi_pitch_factor;*/
 
 	private float amplitude = 0.2f;
 	private float frequency = 1000;
@@ -103,9 +103,10 @@ public class LProcessor extends LocalProcessor {
 	private void generateRaw() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 
+		double step = (frequency * Math.PI * 2) / (double)sample_rate;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
 			outlet.audio[i] = (float)Math.sin(pos) * amplitude;
-			pos += frequency / sample_rate;
+			pos += step;
 		}
 
 		outlet.written = outlet.buffer_size;

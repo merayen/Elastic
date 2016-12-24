@@ -21,10 +21,17 @@ public class Test {
 	private final int DEPTH = 16;
 	private final int BUFFER_SIZE = 256;
 
+	int fires;
+	long start = System.currentTimeMillis();
+	long ispinne;
 	private Test() {
 		Environment env = createEnvironment(() -> {
-			System.out.println("Uhm");
+			//System.out.println("Uhm");
 			system.sendMessageToBackend(new ProcessMessage());
+			//System.out.println("Request " + System.currentTimeMillis());
+			fires++;
+			if(ispinne++ % 100 == 0)
+				System.out.printf("Fires/sec: %f / %d\n", (fires) / ((System.currentTimeMillis() - start) / 1000.0), SAMPLE_RATE / BUFFER_SIZE);
 		});
 
 		system = new ElasticSystem(env);
@@ -158,10 +165,12 @@ public class Test {
 		});
 	}
 
+	class omg {Synchronization s;}
 	private Environment createEnvironment(Runnable needDataFunc) {
 		Mixer mixer = new Mixer();
-		mixer.reconfigure(SAMPLE_RATE, 2, DEPTH);
+		mixer.reconfigure(SAMPLE_RATE, 1, DEPTH);
 
+		final omg o = new omg();
 		Synchronization sync = new Synchronization(mixer, SAMPLE_RATE, BUFFER_SIZE, new Synchronization.Handler() {
 			@Override
 			public void needData() {
@@ -171,9 +180,13 @@ public class Test {
 			@Override
 			public void behind() {
 				//System.out.println("Lagging behind");
+				//o.s.push();
+				//mixer.dispatch(BUFFER_SIZE);
 				//sync.push();
 			}
 		});
+
+		o.s = sync;
 
 		return new Environment(mixer, sync);
 	}
@@ -196,7 +209,7 @@ public class Test {
 		try {
 			while(!func.noe()) {
 				system.update();
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();

@@ -53,9 +53,10 @@ public class BackendContext {
 
 			@Override
 			public void onProcessDone() {
-				// TODO push the mixer or whatever
+				// Rotate the buffers. XXX This should really not be here in BackendContext?
+				env.mixer.dispatch(512);
 				env.synchronization.push();
-				System.out.println("A frame has been processed.");
+				//System.out.println("A frame has been processed.");
 			}
 		});
 

@@ -28,7 +28,7 @@ public class Supervisor {
 	private final Object PROCESS_LOCK = new Object();
 
 	private final Handler handler;
-	private final LogicEnvironment env;
+	final LogicEnvironment env;
 
 	final NetList netlist = new NetList(); // This is the main NetList
 	final LogicNodeList logicnode_list;
@@ -147,6 +147,8 @@ public class Supervisor {
 			if(!is_processing)
 				throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
 	
+			//System.out.println("Response " + System.currentTimeMillis());
+
 			// Call all LogicNodes to work on the frame
 			for(Node node : netlist.getNodes()) {
 				BaseLogicNode bln = logicnode_list.get(node.getID());
@@ -154,6 +156,8 @@ public class Supervisor {
 			}
 
 			handler.onProcessDone();
+
+			//System.out.println("Response done " + System.currentTimeMillis());
 
 			// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
 			is_processing = false;
@@ -184,6 +188,12 @@ public class Supervisor {
 			BaseLogicNode bln = logicnode_list.get(n.getID());
 
 			PackDict p = new PackDict();
+
+			if(!bln.inited) {
+				bln.inited = true;
+				bln.onInit();
+			}
+
 			bln.onPrepareFrame(p);
 
 			m.dict.data.put(n.getID(), p);

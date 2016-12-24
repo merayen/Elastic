@@ -14,6 +14,9 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
+	protected void onInit() {}
+
+	@Override
 	protected void onParameterChange(NodeParameterMessage message) {
 		set(message);
 	}

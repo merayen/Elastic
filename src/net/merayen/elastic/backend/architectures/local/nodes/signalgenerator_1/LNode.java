@@ -23,7 +23,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onProcess(PackDict data) {
-		System.out.println("Signalgenerator " + getID() + " is processing");
+		//System.out.println("Signalgenerator " + getID() + " is processing");
 		for(LocalProcessor lp : getProcessors())
 			lp.schedule();
 	}
@@ -31,6 +31,8 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onParameter(String key, Object value) {
 		//System.out.printf("Signalgenerator arc %s=%s\n", key, value);
+		if(key.equals("frequency"))
+			System.console();
 	}
 
 	@Override

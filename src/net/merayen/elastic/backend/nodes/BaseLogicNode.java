@@ -19,19 +19,26 @@ public abstract class BaseLogicNode {
 		public String chain_ident; // TODO rename to chain_ident
 	}
 
-	protected LogicEnvironment env;
+	private LogicEnvironment env;
 
 	private String id; // Same ID as the one in NetList
 	private Supervisor supervisor;
 	private Node node; // NetList-node that this LogicNode represents
 	private NetList netlist;
 	private LogicNodeList logicnode_list; // Only used for look-up needs
+	boolean inited;
 
 	/**
 	 * Called when this node is created for the first time.
 	 * You will need to initialize stuff like defining ports.
 	 */
 	protected abstract void onCreate();
+
+	/**
+	 * Called every time the LogicNode class is created (either by creating a new node or loading from existing node).
+	 * Called after onCreate().
+	 */
+	protected abstract void onInit();
 
 	/**
 	 * Called when a parameter change has occured.
@@ -121,7 +128,7 @@ public abstract class BaseLogicNode {
 		this.logicnode_list = supervisor.logicnode_list;
 		this.netlist = supervisor.netlist;
 		this.node = node;
-		this.env = env;
+		this.env = supervisor.env;
 	}
 
 	void notifyConnect(String port) {

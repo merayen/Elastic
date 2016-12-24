@@ -53,8 +53,8 @@ public class Synchronization {
 						processing = true;
 						handler.needData();
 					} else if(processing && out_available < buffer_size / 2) { // Dangerous small amount of data left. We fake a frame so that no outputs/inputs starve/overflows
-						handler.behind();
-						dropFrame();
+						behind();
+						//dropFrame();
 					}
 				} else { // No input or outputs. Gotta use our own clock
 					long duration = (System.nanoTime() - start) / 1000; // in microseconds
@@ -65,8 +65,8 @@ public class Synchronization {
 						processing = true;
 						handler.needData();
 					} else if(sample_lag >= buffer_size) {
-						handler.behind(); // Hurry up, you are not fast enough
-						dropFrame();
+						behind(); // Hurry up, you are not fast enough
+						//dropFrame();
 					}
 				}
 
@@ -93,6 +93,7 @@ public class Synchronization {
 	private int buffer_size;
 	private final long start = System.nanoTime();
 	private volatile long sample_count; // samples from start. Counts upwards
+	private boolean reported_behind;
 
 	public Synchronization(Mixer mixer, int sample_rate, int buffer_size, Handler handler) {
 		this.mixer = mixer;
@@ -120,6 +121,7 @@ public class Synchronization {
 			throw new RuntimeException("Calling push() when not been requested is not allowed");
 
 		processing = false;
+		reported_behind = false;
 
 		sample_count += buffer_size;
 	}
@@ -137,5 +139,13 @@ public class Synchronization {
 			ad.spool(buffer_size);
 
 		sample_count += buffer_size;
+	}
+
+	private void behind() {
+		if(reported_behind)
+			return;
+
+		reported_behind = true;
+		handler.behind();
 	}
 }

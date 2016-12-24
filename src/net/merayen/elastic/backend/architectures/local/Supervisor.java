@@ -174,6 +174,9 @@ class Supervisor {
 		if(dead)
 			throw new RuntimeException("Should not be called after clear()");
 
+		// Reset all frame-state in the processors
+		processor_list.forEach((x) -> x.prepare());
+
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for(Node node : netlist.getNodes()) {
 			LocalNode ln = local_properties.getLocalNode(node);

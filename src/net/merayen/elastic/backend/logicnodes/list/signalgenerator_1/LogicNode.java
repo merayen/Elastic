@@ -24,6 +24,9 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
+	protected void onInit() {}
+
+	@Override
 	protected void onParameterChange(NodeParameterMessage message) { // Parameter change from UI
 		//System.out.printf("Signalgenerator LogicNode value: %s: %s\n", message.key, message.value);
 		set(message); // Acknowledge anyway

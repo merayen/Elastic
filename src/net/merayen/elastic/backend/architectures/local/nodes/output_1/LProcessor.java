@@ -42,7 +42,7 @@ public class LProcessor extends LocalProcessor {
 	protected void onPrepare() {
 		// TODO Auto-generated method stub
 		written = 0;
-		System.out.println("Output onPrepare()");
+		//System.out.println("Output onPrepare()");
 	}
 
 	@Override
