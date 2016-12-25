@@ -187,10 +187,8 @@ public class Mixer { // Rename to e.g "IODispatch"?
 			if(!o.getKey().isRunning())
 				o.getKey().begin();
 
-			if(o.getKey() instanceof AudioOutputDevice) {
-				//avail = ((OracleAudioOutputDevice)o.getKey()).line.available();
+			if(o.getKey() instanceof AudioOutputDevice)
 				((AudioOutputDevice)o.getKey()).write(((Audio)o.getValue()).audio);
-			}
 		}
 	}
 }

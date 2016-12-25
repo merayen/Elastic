@@ -11,6 +11,7 @@ import net.merayen.elastic.util.pack.PackArray;
 import net.merayen.elastic.util.pack.PackDict;
 
 public class LogicNode extends BaseLogicNode {
+	private String output_device;
 
 	@Override
 	protected void onCreate() {
@@ -25,7 +26,11 @@ public class LogicNode extends BaseLogicNode {
 		for(AbstractDevice ad : env.mixer.getAvailableDevices())
 			if(ad instanceof AudioDevice)
 				if(((AudioDevice)ad).isOutput())
-					System.out.println(ad.id);
+					if(
+						ad.id.equals("oracle_java:Default Audio Device") ||// Mac OS X 10.9
+						ad.id.equals("oracle_java:PulseAudio Mixer") // Ubuntu 16.04
+					)
+						output_device = ad.id;
 	}
 
 	@Override
@@ -74,6 +79,6 @@ public class LogicNode extends BaseLogicNode {
 			i++;
 		}
 
-		((Environment)getEnv()).mixer.send("oracle_java:PulseAudio Mixer", new Audio(out));
+		((Environment)getEnv()).mixer.send(output_device, new Audio(out));
 	}
 }
