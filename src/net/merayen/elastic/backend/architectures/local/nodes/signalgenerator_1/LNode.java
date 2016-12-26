@@ -31,8 +31,11 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onParameter(String key, Object value) {
 		//System.out.printf("Signalgenerator arc %s=%s\n", key, value);
-		if(key.equals("frequency"))
-			System.console();
+		if(key.equals("data.frequency"))
+			frequency = (float)value;
+
+		if(key.equals("data.amplitude"))
+			amplitude = (float)value;
 	}
 
 	@Override
