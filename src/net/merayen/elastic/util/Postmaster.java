@@ -12,27 +12,27 @@ import java.util.Collection;
  */
 public class Postmaster {
 	public static abstract class Message {
-		public final long timeout;
+		//public final long timeout;
 
 		public Message(long timeout) {
-			this.timeout = System.currentTimeMillis() + timeout;
+			//this.timeout = System.currentTimeMillis() + timeout;
 		}
 
 		public Message() {
-			this.timeout = Long.MAX_VALUE;
+			//this.timeout = Long.MAX_VALUE;
 		}
 	}
 
 	private final ArrayDeque<Message> queue = new ArrayDeque<>();
 
 	public void send(Message message) {
-		if(System.currentTimeMillis() % 10 == 0)
-			clean();
-
-		if(queue.size() >= 1000)
-			System.out.println("Postmaster is scarily flooded");
+		//if(System.currentTimeMillis() % 10 == 0)
+		//	clean();
 
 		synchronized (queue) {
+			if(queue.size() >= 1000)
+				System.out.println("Postmaster is scarily flooded");
+
 			queue.add(message);
 		}
 	}
@@ -44,7 +44,7 @@ public class Postmaster {
 	}
 
 	public Message receive() {
-		clean(); // Bad, if many messages in queue?
+		//clean(); // Bad, if many messages in queue?
 
 		synchronized (queue) {
 			return queue.poll();
@@ -57,11 +57,17 @@ public class Postmaster {
 		Message[] result;
 
 		synchronized (queue) {
-			result = queue.toArray(new Message[0]);
+			result = queue.toArray(new Message[queue.size()]);
 			queue.clear();
 		}
 
 		return result;
+	}
+
+	public boolean isEmpty() {
+		synchronized (queue) {
+			return queue.isEmpty();
+		}
 	}
 
 	public void clear() {

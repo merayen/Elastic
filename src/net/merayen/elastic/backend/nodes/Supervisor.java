@@ -54,10 +54,11 @@ public class Supervisor {
 
 	public void handleMessageFromUI(Postmaster.Message message) {
 		synchronized (PROCESS_LOCK) {
-			if(is_processing)
+			if(is_processing) {
 				while_processing_queue.send(message);
-			else
+			} else {
 				executeMessageFromUI(message);
+			}
 		}
 	}
 
@@ -146,7 +147,7 @@ public class Supervisor {
 		synchronized (PROCESS_LOCK) {
 			if(!is_processing)
 				throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
-	
+
 			//System.out.println("Response " + System.currentTimeMillis());
 
 			// Call all LogicNodes to work on the frame

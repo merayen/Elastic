@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures;
 
+import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -27,15 +28,18 @@ public class Dispatch {
 			while(running) {
 				try {
 					synchronized (this) {
-						wait();
+						if(executor.to_processing.isEmpty())
+							wait(0);
 					}
 				} catch (InterruptedException e) {
 					return;
 				}
 
-				Postmaster.Message message;
-				while ((message = executor.to_processing.receive()) != null)
-					executor.onMessage(message);
+				synchronized (this) {
+					Postmaster.Message message;
+					while ((message = executor.to_processing.receive()) != null)
+						executor.onMessage(message);
+				}
 			}
 		}
 	}
@@ -51,9 +55,9 @@ public class Dispatch {
 	}
 
 	public void executeMessage(Postmaster.Message message) {
-		executor.to_processing.send(message);
 		synchronized (runner) {
-			runner.notify();
+			executor.to_processing.send(message);
+			runner.notifyAll();
 		}
 	}
 

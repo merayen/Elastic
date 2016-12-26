@@ -2,6 +2,7 @@ package net.merayen.elastic.system;
 
 import java.util.ArrayList;
 
+import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.logicnodes.Environment;
@@ -26,9 +27,8 @@ public class Test {
 	long ispinne;
 	private Test() {
 		Environment env = createEnvironment(() -> {
-			//System.out.println("Uhm");
 			system.sendMessageToBackend(new ProcessMessage());
-			//System.out.println("Request " + System.currentTimeMillis());
+
 			fires++;
 			if(ispinne++ % 100 == 0)
 				System.out.printf("Fires/sec: %f / %d\n", (fires) / ((System.currentTimeMillis() - start) / 1000.0), SAMPLE_RATE / BUFFER_SIZE);
@@ -63,7 +63,8 @@ public class Test {
 
 			@Override
 			public void onMessageToBackend(Message message) {
-				System.out.println("Message from UI to Backend: " + message);
+				if(Config.processor.debug.messages)
+					System.out.println("Message from UI to Backend: " + message);
 			}
 		});
 
