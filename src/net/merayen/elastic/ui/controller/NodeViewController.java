@@ -73,10 +73,9 @@ public class NodeViewController extends Controller {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 
-			// Distribute message to all other NodeViews, so they get updated
-			// NO! We don't feed it back directly to all other views, the backend will send it to us afterwards anyway
-			//for(NodeView nv : getNodeViews())
-			//	nv.messageNode(m.node_id, m);
+			if(m.key.startsWith("ui.java.")) // TODO rename ui.java to something more local for this NodeViewController
+				for(NodeView nv : getNodeViews())
+					nv.messageNode(m.node_id, message); // Forward messages with parameters used by us (only)
 
 			sendToBackend(message); // Forward message to backend 
 		}

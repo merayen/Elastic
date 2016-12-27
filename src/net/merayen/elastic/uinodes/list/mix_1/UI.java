@@ -23,6 +23,10 @@ public class UI extends UINode {
 			port.translation.y = 40;
 		}
 
+		if(port.name.equals("fac")) {
+			port.translation.y = 60;
+		}
+
 		if(port.name.equals("out")) {
 			port.translation.x = 100;
 			port.translation.y = 20;
