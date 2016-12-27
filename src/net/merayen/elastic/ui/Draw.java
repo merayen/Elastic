@@ -140,7 +140,7 @@ public class Draw {
 		g2d.fillOval((int)point.x, (int)point.y, (int)dimension.width, (int)dimension.height);
 	}
 
-	public void oval(float x, float y, float width, float height, float lineWidth) {
+	public void oval(float x, float y, float width, float height) {
 		// TODO implement lineWidth
 		Point point = uiobject.getAbsolutePosition(x, y);
 		Dimension dimension = uiobject.getAbsoluteDimension(width, height);
