@@ -179,9 +179,9 @@ public abstract class LocalProcessor {
 
 	boolean frameFinished() {
 		boolean done = true;
-		for(Inlet inlet : inlets.values())
-			if(!inlet.satisfied())
-				done = false;
+		//for(Inlet inlet : inlets.values())
+		//	if(!inlet.satisfied())
+		//		done = false;
 
 		for(Outlet outlet : outlets.values())
 			if(!outlet.satisfied())

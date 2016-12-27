@@ -6,17 +6,16 @@ class VU extends UIObject {
 	float width = 100;
 	float bar_height = 10;
 
-	float[] vu;
+	private float[] vu = new float[0];
+
+	private long last_draw = System.currentTimeMillis();
 
 	@Override
 	protected void onDraw() {
 		super.onDraw();
 
 		float meter_width = width - 4;
-		int channels = 0;
-
-		if(vu != null)
-			channels = vu.length + 5;
+		int channels = vu.length;
 
 		if(vu != null) {
 			for(int i = 0; i < channels; i++) {
@@ -37,5 +36,32 @@ class VU extends UIObject {
 				}
 			}
 		}
+
+		decrease();
+
+		for(int i = 0; i < vu.length; i++)
+			vu[i] = Math.max(0, vu[i] - 0.01f);
+	}
+
+	void updateVU(float[] data) {
+		if(data.length != vu.length)
+			vu = new float[data.length];
+
+		for(int i = 0; i < data.length; i++)
+			if(data[i] > vu[i])
+				vu[i] = Math.min(1, data[i]);
+	}
+
+	float getHeight() {
+		return vu.length * bar_height;
+	}
+
+	private void decrease() {
+		float delta = (System.currentTimeMillis() - last_draw) / 1000f;
+
+		for(int i = 0; i < vu.length; i++)
+			vu[i] = Math.max(0, vu[i] - 0.1f * delta);
+
+		last_draw = System.currentTimeMillis();
 	}
 }

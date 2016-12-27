@@ -80,7 +80,8 @@ public class LogicNode extends BaseLogicNode {
 		}
 
 		//System.out.println("Amplitude: " + ((FloatArray)data.data.get("amplitude")).data[0]);
-		sendDataToUI("vu", data.data.get("vu"));
+		if(data.data.containsKey("vu"))
+			sendDataToUI("vu", data.data.get("vu"));
 
 		((Environment)getEnv()).mixer.send(output_device, new Audio(out));
 

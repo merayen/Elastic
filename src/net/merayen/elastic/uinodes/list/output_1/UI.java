@@ -14,6 +14,8 @@ public class UI extends UINode {
 		super();
 		width = 120;
 		height = 100;
+
+		titlebar.title = "Speaker";
 	}
 
 	@Override
@@ -24,6 +26,13 @@ public class UI extends UINode {
 		vu.translation.x = 10;
 		vu.translation.y = 20;
 		add(vu);
+	}
+
+	@Override
+	protected void onUpdate() {
+		super.onUpdate();
+
+		height = 40 + vu.getHeight();
 	}
 
 	@Override
@@ -40,9 +49,8 @@ public class UI extends UINode {
 
 	@Override
 	protected void onData(NodeDataMessage message) {
-		if(message.key.equals("vu")) {
-			vu.vu = ((FloatArray)message.value).data;
-			System.out.println(vu.vu[0]);
+		if(message.key.equals("vu") && vu != null) {
+			vu.updateVU(((FloatArray)message.value).data);
 		}
 	}
 

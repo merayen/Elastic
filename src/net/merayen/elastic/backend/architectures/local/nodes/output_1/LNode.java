@@ -6,7 +6,6 @@ import java.util.List;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.pack.PackDict;
-import net.merayen.elastic.util.pack.PackNumber;
 import net.merayen.elastic.util.pack.FloatArray;
 import net.merayen.elastic.util.pack.PackArray;
 
@@ -90,7 +89,9 @@ public class LNode extends LocalNode {
 		}
 
 		outgoing.data.put("audio", channels);
-		outgoing.data.put("vu", new FloatArray(amplitude));
+
+		if(channel_count > 0)
+			outgoing.data.put("vu", new FloatArray(amplitude));
 	}
 
 	private int countChannels() {

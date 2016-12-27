@@ -183,6 +183,9 @@ class Supervisor {
 			ln.onProcess((PackDict)message.dict.data.get(node.getID()));
 		}
 
+		for(LocalProcessor lp : processor_list)
+			scheduled.add(lp);
+
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors
 			List<LocalProcessor> to_process = scheduled;
 			scheduled = new ArrayList<>();

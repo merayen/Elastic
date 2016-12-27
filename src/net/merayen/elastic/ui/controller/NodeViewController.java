@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.Config;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster;
@@ -43,8 +44,11 @@ public class NodeViewController extends Controller {
 		} else if(message instanceof NodeDataMessage) {
 			NodeDataMessage m = (NodeDataMessage)message;
 
-			for(NodeView nv : getNodeViews())
-				nv.getNode(m.node_id).executeMessage(message);
+			for(NodeView nv : getNodeViews()) {
+				UINode n = nv.getNode(m.node_id);
+				if(n != null)
+					n.executeMessage(message);
+			}
 
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
