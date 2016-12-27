@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.local;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
@@ -59,6 +60,10 @@ class Supervisor {
 
 			localnode.compiler_setInfo(this, node, sample_rate, buffer_size);
 			localnode.init();
+
+			// Apply any parameters
+			for(Map.Entry<String, Object> x : node_properties.parameters.getAll(node).entrySet())
+				localnode.onParameter(x.getKey().substring(2), x.getValue());
 		}
 	}
 

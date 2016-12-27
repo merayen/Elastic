@@ -1,8 +1,10 @@
 package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.merayen.elastic.backend.logicnodes.Format;
@@ -66,6 +68,15 @@ public class NodeProperties {
 
 		public Object get(Node node, String key) {
 			return node.properties.get("p." + key);
+		}
+
+		public Map<String, Object> getAll(Node node) {
+			Map<String, Object> result = new HashMap<>();
+			for(Map.Entry<String, Object> x : node.properties.entrySet())
+				if(x.getKey().startsWith("p."))
+					result.put(x.getKey(), x.getValue());
+
+			return result;
 		}
 	}
 

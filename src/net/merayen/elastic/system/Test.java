@@ -29,9 +29,9 @@ public class Test {
 		Environment env = createEnvironment(() -> {
 			system.sendMessageToBackend(new ProcessMessage());
 
-			fires++;
-			if(ispinne++ % 100 == 0)
-				System.out.printf("Fires/sec: %f / %d\n", (fires) / ((System.currentTimeMillis() - start) / 1000.0), SAMPLE_RATE / BUFFER_SIZE);
+			//fires++;
+			//if(ispinne++ % 100 == 0)
+			//	System.out.printf("Fires/sec: %f / %d\n", (fires) / ((System.currentTimeMillis() - start) / 1000.0), SAMPLE_RATE / BUFFER_SIZE);
 		});
 
 		system = new ElasticSystem(env);

@@ -55,7 +55,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
-		System.out.printf("Signal generator onMessage() %s: %s\n", this, message);
+		//System.out.printf("Signal generator onMessage() %s: %s\n", this, message);
 		if(message.key.equals("data.frequency")) {
 			frequency = (float)message.value;
 			frequency_slider.setValue(frequency / 8000);

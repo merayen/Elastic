@@ -88,8 +88,8 @@ public class LNode extends LocalNode {
 	
 					// Measure max amplitude
 					for(float v : output[voice_no][channel_no])
-						if(amplitude[channel_no] < v)
-							amplitude[channel_no] = v;
+						if(Math.abs(amplitude[channel_no]) < v)
+							amplitude[channel_no] = Math.abs(v);
 				}
 			}
 		}

@@ -26,9 +26,10 @@ public class Executor extends AbstractExecutor {
 		} else if(message instanceof NodeParameterMessage) {
 			applyNetList();
 			supervisor.handleMessage(message);
+			NetListMessages.apply(getNetList(), message);
 
 		} else if(message instanceof NetListMessage) {
-			NetListMessages.apply(getUpcomingNetList(), message);
+			NetListMessages.apply(branchNetList(), message);
 
 		}
 
@@ -57,7 +58,14 @@ public class Executor extends AbstractExecutor {
 		}
 	}
 
-	private NetList getUpcomingNetList() {
+	private NetList getNetList() {
+		if(upcoming_netlist == null)
+			return netlist;
+
+		return upcoming_netlist;
+	}
+
+	private NetList branchNetList() {
 		if(upcoming_netlist == null) {
 			upcoming_netlist = netlist.copy();
 			new LocalNodeProperties().clear(upcoming_netlist);
