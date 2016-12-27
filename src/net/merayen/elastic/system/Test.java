@@ -73,8 +73,9 @@ public class Test {
 		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
 		system.sendMessageToBackend(new CreateNodeMessage("output", 1));
 		system.sendMessageToBackend(new CreateNodeMessage("mix", 1));
+		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
 
-		waitFor(() -> nodes.size() == 5);
+		waitFor(() -> nodes.size() == 6);
 
 		// Place the nodes
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 50f));

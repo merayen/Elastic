@@ -19,6 +19,7 @@ public class LProcessor extends LocalProcessor {
 	protected void onProcess() {
 		Inlet a = getInlet("a");
 		Inlet b = getInlet("b");
+		Inlet fac = getInlet("fac");
 		Outlet out = getOutlet("out");
 
 		if(a instanceof AudioInlet && b instanceof AudioInlet && out != null) {
@@ -35,11 +36,28 @@ public class LProcessor extends LocalProcessor {
 
 			int stop = out.written + available;
 
-			for(int channel_no = 0; channel_no < channel_count; channel_no++) {
-				for(int i = out.written; i < stop; i++) {
-					float af = (a_buffer.length > channel_no ? a_buffer[channel_no][i] : 0);
-					float bf = (b_buffer.length > channel_no ? b_buffer[channel_no][i] : 0);
-					out_buffer[channel_no][i] = af + bf;
+			if(fac instanceof AudioInlet && fac.outlet instanceof AudioOutlet) {
+				float[][] fac_buffer = ((AudioOutlet)fac.outlet).audio;
+
+				for(int channel_no = 0; channel_no < channel_count; channel_no++) {
+					for(int i = out.written; i < stop; i++) {
+						float af = (a_buffer.length > channel_no ? a_buffer[channel_no][i] : 0);
+						float bf = (b_buffer.length > channel_no ? b_buffer[channel_no][i] : 0);
+
+						float volume_a = 1 - Math.max(0, Math.min(1, fac_buffer[0][i] * -1));
+						float volume_b = 1 - Math.max(0, Math.min(1, fac_buffer[0][i]     ));
+
+						out_buffer[channel_no][i] = (af * volume_a) + (bf * volume_b);
+					}
+				}
+
+			} else {
+				for(int channel_no = 0; channel_no < channel_count; channel_no++) {
+					for(int i = out.written; i < stop; i++) {
+						float af = (a_buffer.length > channel_no ? a_buffer[channel_no][i] : 0);
+						float bf = (b_buffer.length > channel_no ? b_buffer[channel_no][i] : 0);
+						out_buffer[channel_no][i] = af + bf;
+					}
 				}
 			}
 
@@ -55,15 +73,8 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onMessage(Message message) {}
 
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-
-	}
-
+	protected void onDestroy() {}
 }

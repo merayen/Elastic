@@ -19,6 +19,10 @@ public class LogicNode extends BaseLogicNode {
 		}});
 
 		createPort(new PortDefinition() {{
+			name = "fac";
+		}});
+
+		createPort(new PortDefinition() {{
 			name = "out";
 			output = true;
 			format = Format.AUDIO;
