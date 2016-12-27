@@ -24,14 +24,24 @@ public class LProcessor extends LocalProcessor {
 		if(a instanceof AudioInlet && b instanceof AudioInlet && out != null) {
 			int available = available();
 
-			float[] a_buffer = ((AudioOutlet)a.outlet).audio;
-			float[] b_buffer = ((AudioOutlet)b.outlet).audio;
-			float[] out_buffer = ((AudioOutlet)out).audio;
+			float[][] a_buffer = ((AudioOutlet)a.outlet).audio;
+			float[][] b_buffer = ((AudioOutlet)b.outlet).audio;
+
+			int channel_count = Math.max(a_buffer.length, b_buffer.length);
+
+			((AudioOutlet)out).setChannelCount(channel_count);
+
+			float[][] out_buffer = ((AudioOutlet)out).audio;
 
 			int stop = out.written + available;
 
-			for(int i = out.written; i < stop; i++)
-				out_buffer[i] = a_buffer[i] + b_buffer[i];
+			for(int channel_no = 0; channel_no < channel_count; channel_no++) {
+				for(int i = out.written; i < stop; i++) {
+					float af = (a_buffer.length > channel_no ? a_buffer[channel_no][i] : 0);
+					float bf = (b_buffer.length > channel_no ? b_buffer[channel_no][i] : 0);
+					out_buffer[channel_no][i] = af + bf;
+				}
+			}
 
 			out.written = stop;
 			a.read = stop;

@@ -3,12 +3,11 @@ package net.merayen.elastic.backend.architectures.local.lets;
 import net.merayen.elastic.backend.logicnodes.Format;
 
 public class AudioOutlet extends Outlet {
-	public final float[] audio; // Coded alternating channels
-	public int channels; // Count of channels that this Outlet represents. Inlet must read this to correctly read the audio-data TODO
+	public float[/* channel no */][/* sample index */] audio;
 
 	public AudioOutlet(int buffer_size) {
 		super(buffer_size);
-		audio = new float[buffer_size];
+		setChannelCount(0);
 	}
 
 	public Format getFormat() {
@@ -17,5 +16,10 @@ public class AudioOutlet extends Outlet {
 
 	public Class<? extends Inlet> getInletClass() {
 		return AudioInlet.class;
+	}
+
+	public void setChannelCount(int channel_count) {
+		if(audio == null || audio.length != channel_count)
+			audio = new float[channel_count][buffer_size];
 	}
 }

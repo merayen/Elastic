@@ -100,10 +100,12 @@ public class LProcessor extends LocalProcessor {
 	private void generateRaw() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 
+		outlet.setChannelCount(1);
+
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
 		float amplitude = lnode.amplitude;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
-			outlet.audio[i] = (float)Math.sin(pos) * amplitude;
+			outlet.audio[0][i] = (float)Math.sin(pos) * amplitude;
 			pos += step;
 		}
 

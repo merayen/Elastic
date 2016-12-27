@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
+import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -10,22 +11,27 @@ import net.merayen.elastic.util.Postmaster.Message;
  * Accumulates audio and then the Net-node will acquire data when needed.
  */
 public class LProcessor extends LocalProcessor {
-	int channel_id = -1; // Set by the LNode when voice is created
+	int voice_id = -1; // Set by the LNode when voice is created
 	int written;
 
 	@Override
 	protected void onProcess() {
 		Inlet inlet = getInlet("input");
 
-		if(inlet != null) {
+		if(inlet instanceof AudioInlet) {
 			AudioInlet ai = (AudioInlet)inlet;
 			LNode lnode = (LNode)getLocalNode();
 
 			int start = ai.read;
 			int stop = ai.outlet.written;
 
-			for(int i = start; i < stop; i++)
-				lnode.output[channel_id][i] = ai.outlet.audio[i];
+			int channel_count = ((AudioOutlet)ai.outlet).audio.length;
+
+			if(lnode.output[voice_id] == null || lnode.output[voice_id].length != channel_count) // See if the channel count has changed. If yes, we clear our output and recreate the channel buffers
+				lnode.output[voice_id] = new float[channel_count][buffer_size];
+
+			lnode.output[voice_id] = ai.outlet.audio; // Note: does not copy
+
 			//System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
 
 			inlet.read += stop - start;
@@ -34,9 +40,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onInit() {
-		((LNode)getLocalNode()).output[channel_id] = new float[buffer_size]; // Clean our buffer
-	}
+	protected void onInit() {}
 
 	@Override
 	protected void onPrepare() {
@@ -46,13 +50,10 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onMessage(Message message) {}
 
 	@Override
 	protected void onDestroy() {
-		((LNode)getLocalNode()).output[channel_id] = null; // Clean our buffer
+		((LNode)getLocalNode()).output[voice_id] = null; // Clean our buffer
 	}
 }
