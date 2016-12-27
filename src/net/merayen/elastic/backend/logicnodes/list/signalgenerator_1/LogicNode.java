@@ -28,29 +28,18 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onParameterChange(NodeParameterMessage message) { // Parameter change from UI
-		//System.out.printf("Signalgenerator LogicNode value: %s: %s\n", message.key, message.value);
 		set(message); // Acknowledge anyway
 	}
 
 	@Override
-	protected void onConnect(String port) {
-		System.out.println("Signalgenerator got connected");
-	}
+	protected void onConnect(String port) {}
 
 	@Override
-	protected void onDisconnect(String port) {
-		System.out.println("Signalgenerator got disconnected");
-	}
+	protected void onDisconnect(String port) {}
 
 	@Override
-	protected void onPrepareFrame(PackDict data) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onPrepareFrame(PackDict data) {}
 
 	@Override
-	protected void onFinishFrame(PackDict data) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onFinishFrame(PackDict data) {}
 }

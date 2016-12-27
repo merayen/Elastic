@@ -40,6 +40,12 @@ public class NodeViewController extends Controller {
 			for(NodeView nv : getNodeViews())
 				nv.getNode(m.node_id).executeMessage(message);
 
+		} else if(message instanceof NodeDataMessage) {
+			NodeDataMessage m = (NodeDataMessage)message;
+
+			for(NodeView nv : getNodeViews())
+				nv.getNode(m.node_id).executeMessage(message);
+
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
 

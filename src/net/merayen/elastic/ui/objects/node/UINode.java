@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.system.intercom.CreateNodePortMessage;
+import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
 import net.merayen.elastic.ui.UIObject;
@@ -30,6 +31,7 @@ public abstract class UINode extends UIObject {
 	protected abstract void onCreatePort(UIPort port); // Node can customize the created UIPort in this function
 	protected abstract void onRemovePort(UIPort port); // Node can clean up any resources belonging to the UIPort
 	protected abstract void onMessage(NodeParameterMessage message);
+	protected abstract void onData(NodeDataMessage message);
 
 	public UINode() {
 		titlebar = new Titlebar();
@@ -124,8 +126,11 @@ public abstract class UINode extends UIObject {
 				translation.x = (Float)m.value;
 			else if(m.key.equals("ui.java.translation.y") && !titlebar.isDragging())
 				translation.y = (Float)m.value;
-			//else
+
 			onMessage(m);
+
+		} else if(message instanceof NodeDataMessage) {
+			onData((NodeDataMessage)message);
 
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;

@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
+import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.ui.objects.components.ParameterSlider;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
@@ -10,15 +10,13 @@ public class UI extends UINode {
 	private WaveSelect wave_select;
 	private PortParameterSlider frequency_slider;
 	private PortParameterSlider amp_slider;
-	private ParameterSlider offset_slider;
 	private float frequency = 440;
 	private float amplitude = 0.1f;
-	private float offset = 0;
 
 	public UI() {
 		super();
 		width = 100f;
-		height = 120f;
+		height = 90f;
 
 		titlebar.title = "Signalgenerator";
 
@@ -29,7 +27,6 @@ public class UI extends UINode {
 
 		createFrequencySlider();
 		createAmplitudeSlider();
-		createOffsetSlider();
 	}
 
 	public static String getNodeName() {
@@ -67,11 +64,6 @@ public class UI extends UINode {
 		else if(message.key.equals("data.amplitude")) {
 			amplitude = (float)message.value;
 			amp_slider.setValue(amplitude / 10000);
-		}
-
-		else if(message.key.equals("data.offset")) {
-			offset = (float)message.value;
-			offset_slider.setValue(offset / 10000.0);
 		}
 	}
 
@@ -160,35 +152,8 @@ public class UI extends UINode {
 		amp_slider.setScale(0.02f);
 	}
 
-	private void createOffsetSlider() {
-		UI self = this;
-		offset_slider = new ParameterSlider();
-		offset_slider.translation.x = 10f;
-		offset_slider.translation.y = 95f;
-		add(offset_slider);
-
-		offset_slider.setHandler(new ParameterSlider.IHandler() {
-			@Override
-			public void onChange(double value, boolean programatic) {
-				offset = (float)(value * 10000f);
-
-				if(!programatic)
-					sendParameter("data.offset", offset);
-			}
-
-			@Override
-			public void onButton(int offset) {
-				self.offset += offset;
-				offset_slider.setValue(offset / 10000f);
-			}
-
-			@Override
-			public String onLabelUpdate(double value) {
-				return String.format("%.1f", offset);
-			}
-		});
-
-		offset_slider.setValue(0);
-		offset_slider.scale = 0.02f;
+	@Override
+	protected void onData(NodeDataMessage message) {
+		System.console();
 	}
 }

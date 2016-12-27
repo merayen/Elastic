@@ -7,6 +7,7 @@ import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.pack.PackDict;
+import net.merayen.elastic.util.pack.PackType;
 
 public abstract class BaseLogicNode {
 	/**
@@ -110,6 +111,14 @@ public abstract class BaseLogicNode {
 	protected void set(NodeParameterMessage message) {
 		sendMessageToProcessor(message);
 		sendMessageToUI(message);
+	}
+
+	protected void sendDataToUI(String key, PackType data) {
+		sendMessageToUI(new NodeDataMessage(id, key, data));
+	}
+
+	protected void sendDataToProcessor(String key, PackType data) {
+		sendMessageToProcessor(new NodeDataMessage(id, key, data));
 	}
 
 	void create(String name, Integer version) {

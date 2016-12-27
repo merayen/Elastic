@@ -35,9 +35,6 @@ public class LProcessor extends LocalProcessor {
 	private float midi_tangent_frequency;
 	private float midi_pitch_factor;*/
 
-	private float amplitude = 0.2f;
-	private float frequency = 1000;
-
 	private int lol_static;
 	private int lol = new Random().nextInt(Integer.MAX_VALUE);
 
@@ -104,6 +101,7 @@ public class LProcessor extends LocalProcessor {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
+		float amplitude = lnode.amplitude;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
 			outlet.audio[i] = (float)Math.sin(pos) * amplitude;
 			pos += step;
