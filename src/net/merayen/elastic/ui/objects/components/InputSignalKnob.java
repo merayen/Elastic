@@ -8,22 +8,19 @@ public class InputSignalKnob extends UIObject {
 	private CircularSlider amplitude;
 	private CircularSlider offset;
 
-	private float amplitude_value;
-	private float offset_value;
-
 	@Override
 	protected void onInit() {
 		amplitude = new CircularSlider();
 		amplitude.setValue(0.5f);
 		amplitude.size = size;
-		amplitude.drag_scale = 0.1f;
+		amplitude.drag_scale = 0.05f;
 		add(amplitude);
 
 		offset = new CircularSlider();
 		offset.translation.x = size / 4;
 		offset.translation.y = size / 4;
 		offset.size = size / 2;
-		offset.drag_scale = 0.1f;
+		offset.drag_scale = 0.05f;
 		offset.setValue(0.5f);
 		add(offset);
 	}
