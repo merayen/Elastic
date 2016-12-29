@@ -17,31 +17,34 @@ public class BezierCurveBox extends UIObject {
 
 	public class BezierPoint extends UIObject {
 		public Dot position = new Dot(this);
+		public Dot left_dot = new Dot(this);
+		public Dot right_dot = new Dot(this);
 
 		private BezierPoint() {}
 
 		@Override
 		protected void onInit() {
 			add(position);
-		}
-	}
-
-	public class BezierPointAfter extends BezierPoint {
-		public Dot left_dot = new Dot(this);
-		public Dot right_dot = new Dot(this);
-
-		private BezierPointAfter() {}
-
-		@Override
-		protected void onInit() {
-			super.onInit();
 			add(left_dot);
 			add(right_dot);
+
+			left_dot.radius = 0.03f;
+			right_dot.radius = 0.03f;
+
+			left_dot.color.red = 255;
+			left_dot.color.green = 255;
+			left_dot.color.blue = 200;
+
+			right_dot.color.red = 255;
+			right_dot.color.green = 255;
+			right_dot.color.blue = 200;
 		}
 	}
 
 	public class Dot extends UIObject {
 		public final Color color = new Color(255, 200, 0);
+		public float radius = 0.05f;
+
 		Movable movable;
 		boolean visible = true; // Set to false to hide the dot (not possible to move it)
 
@@ -77,8 +80,7 @@ public class BezierCurveBox extends UIObject {
 			translation.y = Math.max(0, Math.min(1, translation.y));
 
 			if(visible) {
-				final float radius = 0.05f;
-				draw.setColor(255, 200, 0);
+				draw.setColor(color.red, color.green, color.blue);
 				draw.fillOval(-radius / 2, -radius / 2, radius, radius);
 			}
 		}
@@ -112,16 +114,18 @@ public class BezierCurveBox extends UIObject {
 	private void initPoints() {
 		BezierPoint start = new BezierPoint();
 		start.position.translation.y = 0.5f;
+		start.right_dot.translation.x = 0.5f;
+		start.right_dot.translation.y = 0.75f;
+		start.left_dot.visible = false; // Not being used
 		points.add(start);
 		add(start);
 
-		BezierPointAfter stop = new BezierPointAfter();
+		BezierPoint stop = new BezierPoint();
 		stop.position.translation.x = 1f;
 		stop.position.translation.y = 0.5f;
 		stop.left_dot.translation.x = 0.5f;
 		stop.left_dot.translation.y = 0.25f;
-		stop.right_dot.translation.x = 0.5f;
-		stop.right_dot.translation.y = 0.75f;
+		stop.right_dot.visible = false; // Not being used
 
 		points.add(stop);
 		add(stop);
@@ -140,19 +144,17 @@ public class BezierCurveBox extends UIObject {
 		draw.setColor(255, 200, 0);
 		Point[] p = new Point[(points.size() - 1) * 3];
 
-		int i = -1;
-		for(BezierPoint bp : points) {
-			if(i > -1) { // First one is special and is handled below
-				BezierPointAfter bpa = (BezierPointAfter)bp;
-				p[i++] = new Point(bpa.left_dot.translation.x, bpa.left_dot.translation.y);
-				p[i++] = new Point(bpa.right_dot.translation.x, bpa.right_dot.translation.y);
-				p[i++] = new Point(bpa.position.translation.x, bpa.position.translation.y);
-			} else {
-				i++;
-			}
+		int i = 0;
+		for(int j = 1; j < points.size(); j++) {
+			BezierPoint before = points.get(j - 1);
+			BezierPoint current = points.get(j);
+
+			p[i++] = new Point(before.right_dot.translation.x, before.right_dot.translation.y);
+			p[i++] = new Point(current.left_dot.translation.x, current.left_dot.translation.y);
+			p[i++] = new Point(current.position.translation.x, current.position.translation.y);
 		}
 
-		BezierPoint bps = (BezierPoint)points.get(0);
+		BezierPoint bps = (BezierPoint)points.get(0); // The initial point
 		draw.bezier(bps.position.translation.x, bps.position.translation.y, p);
 
 		// Draw lines from the dots to the points
@@ -167,28 +169,33 @@ public class BezierCurveBox extends UIObject {
 		draw.setStroke(1 / (width  + height));
 		draw.setColor(200, 180, 0);
 
-		for(int i = 0; i < points.size(); i++) {
-			if(i == 0) {
+		for(BezierPoint bp : points) {
+			/*if(i == 0) {
 				BezierPoint bps = (BezierPoint)points.get(0);
-				BezierPointAfter bpa = (BezierPointAfter)points.get(1);
+				BezierPoint bpa = (BezierPoint)points.get(1);
 				draw.line(bps.position.translation.x, bps.position.translation.y, bpa.left_dot.translation.x, bpa.left_dot.translation.y);
 			} else {
-				BezierPointAfter bpa = (BezierPointAfter)points.get(i);
+				BezierPoint bpa = (BezierPoint)points.get(i);
 				BezierPoint before = points.get(i - 1);
-				draw.line(before.position.translation.x, before.position.translation.y, bpa.left_dot.translation.x, bpa.left_dot.translation.y);
-				draw.line(bpa.position.translation.x, bpa.position.translation.y, bpa.right_dot.translation.x, bpa.right_dot.translation.y);
-			}
+				//draw.line(before.position.translation.x, before.position.translation.y, bpa.left_dot.translation.x, bpa.left_dot.translation.y);
+				//draw.line(bpa.position.translation.x, bpa.position.translation.y, bpa.right_dot.translation.x, bpa.right_dot.translation.y);
+			}*/
+			if(bp.left_dot.visible)
+				draw.line(bp.position.translation.x, bp.position.translation.y, bp.left_dot.translation.x, bp.left_dot.translation.y);
+
+			if(bp.right_dot.visible)
+				draw.line(bp.position.translation.x, bp.position.translation.y, bp.right_dot.translation.x, bp.right_dot.translation.y);
 		}
 	}
 
-	public BezierPointAfter insertPoint(int before_index) {
+	public BezierPoint insertPoint(int before_index) {
 		if(before_index < 1)
 			throw new RuntimeException("Can not insert before the first point as it is fixed");
 
 		if(before_index > points.size() - 1)
 			throw new RuntimeException("Can not add after the last point as it is fixed");
 
-		BezierPointAfter bpa = new BezierPointAfter();
+		BezierPoint bpa = new BezierPoint();
 
 		points.add(before_index, bpa);
 		add(bpa);
