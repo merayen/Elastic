@@ -1,18 +1,3 @@
-- Think about that all nodes might need to support different parameters for each channel
-	- And that a left node might need to ask right node to open a channel
-	Like, a left node has 12 voices (channels), it needs to get 12 different values from its right node, and needs to request multiple channels
-	Asking for multiple channels might be some special RequestPacket type, that processing nodes just pass along whilst generator nodes actually opens more channels
-- AudioCircularBuffer: Implement posibility to drop channels, when the one filling this buffer notice that there are no more data for a certain channel
-- Make input on a signal generator actually work
-- Create own port for MIDI-data
-- Make MIDI-input node output MIDI
-- Make wavegenerator take MIDI
-- Create offset node (adds to the signal)
-- Create volume node (multiplies with the signal)
-- Give up on very dynamic sample rate
-	The requesting node was orignally deciding what sample rate it wants to receive from its left nodes.
-	This just adds complexity that might not be worth.
-	Implement an "event" system so that we can send events to all nodes in a NodeSystem?
-	Sample rate will be set globally with an event
-- "Event" system for netnodes (e.g change sample rate)
 - (Low prio) "Event" system for UI nodes (e.g to communicate with other nodes outside the connected lines)
+- Make intercom use only PackType for data transfer, so that it is serializable between devices
+

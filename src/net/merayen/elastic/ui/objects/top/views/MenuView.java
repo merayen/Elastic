@@ -19,4 +19,9 @@ public class MenuView extends View {
 		menu.width = width;
 		menu.translation.y = height - menu.height;
 	}
+
+	@Override
+	public View cloneView() {
+		return new MenuView();
+	}
 }

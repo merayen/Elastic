@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.UINode;
+import net.merayen.elastic.ui.objects.top.MenuBar;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Postmaster;
@@ -25,6 +26,7 @@ public class NodeView extends View {
 	private Movable movable;
 	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s";
+	private final MenuBar menu = new MenuBar();
 
 	public NodeView() {
 		super();
@@ -42,6 +44,11 @@ public class NodeView extends View {
 		super.onInit();
 		// Ask for sending a new NetList. We queue it up in the ViewportContainer domain, as several NodeViews might have been created simultaneously, we then only send 1 message
 		addTask(new TaskExecutor.Task(getClass(), 1000, () -> sendMessage(new NetListRefreshRequestMessage())));
+
+		menu.translation.x = 0;
+		menu.translation.y = 0;
+		menu.width = 200;
+		add(menu);
 	}
 
 	@Override
@@ -50,6 +57,8 @@ public class NodeView extends View {
 
 		draw.setColor(20, 20, 50);
 		draw.fillRect(2, 2, width - 4, height - 4);
+
+		menu.width = width;
 	}
 
 	/**

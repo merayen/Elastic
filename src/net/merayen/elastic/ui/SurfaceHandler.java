@@ -28,13 +28,8 @@ public class SurfaceHandler {
 		surface = new Swing(new Swing.Handler() { // TODO Instantiate Fake() when not topmost nodesystem
 
 			@Override
-			public void onMouseWheelEvent(MouseWheelEvent mouse_wheel_event) {
-				events_queue.add(mouse_wheel_event);
-			}
-
-			@Override
-			public void onMouseEvent(MouseEvent mouse_event) {
-				events_queue.add(mouse_event);
+			public void onEvent(IEvent event) {
+				events_queue.add(event);
 			}
 
 			@Override

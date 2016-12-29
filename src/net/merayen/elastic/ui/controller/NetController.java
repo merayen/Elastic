@@ -30,13 +30,8 @@ public class NetController extends Controller {
 
 	@Override
 	protected void onMessageFromUI(Message message) {
-		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage) {
+		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage)
 			sendToBackend(message); // Forward message. Backend will respond with the same message
-
-			// Send it back to UI, for all views for now, for testing
-			//for(NodeView nv : getNodeViews())
-			//	nv.getUINet().handleMessage(message);
-		}
 	}
 
 	private List<NodeView> getNodeViews() {

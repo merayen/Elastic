@@ -2,7 +2,14 @@ package net.merayen.elastic.ui.surface;
 
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.KeyboardEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 
@@ -45,11 +52,16 @@ public class Swing implements Surface {
 		}
 	}
 
-	public class LolPanel extends javax.swing.JPanel implements java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener {
+	public class LolPanel extends javax.swing.JPanel implements java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener, java.awt.event.KeyListener {
+		private Set<Integer> active_key_codes = new HashSet<>(); // Ugly hack as JKeyListener repeats the keys, at least for Linux
+
 		public LolPanel() {
-			this.addMouseListener(this);
-			this.addMouseMotionListener(this);
-			this.addMouseWheelListener(this);
+			setFocusable(true);
+			//grabFocus();
+			addMouseListener(this);
+			addMouseMotionListener(this);
+			addMouseWheelListener(this);
+			addKeyListener(this);
 		}
 
 		@Override
@@ -84,14 +96,36 @@ public class Swing implements Surface {
 
 		public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
 			if(handler != null)
-				handler.onMouseWheelEvent(new MouseWheelEvent(e));
+				handler.onEvent(new MouseWheelEvent(e));
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(handler != null) {
+				if(!active_key_codes.contains(e.getKeyCode())) {
+					active_key_codes.add(e.getKeyCode());
+					handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.DOWN));
+				}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			if(handler != null) {
+				if(active_key_codes.contains(e.getKeyCode())) {
+					active_key_codes.remove(e.getKeyCode());
+					handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.UP));
+				}
+			}
 		}
 	}
 
 	public interface Handler {
 		public void onDraw(java.awt.Graphics2D graphics2d);
-		public void onMouseEvent(MouseEvent mouse_event);
-		public void onMouseWheelEvent(MouseWheelEvent mouse_wheel_event);
+		public void onEvent(IEvent event);
 	}
 
 	private Handler handler;
@@ -124,11 +158,8 @@ public class Swing implements Surface {
 	}
 
 	private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.action_type ac) {
-		if(handler == null)
-			return;
-
-		MouseEvent me = new MouseEvent(e, ac);
-		handler.onMouseEvent(me);
+		if(handler != null)
+			handler.onEvent(new MouseEvent(e, ac));
 	}
 
 	@Override

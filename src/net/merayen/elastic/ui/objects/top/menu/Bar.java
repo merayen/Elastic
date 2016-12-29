@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.objects.top.menu;
 import java.util.ArrayList;
 
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.KeyboardEvent;
 
 public class Bar extends UIObject {
 	public ArrayList<MenuBarItem> items = new ArrayList<MenuBarItem>();
@@ -56,5 +58,13 @@ public class Bar extends UIObject {
 		this.logo = logo;
 		add(logo);
 		this.logo_width = logo_width;
+	}
+
+	@Override
+	protected void onEvent(IEvent event) {
+		if(event instanceof KeyboardEvent) {
+			KeyboardEvent e = (KeyboardEvent)event;
+			System.out.println(e.action + ": " + e.character + " (" + e.code + ")");
+		}
 	}
 }
