@@ -7,9 +7,10 @@ public class Test {
 		Supervisor supervisor = new Supervisor(new Supervisor.Handler() {
 
 			@Override
-			public void onMessageToBackend(Message message) {
-				// Meh
-			}
+			public void onMessageToBackend(Message message) {}
+
+			@Override
+			public void onReadyForMessages() {}
 		});
 		try {
 			Thread.sleep(3000);
