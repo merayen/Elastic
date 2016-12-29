@@ -22,11 +22,8 @@ public class LProcessor extends LocalProcessor {
 	private enum Mode {
 		NOTHING,
 		RAW,
-		RAW_AMP,
 		MIDI,
 		FREQUENCY,
-		MIDI_AMP,
-		FREQUENCY_AMP,
 		MALFUNCTION // E.g, wrong line has been connected. We output only zeroes in this case (and should send a warning)
 	}
 
@@ -54,34 +51,19 @@ public class LProcessor extends LocalProcessor {
 		lnode = (LNode)getLocalNode();
 
 		Inlet frequency = getInlet("frequency");
-		Inlet amplitude = getInlet("amplitude");
 		Outlet output = getOutlet("output");
 
 		if(output == null)
 			mode = Mode.NOTHING;
-		if(frequency == null && amplitude == null) {
+		if(frequency == null) {
 			mode = Mode.RAW;
-		} else if(frequency == null && amplitude != null) {
-			if(amplitude instanceof AudioInlet) {
-				mode = Mode.RAW_AMP;
-			} else {
-				mode = Mode.MALFUNCTION;
-			}
-		} else if(frequency != null && amplitude == null) {
+		} else if(frequency != null) {
 			if(frequency instanceof AudioInlet) {
 				mode = Mode.FREQUENCY;
 			} else if(frequency instanceof MidiInlet) {
 				mode = Mode.MIDI;
 			} else {
 				mode = Mode.MALFUNCTION; // We don't understand the input on the frequency-port
-			}
-		} else if(frequency != null && amplitude != null) {
-			if((frequency instanceof AudioInlet) && (amplitude instanceof AudioInlet)) {
-				mode = Mode.FREQUENCY_AMP;
-			} else if((frequency instanceof MidiInlet) && (amplitude instanceof AudioInlet)) {
-				mode = Mode.MIDI_AMP;
-			} else {
-				mode = Mode.MALFUNCTION;
 			}
 		}
 

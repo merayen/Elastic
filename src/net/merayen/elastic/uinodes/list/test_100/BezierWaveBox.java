@@ -3,8 +3,8 @@ package net.merayen.elastic.uinodes.list.test_100;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.uinodes.list.test_100.BezierCurveBox.BezierPoint;
 
-public class BezierWaveBox extends UIObject {
-	private final BezierCurveBox curve = new BezierCurveBox();
+public class BezierWaveBox extends UIObject { // Move out from test_100
+	public final BezierCurveBox curve = new BezierCurveBox();
 
 	@Override
 	protected void onInit() {

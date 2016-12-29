@@ -5,28 +5,21 @@ import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
+import net.merayen.elastic.uinodes.list.test_100.BezierWaveBox;
 
 public class UI extends UINode {
-	private WaveSelect wave_select;
 	private PortParameterSlider frequency_slider;
-	private PortParameterSlider amp_slider;
 	private float frequency = 440;
-	private float amplitude = 0.1f;
 
 	public UI() {
 		super();
-		width = 100f;
-		height = 90f;
+		width = 240f;
+		height = 250f;
 
 		titlebar.title = "Signalgenerator";
 
-		wave_select = new WaveSelect();
-		wave_select.translation.x = 35;
-		wave_select.translation.y = 20;
-		add(wave_select);
-
 		createFrequencySlider();
-		createAmplitudeSlider();
+		createBezierWave();
 	}
 
 	public static String getNodeName() {
@@ -48,9 +41,6 @@ public class UI extends UINode {
 
 		if(getPort("frequency") != null)
 			frequency_slider.showSlider(!getUINet().isConnected(getPort("frequency"))); // TODO Only do this when connections are actually changed
-
-		if(getPort("amplitude") != null)
-			amp_slider.showSlider(!getUINet().isConnected(getPort("amplitude")));
 	}
 
 	@Override
@@ -60,21 +50,12 @@ public class UI extends UINode {
 			frequency = (float)message.value;
 			frequency_slider.setValue(frequency / 8000);
 		}
-
-		else if(message.key.equals("data.amplitude")) {
-			amplitude = (float)message.value;
-			amp_slider.setValue(amplitude / 10000);
-		}
 	}
 
 	@Override
 	public void onCreatePort(UIPort port) {
 		if(port.name.equals("frequency")) {
 			frequency_slider.setPort(port);
-		}
-
-		if(port.name.equals("amplitude")) {
-			amp_slider.setPort(port);
 		}
 
 		if(port.name.equals("output")) {
@@ -91,7 +72,7 @@ public class UI extends UINode {
 	private void createFrequencySlider() {
 		UI self = this;
 		frequency_slider = new PortParameterSlider("frequency");
-		frequency_slider.translation.y = 40f;
+		frequency_slider.translation.y = 20f;
 		frequency_slider.color = UIPort.AUX_PORT;
 		add(frequency_slider);
 
@@ -120,36 +101,13 @@ public class UI extends UINode {
 		frequency_slider.setScale(0.1f);
 	}
 
-	private void createAmplitudeSlider() {
-		UI self = this;
-		amp_slider = new PortParameterSlider("amplitude");
-		amp_slider.translation.y = 70f;
-		amp_slider.color = UIPort.AUDIO_PORT;
-		add(amp_slider);
-
-		amp_slider.setHandler(new PortParameterSlider.IHandler() {
-			@Override
-			public void onChange(double value, boolean programatic) {
-				amplitude = (float)(value * 10000f);
-
-				if(!programatic) // If not set by setValue, but by users himself
-					sendParameter("data.amplitude", amplitude);
-			}
-
-			@Override
-			public void onButton(int offset) {
-				amplitude += offset * 0.1f;
-				amp_slider.setValue(amplitude / 10000f);
-			}
-
-			@Override
-			public String onLabelUpdate(double value) {
-				return String.format("%.2f", amplitude);
-			}
-		});
-
-		amp_slider.setValue(0.001f);
-		amp_slider.setScale(0.02f);
+	private void createBezierWave() {
+		BezierWaveBox bwb = new BezierWaveBox();
+		bwb.translation.x = 20;
+		bwb.translation.y = 40;
+		bwb.curve.width = 200;
+		bwb.curve.height = 200;
+		add(bwb);
 	}
 
 	@Override

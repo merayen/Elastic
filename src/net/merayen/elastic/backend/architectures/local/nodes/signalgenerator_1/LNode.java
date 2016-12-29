@@ -33,9 +33,6 @@ public class LNode extends LocalNode {
 		System.out.printf("Signalgenerator parameter %s=%s\n", key, value);
 		if(key.equals("data.frequency"))
 			frequency = (float)value;
-
-		if(key.equals("data.amplitude"))
-			amplitude = (float)value;
 	}
 
 	@Override

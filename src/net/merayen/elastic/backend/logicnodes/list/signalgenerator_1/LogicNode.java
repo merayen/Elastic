@@ -13,10 +13,6 @@ public class LogicNode extends BaseLogicNode {
 		}});
 
 		createPort(new BaseLogicNode.PortDefinition() {{
-			name = "amplitude";
-		}});
-
-		createPort(new BaseLogicNode.PortDefinition() {{
 			name = "output";
 			format = Format.AUDIO;
 			output = true;
