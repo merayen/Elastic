@@ -78,6 +78,7 @@ public class Test {
 		waitFor(() -> nodes.size() == 6);
 
 		// Place the nodes
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(0).node_id, "ui.java.translation.y", 300f));
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 50f));
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(3).node_id, "ui.java.translation.x", 200f));
 

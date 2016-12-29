@@ -14,10 +14,9 @@ public class Window extends UIObject {
 	public float width = 100f;
 	public float height = 100f;
 	public String title = "";
-	private Content content;
+	private Content content = new Content();
 
 	protected void onInit() {
-		content = new Content();
 		content.translation.x = 1f;
 		content.translation.y = 11f;
 		add(content);

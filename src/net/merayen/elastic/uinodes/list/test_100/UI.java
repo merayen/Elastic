@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.test_100;
 
+import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
@@ -7,8 +8,8 @@ import net.merayen.elastic.ui.objects.node.UIPort;
 public class UI extends UINode {
 	public UI() {
 		super();
-		width = 100;
-		height = 100;
+		width = 200;
+		height = 200;
 	}
 
 	@Override
@@ -19,10 +20,22 @@ public class UI extends UINode {
 	}
 
 	@Override
+	protected void onInit() {
+		super.onInit();
+		BezierWaveBox bwb = new BezierWaveBox();
+		bwb.translation.x = 20;
+		bwb.translation.y = 30;
+		add(bwb);
+	}
+
+	@Override
 	protected void onRemovePort(UIPort port) {
 		
 	}
 
 	@Override
 	protected void onMessage(NodeParameterMessage message) {}
+
+	@Override
+	protected void onData(NodeDataMessage message) {}
 }

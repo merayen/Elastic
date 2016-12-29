@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
+import net.merayen.elastic.ui.objects.top.menu.Bar;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.util.TaskExecutor;
 
@@ -10,16 +11,26 @@ public abstract class View extends UIObject {
 	public float width = 100;
 	public float height = 100;
 	private boolean focused; // true when mouse is hovering over us, meaning we have the focus
+	private Bar bar = new Bar(); // Shown in all viewports
 
 	public abstract View cloneView();
 
 	@Override
+	protected void onInit() {
+		super.onInit();
+		add(bar);
+	}
+
+	@Override
 	protected void onDraw() {
 		if(focused) {
-			//draw.setColor(255, 0, 255);
-			//draw.setStroke(4);
-			//draw.rect(1, 1, width - 2, height - 2);
+			draw.setColor(200, 200, 200);
+			draw.setStroke(4);
+			draw.rect(1, 1, width - 2, height - 2);
 		}
+
+		bar.translation.y = height - 20;
+		bar.width = width;
 	}
 
 	@Override

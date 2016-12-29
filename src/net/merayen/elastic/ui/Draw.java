@@ -2,6 +2,7 @@ package net.merayen.elastic.ui;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.geom.Path2D;
 
 import net.merayen.elastic.ui.util.DrawContext;
 
@@ -146,6 +147,28 @@ public class Draw {
 		Dimension dimension = uiobject.getAbsoluteDimension(width, height);
 		reg(x, y, width, height);
 		g2d.drawOval((int)point.x, (int)point.y, (int)dimension.width, (int)dimension.height);
+	}
+
+	public void bezier(float x, float y, Point[] points) {
+		if(points.length == 0)
+			return;
+
+		Path2D.Float f = new Path2D.Float();
+		Point point = uiobject.getAbsolutePosition(x, y);
+		f.moveTo(point.x, point.y);
+
+		if(points.length % 3 != 0)
+			throw new RuntimeException();
+
+		for(int i = 0; i < points.length; i += 3) {
+			Point p1 = uiobject.getAbsolutePosition(points[i].x, points[i].y);
+			Point p2 = uiobject.getAbsolutePosition(points[i+1].x, points[i+1].y);
+			Point p3 = uiobject.getAbsolutePosition(points[i+2].x, points[i+2].y);
+
+			f.curveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+		}
+
+		g2d.draw(f);
 	}
 
 	public void text(String text, float x, float y) {
