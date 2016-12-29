@@ -55,7 +55,7 @@ public class MouseHandler {
 
 			boolean hit = e.isHit(uiobject); // XXX doing this for absolute every uiobject, ouch!
 
-			if(e.action == MouseEvent.action_type.DOWN) {
+			if(e.action == MouseEvent.Action.DOWN) {
 				if(hit) {
 					mouse_down = true;
 					handler_class.onMouseDown(p_relative);
@@ -66,7 +66,7 @@ public class MouseHandler {
 					handler_class.onMouseOutsideDown(p_absolute);
 				}
 			}
-			else if(e.action == MouseEvent.action_type.UP) {
+			else if(e.action == MouseEvent.Action.UP) {
 				if(mouse_dragging && mouse_down) {
 					mouse_dragging = false;
 					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.ui.Point(p_relative.x - drag_start.x, p_relative.y - drag_start.y));
@@ -82,7 +82,7 @@ public class MouseHandler {
 
 				mouse_down = false;
 			}
-			else if(e.action == MouseEvent.action_type.MOVE) {
+			else if(e.action == MouseEvent.Action.MOVE) {
 				if(hit) {
 					handler_class.onMouseMove(p_relative);
 	

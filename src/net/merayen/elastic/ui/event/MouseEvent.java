@@ -12,7 +12,7 @@ public class MouseEvent implements IEvent {
 	 * Contains a mouse event
 	 */
 
-	public enum action_type {
+	public enum Action {
 		DOWN,
 		UP,
 		OVER,
@@ -21,11 +21,11 @@ public class MouseEvent implements IEvent {
 	}
 
 	public java.awt.event.MouseEvent mouse_event;
-	public action_type action;
+	public Action action;
 
 	public List<UIObject> objects_hit;
 
-	public MouseEvent(java.awt.event.MouseEvent mouse_event, action_type action) {
+	public MouseEvent(java.awt.event.MouseEvent mouse_event, Action action) {
 		this.mouse_event = mouse_event;
 		this.action = action;
 	}

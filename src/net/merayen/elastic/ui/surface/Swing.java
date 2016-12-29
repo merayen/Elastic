@@ -3,9 +3,7 @@ package net.merayen.elastic.ui.surface;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.merayen.elastic.ui.event.IEvent;
@@ -66,7 +64,7 @@ public class Swing implements Surface {
 
 		@Override
 		public void paintComponent(java.awt.Graphics g) {
-			RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+			//RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			super.paintComponent(g);
 
@@ -75,11 +73,11 @@ public class Swing implements Surface {
 		}
 
 		public void mousePressed(java.awt.event.MouseEvent e) {
-			createMouseEvent(e, MouseEvent.action_type.DOWN);
+			createMouseEvent(e, MouseEvent.Action.DOWN);
 		}
 
 		public void mouseReleased(java.awt.event.MouseEvent e) {
-			createMouseEvent(e, MouseEvent.action_type.UP);
+			createMouseEvent(e, MouseEvent.Action.UP);
 		}
 
 		public void mouseEntered(java.awt.event.MouseEvent e) {}
@@ -87,11 +85,11 @@ public class Swing implements Surface {
 		public void mouseClicked(java.awt.event.MouseEvent e) {}
 
 		public void mouseMoved(java.awt.event.MouseEvent e) {
-			createMouseEvent(e, MouseEvent.action_type.MOVE);
+			createMouseEvent(e, MouseEvent.Action.MOVE);
 		}
 
 		public void mouseDragged(java.awt.event.MouseEvent e) {
-			createMouseEvent(e, MouseEvent.action_type.MOVE);
+			createMouseEvent(e, MouseEvent.Action.MOVE);
 		}
 
 		public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
@@ -157,7 +155,7 @@ public class Swing implements Surface {
 		return this.panel.getHeight();
 	}
 
-	private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.action_type ac) {
+	private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.Action ac) {
 		if(handler != null)
 			handler.onEvent(new MouseEvent(e, ac));
 	}
