@@ -5,7 +5,7 @@ import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
-import net.merayen.elastic.uinodes.list.test_100.BezierWaveBox;
+import net.merayen.elastic.uinodes.list.test_100.SignalBezierCurveBox;
 
 public class UI extends UINode {
 	private PortParameterSlider frequency_slider;
@@ -19,7 +19,7 @@ public class UI extends UINode {
 		titlebar.title = "Signalgenerator";
 
 		createFrequencySlider();
-		//createBezierWave();
+		createBezierWave();
 	}
 
 	public static String getNodeName() {
@@ -102,11 +102,11 @@ public class UI extends UINode {
 	}
 
 	private void createBezierWave() {
-		BezierWaveBox bwb = new BezierWaveBox();
+		SignalBezierCurveBox bwb = new SignalBezierCurveBox();
 		bwb.translation.x = 20;
 		bwb.translation.y = 40;
-		bwb.curve.width = 200;
-		bwb.curve.height = 200;
+		bwb.width = 200;
+		bwb.height = 200;
 		add(bwb);
 	}
 

@@ -3,6 +3,7 @@ package net.merayen.elastic;
 public class Test {
 
 	public static void main(String[] args) {
+		net.merayen.elastic.util.Test.test();
 		//net.merayen.elastic.backend.buffer.FloatCircularBuffer.test();
 		//net.merayen.elastic.buffer.AudioCircularBuffer.test();
 		//net.merayen.elastic.netlist.Test.test();

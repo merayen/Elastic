@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.ui.Color;
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.util.Movable;
+import net.merayen.elastic.util.Point;
 
 public class BezierCurveBox extends UIObject {
 	public interface Handler {
-		public void onMove(BezierPoint point);
+		public void onMove(BezierDot point);
 	}
 
-	public class BezierPoint extends UIObject {
-		public Dot position = new Dot(this);
-		public Dot left_dot = new Dot(this);
-		public Dot right_dot = new Dot(this);
+	public class BezierDot extends UIObject {
+		public BezierDotDragable position = new BezierDotDragable(this);
+		public BezierDotDragable left_dot = new BezierDotDragable(this);
+		public BezierDotDragable right_dot = new BezierDotDragable(this);
 
-		private BezierPoint() {}
+		private BezierDot() {}
 
 		@Override
 		protected void onInit() {
@@ -41,16 +41,16 @@ public class BezierCurveBox extends UIObject {
 		}
 	}
 
-	public class Dot extends UIObject {
+	public class BezierDotDragable extends UIObject {
 		public final Color color = new Color(255, 200, 0);
 		public float radius = 0.05f;
 
 		Movable movable;
 		boolean visible = true; // Set to false to hide the dot (not possible to move it)
 
-		private final BezierPoint point;
+		private final BezierDot point;
 
-		Dot(BezierPoint point) {
+		BezierDotDragable(BezierDot point) {
 			this.point = point;
 		}
 
@@ -95,7 +95,13 @@ public class BezierCurveBox extends UIObject {
 	public float width = 100;
 	public float height = 100;
 
-	private final List<BezierPoint> points = new ArrayList<>();
+	/**
+	 * Use this object to draw stuff inside our view.
+	 * NOTE: It uses a relative 0 to 1 scale!
+	 */
+	public final UIObject background = new UIObject();
+
+	private final List<BezierDot> points = new ArrayList<>();
 	private Handler handler;
 
 	public BezierCurveBox() {
@@ -109,10 +115,12 @@ public class BezierCurveBox extends UIObject {
 		translation.scale_y = 1 / height;
 
 		translation.clip = new Rect(0, 0, width, height);
+
+		add(background, true);
 	}
 
 	private void initPoints() {
-		BezierPoint start = new BezierPoint();
+		BezierDot start = new BezierDot();
 		start.position.translation.y = 0.5f;
 		start.right_dot.translation.x = 0.5f;
 		start.right_dot.translation.y = 0.75f;
@@ -120,7 +128,7 @@ public class BezierCurveBox extends UIObject {
 		points.add(start);
 		add(start);
 
-		BezierPoint stop = new BezierPoint();
+		BezierDot stop = new BezierDot();
 		stop.position.translation.x = 1f;
 		stop.position.translation.y = 0.5f;
 		stop.left_dot.translation.x = 0.5f;
@@ -146,15 +154,15 @@ public class BezierCurveBox extends UIObject {
 
 		int i = 0;
 		for(int j = 1; j < points.size(); j++) {
-			BezierPoint before = points.get(j - 1);
-			BezierPoint current = points.get(j);
+			BezierDot before = points.get(j - 1);
+			BezierDot current = points.get(j);
 
 			p[i++] = new Point(before.right_dot.translation.x, before.right_dot.translation.y);
 			p[i++] = new Point(current.left_dot.translation.x, current.left_dot.translation.y);
 			p[i++] = new Point(current.position.translation.x, current.position.translation.y);
 		}
 
-		BezierPoint bps = (BezierPoint)points.get(0); // The initial point
+		BezierDot bps = (BezierDot)points.get(0); // The initial point
 		draw.bezier(bps.position.translation.x, bps.position.translation.y, p);
 
 		// Draw lines from the dots to the points
@@ -169,7 +177,7 @@ public class BezierCurveBox extends UIObject {
 		draw.setStroke(1 / (width  + height));
 		draw.setColor(200, 180, 0);
 
-		for(BezierPoint bp : points) {
+		for(BezierDot bp : points) {
 			/*if(i == 0) {
 				BezierPoint bps = (BezierPoint)points.get(0);
 				BezierPoint bpa = (BezierPoint)points.get(1);
@@ -188,14 +196,14 @@ public class BezierCurveBox extends UIObject {
 		}
 	}
 
-	public BezierPoint insertPoint(int before_index) {
+	public BezierDot insertPoint(int before_index) {
 		if(before_index < 1)
 			throw new RuntimeException("Can not insert before the first point as it is fixed");
 
 		if(before_index > points.size() - 1)
 			throw new RuntimeException("Can not add after the last point as it is fixed");
 
-		BezierPoint bpa = new BezierPoint();
+		BezierDot bpa = new BezierDot();
 
 		points.add(before_index, bpa);
 		add(bpa);
@@ -203,15 +211,15 @@ public class BezierCurveBox extends UIObject {
 		return bpa;
 	}
 
-	public BezierPoint getPoint(int index) {
+	public BezierDot getBezierPoint(int index) {
 		return points.get(index);
 	}
 
-	public BezierPoint[] getPoints() {
-		return points.toArray(new BezierPoint[points.size()]);
+	public BezierDot[] getBezierPoints() {
+		return points.toArray(new BezierDot[points.size()]);
 	}
 
-	public int getIndex(BezierPoint point) {
+	public int getIndex(BezierDot point) {
 		return points.indexOf(point);
 	}
 

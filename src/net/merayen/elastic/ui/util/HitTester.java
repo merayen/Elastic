@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.util;
 
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.Rect;
+import net.merayen.elastic.util.Point;
 
 public class HitTester {
 	public static boolean inside(Point point, Rect rect) {

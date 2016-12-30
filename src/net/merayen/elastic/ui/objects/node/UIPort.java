@@ -4,10 +4,10 @@ import java.util.HashSet;
 
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.ui.Color;
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.util.Point;
 
 public class UIPort extends UIObject {
 	public final static Color AUDIO_PORT = new Color(150, 200, 150);

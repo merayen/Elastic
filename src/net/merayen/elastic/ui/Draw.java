@@ -5,6 +5,7 @@ import java.awt.FontMetrics;
 import java.awt.geom.Path2D;
 
 import net.merayen.elastic.ui.util.DrawContext;
+import net.merayen.elastic.util.Point;
 
 public class Draw {
 	/*

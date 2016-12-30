@@ -5,9 +5,10 @@ import java.util.List;
 
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.Postmaster;
 
-public abstract class UIObject {
+public class UIObject {
 	private UIObject parent;
 	final List<UIObject> children = new ArrayList<>(); 
 
@@ -89,17 +90,17 @@ public abstract class UIObject {
 		return new Point((int)(td.x + offset_x / td.scale_x), (int)(td.y + offset_y / td.scale_y)); // Pixel perfect
 	}
 
-	public net.merayen.elastic.ui.Point getAbsolutePosition() {
+	public net.merayen.elastic.util.Point getAbsolutePosition() {
 		TranslationData td = absolute_translation;
-		return new net.merayen.elastic.ui.Point(td.x, td.y);
+		return new net.merayen.elastic.util.Point(td.x, td.y);
 	}
 
 	/**
 	 * Returns the relative position of the object "obj" to this object.
 	 */
-	public net.merayen.elastic.ui.Point getRelativePosition(UIObject obj) {
+	public net.merayen.elastic.util.Point getRelativePosition(UIObject obj) {
 		TranslationData td1 = absolute_translation;
-		return new net.merayen.elastic.ui.Point(
+		return new net.merayen.elastic.util.Point(
 			(obj.absolute_translation.x - absolute_translation.x) * absolute_translation.scale_x,
 			(obj.absolute_translation.y - absolute_translation.y) * absolute_translation.scale_y
 		);
@@ -108,9 +109,9 @@ public abstract class UIObject {
 	/**
 	 * Get our internal (relative) position from absolute position.
 	 */
-	public net.merayen.elastic.ui.Point getRelativeFromAbsolute(float x, float y) {
+	public net.merayen.elastic.util.Point getRelativeFromAbsolute(float x, float y) {
 		TranslationData td = absolute_translation;
-		return new net.merayen.elastic.ui.Point((x - td.x) * td.scale_x, (y - td.y) * td.scale_y);
+		return new net.merayen.elastic.util.Point((x - td.x) * td.scale_x, (y - td.y) * td.scale_y);
 	}
 
 	public Dimension getAbsoluteDimension(float width, float height) {

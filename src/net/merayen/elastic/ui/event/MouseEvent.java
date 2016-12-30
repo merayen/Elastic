@@ -3,9 +3,9 @@ package net.merayen.elastic.ui.event;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.util.Point;
 
 public class MouseEvent implements IEvent {
 	/*

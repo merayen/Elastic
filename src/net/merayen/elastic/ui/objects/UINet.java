@@ -6,13 +6,13 @@ import java.util.List;
 
 import net.merayen.elastic.system.intercom.NodeConnectMessage;
 import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.UIPortTemporary;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.Postmaster;
 
 /**

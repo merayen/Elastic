@@ -1,9 +1,9 @@
 package net.merayen.elastic.ui.objects.components;
 
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.util.Point;
 
 public class Button extends UIObject {
 	public interface IHandler {

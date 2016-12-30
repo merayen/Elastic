@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import net.merayen.elastic.ui.Point;
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
@@ -17,6 +16,7 @@ import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.HitTester;
 import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.TaskExecutor;
 
 /**

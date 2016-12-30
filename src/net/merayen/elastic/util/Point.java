@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui;
+package net.merayen.elastic.util;
 
 public class Point {
 	public float x;

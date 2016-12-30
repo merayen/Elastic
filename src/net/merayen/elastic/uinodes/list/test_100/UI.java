@@ -22,7 +22,7 @@ public class UI extends UINode {
 	@Override
 	protected void onInit() {
 		super.onInit();
-		BezierWaveBox bwb = new BezierWaveBox();
+		SignalBezierCurveBox bwb = new SignalBezierCurveBox();
 		bwb.translation.x = 20;
 		bwb.translation.y = 30;
 		add(bwb);
