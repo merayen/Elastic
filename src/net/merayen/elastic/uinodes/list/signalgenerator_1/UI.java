@@ -6,6 +6,7 @@ import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
 import net.merayen.elastic.uinodes.list.test_100.SignalBezierCurveBox;
+import net.merayen.elastic.util.pack.FloatArray;
 
 public class UI extends UINode {
 	private PortParameterSlider frequency_slider;
@@ -13,8 +14,8 @@ public class UI extends UINode {
 
 	public UI() {
 		super();
-		width = 240f;
-		height = 250f;
+		width = 200f;
+		height = 200f;
 
 		titlebar.title = "Signalgenerator";
 
@@ -108,6 +109,18 @@ public class UI extends UINode {
 		bwb.width = 200;
 		bwb.height = 200;
 		add(bwb);
+		UI self = this;
+
+		bwb.setHandler(new SignalBezierCurveBox.Handler() {
+			@Override
+			public void onChange() {
+				float[] points_flat = bwb.getFloats();
+				self.sendParameter("data.curve", new FloatArray(points_flat));
+			}
+
+			@Override
+			public void onMove() {}
+		});
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package net.merayen.elastic.util.math;
 
 import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.math.BezierCurve.Dot;
 
 /**
  * Unfinished utility class.
@@ -19,5 +20,31 @@ public class BezierCurve {
 			this.left = left;
 			this.right = right;
 		}
+	}
+
+	/**
+	 * Converts a flat list of points to an array of BezierCurve.Dot()s
+	 */
+	public static Dot[] fromFlat(float[] points) {
+		if(points.length % (2 * 3) != 0)
+			throw new RuntimeException();
+
+		Dot[] result = new Dot[points.length / (2 * 3)];
+
+		int p = 0;
+		for(int i = 0; i < result.length; i++) {
+			Dot dot = result[i] = new BezierCurve.Dot();
+
+			dot.left.x = points[p++];
+			dot.left.y = points[p++];
+
+			dot.position.x = points[p++];
+			dot.position.y = points[p++];
+
+			dot.right.x = points[p++];
+			dot.right.y = points[p++];
+		}
+
+		return result;
 	}
 }

@@ -87,7 +87,8 @@ public class LProcessor extends LocalProcessor {
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
 		float amplitude = lnode.amplitude;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
-			outlet.audio[0][i] = (float)Math.sin(pos) * amplitude;
+			//outlet.audio[0][i] = (float)Math.sin(pos) * amplitude;
+			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
 			pos += step;
 		}
 

@@ -12,7 +12,15 @@ import net.merayen.elastic.util.Point;
 
 public class BezierCurveBox extends UIObject {
 	public interface Handler {
+		/**
+		 * Called every time a dot moves a pixel.
+		 */
 		public void onMove(BezierDot point);
+
+		/**
+		 * Called after user has let go of a dot.
+		 */
+		public void onChange();
 	}
 
 	public class BezierDot extends UIObject {
@@ -69,7 +77,9 @@ public class BezierCurveBox extends UIObject {
 				public void onGrab() {}
 				
 				@Override
-				public void onDrop() {}
+				public void onDrop() {
+					handler.onChange();
+				}
 			});
 		}
 
@@ -225,5 +235,27 @@ public class BezierCurveBox extends UIObject {
 
 	public int getPointCount() {
 		return points.size();
+	}
+
+	/**
+	 * Gets all points as a flat list of floats in this format: [p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, ...]
+	 * @return
+	 */
+	public float[] getFloats() {
+		float[] result = new float[points.size() * 3 * 2];
+
+		int i = 0;
+		for(BezierDot bd : points) {
+			result[i++] = bd.left_dot.translation.x;
+			result[i++] = bd.left_dot.translation.y;
+
+			result[i++] = bd.position.translation.x;
+			result[i++] = bd.position.translation.y;
+
+			result[i++] = bd.right_dot.translation.x;
+			result[i++] = bd.right_dot.translation.y;
+		}
+
+		return result;
 	}
 }

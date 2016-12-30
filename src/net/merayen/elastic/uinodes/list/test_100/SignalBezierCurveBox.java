@@ -14,9 +14,14 @@ import net.merayen.elastic.util.math.SignalBezierCurve;
 public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 	public interface Handler {
 		/**
-		 * Called when user is changing the curve.
+		 * Called when user has changed the curve.
 		 */
 		public void onChange();
+
+		/**
+		 * Called very often when user is changing something.
+		 */
+		public void onMove();
 	}
 
 	private class Overlay extends UIObject {
@@ -43,6 +48,12 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 				constrainPoint(point);
 				offset = getOffset();
 
+				if(handler != null)
+					handler.onMove();
+			}
+
+			@Override
+			public void onChange() {
 				if(handler != null)
 					handler.onChange();
 			}
@@ -166,5 +177,9 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 		}
 
 		return result;
+	}
+
+	public float[] getFloats() {
+		return curve.getFloats();
 	}
 }
