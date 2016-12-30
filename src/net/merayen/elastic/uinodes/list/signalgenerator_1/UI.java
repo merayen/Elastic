@@ -19,7 +19,7 @@ public class UI extends UINode {
 		titlebar.title = "Signalgenerator";
 
 		createFrequencySlider();
-		createBezierWave();
+		//createBezierWave();
 	}
 
 	public static String getNodeName() {
