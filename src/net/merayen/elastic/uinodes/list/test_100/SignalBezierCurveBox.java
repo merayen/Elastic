@@ -40,6 +40,12 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 	private float offset;
 	private Handler handler;
 
+	public SignalBezierCurveBox() {
+		// We do not allow user moving the start and stop point
+		curve.getBezierPoint(0).position.visible = false;
+		((BezierDot)curve.getBezierPoint(1)).position.visible = false;
+	}
+
 	@Override
 	protected void onInit() {
 		curve.setHandler(new BezierCurveBox.Handler() {
@@ -60,10 +66,6 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 		});
 
 		add(curve);
-
-		// We do not allow user moving the start and stop point
-		curve.getBezierPoint(0).position.visible = false;
-		((BezierDot)curve.getBezierPoint(1)).position.visible = false;
 
 		//insertPoint(1);
 		//insertPoint(1);

@@ -30,7 +30,9 @@ public class SignalBezierCurve {
 
 		for(int i = 0; i < dots.length - 1; i++) {
 			float length = dots[i+1].position.x - dots[i].position.x;
-			getValuesFromSegment(dots[i], dots[i+1], result, (int)(dots[i].position.x * result.length), (int)(length * result.length));
+			int length_samples = (int)(length * result.length);
+			if(length_samples > 0)
+				getValuesFromSegment2(dots[i], dots[i+1], result, (int)(dots[i].position.x * result.length), length_samples);
 		}
 	}
 
@@ -38,7 +40,7 @@ public class SignalBezierCurve {
 		int last = 0;
 		float last_value = 0;
 
-		for(float i = 0; i < length; i++) {
+		for(float i = 0; i < length * 1.1; i++) {
 			float v = i / (float)length;
 
 			float x = getAxis(
@@ -61,19 +63,100 @@ public class SignalBezierCurve {
 				v
 			);
 
-			int pos = Math.min(start + length - 1, Math.round(start + x * length));
+			int pos = Math.max(0, Math.min(start + length - 1, Math.round(result.length * x)));
 			result[pos] = y;
+
+			if(i == 0) {
+				last = pos;
+				last_value = y;
+			}
 
 			// Linear interpolation on missing samples in between. (this does perhaps not sound too good?) Not tested
 			// TODO rather step half a step back and do the above calculations again?
 			for(int j = last + 1; j < pos; j++) {
 				double k = (j - last) / (double)(pos - last);
 				result[j] = (float)((1 - k) * last_value + k * y);
+				//System.out.println("Interpolated " + j + " " + result[j]);
 			}
 
 			last = pos;
 			last_value = y;
 		}
+
+		if(last < start + length - 1)
+			System.out.println("Nope");
+
+		//System.out.println(start + "\t" + pos + "\t" + length + "\t" + x);
+	}
+
+	private static void getValuesFromSegment2(Dot dot0, Dot dot1, final float[] result, int start, int length) {
+		int last = 0;
+		float last_value = 0;
+
+		// Normalizing X-axis
+		float x_distance = (dot1.position.x - dot0.position.x);
+
+		float[] x_axis = new float[]{
+			0,//dot0.position.x,
+			(dot0.right.x - dot0.position.x) / x_distance,
+			(dot1.left.x - dot0.position.x) / x_distance,
+			1//dot1.position.x
+		};
+
+		float[] y_axis = new float[]{
+			dot0.position.y,
+			dot0.right.y,
+			dot1.left.y,
+			dot1.position.y
+		};
+
+		int i = 0, pos = 0, pos_index = 0, protection = 0;
+		float x = 0,y = 0;
+		while(protection++ < 10000) {
+			float v = i / (float)length;
+
+			x = Math.min(1, Math.max(0, getAxis(
+				x_axis,
+				v
+			)));
+
+			y = getAxis(
+				y_axis,
+				v
+			);
+
+			pos = Math.round(start + (length) * x);
+			pos_index = Math.max(0, Math.min(result.length - 1, pos));
+			result[pos_index] = y;
+
+			if(y > 1 || y < 0)
+				System.console();
+
+			if(i == 0) {
+				last = pos;
+				last_value = y;
+			}
+
+			// Linear interpolation on missing samples in between. (this does perhaps not sound too good?) Not tested
+			// TODO rather step half a step back and do the above calculations again?
+			for(int j = last + 1; j < pos_index; j++) {
+				double k = (j - last) / (double)(pos - last);
+				result[j] = (float)((1 - k) * last_value + k * y);
+				//System.out.println("Interpolated " + j + " " + result[j]);
+			}
+
+			if(x >= 1.0f)
+				break;
+
+			last = pos;
+			last_value = y;
+			i++;
+		}
+
+		//if(last < start + length - 1)
+		//	System.out.println("Nope");
+
+		//System.out.println(start + "\t" + pos + "\t" + pos_index + "\t" + start + "\t" + length + "\t" + x + "\t" + protection);
 	}
 
 	private static float getAxis(float[] p, float t) {

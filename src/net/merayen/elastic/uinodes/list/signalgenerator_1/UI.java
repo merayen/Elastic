@@ -112,15 +112,21 @@ public class UI extends UINode {
 		UI self = this;
 
 		bwb.setHandler(new SignalBezierCurveBox.Handler() {
+			int i;
 			@Override
 			public void onChange() {
 				float[] points_flat = bwb.getFloats();
-				self.sendParameter("data.curve", new FloatArray(points_flat));
+				self.sendParameter("data.curve", new FloatArray(bwb.getFloats()));
 			}
 
 			@Override
-			public void onMove() {}
+			public void onMove() {
+				if(i++ % 10 == 0)
+					self.sendParameter("data.curve", new FloatArray(bwb.getFloats()));
+			}
 		});
+
+		bwb.insertPoint(1);
 	}
 
 	@Override

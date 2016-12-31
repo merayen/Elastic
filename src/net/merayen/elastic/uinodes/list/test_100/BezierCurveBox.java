@@ -9,6 +9,8 @@ import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.math.BezierCurve;
+import net.merayen.elastic.util.math.SignalBezierCurve;
 
 public class BezierCurveBox extends UIObject {
 	public interface Handler {
@@ -28,10 +30,7 @@ public class BezierCurveBox extends UIObject {
 		public BezierDotDragable left_dot = new BezierDotDragable(this);
 		public BezierDotDragable right_dot = new BezierDotDragable(this);
 
-		private BezierDot() {}
-
-		@Override
-		protected void onInit() {
+		private BezierDot() {
 			add(position);
 			add(left_dot);
 			add(right_dot);
@@ -69,6 +68,8 @@ public class BezierCurveBox extends UIObject {
 				
 				@Override
 				public void onMove() {
+					translation.x = Math.max(0, Math.min(1, translation.x));
+					translation.y = Math.max(0, Math.min(1, translation.y));
 					if(handler != null)
 						handler.onMove(point);
 				}
@@ -85,10 +86,6 @@ public class BezierCurveBox extends UIObject {
 
 		@Override
 		protected void onDraw() {
-			// Keep values inside the box
-			translation.x = Math.max(0, Math.min(1, translation.x));
-			translation.y = Math.max(0, Math.min(1, translation.y));
-
 			if(visible) {
 				draw.setColor(color.red, color.green, color.blue);
 				draw.fillOval(-radius / 2, -radius / 2, radius, radius);
@@ -177,6 +174,8 @@ public class BezierCurveBox extends UIObject {
 
 		// Draw lines from the dots to the points
 		drawDotLines();
+
+		drawDiagnostics();
 	}
 
 	public void setHandler(Handler handler) {
@@ -188,16 +187,6 @@ public class BezierCurveBox extends UIObject {
 		draw.setColor(200, 180, 0);
 
 		for(BezierDot bp : points) {
-			/*if(i == 0) {
-				BezierPoint bps = (BezierPoint)points.get(0);
-				BezierPoint bpa = (BezierPoint)points.get(1);
-				draw.line(bps.position.translation.x, bps.position.translation.y, bpa.left_dot.translation.x, bpa.left_dot.translation.y);
-			} else {
-				BezierPoint bpa = (BezierPoint)points.get(i);
-				BezierPoint before = points.get(i - 1);
-				//draw.line(before.position.translation.x, before.position.translation.y, bpa.left_dot.translation.x, bpa.left_dot.translation.y);
-				//draw.line(bpa.position.translation.x, bpa.position.translation.y, bpa.right_dot.translation.x, bpa.right_dot.translation.y);
-			}*/
 			if(bp.left_dot.visible)
 				draw.line(bp.position.translation.x, bp.position.translation.y, bp.left_dot.translation.x, bp.left_dot.translation.y);
 
@@ -257,5 +246,15 @@ public class BezierCurveBox extends UIObject {
 		}
 
 		return result;
+	}
+
+	private void drawDiagnostics() {
+		BezierCurve.Dot[] dots = BezierCurve.fromFlat(getFloats());
+		float[] result = new float[1000];
+		SignalBezierCurve.getValues(dots, result);
+
+		draw.setColor(0, 255, 255);
+		for(int i = 0; i < result.length; i++)
+			draw.fillOval(i / (float)result.length - 0.005f, result[i] - 0.005f, 0.01f, 0.01f);
 	}
 }

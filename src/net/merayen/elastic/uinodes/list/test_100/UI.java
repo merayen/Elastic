@@ -26,6 +26,7 @@ public class UI extends UINode {
 		bwb.translation.x = 20;
 		bwb.translation.y = 30;
 		add(bwb);
+		bwb.insertPoint(1);
 	}
 
 	@Override
