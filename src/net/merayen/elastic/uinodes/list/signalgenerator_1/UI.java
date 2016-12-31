@@ -127,6 +127,8 @@ public class UI extends UINode {
 		});
 
 		bwb.insertPoint(1);
+		bwb.insertPoint(2);
+		bwb.insertPoint(1);
 	}
 
 	@Override

@@ -75,6 +75,8 @@ public class LProcessor extends LocalProcessor {
 		//System.out.println("Generator process() " + lol);
 		if(mode == Mode.RAW)
 			generateRaw();
+		else if(mode == Mode.FREQUENCY)
+			generateWithFrequency();
 		else
 			throw new RuntimeException("Not implemented");
 	}
@@ -90,6 +92,25 @@ public class LProcessor extends LocalProcessor {
 			//outlet.audio[0][i] = (float)Math.sin(pos) * amplitude;
 			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
 			pos += step;
+		}
+
+		outlet.written = outlet.buffer_size;
+		outlet.push();
+	}
+
+	private void generateWithFrequency() {
+		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
+		AudioOutlet frequency = ((AudioInlet)getInlet("frequency")).outlet;
+
+		outlet.setChannelCount(1);
+
+		int available = available();
+
+		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
+		float amplitude = lnode.amplitude;
+		for(int i = outlet.written; i < available; i++) {
+			outlet.audio[0][i] = lnode.curve_wave[(int)(((pos < 0 ? -pos : pos) / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
+			pos += frequency.audio[0][i];
 		}
 
 		outlet.written = outlet.buffer_size;
