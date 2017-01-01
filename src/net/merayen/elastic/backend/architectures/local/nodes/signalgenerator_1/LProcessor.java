@@ -28,9 +28,6 @@ public class LProcessor extends LocalProcessor {
 		MALFUNCTION // E.g, wrong line has been connected. We output only zeroes in this case (and should send a warning)
 	}
 
-	private int lol_static;
-	private int lol = new Random().nextInt(Integer.MAX_VALUE);
-
 	private LNode lnode;
 
 	private Mode mode;
@@ -44,8 +41,6 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onInit() {
-		lol = lol_static++;
-		//System.out.println("Generator onInit() " + lol);
 		lnode = (LNode)getLocalNode();
 
 		Inlet frequency = getInlet("frequency");
@@ -64,8 +59,6 @@ public class LProcessor extends LocalProcessor {
 				mode = Mode.MALFUNCTION; // We don't understand the input on the frequency-port
 			}
 		}
-
-		System.out.printf("Signalgenerator LProcessor onInit() %d. Mode: %s\n", lol, mode.name());
 	}
 
 	@Override
@@ -267,13 +260,6 @@ public class LProcessor extends LocalProcessor {
 
 		return output;
 	}*/
-
-	@Override
-	public void onDestroy() {
-		System.out.println("Generator onDestroy() " + lol);
-		//if(!dead)
-		//	send("output", new EndSessionResponse());
-	}
 
 	/*@Override
 	protected void onReceive(String port_name) {

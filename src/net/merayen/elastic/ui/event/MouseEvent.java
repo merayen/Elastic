@@ -8,10 +8,6 @@ import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.util.Point;
 
 public class MouseEvent implements IEvent {
-	/*
-	 * Contains a mouse event
-	 */
-
 	public enum Action {
 		DOWN,
 		UP,
@@ -20,24 +16,29 @@ public class MouseEvent implements IEvent {
 		MOVE
 	}
 
-	public java.awt.event.MouseEvent mouse_event;
-	public Action action;
+	public enum Button {
+		LEFT,
+		MIDDLE,
+		RIGHT
+	}
+
+	public final Action action;
+	public final Button button;
+
+	public final int x, y;
 
 	public List<UIObject> objects_hit;
 
-	public MouseEvent(java.awt.event.MouseEvent mouse_event, Action action) {
-		this.mouse_event = mouse_event;
+	public MouseEvent(int x, int y, Action action, Button button) {
+		this.x = x;
+		this.y = y;
 		this.action = action;
+		this.button = button;
 	}
 
 	// XXX Move hit testing out in a "hit test"-like class? 
 	private List<UIObject> calcHit(UIObject uiobject) {
 		List<UIObject> hits = new ArrayList<UIObject>();
-
-		int x_px = mouse_event.getX();
-		int y_px = mouse_event.getY();
-		float x = x_px;
-		float y = y_px;
 
 		List<UIObject> objs = uiobject.search.getAllChildren();
 		objs.add(uiobject);
@@ -98,6 +99,6 @@ public class MouseEvent implements IEvent {
 	 * Get mouse cursor position on UIObject.
 	 */
 	public Point getOffset(UIObject uiobject) {
-		return uiobject.getRelativeFromAbsolute(mouse_event.getX(), mouse_event.getY());
+		return uiobject.getRelativeFromAbsolute(x, y);
 	}
 }

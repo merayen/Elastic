@@ -34,8 +34,16 @@ public class MouseHandler {
 	private boolean mouse_over = false;
 	private boolean mouse_dragging = false;
 
+	private final MouseEvent.Button button; // Which button on mouse to react on
+
 	public MouseHandler(UIObject uiobject) {
 		this.uiobject = uiobject;
+		this.button = null;
+	}
+
+	public MouseHandler(UIObject uiobject, MouseEvent.Button button) {
+		this.uiobject = uiobject;
+		this.button = button;
 	}
 
 	public void setHandler(Handler cls) {
@@ -48,10 +56,12 @@ public class MouseHandler {
 	public void handle(IEvent event) {
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
-			int x = e.mouse_event.getX();
-			int y = e.mouse_event.getY();
-			net.merayen.elastic.util.Point p_relative = uiobject.getRelativeFromAbsolute(x, y);
-			net.merayen.elastic.util.Point p_absolute = new net.merayen.elastic.util.Point(x, y);//uiobject.getAbsolutePointFromPixel(x, y);
+
+			if(button != null && e.button != null && e.button != button)
+				return;
+
+			net.merayen.elastic.util.Point p_relative = uiobject.getRelativeFromAbsolute(e.x, e.y);
+			net.merayen.elastic.util.Point p_absolute = new net.merayen.elastic.util.Point(e.x, e.y);
 
 			boolean hit = e.isHit(uiobject); // XXX doing this for absolute every uiobject, ouch!
 

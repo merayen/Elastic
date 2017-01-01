@@ -155,9 +155,21 @@ public class Swing implements Surface {
 		return this.panel.getHeight();
 	}
 
-	private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.Action ac) {
-		if(handler != null)
-			handler.onEvent(new MouseEvent(e, ac));
+	private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.Action action) {
+		if(handler != null) {
+			MouseEvent.Button button = null;
+
+			int b = e.getButton();
+
+			if(b == java.awt.event.MouseEvent.BUTTON1)
+				button = MouseEvent.Button.LEFT;
+			else if(b == java.awt.event.MouseEvent.BUTTON2)
+				button = MouseEvent.Button.MIDDLE;
+			else if(b == java.awt.event.MouseEvent.BUTTON3)
+				button = MouseEvent.Button.RIGHT;
+				
+			handler.onEvent(new MouseEvent(e.getX(), e.getY(), action, button));
+		}
 	}
 
 	@Override

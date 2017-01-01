@@ -6,6 +6,7 @@ import net.merayen.elastic.ui.util.Movable;
 public class Titlebar extends UIObject {
 	public float width;
 	public String title = "";
+
 	private boolean dragging; // True when user is dragging the node
 
 	private Movable moveable = null;
@@ -32,6 +33,8 @@ public class Titlebar extends UIObject {
 				dragging = false;
 			}
 		});
+
+		add(new TitleBarContextMenu(this));
 	}
 
 	@Override

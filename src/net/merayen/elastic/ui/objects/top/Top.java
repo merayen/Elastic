@@ -17,6 +17,12 @@ public class Top extends UIObject {
 	// Cached screen width and height. Updates on every draw. Children UIObjects can use this to get screen size in pixels
 	public float width, height;
 
+	/**
+	 * Windows and other popups can be put here.
+	 * UIObjects put here are put on top of everything.
+	 */
+	public final UIObject overlay = new UIObject();
+
 	public Debug debug;
 	private ViewportContainer viewport_container;
 
@@ -25,6 +31,8 @@ public class Top extends UIObject {
 		add(viewport_container);
 
 		initDebug();
+
+		add(overlay);
 	}
 
 	public void setUIGate(Gate.UIGate ui_gate) { // Must be called when inited
