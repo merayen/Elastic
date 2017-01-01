@@ -2,7 +2,7 @@ package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.ui.objects.components.BoxLabel;
+import net.merayen.elastic.ui.objects.components.InputSignalParameters;
 import net.merayen.elastic.ui.objects.components.PopupParameter1D;
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox;
 import net.merayen.elastic.ui.objects.components.framework.PortParameter;
@@ -13,10 +13,8 @@ import net.merayen.elastic.util.pack.FloatArray;
 public class UI extends UINode {
 	private PortParameter frequency_port_parameter;
 
-	static int a,b;
 	public UI() {
 		super();
-		System.out.println("init: " + a++);
 		width = 200f;
 		height = 200f;
 
@@ -35,7 +33,6 @@ public class UI extends UINode {
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
 		if(message.key.equals("data.frequency")) {
-			System.out.println("frequency: " + b++);
 			((PopupParameter1D)frequency_port_parameter.not_connected).setValue((float)(Math.pow((float)message.value, 1/4.301029995663981) / 10.0));
 			updateFrequencyText();
 		}
@@ -44,7 +41,7 @@ public class UI extends UINode {
 	@Override
 	public void onCreatePort(UIPort port) {
 		if(port.name.equals("frequency")) {
-			frequency_port_parameter = new PortParameter(this, getPort("frequency"), new PopupParameter1D(), new BoxLabel());
+			frequency_port_parameter = new PortParameter(this, getPort("frequency"), new PopupParameter1D(), new InputSignalParameters(this, "frequency"));
 			frequency_port_parameter.translation.x = 20;
 			frequency_port_parameter.translation.y = 20;
 			add(frequency_port_parameter);
@@ -84,7 +81,6 @@ public class UI extends UINode {
 			int i;
 			@Override
 			public void onChange() {
-				float[] points_flat = bwb.getFloats();
 				self.sendParameter("data.curve", new FloatArray(bwb.getFloats()));
 			}
 

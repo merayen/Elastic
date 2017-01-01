@@ -1,7 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.test_100;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.util.pack.PackDict;
 
 public class LogicNode extends BaseLogicNode {
@@ -17,8 +16,8 @@ public class LogicNode extends BaseLogicNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onParameterChange(NodeParameterMessage message) {
-		set(message);
+	protected void onParameterChange(String key, Object value) {
+		set(key, value);
 	}
 
 	@Override

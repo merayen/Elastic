@@ -33,7 +33,7 @@ public class LogicNode extends BaseLogicNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onParameterChange(NodeParameterMessage message) {}
+	protected void onParameterChange(String key, Object value) {}
 
 	@Override
 	protected void onConnect(String port) {}

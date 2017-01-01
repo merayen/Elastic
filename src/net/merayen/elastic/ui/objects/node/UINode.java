@@ -114,7 +114,7 @@ public abstract class UINode extends UIObject {
 		return uinode;
 	}
 
-	protected void sendParameter(String key, Object value) {
+	public void sendParameter(String key, Object value) {
 		sendMessage(new NodeParameterMessage(node_id, key, value));
 	}
 

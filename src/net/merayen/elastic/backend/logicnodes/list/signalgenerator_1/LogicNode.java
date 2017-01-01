@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.logicnodes.list.signalgenerator_1;
 
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.util.pack.PackDict;
 
 public class LogicNode extends BaseLogicNode {
@@ -25,8 +24,8 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onParameterChange(NodeParameterMessage message) { // Parameter change from UI
-		set(message); // Acknowledge anyway
+	protected void onParameterChange(String key, Object value) { // Parameter change from UI
+		set(key, value); // Acknowledge anyway
 	}
 
 	@Override

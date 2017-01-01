@@ -10,6 +10,7 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.util.Postmaster.Message;
 
 /*
@@ -27,17 +28,14 @@ public class LProcessor extends LocalProcessor {
 		MALFUNCTION // E.g, wrong line has been connected. We output only zeroes in this case (and should send a warning)
 	}
 
-	/*private float midi_amplitude = 1f;
-	private float midi_frequency;
-	private float midi_tangent_frequency;
-	private float midi_pitch_factor;*/
-
 	private int lol_static;
 	private int lol = new Random().nextInt(Integer.MAX_VALUE);
 
 	private LNode lnode;
 
 	private Mode mode;
+
+	private float[][] input_frequency_buffer;
 
 	int standalone_to_generate;
 	List<Short> keys_down = new ArrayList<>();
@@ -91,7 +89,6 @@ public class LProcessor extends LocalProcessor {
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
 		float amplitude = lnode.amplitude;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
-			//outlet.audio[0][i] = (float)Math.sin(pos) * amplitude;
 			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
 			pos += step;
 		}
@@ -100,91 +97,42 @@ public class LProcessor extends LocalProcessor {
 		outlet.push();
 	}
 
+	boolean forward = true;
 	private void generateWithFrequency() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
-		AudioOutlet frequency = ((AudioInlet)getInlet("frequency")).outlet;
+		AudioInlet frequency = (AudioInlet)getInlet("frequency");
 
 		outlet.setChannelCount(1);
 
 		int available = available();
 
-		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
-		float amplitude = lnode.amplitude;
-		for(int i = outlet.written; i < available; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[(int)(((pos < 0 ? -pos : pos) / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
-			pos += frequency.audio[0][i];
+		if(available == 0)
+			return;
+
+		// Transform input according to the UI's InputSignalProcessor() parameters
+		if(input_frequency_buffer == null)
+			input_frequency_buffer = new float[1][buffer_size];
+
+		InputSignalParametersProcessor.process(lnode, "frequency", new float[][]{frequency.outlet.audio[0]}, input_frequency_buffer, outlet.written, available);
+
+		int i;
+		for(i = outlet.written; i < outlet.written + available; i++) {
+			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
+			pos += input_frequency_buffer[0][i];
 		}
 
-		outlet.written = outlet.buffer_size;
+		if(forward && pos < 0) {
+			System.out.println("ned");
+			forward = false;
+		} else if(!forward && pos >= 0) {
+			System.out.println("opp");
+			forward = true;
+		}
+
+		outlet.written = i;
+		frequency.read = i;
 		outlet.push();
 	}
-
-	/*void tryToGenerate() {
-		boolean frequency_connected = getInlet("frequency").isConnected("frequency");
-		boolean amplitude_connected = ports.isConnected("amplitude");
-		ManagedPortState frequency_state = getPortState("frequency");
-
-		float[] r = null;
-		if(!frequency_connected && !amplitude_connected) {
-			r = generateStandalone();
-
-		} else if(frequency_connected) {
-			if(frequency_state == null)
-				return; // frequency port is connected but we have not received anything on it, so we don't know the format. We wait
-
-			if(frequency_state.format == MidiResponse.class)
-				r = generateWithMidi();
-			if(frequency_state.format == AudioResponse.class)
-				r = generateFromFrequency();
-
-		} else if(amplitude_connected) { // Only amplitude-port connected
-			r = generateStandalone();
-		} else {
-			throw new RuntimeException("Not implemented");
-		}
-
-		if(r != null) {
-			AudioResponse ar = new AudioResponse();
-			ar.sample_count = r.length;
-			ar.channels = new short[]{0}; // We only send mono
-			ar.samples = r;
-			send("output", ar);
-		}
-	}*/
-
-	/**
-	 * Generate sine wave without the frequency port.
-	 * We then generate data synchronously.
-	 * Called by the Net-node. 
-	 */
-	/*public float[] generateStandalone() {
-		if(standalone_to_generate == 0)
-			return null;
-
-		boolean amplitude_connected = ports.isConnected("amplitude");
-
-		float[] r = new float[standalone_to_generate]; // TODO use shared buffer
-		float frequency = net_node.frequency;
-		float amplitude = net_node.amplitude;// * midi_amplitude;
-
-		standalone_to_generate = 0;
-
-		float amplitude_offset = ((Node)net_node).offset;
-
-		if(amplitude_connected) {
-			
-		} else {
-			if(amplitude > 0)
-				for(int i = 0; i < r.length; i++)
-					r[i] = (float)Math.sin(pos += (Math.PI * 2.0 * frequency) / sample_rate) * amplitude + amplitude_offset;
-			else
-					pos += (Math.PI * 2.0 * frequency * r.length) / sample_rate;
-		}
-
-		pos %= Math.PI * 2 * 1000;
-
-		return r;
-	}*/
 
 	/**
 	 * Generate sine wave from frequency port connected to a MIDI source.
@@ -281,9 +229,9 @@ public class LProcessor extends LocalProcessor {
 		midi_frequency = (float)(midi_tangent_frequency * Math.pow(2, midi_pitch_factor / 6f));
 	}*/
 
-	private float midiNoteToFreq(short n) {
+	/*private float midiNoteToFreq(short n) {
 		return (float)(440 * Math.pow(2, (n - 69) / 12.0f));
-	}
+	}*/
 
 	/*private float[] generateFromFrequency() {
 		boolean amplitude_connected = net_node.isConnected("amplitude");

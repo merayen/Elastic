@@ -74,7 +74,7 @@ public class Supervisor {
 
 				NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
 
-				logicnode_list.get(m.node_id).onParameterChange(m);
+				logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
 
 				return;
 	

@@ -30,7 +30,7 @@ public class UI extends UINode {
 		add(bwb);
 		bwb.insertPoint(1);
 
-		InputSignalParameters isa = new InputSignalParameters();
+		InputSignalParameters isa = new InputSignalParameters(this, "test");
 		isa.translation.x = 10;
 		isa.translation.y = 180;
 		add(isa);

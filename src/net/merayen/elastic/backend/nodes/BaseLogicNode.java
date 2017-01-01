@@ -47,7 +47,7 @@ public abstract class BaseLogicNode {
 	 * This could be the UI changing a parameter, or a restore loading parameters.
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
 	 */
-	protected abstract void onParameterChange(NodeParameterMessage message);
+	protected abstract void onParameterChange(String key, Object value);
 
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
@@ -110,14 +110,6 @@ public abstract class BaseLogicNode {
 
 		NodeProperties np = new NodeProperties(netlist);
 		np.parameters.set(node, key, value);
-	}
-
-	protected void set(NodeParameterMessage message) {
-		sendMessageToProcessor(message);
-		sendMessageToUI(message);
-
-		NodeProperties np = new NodeProperties(netlist);
-		np.parameters.set(node, message.key, message.value);
 	}
 
 	protected void sendDataToUI(String key, PackType data) {

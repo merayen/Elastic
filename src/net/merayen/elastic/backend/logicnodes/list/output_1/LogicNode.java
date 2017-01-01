@@ -40,8 +40,8 @@ public class LogicNode extends BaseLogicNode {
 	protected void onDisconnect(String port) {}
 
 	@Override
-	protected void onParameterChange(NodeParameterMessage message) {
-		set(message);
+	protected void onParameterChange(String key, Object value) {
+		set(key, value);
 	}
 
 	@Override

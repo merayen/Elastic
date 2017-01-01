@@ -1,10 +1,28 @@
 package net.merayen.elastic.ui.objects.components;
 
-import net.merayen.elastic.ui.UIObject;
+import java.util.HashMap;
 
+import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.objects.node.UINode;
+
+/**
+ * To be used with InputSignalParametersProcessor that sits on the other end (backend) and actually transforms the signal.
+ */
 public class InputSignalParameters extends UIObject {
 	public final PopupParameter1D amplitude = new PopupParameter1D();
 	public final PopupParameter1D offset = new PopupParameter1D();
+
+	public final String name;
+	private final UINode node;
+
+	/**
+	 * @param node Uses this node to send messages to backend
+	 * @param name Couples the InputSignalParametersProcessor() in the backend. They have to have the same name.
+	 */
+	public InputSignalParameters(UINode node, String name) {
+		this.name = name;
+		this.node = node;
+	}
 
 	@Override
 	protected void onInit() {
@@ -23,6 +41,7 @@ public class InputSignalParameters extends UIObject {
 			@Override
 			public void onMove(float value) {
 				updateTexts();
+				sendParameters();
 			}
 
 			@Override
@@ -33,6 +52,7 @@ public class InputSignalParameters extends UIObject {
 			@Override
 			public void onMove(float value) {
 				updateTexts();
+				sendParameters();
 			}
 
 			@Override
@@ -62,5 +82,13 @@ public class InputSignalParameters extends UIObject {
 	private void updateTexts() {
 		amplitude.label.text = String.format("Amplitude: %.3f", getAmplitude());
 		offset.label.text = String.format("Offset: %.3f", getOffset());
+	}
+
+	@SuppressWarnings("serial")
+	private void sendParameters() {
+		node.sendParameter("data.InputSignalParameters:" + name, new HashMap<String, Object>(){{
+			put("amplitude", getAmplitude());
+			put("offset", getOffset());
+		}});
 	}
 }

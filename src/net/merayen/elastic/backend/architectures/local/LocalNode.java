@@ -132,4 +132,8 @@ public abstract class LocalNode {
 	protected List<LocalProcessor> getProcessors() {
 		return supervisor.getProcessors(this);
 	}
+
+	public Object getParameter(String key) {
+		return properties.parameters.get(node, key);
+	}
 }
