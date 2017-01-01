@@ -11,10 +11,16 @@ import net.merayen.elastic.util.Point;
  * Puts up a context menu on top of everything (Top().overlay)
  */
 public class ContextMenu {
-	private final Menu menu = new Menu();
+	private final Menu menu;
 	private final MouseHandler mouse;
 
 	public ContextMenu(UIObject trigger) {
+		this(trigger, 8);
+	}
+
+	public ContextMenu(UIObject trigger, int count) {
+		menu = new Menu(count);
+
 		mouse = new MouseHandler(trigger, MouseEvent.Button.RIGHT);
 		mouse.setHandler(new MouseHandler.Handler() {
 			float start_x, start_y;
@@ -45,5 +51,9 @@ public class ContextMenu {
 
 	public void handle(IEvent event) {
 		mouse.handle(event);
+	}
+
+	public void addMenuItem(ContextMenuItem item) {
+		menu.addMenuItem(item);
 	}
 }
