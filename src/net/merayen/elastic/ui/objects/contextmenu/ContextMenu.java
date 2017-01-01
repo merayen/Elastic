@@ -33,6 +33,8 @@ public class ContextMenu {
 				start_y = absolute.y;
 				menu.translation.x = absolute.x - menu.radius;
 				menu.translation.y = absolute.y - menu.radius;
+
+				menu.setPointer(0, 0);
 			}
 
 			@Override
@@ -45,6 +47,8 @@ public class ContextMenu {
 			public void onGlobalMouseUp(Point position) {
 				if(menu.getParent() != null)
 					((Top)trigger.search.getTop()).overlay.remove(menu);
+
+				// TODO callback
 			}
 		});
 	}
