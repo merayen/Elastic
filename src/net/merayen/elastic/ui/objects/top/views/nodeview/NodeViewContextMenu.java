@@ -1,14 +1,14 @@
-package net.merayen.elastic.ui.objects.node;
+package net.merayen.elastic.ui.objects.top.views.nodeview;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 
-class TitleBarContextMenu extends UIObject {
+class NodeViewContextMenu extends UIObject {
 	private final ContextMenu menu;
 
-	TitleBarContextMenu(UIObject titlebar) {
-		menu = new ContextMenu(titlebar);
+	NodeViewContextMenu(UIObject background) {
+		menu = new ContextMenu(background);
 	}
 
 	@Override

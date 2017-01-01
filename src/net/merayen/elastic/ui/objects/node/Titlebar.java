@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.util.Movable;
 
 public class Titlebar extends UIObject {
@@ -14,7 +15,7 @@ public class Titlebar extends UIObject {
 	Titlebar() {}
 
 	protected void onInit() {
-		moveable = new Movable(this.getParent(), this);
+		moveable = new Movable(this.getParent(), this, MouseEvent.Button.LEFT);
 		moveable.setHandler(new Movable.IMoveable() {
 
 			@Override

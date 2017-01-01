@@ -58,20 +58,6 @@ public abstract class UINode extends UIObject {
 
 		titlebar.width = width;
 
-		// Doodling
-		/*Stats s = getGlueNode().getStats();
-		if(s != null) { // Statistics are only available for Net nodes that are AudioNodes
-			for(UIPort p : this.getPorts()) // TODO Only show when enabled in the UI?
-				if(s.ports.containsKey(p.name))
-					p.setPortStats(s.ports.get(p.name));
-
-			if(absolute_translation.scale_x < .5) {
-				draw.setColor(255, 255, 255);
-				draw.setFont("Verdana", 8);
-				draw.text(String.format("%d",  s.processor_count), 0, -5);
-			}
-		}*/
-
 		super.onDraw();
 	}
 

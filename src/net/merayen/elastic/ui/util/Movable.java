@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.util;
 
 import net.merayen.elastic.ui.TranslationData;
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.util.Point;
 
 /*
@@ -27,11 +28,15 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 	private IMoveable handler;
 
 	public Movable(UIObject movable, UIObject trigger) {
+		this(movable, trigger, null);
+	}
+
+	public Movable(UIObject movable, UIObject trigger, MouseEvent.Button button) {
 		/*
 		 * Moving is triggered by the trigger, which moves the movable.
 		 * The movable is usually the parent to the trigger.
 		 */
-		super(trigger);
+		super(trigger, button);
 
 		super.setHandler(new MouseHandler.Handler() {
 			@Override

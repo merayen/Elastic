@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.UINet;
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.MenuBar;
 import net.merayen.elastic.ui.objects.top.views.View;
@@ -28,6 +30,8 @@ public class NodeView extends View {
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s";
 	private final MenuBar menu = new MenuBar();
 
+	private final NodeViewContextMenu context_menu;
+
 	public NodeView() {
 		super();
 		add(container);
@@ -36,7 +40,10 @@ public class NodeView extends View {
 		container.add(net, true); // Add the net first (also, drawn behind everything), as addNode() might have already been called
 
 		// Make it possible to move NodeViewContainer by dragging the background
-		movable = new Movable(container, this);
+		movable = new Movable(container, this, MouseEvent.Button.LEFT);
+
+		// Set up context menu when right-clicking on the background
+		context_menu = new NodeViewContextMenu(this);
 	}
 
 	@Override
@@ -49,6 +56,8 @@ public class NodeView extends View {
 		menu.translation.y = 0;
 		menu.width = 200;
 		add(menu);
+
+		add(context_menu);
 	}
 
 	@Override
