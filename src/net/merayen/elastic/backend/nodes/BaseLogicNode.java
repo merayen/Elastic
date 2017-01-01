@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.nodes;
 
+import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -106,11 +107,17 @@ public abstract class BaseLogicNode {
 		NodeParameterMessage message = new NodeParameterMessage(id, key, value);
 		supervisor.sendMessageToProcessor(message);
 		supervisor.sendMessageToUI(message);
+
+		NodeProperties np = new NodeProperties(netlist);
+		np.parameters.set(node, key, value);
 	}
 
 	protected void set(NodeParameterMessage message) {
 		sendMessageToProcessor(message);
 		sendMessageToUI(message);
+
+		NodeProperties np = new NodeProperties(netlist);
+		np.parameters.set(node, message.key, message.value);
 	}
 
 	protected void sendDataToUI(String key, PackType data) {

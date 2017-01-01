@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.components;
 
 import net.merayen.elastic.ui.UIObject;
 
-public class InputSignalKnob extends UIObject {
+public class InputSignalKnob extends UIObject { // TODO delete
 	public float size = 30;
 
 	private CircularSlider amplitude;

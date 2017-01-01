@@ -2,104 +2,73 @@ package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.ui.objects.components.BoxLabel;
+import net.merayen.elastic.ui.objects.components.PopupParameter1D;
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox;
+import net.merayen.elastic.ui.objects.components.framework.PortParameter;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
-import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
 import net.merayen.elastic.util.pack.FloatArray;
 
 public class UI extends UINode {
-	private PortParameterSlider frequency_slider;
-	private float frequency = 440;
+	private PortParameter frequency_port_parameter;
 
+	static int a,b;
 	public UI() {
 		super();
+		System.out.println("init: " + a++);
 		width = 200f;
 		height = 200f;
 
 		titlebar.title = "Signalgenerator";
 
-		createFrequencySlider();
 		createBezierWave();
 	}
 
-	public static String getNodeName() {
-		return "Signalgenerator";
-	}
-
-	public static String getNodeDescription() {
-		return "Generates audio waves.";
-	}
-
-	boolean shown;
 	public void onDraw() {
 		super.onDraw();
-		if(!shown)
-			System.out.printf("Signal generator draw() %s: t=%s\n", this, translation);
-		shown = true;
+
 		if(getPort("output") != null)
 			getPort("output").translation.x = width;
-
-		if(getPort("frequency") != null)
-			frequency_slider.showSlider(!getUINet().isConnected(getPort("frequency"))); // TODO Only do this when connections are actually changed
 	}
 
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
-		//System.out.printf("Signal generator onMessage() %s: %s\n", this, message);
 		if(message.key.equals("data.frequency")) {
-			frequency = (float)message.value;
-			frequency_slider.setValue(frequency / 8000);
+			System.out.println("frequency: " + b++);
+			((PopupParameter1D)frequency_port_parameter.not_connected).setValue((float)(Math.pow((float)message.value, 1/4.301029995663981) / 10.0));
+			updateFrequencyText();
 		}
 	}
 
 	@Override
 	public void onCreatePort(UIPort port) {
 		if(port.name.equals("frequency")) {
-			frequency_slider.setPort(port);
+			frequency_port_parameter = new PortParameter(this, getPort("frequency"), new PopupParameter1D(), new BoxLabel());
+			frequency_port_parameter.translation.x = 20;
+			frequency_port_parameter.translation.y = 20;
+			add(frequency_port_parameter);
+
+			((PopupParameter1D)frequency_port_parameter.not_connected).setHandler(new PopupParameter1D.Handler() {
+				@Override
+				public void onMove(float value) {
+					updateFrequencyText();
+					sendParameter("data.frequency", getFrequency());
+				}
+
+				@Override
+				public void onChange(float value) {}
+			});
+
+			((PopupParameter1D)frequency_port_parameter.not_connected).drag_scale = 0.5f;
+
+			port.translation.y = 20;
 		}
 
 		if(port.name.equals("output")) {
 			port.translation.y = 20f;
 			port.color = UIPort.AUDIO_PORT;
 		}
-	}
-
-	@Override
-	public void onRemovePort(UIPort port) {
-		// Never removes any port anyway, so not implemented
-	}
-
-	private void createFrequencySlider() {
-		UI self = this;
-		frequency_slider = new PortParameterSlider("frequency");
-		frequency_slider.translation.y = 20f;
-		frequency_slider.color = UIPort.AUX_PORT;
-		add(frequency_slider);
-
-		frequency_slider.setHandler(new PortParameterSlider.IHandler() {
-			@Override
-			public void onChange(double value, boolean programatic) {
-				frequency = Math.round(value * 8000.0 * 10) / 10 + 0.1f;
-
-				if(!programatic) // If not set by setValue, but by users himself
-					sendParameter("data.frequency", frequency);
-			}
-
-			@Override
-			public void onButton(int offset) {
-				frequency += offset*1;
-				frequency_slider.setValue(frequency / 8000);
-			}
-
-			@Override
-			public String onLabelUpdate(double value) {
-				return String.format("%.2f Hz", frequency);
-			}
-		});
-
-		frequency_slider.setValue(frequency / 8000);
-		frequency_slider.setScale(0.1f);
 	}
 
 	private void createBezierWave() {
@@ -132,7 +101,17 @@ public class UI extends UINode {
 	}
 
 	@Override
-	protected void onData(NodeDataMessage message) {
-		System.console();
+	protected void onData(NodeDataMessage message) {}
+
+	@Override
+	protected void onRemovePort(UIPort port) {}
+
+	private float getFrequency() {
+		//return (float)Math.pow(((PopupParameter1D)frequency_port_parameter.not_connected).getValue() * 2, 14);
+		return (float)Math.pow(((PopupParameter1D)frequency_port_parameter.not_connected).getValue() * 10, 4.301029995663981);
+	}
+
+	private void updateFrequencyText() {
+		((PopupParameter1D)frequency_port_parameter.not_connected).label.text = String.format("Frequency: %.3f", getFrequency());
 	}
 }

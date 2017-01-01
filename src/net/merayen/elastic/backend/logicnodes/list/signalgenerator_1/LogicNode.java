@@ -20,7 +20,9 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onInit() {}
+	protected void onInit() {
+		set("data.frequency", 1337f);
+	}
 
 	@Override
 	protected void onParameterChange(NodeParameterMessage message) { // Parameter change from UI

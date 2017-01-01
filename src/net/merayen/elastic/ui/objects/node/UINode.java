@@ -148,7 +148,7 @@ public abstract class UINode extends UIObject {
 		}
 	}
 
-	protected UINet getUINet() {
+	public UINet getUINet() { // TODO cache it
 		UIObject c = this;
 		while(!((c = c.getParent()) instanceof NodeView)); // Will crash hardstyle if not found
 
