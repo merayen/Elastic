@@ -97,7 +97,6 @@ public class LProcessor extends LocalProcessor {
 		outlet.push();
 	}
 
-	boolean forward = true;
 	private void generateWithFrequency() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 		AudioInlet frequency = (AudioInlet)getInlet("frequency");
@@ -119,14 +118,6 @@ public class LProcessor extends LocalProcessor {
 		for(i = outlet.written; i < outlet.written + available; i++) {
 			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
 			pos += input_frequency_buffer[0][i];
-		}
-
-		if(forward && pos < 0) {
-			System.out.println("ned");
-			forward = false;
-		} else if(!forward && pos >= 0) {
-			System.out.println("opp");
-			forward = true;
 		}
 
 		outlet.written = i;
