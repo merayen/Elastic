@@ -2,10 +2,10 @@ package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.components.PortParameterSlider;
-import net.merayen.elastic.uinodes.list.test_100.SignalBezierCurveBox;
 import net.merayen.elastic.util.pack.FloatArray;
 
 public class UI extends UINode {

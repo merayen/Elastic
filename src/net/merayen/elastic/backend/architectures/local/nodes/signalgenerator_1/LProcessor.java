@@ -72,7 +72,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	public void onProcess() {
-		//System.out.println("Generator process() " + lol);
+		if(getOutlet("output") == null)
+			return;
+
 		if(mode == Mode.RAW)
 			generateRaw();
 		else if(mode == Mode.FREQUENCY)

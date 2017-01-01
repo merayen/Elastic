@@ -1,7 +1,7 @@
-package net.merayen.elastic.uinodes.list.test_100;
+package net.merayen.elastic.ui.objects.components.curvebox;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.uinodes.list.test_100.BezierCurveBox.BezierDot;
+import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDot;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;

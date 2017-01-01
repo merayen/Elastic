@@ -1,4 +1,4 @@
-package net.merayen.elastic.uinodes.list.test_100;
+package net.merayen.elastic.ui.objects.components.curvebox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +175,7 @@ public class BezierCurveBox extends UIObject {
 		// Draw lines from the dots to the points
 		drawDotLines();
 
-		drawDiagnostics();
+		//drawDiagnostics();
 	}
 
 	public void setHandler(Handler handler) {
