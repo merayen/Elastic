@@ -12,11 +12,12 @@ import net.merayen.elastic.util.pack.FloatArray;
 
 public class UI extends UINode {
 	private PortParameter frequency_port_parameter;
+	private SignalBezierCurveBox curve;
 
 	public UI() {
 		super();
 		width = 200f;
-		height = 200f;
+		height = 150f;
 
 		titlebar.title = "Signalgenerator";
 
@@ -28,6 +29,9 @@ public class UI extends UINode {
 
 		if(getPort("output") != null)
 			getPort("output").translation.x = width;
+
+		// Debug
+		//curve.width = 100 + (float)Math.sin(System.currentTimeMillis() / 1000.0) * 50;
 	}
 
 	@Override
@@ -72,9 +76,10 @@ public class UI extends UINode {
 		SignalBezierCurveBox bwb = new SignalBezierCurveBox();
 		bwb.translation.x = 20;
 		bwb.translation.y = 40;
-		bwb.width = 200;
-		bwb.height = 200;
+		bwb.width = 160;
+		bwb.height = 100;
 		add(bwb);
+		curve = bwb;
 		UI self = this;
 
 		bwb.setHandler(new SignalBezierCurveBox.Handler() {

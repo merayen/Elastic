@@ -117,12 +117,6 @@ public class BezierCurveBox extends UIObject {
 
 	@Override
 	protected void onInit() {
-		// Make our content scale to a 0 to 1 coordinate system
-		translation.scale_x = 1 / width;
-		translation.scale_y = 1 / height;
-
-		translation.clip = new Rect(0, 0, width, height);
-
 		add(background, true);
 	}
 
@@ -148,6 +142,11 @@ public class BezierCurveBox extends UIObject {
 
 	@Override
 	protected void onDraw() {
+		// Make our content scale to a 0 to 1 coordinate system
+		translation.scale_x = 1 / width;
+		translation.scale_y = 1 / height;
+		translation.clip = new Rect(0, 0, width + 1, height + 1);
+
 		draw.setColor(20, 20, 40);
 		draw.fillRect(0, 0, 1, 1);
 

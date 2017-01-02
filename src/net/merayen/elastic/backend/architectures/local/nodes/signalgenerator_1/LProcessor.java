@@ -315,4 +315,10 @@ public class LProcessor extends LocalProcessor {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -25,7 +25,7 @@ public class TranslationData {
 		visible = td.visible;
 
 		if(td.clip != null) {
-			if(clip == null) // XXX apply scaling below?
+			if(clip == null)
 				clip = new Rect(
 					x + td.clip.x1 / scale_x,
 					y + td.clip.y1 / scale_y,

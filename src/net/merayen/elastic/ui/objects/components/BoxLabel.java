@@ -15,6 +15,7 @@ public class BoxLabel extends UIObject {
 	@Override
 	protected void onDraw() {
 		draw.setFont("", 5);
+		draw.setStroke(1);
 		calculated_width = draw.getTextWidth(text) + 10;
 
 		draw.setColor(0, 0, 0);
