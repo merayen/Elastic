@@ -29,9 +29,6 @@ public class UI extends UINode {
 
 		if(getPort("output") != null)
 			getPort("output").translation.x = width;
-
-		// Debug
-		//curve.width = 100 + (float)Math.sin(System.currentTimeMillis() / 1000.0) * 50;
 	}
 
 	@Override

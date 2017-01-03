@@ -42,9 +42,6 @@ public class LNode extends LocalNode {
 		if(key.equals("data.curve")) {
 			setCurveWave(((FloatArray)value).data);
 		}
-
-		if(key.equals("data.InputSignalParameters:frequency"))
-			System.out.println("JA! " + value);
 	}
 
 	@Override

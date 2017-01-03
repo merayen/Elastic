@@ -30,7 +30,8 @@ class Menu extends UIObject {
 
 		float item_radius = radius / (3 * (steps / (float)8)) ;
 		boolean marked = false;
-		int selected = -1;
+
+		selected = -1;
 
 		for(int i = 0; i < steps; i++) {
 			boolean active = false;
@@ -42,20 +43,20 @@ class Menu extends UIObject {
 				if((int)pointer == i) {
 					marked = true;
 					active = true;
-					selected = i;
 				}
 			}
 
-			if(i < items.size()) {
-				ContextMenuItem cmi = items.get(i);
+			int menu_index = Math.floorMod(-i + count / 2, steps); // Makes items begin at 12 o'clock
+			if(menu_index < items.size()) {
+				ContextMenuItem cmi = items.get(menu_index);
 				cmi.active = active;
 				cmi.item_radius = item_radius;
 				cmi.translation.x = x;
 				cmi.translation.y = y;
+				if(active)
+					selected = menu_index;
 			}
 		}
-
-		this.selected = selected;
 	}
 
 	void setPointer(float x, float y) {
@@ -68,7 +69,10 @@ class Menu extends UIObject {
 		add(item);
 	}
 
-	int getSelected() {
-		return selected;
+	ContextMenuItem getSelected() {
+		if(selected > -1 && selected < items.size())
+			return items.get(selected);
+
+		return null;
 	}
 }
