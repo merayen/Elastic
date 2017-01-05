@@ -5,20 +5,10 @@ import java.util.List;
 
 public class Search {
 	private UIObject obj;
-	private int depth;
 
-	Search(UIObject obj) {
-		this(obj, 1000);
-	}
-
-	public Search(UIObject obj, int depth) {
+	public Search(UIObject obj) {
 		this.obj = obj;
-		this.depth = depth;
 	}
-	
-	/*public static Search getTopSearch(UIObject obj) {
-		return 
-	}*/
 	
 	public UIObject getTop() {
 		UIObject top = obj;
@@ -28,7 +18,7 @@ public class Search {
 		return top;
 	}
 
-	public ArrayList<UIObject> searchByType(Class<? extends UIObject> cls) {
+	public ArrayList<UIObject> childrenByType(Class<? extends UIObject> cls) {
 		/*
 		 * Search downwards for a type
 		 */
@@ -40,6 +30,14 @@ public class Search {
 		}
 
 		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends UIObject> T parentByType(Class<T> cls) {
+		UIObject x = obj;
+		while((x = x.getParent()) != null && !cls.isAssignableFrom(x.getClass()));
+
+		return (T)x;
 	}
 	
 	public List<UIObject> getAllChildren() { // Not tested

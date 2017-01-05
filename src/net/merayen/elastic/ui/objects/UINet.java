@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import net.merayen.elastic.system.intercom.NodeConnectMessage;
-import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
@@ -119,7 +118,7 @@ public class UINet extends UIObject {
 	}
 
 	private void internalDisconnect(NodeDisconnectMessage message) {
-		for(int i = connections.size() - 1; i >= 0; i--) {
+		for(int i = connections.size() - 1; i > -1; i--) {
 			Connection c = connections.get(i);
 			String node_a = c.a.getNode().node_id;
 			String node_b = c.b.getNode().node_id;
@@ -130,6 +129,21 @@ public class UINet extends UIObject {
 				if(c.a.name.equals(message.port_b) && c.b.name.equals(message.port_a))
 					connections.remove(i);
 			}
+		}
+	}
+
+	private void internalRemoveNode(String node_id) {
+		// Remove all connections
+		for(int i = connections.size() - 1; i > -1; i--) {
+			Connection c = connections.get(i);
+			UIPort port = null;
+			if(c.a.getNode().node_id.equals(node_id))
+				port = c.a;
+			else if(c.b.getNode().node_id.equals(node_id))
+				port = c.b;
+
+			if(port != null)
+				connections.remove(i);
 		}
 	}
 
@@ -149,6 +163,9 @@ public class UINet extends UIObject {
 
 		else if(message instanceof NodeDisconnectMessage)
 			internalDisconnect((NodeDisconnectMessage)message);
+
+		else if(message instanceof RemoveNodeMessage)
+			internalRemoveNode(((RemoveNodeMessage)message).node_id);
 	}
 
 	/*

@@ -20,7 +20,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onInit() {
-		set("data.frequency", 1337f);
+		set("data.frequency", 440.0f);
 	}
 
 	@Override
@@ -39,4 +39,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onFinishFrame(PackDict data) {}
+
+	@Override
+	protected void onRemove() {}
 }

@@ -113,6 +113,13 @@ public class Supervisor {
 				NodeDisconnectMessage disconnect_message = new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
 				handler.sendMessageToUI(disconnect_message); // Acknowledge disconnection
 				handler.sendMessageToProcessor(disconnect_message); // Acknowledge disconnection
+
+			} else if(message instanceof RemoveNodeMessage) {
+				RemoveNodeMessage m = (RemoveNodeMessage)message;
+				logicnode_list.get(m.node_id).onRemove();
+				logicnode_list.remove(m.node_id);
+				handler.sendMessageToUI(new RemoveNodeMessage(m.node_id));
+				handler.sendMessageToProcessor(new RemoveNodeMessage(m.node_id));
 	
 			} else if(message instanceof ProcessMessage) {
 				doProcessFrame((ProcessMessage)message);

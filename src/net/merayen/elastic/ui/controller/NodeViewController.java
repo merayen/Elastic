@@ -46,7 +46,7 @@ public class NodeViewController extends Controller {
 
 			for(NodeView nv : getNodeViews()) {
 				UINode n = nv.getNode(m.node_id);
-				if(n != null)
+				if(n != null) // Why check?
 					n.executeMessage(message);
 			}
 
@@ -58,9 +58,13 @@ public class NodeViewController extends Controller {
 
 		} else if(message instanceof RemoveNodePortMessage) {
 			RemoveNodePortMessage m = (RemoveNodePortMessage)message;
-
 			for(NodeView nv : getNodeViews())
 				nv.getNode(m.node_id).executeMessage(message); // Exception? UI out of sync
+
+		} else if(message instanceof RemoveNodeMessage) {
+			RemoveNodeMessage m = (RemoveNodeMessage)message;
+			for(NodeView nv : getNodeViews())
+				nv.removeNode(m.node_id); // Exception? UI out of sync
 
 		} else if(message instanceof ResetNetListMessage) { // TODO implement support to only reset a certain group?
 			for(NodeView nv : getNodeViews())
@@ -78,6 +82,9 @@ public class NodeViewController extends Controller {
 					nv.messageNode(m.node_id, message); // Forward messages with parameters used by us (only)
 
 			sendToBackend(message); // Forward message to backend 
+		} else if(message instanceof RemoveNodeMessage) {
+			sendToBackend(message);
+
 		}
 	}
 
@@ -101,7 +108,5 @@ public class NodeViewController extends Controller {
 	}
 
 	@Override
-	protected void onRestore(JSONObject obj) {
-		
-	}
+	protected void onRestore(JSONObject obj) {}
 }

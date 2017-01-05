@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import net.merayen.elastic.system.intercom.CreateNodePortMessage;
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.system.intercom.RemoveNodeMessage;
 import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
@@ -131,7 +132,15 @@ public abstract class UINode extends UIObject {
 			remove(port);
 			ports.remove(port);
 			onRemovePort(port);
+
 		}
+	}
+
+	/**
+	 * Request to delete ourself. Only a message will be sent to backend, which will delete us.
+	 */
+	void delete() {
+		sendMessage(new RemoveNodeMessage(node_id));
 	}
 
 	public UINet getUINet() { // TODO cache it

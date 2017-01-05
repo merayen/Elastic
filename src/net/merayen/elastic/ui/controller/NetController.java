@@ -5,14 +5,12 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import net.merayen.elastic.system.intercom.NodeConnectMessage;
-import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster.Message;
 
 public class NetController extends Controller {
-
 	public NetController(Gate gate) {
 		super(gate);
 	}
@@ -22,7 +20,7 @@ public class NetController extends Controller {
 
 	@Override
 	protected void onMessageFromBackend(Message message) {
-		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage) {
+		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage || message instanceof RemoveNodeMessage) {
 			for(NodeView nv : getNodeViews()) // Forward message regarding the net, from backend to the UINet, to all NodeViews
 				nv.getUINet().handleMessage(message);
 		}

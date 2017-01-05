@@ -3,6 +3,7 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.merayen.elastic.system.intercom.RemoveNodeMessage;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.util.Point;
@@ -141,6 +142,7 @@ public class UIObject {
 
 	protected void sendMessage(Postmaster.Message message) {
 		UIObject top = search.getTop();
+
 		if(top instanceof Top)
 			((Top)top).sendMessage(message);
 		else

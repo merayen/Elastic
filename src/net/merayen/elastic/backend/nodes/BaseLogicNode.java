@@ -53,6 +53,11 @@ public abstract class BaseLogicNode {
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
 
 	/**
+	 * Called when node is being deleted.
+	 */
+	protected abstract void onRemove();
+
+	/**
 	 * Called when a ProcessMessage()-request has been received. All LogicNodes must prepare data to be sent to processor.
 	 * Change the data-argument directly. 
 	 */

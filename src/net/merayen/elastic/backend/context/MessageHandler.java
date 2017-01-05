@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
+import net.merayen.elastic.system.intercom.RemoveNodeMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.NetListMessages;
@@ -55,7 +56,6 @@ public class MessageHandler {
 
 				continue; // Message handled by us directly, not sent further into the backend
 			}
-
 			backend_context.logicnode_supervisor.handleMessageFromUI(message);
 		}
 	}

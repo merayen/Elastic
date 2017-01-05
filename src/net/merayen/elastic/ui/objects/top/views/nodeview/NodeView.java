@@ -90,6 +90,12 @@ public class NodeView extends View {
 		container.add(uinode);
 	}
 
+	public void removeNode(String node_id) {
+		UINode uinode = getNode(node_id);
+		nodes.remove(uinode);
+		container.remove(uinode);
+	}
+
 	public ArrayList<UINode> getNodes() {
 		return new ArrayList<UINode>(nodes);
 	}

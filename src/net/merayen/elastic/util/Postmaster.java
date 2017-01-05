@@ -85,4 +85,8 @@ public class Postmaster {
 					queue.remove(o);
 		}*/
 	}
+
+	public int size() {
+		return queue.size();
+	}
 }
