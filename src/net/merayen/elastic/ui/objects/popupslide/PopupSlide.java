@@ -23,7 +23,7 @@ public class PopupSlide extends UIObject {
 			mouse.setHandler(new MouseHandler.Handler() {
 				@Override
 				public void onMouseDown(Point position) {
-					closeMenu();
+					popPopup();
 				}
 			});
 		}
@@ -43,15 +43,6 @@ public class PopupSlide extends UIObject {
 	}
 
 	private class Menu extends UIObject {
-
-		/*@Override
-		protected void onDraw() {
-			Top top = (Top)search.getTop();
-			Dimension dimension = getItemMaxDimension();
-
-			// Close ourself if clicking outside
-		}*/
-
 		@Override
 		protected void onUpdate() {
 			Top top = (Top)search.getTop();
@@ -91,14 +82,29 @@ public class PopupSlide extends UIObject {
 	}
 
 	private void placeItems() {
-		float offset = stack.size() * 20;
+		float offset = 0;
 		for(PopupSlideItem x : stack) {
 			x.translation.y = offset;
-			offset += 20;
+			offset += 25;
+			x.makeActive(false);
 		}
+
+		if(stack.size() > 0)
+			stack.get(stack.size() - 1).makeActive(true);
 	}
 
-	private void closeMenu() {
-		this.getParent().remove(this);
+	private void popPopup() {
+		menu.remove(stack.get(stack.size() - 1));
+
+		placeItems();
+
+		stack.remove(stack.size() - 1);
+
+		if(stack.size() == 0)
+			closePopup();
+	}
+
+	public void closePopup() {
+		getParent().remove(this);
 	}
 }

@@ -8,20 +8,20 @@ public abstract class PopupSlideItem extends UIObject {
 	}
 
 	public static class Title extends ContentBase {
+		public String text = "";
+
 		@Override
 		protected void onDraw() {
-			draw.setColor(50, 50, 50);
+			draw.setColor(250, 250, 250);
 			draw.fillRect(0, 0, width, height);
-		}
 
-		protected void drawText(String text) {
-			draw.setColor(255, 255, 255);
+			draw.setColor(0, 0, 0);
 			draw.setFont("", 12);
 			draw.text(text, 10, 15);
 		}
 	}
 
-	public static class Content extends ContentBase {
+	public static class Content extends ContentBase { // TODO remove() Content when not in foreground
 		@Override
 		protected void onDraw() {
 			draw.setColor(100, 100, 100);
@@ -32,11 +32,10 @@ public abstract class PopupSlideItem extends UIObject {
 	public float width = 100;
 	public float height = 100;
 
-	protected final Title title;
+	protected final Title title = new Title();
 	protected final Content content;
 
-	public PopupSlideItem(Title title, Content content) {
-		this.title = title;
+	public PopupSlideItem(Content content) {
 		this.content = content;
 	}
 
@@ -52,20 +51,17 @@ public abstract class PopupSlideItem extends UIObject {
 	}
 
 	@Override
-	protected final void onDraw() {
-		draw.setColor(50, 50, 50);
-		draw.rect(0, 0, width, height);
-
-		draw.setStroke(1);
-		draw.setColor(100, 100, 100);
-		draw.rect(2, 2, width - 4, height - 4);
-	}
-
-	@Override
 	protected void onUpdate() {
 		title.width = width - 8;
 		title.height = 20;
 		content.width = width - 8;
 		content.height = height - 20 - 12;
+	}
+
+	void makeActive(boolean yes) {
+		if(yes && content.getParent() == null)
+			add(content);
+		else if(!yes && content.getParent() != null)
+			remove(content);
 	}
 }

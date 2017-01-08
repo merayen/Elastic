@@ -85,6 +85,8 @@ public class NodeViewController extends Controller {
 		} else if(message instanceof RemoveNodeMessage) {
 			sendToBackend(message);
 
+		} else if(message instanceof CreateNodeMessage) {
+			sendToBackend(message);
 		}
 	}
 

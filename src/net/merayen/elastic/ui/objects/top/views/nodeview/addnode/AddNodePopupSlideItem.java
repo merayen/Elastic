@@ -1,54 +1,95 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview.addnode;
 
 import net.merayen.elastic.ui.event.IEvent;
-import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
-import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem;
-import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem;
+import net.merayen.elastic.ui.objects.components.list.UIList;
+import net.merayen.elastic.ui.objects.components.list.UIListItem;
 import net.merayen.elastic.ui.objects.popupslide.PopupSlideItem;
+import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.uinodes.UINodeInformation;
+import net.merayen.elastic.util.Point;
 
 class AddNodePopupSlideItem extends PopupSlideItem {
 	interface Handler {
-		public void onAddNode();
-	}
-
-	private static class Title extends PopupSlideItem.Title {
-		@Override
-		protected void onDraw() {
-			super.onDraw();
-
-			drawText("Add node");
-		}
+		public void onSelectCategory(String category);
 	}
 
 	private static class Content extends PopupSlideItem.Content {
-		ContextMenu menu;
+		interface Handler {
+			public void onSelect(String text);
+		}
 
-		final ContextMenuItem import_item = new TextContextMenuItem("Import");
-		final ContextMenuItem generators_item = new TextContextMenuItem("Generators");
-		final ContextMenuItem filters_item = new TextContextMenuItem("Filters");
-		final ContextMenuItem output_item = new TextContextMenuItem("Output");
-		final ContextMenuItem link_item = new TextContextMenuItem("Link");
-		final ContextMenuItem library_item = new TextContextMenuItem("Library");
+		final UIList list = new UIList();
+		Handler handler;
+
+		private void setHandler(Handler handler) {
+			this.handler = handler;
+		}
 
 		@Override
 		protected void onInit() {
-			menu = new ContextMenu(this, 8, new ContextMenu.Handler() {
-				@Override
-				public void onSelect(ContextMenuItem item) { // TODO move stuff below out to a separate class
-					System.out.println(((TextContextMenuItem)item).text);
+			addCategory("Import node");
 
-					/*if(item == add_node_item) {
-						new AddNodePopup(self);
-					}*/
+			for(String category : UINodeInformation.getCategories())
+				addCategory(category);
+
+			list.reflowVertically(3);
+
+			add(list);
+
+			list.width = 400;
+			list.height = 450;
+		}
+
+		private void addCategory(String text) {
+			list.addItem(0, new UIListItem() {
+				MouseHandler mouse = new MouseHandler(this);
+				boolean over;
+
+				@Override
+				protected void onInit() {
+					width = 100;
+					height = 100;
+
+					mouse.setHandler(new MouseHandler.Handler() {
+						@Override
+						public void onMouseOver() {
+							over = true;
+						}
+
+						@Override
+						public void onMouseOut() {
+							over = false;
+						}
+
+						@Override
+						public void onMouseClick(Point position) {
+							handler.onSelect(text);
+						}
+					});
+				}
+
+				@Override
+				protected void onDraw() {
+					if(over)
+						draw.setColor(150, 200, 150);
+					else
+						draw.setColor(150, 150, 150);
+					draw.fillRect(0, 0, width, height);
+
+					draw.setColor(50, 50, 50);
+					draw.setStroke(2);
+					draw.rect(0, 0, width, height);
+
+					draw.setColor(0, 0, 0);
+					draw.setFont("", 16);
+					draw.text(text, width / 2 - draw.getTextWidth(text) / 2, 20);
+				}
+
+				@Override
+				protected void onEvent(IEvent event) {
+					mouse.handle(event);
 				}
 			});
-
-			menu.addMenuItem(import_item);
-			menu.addMenuItem(generators_item);
-			menu.addMenuItem(filters_item);
-			menu.addMenuItem(output_item);
-			menu.addMenuItem(library_item);
-			menu.addMenuItem(link_item);
 		}
 
 		@Override
@@ -59,22 +100,27 @@ class AddNodePopupSlideItem extends PopupSlideItem {
 			draw.setFont("", 12);
 			draw.text("Will show search and categories", 20, 20);
 		}
-
-		@Override
-		protected void onEvent(IEvent event) {
-			menu.handle(event);
-		}
 	}
 
-	public AddNodePopupSlideItem() {
-		super(new Title(), new Content());
+	public AddNodePopupSlideItem(Handler handler) {
+		super(new Content());
+
+		((Content)content).setHandler(new Content.Handler() {
+			@Override
+			public void onSelect(String text) {
+				title.text = "Category: " + text;
+				handler.onSelectCategory(text);
+			}
+		});
 	}
 
 	@Override
 	protected void onInit() {
 		super.onInit();
 
-		width = 400;
+		width = 408;
 		height = 500;
+
+		title.text = "Choose node category";
 	}
 }
