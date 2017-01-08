@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui;
 
 public class Color {
-	public int red, green, blue, alpha;
+	public int red, green, blue;
 
 	public Color(int red, int green, int blue) {
 		this.red = red;

@@ -46,4 +46,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onFinishFrame(PackDict data) {}
+
+	@Override
+	protected void onRemove() {}
 }

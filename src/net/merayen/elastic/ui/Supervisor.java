@@ -59,7 +59,7 @@ public class Supervisor {
 
 	void draw(DrawContext dc) {
 		internalDraw(dc, top);
-		internalUpdate(dc.incoming_events); // TODO maybe do it in another thread ?
+		internalUpdate(dc.incoming_events);
 		internalExecuteIncomingMessages();
 		ui_gate.update();
 	}

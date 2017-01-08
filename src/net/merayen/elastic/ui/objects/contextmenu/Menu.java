@@ -24,9 +24,21 @@ class Menu extends UIObject {
 	protected void onDraw() {
 		int steps = count;
 
-		draw.setColor(200, 200, 200);
+		draw.setColor(150, 150, 150);
+
 		draw.setStroke(10);
 		draw.oval(0, 0, radius * 2, radius * 2);
+
+		draw.setStroke(3);
+		draw.oval(radius - radius / 3, radius - radius / 3, radius * 2 / 3, radius * 2 / 3);
+
+		draw.setColor(200, 200, 200);
+
+		draw.setStroke(5);
+		draw.oval(0, 0, radius * 2, radius * 2);
+
+		draw.setStroke(1);
+		draw.oval(radius - radius / 3, radius - radius / 3, radius * 2 / 3, radius * 2 / 3);
 
 		float item_radius = radius / (3 * (steps / (float)8)) ;
 		boolean marked = false;
@@ -53,6 +65,7 @@ class Menu extends UIObject {
 				cmi.item_radius = item_radius;
 				cmi.translation.x = x;
 				cmi.translation.y = y;
+
 				if(active)
 					selected = menu_index;
 			}

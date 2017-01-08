@@ -84,7 +84,8 @@ public class LogicNode extends BaseLogicNode {
 			sendDataToUI("vu", data.data.get("vu"));
 
 		((Environment)getEnv()).mixer.send(output_device, new Audio(out));
-
-		
 	}
+
+	@Override
+	protected void onRemove() {}
 }

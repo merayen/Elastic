@@ -27,12 +27,11 @@ public class LogicNode extends BaseLogicNode {
 	protected void onDisconnect(String port) {}
 
 	@Override
-	protected void onPrepareFrame(PackDict data) {
-		// TODO Auto-generated method stub
-	}
+	protected void onPrepareFrame(PackDict data) {}
 
 	@Override
-	protected void onFinishFrame(PackDict data) {
-		// TODO Auto-generated method stub
-	}
+	protected void onFinishFrame(PackDict data) {}
+
+	@Override
+	protected void onRemove() {}
 }
