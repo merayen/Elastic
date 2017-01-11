@@ -12,7 +12,7 @@ import net.merayen.elastic.util.Point;
  */
 public class ContextMenu {
 	public interface Handler {
-		public void onSelect(ContextMenuItem item);
+		public void onSelect(ContextMenuItem item, Point position);
 	}
 
 	private final Menu menu;
@@ -28,6 +28,7 @@ public class ContextMenu {
 		mouse = new MouseHandler(trigger, MouseEvent.Button.RIGHT);
 		mouse.setHandler(new MouseHandler.Handler() {
 			float start_x, start_y;
+			Point relative;
 
 			@Override
 			public void onMouseDown(Point position) {
@@ -35,6 +36,7 @@ public class ContextMenu {
 				Point absolute = trigger.getAbsolutePosition(position.x, position.y);
 				start_x = absolute.x;
 				start_y = absolute.y;
+				relative = position;
 				menu.translation.x = absolute.x - menu.radius;
 				menu.translation.y = absolute.y - menu.radius;
 
@@ -53,7 +55,7 @@ public class ContextMenu {
 					((Top)trigger.search.getTop()).overlay.remove(menu);
 					ContextMenuItem selected = menu.getSelected();
 					if(selected != null)
-						handler.onSelect(selected);
+						handler.onSelect(selected, relative);
 				}
 			}
 		});

@@ -40,7 +40,7 @@ class Menu extends UIObject {
 		draw.setStroke(1);
 		draw.oval(radius - radius / 3, radius - radius / 3, radius * 2 / 3, radius * 2 / 3);
 
-		float item_radius = radius / (3 * (steps / (float)8)) ;
+		float item_radius = radius / (3 * (steps / (float)8));
 		boolean marked = false;
 
 		selected = -1;

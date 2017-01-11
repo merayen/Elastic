@@ -24,7 +24,7 @@ public class MenuBarItem extends UIObject {
 	private long allow_closing;
 
 	protected void onInit() {
-		add(menu_list);
+		//add(menu_list);
 		menu_list.translation.visible = false; // Not drawn until we get clicked on
 		menu_list.translation.y = 20f;
 		menu_list.setHandler(new MenuList.Handler() {
@@ -89,12 +89,15 @@ public class MenuBarItem extends UIObject {
 	}
 
 	public void showMenu() {
-		menu_list.translation.visible = true;
+		if(menu_list.getParent() == null)
+			add(menu_list);
+
 		allow_closing = System.currentTimeMillis() + 200;
 	}
 
 	public void hideMenu() {
-		menu_list.translation.visible = false;
+		if(menu_list.getParent() != null)
+			remove(menu_list);
 	}
 
 	public void setHandler(Handler handler) {

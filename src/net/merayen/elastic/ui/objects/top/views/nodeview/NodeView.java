@@ -7,7 +7,6 @@ import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.UINet;
-import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.MenuBar;
 import net.merayen.elastic.ui.objects.top.views.View;
@@ -40,10 +39,10 @@ public class NodeView extends View {
 		container.add(net, true); // Add the net first (also, drawn behind everything), as addNode() might have already been called
 
 		// Make it possible to move NodeViewContainer by dragging the background
-		movable = new Movable(container, this, MouseEvent.Button.LEFT);
+		movable = new Movable(container, container, MouseEvent.Button.LEFT);
 
 		// Set up context menu when right-clicking on the background
-		context_menu = new NodeViewContextMenu(this);
+		context_menu = new NodeViewContextMenu(container);
 	}
 
 	@Override
@@ -57,7 +56,7 @@ public class NodeView extends View {
 		menu.width = 200;
 		add(menu);
 
-		add(context_menu);
+		container.add(context_menu);
 	}
 
 	@Override
@@ -130,7 +129,7 @@ public class NodeView extends View {
 		float scale_diff_y = new_scale_y - previous_scale_y;
 		float current_offset_x = (container.translation.x - width  / 2);
 		float current_offset_y = (container.translation.y - height / 2);
-	
+
 		container.translation.scale_x = new_scale_x;
 		container.translation.scale_y = new_scale_y;
 		container.translation.x = width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
@@ -181,7 +180,7 @@ public class NodeView extends View {
 		for(UINode node : nodes)
 			container.remove(node);
 
-		if(container.search.getAllChildren().size() != 1) // Only UINet() should be remaining
+		if(container.search.getAllChildren().size() != 2) // Only UINet() and ContextMenu() should be remaining
 			throw new RuntimeException("Should not happen");
 
 		nodes.clear();

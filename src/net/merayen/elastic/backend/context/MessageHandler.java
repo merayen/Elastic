@@ -6,7 +6,6 @@ import java.util.List;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
-import net.merayen.elastic.system.intercom.RemoveNodeMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.NetListMessages;

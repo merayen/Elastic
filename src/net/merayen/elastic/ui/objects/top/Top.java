@@ -44,7 +44,7 @@ public class Top extends UIObject {
 		debug.translation.y = 40f;
 		debug.translation.scale_x = .1f;
 		debug.translation.scale_y = .1f;
-		add(debug);
+		//add(debug);
 		debug.set("DEBUG", "Has been enabled");
 	}
 

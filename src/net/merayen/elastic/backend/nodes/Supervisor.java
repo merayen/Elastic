@@ -42,10 +42,15 @@ public class Supervisor {
 		logicnode_list = new LogicNodeList(this);
 	}
 
-	private void createNode(String name, Integer version) {
+	private void createNode(String node_id, String name, Integer version) {
 		logicnode_list.getLogicNodeClass(name, version); // Will throw exception if node is not found
 
-		Node node = netlist.createNode();
+		Node node;
+		if(node_id == null)
+			node = netlist.createNode();
+		else
+			node = netlist.createNode(node_id);
+
 		node.properties.put("name", name);
 		node.properties.put("version", version);
 
@@ -66,7 +71,7 @@ public class Supervisor {
 		synchronized (PROCESS_LOCK) {
 			if(message instanceof CreateNodeMessage) {
 				CreateNodeMessage m = (CreateNodeMessage)message;
-				createNode(m.name, m.version);
+				createNode(m.node_id, m.name, m.version);
 				return;
 
 			} else if(message instanceof NodeParameterMessage) {
@@ -77,7 +82,7 @@ public class Supervisor {
 				logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
 
 				return;
-	
+
 			} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 				NodeConnectMessage m = (NodeConnectMessage)message;
 				NodeProperties np = new NodeProperties(netlist);
@@ -104,7 +109,7 @@ public class Supervisor {
 				NodeConnectMessage connect_message = new NodeConnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
 				handler.sendMessageToUI(connect_message); // Acknowledge connection
 				handler.sendMessageToProcessor(connect_message);
-	
+
 			} else if(message instanceof NodeDisconnectMessage) { // Notifies LogicNodes about changing of connections
 				NodeDisconnectMessage m = (NodeDisconnectMessage)message;
 				logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
@@ -120,7 +125,7 @@ public class Supervisor {
 				logicnode_list.remove(m.node_id);
 				handler.sendMessageToUI(new RemoveNodeMessage(m.node_id));
 				handler.sendMessageToProcessor(new RemoveNodeMessage(m.node_id));
-	
+
 			} else if(message instanceof ProcessMessage) {
 				doProcessFrame((ProcessMessage)message);
 			}
