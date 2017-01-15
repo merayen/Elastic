@@ -160,8 +160,6 @@ public class Supervisor {
 			if(!is_processing)
 				throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
 
-			//System.out.println("Response " + System.currentTimeMillis());
-
 			// Call all LogicNodes to work on the frame
 			for(Node node : netlist.getNodes()) {
 				BaseLogicNode bln = logicnode_list.get(node.getID());
@@ -169,8 +167,6 @@ public class Supervisor {
 			}
 
 			handler.onProcessDone();
-
-			//System.out.println("Response done " + System.currentTimeMillis());
 
 			// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
 			is_processing = false;
@@ -185,7 +181,9 @@ public class Supervisor {
 	 * Get the NetList. A copy is returned and can be changed at will.
 	 */
 	public NetList getNetList() {
-		return netlist.copy();
+		synchronized (PROCESS_LOCK) {
+			return netlist.copy();
+		}
 	}
 
 	private void doProcessFrame(ProcessMessage message) {
