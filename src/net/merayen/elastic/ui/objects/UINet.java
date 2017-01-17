@@ -10,7 +10,9 @@ import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.UIPortTemporary;
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.Postmaster;
 
@@ -38,7 +40,7 @@ public class UINet extends UIObject {
 
 	@Override
 	protected void onDraw() {
-		Top top = (Top)search.getTop();
+		Window window = UINodeUtil.getWindow(this);
 		draw.disableOutline();
 
 		for(Connection c : connections) {
@@ -55,11 +57,10 @@ public class UINet extends UIObject {
 				draw.line(p1.x, p1.y, p2.x, p2.y);
 
 				if (c.a instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
-					top.debug.set("UINet UITemporaryPort: %s\n", p1);
+					window.debug.set("UINet UITemporaryPort: %s\n", p1);
 
 				if (c.b instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
-					top.debug.set("UINet UITemporaryPort: %s\n", p2);
-
+					window.debug.set("UINet UITemporaryPort: %s\n", p2);
 			}
 		}
 
@@ -67,7 +68,7 @@ public class UINet extends UIObject {
 		for(Connection c : connections)
 			sb.append(String.format("%s <-> %s", c.a, c.b));
 
-		((Top)this.search.getTop()).debug.set("UI port connections", String.format("%d: %s", connections.size(), sb));
+		UINodeUtil.getWindow(this).debug.set("UI port connections", String.format("%d: %s", connections.size(), sb));
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class UINet extends UIObject {
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		((Top)search.getTop()).sendMessage(new NodeConnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
+		UINodeUtil.getTop(this).sendMessage(new NodeConnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
 	}
 
 	private void internalConnect(NodeConnectMessage message) {
@@ -114,7 +115,7 @@ public class UINet extends UIObject {
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		((Top)search.getTop()).sendMessage(new NodeDisconnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
+		UINodeUtil.getTop(this).sendMessage(new NodeDisconnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
 	}
 
 	private void internalDisconnect(NodeDisconnectMessage message) {
@@ -151,7 +152,7 @@ public class UINet extends UIObject {
 	 * Disconnects all connections on a port.
 	 */
 	public void disconnectAll(UIPort p) {
-		Top top = ((Top)search.getTop());
+		Top top = UINodeUtil.getTop(this);
 		for(Connection c : connections)
 			if(p == c.a || p == c.b)
 				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().node_id, c.a.name, c.b.getNode().node_id, c.b.name));

@@ -28,7 +28,7 @@ public abstract class Controller {
 		gate.sendMessageToBackend(message);
 	}
 
-	public Top getTopObject() {
+	public Top getTop() {
 		return gate.top;
 	}
 

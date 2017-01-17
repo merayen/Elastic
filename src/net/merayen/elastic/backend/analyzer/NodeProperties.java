@@ -13,8 +13,6 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 
 public class NodeProperties {
-	private static final Format[] NO_FORMATS = new Format[0];
-
 	private final NetList netlist;
 
 	/**
@@ -100,7 +98,22 @@ public class NodeProperties {
 	}
 
 	public void setVersion(Node node, int version) {
-		node.properties.put("name", version);
+		node.properties.put("version", version);
+	}
+
+	/**
+	 * Set which group this node belongs to.
+	 * A group can be a group of node being a subgroup of another node, for example.
+	 * Instead of storing child nodes inside other nodes, we store the children in its
+	 * own group.
+	 * A group is just a text-string, mostly random.
+	 */
+	public void setGroup(Node node, String group) {
+		node.properties.put("group", group);
+	}
+
+	public String getGroup(Node node) {
+		return (String)node.properties.get("group");
 	}
 
 	public void setOutput(Port port) { // Can not be changed afterwards. Drop and recreate port

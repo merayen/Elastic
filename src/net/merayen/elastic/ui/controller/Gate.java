@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -69,10 +70,6 @@ public class Gate {
 		public void send(Postmaster.Message message) {
 			gate.from_backend.send(message);
 		}
-
-		/*public Postmaster.Message receive() {
-			return gate.to_backend.receive();
-		}*/
 	}
 
 	public interface Handler {

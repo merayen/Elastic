@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.top.views;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.Movable;
 
 public class TestView extends View {

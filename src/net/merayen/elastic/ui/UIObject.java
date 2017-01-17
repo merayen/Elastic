@@ -3,9 +3,10 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.merayen.elastic.system.intercom.RemoveNodeMessage;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.Postmaster;
 
@@ -32,6 +33,14 @@ public class UIObject {
 	protected void onDraw() {}
 	protected void onUpdate() {}
 	protected void onEvent(IEvent e) {}
+
+	/**
+	 * Override this method to artificially set the children of the UIObject in a onDraw(), onUpdate() and onEvent() call tree.
+	 * Should only be used in very specific cases, like by the Top() object to draw different trees for different Window()s.
+	 */
+	protected List<UIObject> onGetChildren() {
+		return this.children;
+	}
 
 	public void add(UIObject uiobject) {
 		add(uiobject, false);
@@ -141,12 +150,8 @@ public class UIObject {
 	}
 
 	protected void sendMessage(Postmaster.Message message) {
-		UIObject top = search.getTop();
-
-		if(top instanceof Top)
-			((Top)top).sendMessage(message);
-		else
-			System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", this.getClass().getName());
+		UINodeUtil.getTop(this).sendMessage(message);
+		//System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", this.getClass().getName());
 	}
 
 	/**

@@ -2,7 +2,8 @@ package net.merayen.elastic.ui.objects.top.views.nodeview.addnode;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.popupslide.PopupSlide;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.uinodes.BaseInfo;
 
 public class AddNodePopup {
@@ -10,17 +11,18 @@ public class AddNodePopup {
 		public void onSelectNode(BaseInfo info);
 	}
 
-	private final Top top;
+	private final Window window;
 	private final PopupSlide popup;
 	private final Handler handler;
 
-	public AddNodePopup(UIObject object, Handler handler) {
-		top = (Top)object.search.getTop();
+	public AddNodePopup(UIObject uiobject, Handler handler) {
+		window = UINodeUtil.getWindow(uiobject);
+
 		this.handler = handler;
 
 		popup = new PopupSlide();
 
-		top.overlay.add(popup);
+		window.overlay.add(popup);
 
 		openAddNodePopup();
 	}

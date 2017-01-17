@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.util.UINodeUtil;
 
 public class UIPortTemporary extends UIPort {
 	/*
@@ -29,6 +30,6 @@ public class UIPortTemporary extends UIPort {
 
 	@Override
 	public void onDraw() {
-		((Top)search.getTop()).debug.set("UIPortTemporary " + this, String.format("source_port=%s, target=%s", source_port == null ? null : source_port.name, target == null ? null : target.name));
+		UINodeUtil.getWindow(this).debug.set("UIPortTemporary " + this, String.format("source_port=%s, target=%s", source_port == null ? null : source_port.name, target == null ? null : target.name));
 	}
 }

@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.architectures;
 
-import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
 

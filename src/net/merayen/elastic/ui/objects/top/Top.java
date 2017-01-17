@@ -1,79 +1,47 @@
 package net.merayen.elastic.ui.objects.top;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.controller.Gate;
-import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer;
+import net.merayen.elastic.ui.controller.Gate.UIGate;
 import net.merayen.elastic.util.Postmaster;
 
 /**
- * The very topmost UIObject containing absolutely everything.
+ * The very topmost object.
+ * Holds track of all the windows, and which to draw in which context.
  */
 public class Top extends UIObject {
-	private Gate.UIGate ui_gate;
+	private final List<Window> windows = new ArrayList<>();
+	UIGate ui_gate;
 
-	// Scrolling, when dragging the background
-	float start_scroll_x, start_scroll_y;
-
-	// Cached screen width and height. Updates on every draw. Children UIObjects can use this to get screen size in pixels
-	public float width, height;
-
-	/**
-	 * Windows and other popups can be put here.
-	 * UIObjects put here are put on top of everything.
-	 */
-	public final UIObject overlay = new UIObject();
-
-	public Debug debug;
-	private ViewportContainer viewport_container;
-
-	public Top() {
-		viewport_container = new ViewportContainer();
-		add(viewport_container);
-
-		initDebug();
-
-		add(overlay);
+	@Override
+	protected void onInit() {
+		// Create a default window
+		Window w = new Window(this);
+		windows.add(w);
+		add(w);
 	}
 
-	public void setUIGate(Gate.UIGate ui_gate) { // Must be called when inited
+	/**
+	 * We override this method to return the correct UIObject for the window being drawn.
+	 * TODO decide which Window()-object to return upon DrawContext-type.
+	 */
+	@SuppressWarnings("serial")
+	@Override
+	protected List<UIObject> onGetChildren() {
+		return new ArrayList<UIObject>(){{
+			add(windows.get(0));
+		}}; // Supports only 1 window for now
+	}
+
+	public void setUIGate(UIGate ui_gate) {
 		this.ui_gate = ui_gate;
 	}
 
-	private void initDebug() {
-		debug = new Debug();
-		debug.translation.y = 40f;
-		debug.translation.scale_x = .1f;
-		debug.translation.scale_y = .1f;
-		//add(debug);
-		debug.set("DEBUG", "Has been enabled");
-	}
-
-	@Override
-	protected void onDraw() {
-		width = draw.getScreenWidth();
-		height = draw.getScreenHeight();
-	}
-
-	@Override
-	protected void onUpdate() {
-		viewport_container.width = width;
-		viewport_container.height = height - 10;
-	}
-
-	public float getScreenWidth() {
-		return width;
-	}
-
-	public float getScreenHeight() {
-		return height;
-	}
-
-	public ViewportContainer getViewportContainer() { // Note, need to allow multiple viewports when having several windows?
-		return viewport_container;
-	}
-
-	public void debugPrint(String key, Object value) {
-		debug.set(key, value);
+	public List<Window> getWindows() {
+		return Collections.unmodifiableList(windows);
 	}
 
 	public void sendMessage(Postmaster.Message message) {

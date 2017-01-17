@@ -68,12 +68,12 @@ public class Test {
 			}
 		});
 
-		system.sendMessageToBackend(new CreateNodeMessage("test", 100));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
-		system.sendMessageToBackend(new CreateNodeMessage("output", 1));
-		system.sendMessageToBackend(new CreateNodeMessage("mix", 1));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1));
+		system.sendMessageToBackend(new CreateNodeMessage("test", 100, null));
+		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
+		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
+		system.sendMessageToBackend(new CreateNodeMessage("output", 1, null));
+		system.sendMessageToBackend(new CreateNodeMessage("mix", 1, null));
+		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
 
 		waitFor(() -> nodes.size() == 6);
 

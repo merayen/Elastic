@@ -6,8 +6,9 @@ import java.util.List;
 import net.merayen.elastic.ui.Dimension;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 
 /**
@@ -30,10 +31,10 @@ public class PopupSlide extends UIObject {
 
 		@Override
 		protected void onDraw() {
-			Top top = (Top)search.getTop();
+			Window window = UINodeUtil.getWindow(this);
 
 			// Closes ourself if clicked outside
-			draw.empty(0, 0, top.width, top.height);
+			draw.empty(0, 0, window.width, window.height);
 		}
 
 		@Override
@@ -45,10 +46,10 @@ public class PopupSlide extends UIObject {
 	private class Menu extends UIObject {
 		@Override
 		protected void onUpdate() {
-			Top top = (Top)search.getTop();
+			Window window = UINodeUtil.getWindow(this);
 			Dimension dimension = getItemMaxDimension();
-			translation.x = top.width / 2- dimension.width / 2;
-			translation.y = top.height / 2 - dimension.height / 2;
+			translation.x = window.width / 2- dimension.width / 2;
+			translation.y = window.height / 2 - dimension.height / 2;
 
 			placeItems();
 		}

@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui.objects.window;
+package net.merayen.elastic.ui.objects.components.window;
 
 import net.merayen.elastic.ui.UIObject;
 

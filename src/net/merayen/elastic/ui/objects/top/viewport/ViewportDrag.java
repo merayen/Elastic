@@ -2,8 +2,9 @@ package net.merayen.elastic.ui.objects.top.viewport;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 
 public class ViewportDrag extends UIObject {
@@ -80,7 +81,8 @@ public class ViewportDrag extends UIObject {
 
 	@Override
 	protected void onUpdate() {
-		((Top)search.getTop()).debugPrint("ViewportDrag outline() " + lol, this.outline_abs_px);
+		Window window = UINodeUtil.getWindow(this);
+		window.debugPrint("ViewportDrag outline() " + lol, this.outline_abs_px);
 	}
 
 	@Override

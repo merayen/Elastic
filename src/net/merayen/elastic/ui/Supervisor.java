@@ -59,7 +59,7 @@ public class Supervisor {
 
 	void draw(DrawContext dc) {
 		internalDraw(dc, top);
-		internalUpdate(dc.incoming_events);
+		internalUpdate(dc.incoming_events, top);
 		internalExecuteIncomingMessages();
 		ui_gate.update();
 	}
@@ -85,7 +85,7 @@ public class Supervisor {
 
 			draw.destroy();
 
-			for(UIObject o : new ArrayList<>(uiobject.children))
+			for(UIObject o : uiobject.onGetChildren())
 				internalDraw(dc, o);
 
 		} else {
@@ -99,20 +99,20 @@ public class Supervisor {
 	 * Non-draw update of UIObjects.
 	 * Here the UIObjects can change their properties, add/remove UIObjects, etc.
 	 */
-	private void internalUpdate(List<IEvent> events) {
-		List<UIObject> list = top.search.getAllChildren();
-		list.add(0, top);
+	private void internalUpdate(List<IEvent> events, UIObject uiobject) {
+		if(!uiobject.isAttached() && uiobject != top)
+			return;
 
-		for(UIObject o : list) {
-			if(!(o instanceof Top) && !o.isAttached()) // UIObject is not connected to the tree. Most likely detached under an previously onUpdate(), after getAllChildren() was called
-				continue;
+		uiobject.onUpdate();
 
-			if(o.isInitialized()) // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
-				for(IEvent e : events)
-					o.onEvent(e);
+		if(uiobject.isInitialized()) // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
+			for(IEvent e : events)
+				uiobject.onEvent(e);
 
-			o.onUpdate();
-		}
+			uiobject.onUpdate();
+
+		for(UIObject o : new ArrayList<UIObject>(uiobject.onGetChildren()))
+			internalUpdate(events, o);
 	}
 
 	private void internalExecuteIncomingMessages() {

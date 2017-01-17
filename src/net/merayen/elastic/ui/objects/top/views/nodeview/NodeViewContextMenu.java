@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem;
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem;
 import net.merayen.elastic.ui.objects.top.views.nodeview.addnode.AddNodePopup;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.uinodes.BaseInfo;
 import net.merayen.elastic.util.NodeUtil;
 import net.merayen.elastic.util.Point;
@@ -46,7 +47,7 @@ class NodeViewContextMenu extends UIObject {
 		String name = path[path.length - 2];
 
 		String node_id = NodeUtil.createID();
-		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name)));
+		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), UINodeUtil.getGroup(this))); // TODO group shall not be null, but 
 		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.x", position.x));
 		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.y", position.y));
 		// TODO also send parameter for X and Y translation?

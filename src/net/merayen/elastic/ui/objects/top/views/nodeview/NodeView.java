@@ -6,6 +6,7 @@ import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
+import net.merayen.elastic.ui.objects.NodeGroupInitiator;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.MenuBar;
@@ -21,7 +22,8 @@ import net.merayen.elastic.util.TaskExecutor;
 /**
  * Main view. Shows all the nodes and their connections.
  */
-public class NodeView extends View {
+public class NodeView extends View implements NodeGroupInitiator {
+	private String node_group;
 	private final NodeViewContainer container = new NodeViewContainer();
 	private UINet net;
 	private Movable movable;
@@ -184,5 +186,10 @@ public class NodeView extends View {
 			throw new RuntimeException("Should not happen");
 
 		nodes.clear();
+	}
+
+	@Override
+	public String getGroup() {
+		return node_group;
 	}
 }

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 
 public class MouseEvent implements IEvent {
@@ -62,19 +63,21 @@ public class MouseEvent implements IEvent {
 			for(UIObject o : hits)
 				m += o.getClass().getSimpleName() + ", ";
 
-			((Top)uiobject.search.getTop()).debug.set("MouseEvent.calcHit", m);
+			Window window = UINodeUtil.getWindow(uiobject);
+			if(window != null)
+				window.debug.set("MouseEvent.calcHit", m);
 		} else {
-			((Top)uiobject.search.getTop()).debug.unset("MouseEvent.calcHit");
+			Window window = UINodeUtil.getWindow(uiobject);
+			if(window != null)
+				window.debug.unset("MouseEvent.calcHit");
 		}
-
-		
 
 		return hits;
 	}
 
 	public boolean isHit(UIObject uiobject) {
 		if(objects_hit == null)
-			objects_hit = calcHit(uiobject.search.getTop());
+			objects_hit = calcHit(UINodeUtil.getWindow(uiobject));
 
 		if(objects_hit.size() > 0)
 			return objects_hit.get(0) == uiobject;
@@ -90,7 +93,7 @@ public class MouseEvent implements IEvent {
 	 */
 	public int hitDepth(UIObject uiobject) {
 		if(objects_hit == null)
-			objects_hit = calcHit(uiobject.search.getTop());
+			objects_hit = calcHit(UINodeUtil.getWindow(uiobject));
 
 		return objects_hit.indexOf(uiobject);
 	}

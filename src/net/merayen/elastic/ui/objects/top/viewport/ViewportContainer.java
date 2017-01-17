@@ -11,11 +11,12 @@ import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.HitTester;
 import net.merayen.elastic.ui.util.MouseHandler;
+import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.TaskExecutor;
 
@@ -192,6 +193,8 @@ public class ViewportContainer extends UIObject {
 	private Viewport createViewport(View view) {
 		final Map<String, Object> m = new HashMap<>();
 
+		ViewportContainer self = this;
+
 		Viewport v = new Viewport(new Viewport.Handler() {
 			@Override
 			public void onNewViewport(boolean vertical) { // TODO refuse creation if we are too small
@@ -218,7 +221,7 @@ public class ViewportContainer extends UIObject {
 				else
 					layout.resizeHeight(m.get("viewport"), new_size / height);
 
-				((Top)search.getTop()).debug.set("ViewContainer new_size", new_size / (vertical ? width : height));
+				UINodeUtil.getWindow(self).debug.set("ViewContainer new_size", new_size / (vertical ? width : height));
 			}
 		});
 

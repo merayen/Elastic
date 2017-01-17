@@ -3,6 +3,7 @@ package net.merayen.elastic.backend.nodes;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.Node;
 
 class LogicNodeList {
@@ -16,8 +17,10 @@ class LogicNodeList {
 	}
 
 	void createLogicNode(Node node) {
-		String name = (String)node.properties.get("name");
-		Integer version = (Integer)node.properties.get("version");
+		NodeProperties np = new NodeProperties(supervisor.netlist);
+		String name = np.getName(node);
+		Integer version = np.getVersion(node);
+		String group = np.getGroup(node);
 
 		Class<? extends BaseLogicNode> cls = getLogicNodeClass(
 			name,
@@ -35,7 +38,7 @@ class LogicNodeList {
 
 		nodes.put(node.getID(), logicnode);
 
-		logicnode.create(name, version);
+		logicnode.create(name, version, group);
 	}
 
 	void remove(String node_id) {

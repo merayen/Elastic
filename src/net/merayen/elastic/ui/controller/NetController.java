@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.util.Postmaster.Message;
@@ -35,12 +36,13 @@ public class NetController extends Controller {
 	private List<NodeView> getNodeViews() {
 		List<NodeView> result = new ArrayList<>();
 
-		if(getTopObject().isInitialized()) {
-			for(Viewport vp : getTopObject().getViewportContainer().getViewports()) {
-				if(vp.view instanceof NodeView)
-					result.add((NodeView)vp.view);
+		for(Window w : getTop().getWindows())
+			if(w.isInitialized()) {
+				for(Viewport vp : w.getViewportContainer().getViewports()) {
+					if(vp.view instanceof NodeView)
+						result.add((NodeView)vp.view);
+				}
 			}
-		}
 
 		return result;
 	}

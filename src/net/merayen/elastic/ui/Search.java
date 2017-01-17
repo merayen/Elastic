@@ -10,7 +10,7 @@ public class Search {
 		this.obj = obj;
 	}
 	
-	public UIObject getTop() {
+	public UIObject getTop() { // TODO neste gang: endre mange til å være getWindow() i stedet
 		UIObject top = obj;
 		while(top.getParent() != null)
 			top = top.getParent();
@@ -18,10 +18,10 @@ public class Search {
 		return top;
 	}
 
+	/**
+	 * Search downwards for a type
+	 */
 	public ArrayList<UIObject> childrenByType(Class<? extends UIObject> cls) {
-		/*
-		 * Search downwards for a type
-		 */
 		ArrayList<UIObject> result = new ArrayList<UIObject>();
 
 		for(UIObject x : getAllChildren()) {
@@ -39,7 +39,15 @@ public class Search {
 
 		return (T)x;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public <T> T parentByInterface(Class<T> cls) {
+		UIObject x = obj;
+		while((x = x.getParent()) != null && !cls.isAssignableFrom(x.getClass()));
+
+		return (T)x;
+	}
+
 	public List<UIObject> getAllChildren() { // Not tested
 		List<UIObject> result = new ArrayList<>();
 		List<UIObject> stack = new ArrayList<>();

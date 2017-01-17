@@ -4,8 +4,9 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UIClip;
-import net.merayen.elastic.ui.objects.top.Top;
+import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.View;
+import net.merayen.elastic.ui.util.UINodeUtil;
 
 /**
  * A viewport. Yes. Yup, it is.
@@ -44,6 +45,8 @@ public class Viewport extends UIObject {
 
 	@Override
 	protected void onInit() {
+		Viewport self = this;
+
 		drag = new ViewportDrag(new ViewportDrag.Handler(){
 			@Override
 			public void onStartDrag(float diff, boolean vertical) {
@@ -58,14 +61,14 @@ public class Viewport extends UIObject {
 
 			@Override
 			public void onDrag(float diff, boolean vertical) {
-				((Top)search.getTop()).debugPrint("ViewportDrag onDrag()", diff + "," + vertical + ", " + original_size);
+				UINodeUtil.getWindow(self).debugPrint("ViewportDrag onDrag()", diff + "," + vertical + ", " + original_size);
 				float relative_diff = original_size + diff;
 				handler.onNewViewportResize(relative_diff, vertical);
 			}
 
 			@Override
 			public void onDrop(float diff, boolean vertical) {
-				((Top)search.getTop()).debugPrint("ViewportDrag onDrop()", diff + ", " + vertical);
+				UINodeUtil.getWindow(self).debugPrint("ViewportDrag onDrop()", diff + ", " + vertical);
 			}
 		});
 		clip.add(drag);
@@ -114,7 +117,8 @@ public class Viewport extends UIObject {
 		drag.width = width - BORDER_WIDTH * 2;
 		drag.height = height - BORDER_WIDTH * 2;
 
-		((Top)search.getTop()).debugPrint("Viewport " + lol, translation + "   [" + width + ", " + height + "]");
+		Window window = UINodeUtil.getWindow(this);
+		window.debugPrint("Viewport " + lol, translation + "   [" + width + ", " + height + "]");
 	}
 
 	JSONObject dump() {
