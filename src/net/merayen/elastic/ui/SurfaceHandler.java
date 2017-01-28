@@ -1,7 +1,9 @@
 package net.merayen.elastic.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.surface.Surface;
@@ -9,40 +11,47 @@ import net.merayen.elastic.ui.surface.Swing;
 import net.merayen.elastic.ui.util.DrawContext;
 
 public class SurfaceHandler {
-	Surface surface;
+	final Map<String,Surface> surfaces = new HashMap<>();
 	List<IEvent> events_queue = new ArrayList<IEvent>();
 	private final Supervisor supervisor;
 
 	SurfaceHandler(Supervisor supervisor) {
 		this.supervisor = supervisor;
-		initSurface();
 	}
 
 	public void end() {
-		surface.end();
+		for(Surface s: surfaces.values())
+			s.end();
 	}
 
-	private void initSurface() {
-		surface = new Swing(new Swing.Handler() { // TODO Instantiate Fake() when not topmost nodesystem
+	public Surface createSurface(String id) {
+		synchronized (surfaces) {
+			if(surfaces.containsKey(id))
+				throw new RuntimeException("Surface with that id already exists");
 
-			@Override
-			public void onEvent(IEvent event) {
-				events_queue.add(event);
-			}
+			surfaces.put(id, new Swing(id, new Surface.Handler() { // TODO Hardcoded Swing as that is the only one we support for now
 
-			@Override
-			public void onDraw(java.awt.Graphics2D graphics2d) {
-				ArrayList<net.merayen.elastic.ui.event.IEvent> current_events;
-
-				synchronized (events_queue) {
-					current_events = new ArrayList<net.merayen.elastic.ui.event.IEvent>(events_queue);
-					events_queue.clear();
+				@Override
+				public void onEvent(IEvent event) {
+					events_queue.add(event);
 				}
 
-				DrawContext dc = new DrawContext(graphics2d, surface.getWidth(), surface.getHeight(), current_events);				
+				@Override
+				public void onDraw(java.awt.Graphics2D graphics2d) {
+					ArrayList<IEvent> current_events;
 
-				supervisor.draw(dc);
-			}
-		});
+					synchronized (events_queue) {
+						current_events = new ArrayList<>(events_queue);
+						events_queue.clear();
+					}
+
+					DrawContext dc = new DrawContext(graphics2d, surfaces.get(id), current_events);				
+
+					supervisor.draw(dc);
+				}
+			}));
+		}
+
+		return surfaces.get(id);
 	}
 }

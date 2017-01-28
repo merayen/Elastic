@@ -16,7 +16,11 @@ public class UINodeUtil {
 	}
 
 	public static Top getTop(UIObject uiobject) {
-		return (Top)uiobject.search.getTop();
+		UIObject result = uiobject.search.getTop();
+		if(result instanceof Top)
+			return (Top)result;
+		else
+			return null;
 	}
 
 	/**

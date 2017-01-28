@@ -3,12 +3,11 @@ package net.merayen.elastic.ui.util;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
-import net.merayen.elastic.ui.TranslationData;
 import net.merayen.elastic.ui.TranslationDataStack;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.surface.Surface;
 
 /**
  * Session-like class for the current drawing.
@@ -20,11 +19,11 @@ public class DrawContext {
 	public final int width;
 	public final int height;
 
+	private final Surface surface;
+
 	private int z_counter = 0;
 
-	public final List<IEvent> incoming_events;
-
-	//private final HitTester hit_tester = new HitTester(); 
+	public final List<IEvent> incoming_events; 
 
 	public final TranslationDataStack translation_stack = new TranslationDataStack();
 
@@ -36,10 +35,11 @@ public class DrawContext {
 	 */
 	private final LinkedList<UIObject> draw_stack = new LinkedList<>();
 
-	public DrawContext(java.awt.Graphics2D graphics2d, int width, int height, List<IEvent> events) {
+	public DrawContext(java.awt.Graphics2D graphics2d, Surface surface, List<IEvent> events) { // TODO abstract away Graphics2D
 		this.graphics2d = graphics2d;
-		this.width = width;
-		this.height = height;
+		this.width = surface.getWidth();
+		this.height = surface.getHeight();
+		this.surface = surface;
 		this.incoming_events = events;
 	}
 
@@ -65,5 +65,9 @@ public class DrawContext {
 
 	public int pushZIndex() {
 		return ++z_counter;
+	}
+
+	public String getSurfaceID() {
+		return surface.getID();
 	}
 }

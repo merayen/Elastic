@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.merayen.elastic.ui.SurfaceHandler;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.controller.Gate.UIGate;
+import net.merayen.elastic.ui.surface.Surface;
 import net.merayen.elastic.util.Postmaster;
 
 /**
  * The very topmost object.
- * Holds track of all the windows, and which to draw in which context.
+ * Holds track of all the windows (called surfaces), and which to draw in which context.
  */
 public class Top extends UIObject {
 	private final List<Window> windows = new ArrayList<>();
+	private final SurfaceHandler surfacehandler;
 	UIGate ui_gate;
+
+	public Top(SurfaceHandler surfacehandler) {
+		this.surfacehandler = surfacehandler;
+
+		// Create a default window
+		Window w = new Window(createSurface("default"));
+		windows.add(w);
+		add(w);
+	}
 
 	@Override
 	protected void onInit() {
-		// Create a default window
-		Window w = new Window(this);
-		windows.add(w);
-		add(w);
+		
 	}
 
 	/**
@@ -42,6 +51,10 @@ public class Top extends UIObject {
 
 	public List<Window> getWindows() {
 		return Collections.unmodifiableList(windows);
+	}
+
+	public Surface createSurface(String id) {
+		return surfacehandler.createSurface(id);
 	}
 
 	public void sendMessage(Postmaster.Message message) {

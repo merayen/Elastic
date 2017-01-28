@@ -41,7 +41,9 @@ public class Supervisor {
 	public Supervisor(Handler handler) {
 		this.handler = handler;
 
-		top = new Top();
+		surfacehandler = new SurfaceHandler(this);
+
+		top = new Top(surfacehandler);
 
 		Supervisor self = this;
 		gate = new Gate(top, new Gate.Handler() {
@@ -50,11 +52,10 @@ public class Supervisor {
 				self.handler.onMessageToBackend(message);
 			}
 		});
+
 		ui_gate = gate.getUIGate();
 		top.setUIGate(ui_gate);
 		backend_gate = gate.getBackendGate();
-
-		initSurface();
 	}
 
 	void draw(DrawContext dc) {
@@ -129,9 +130,5 @@ public class Supervisor {
 
 	public JSONObject dump() {
 		return gate.dump();
-	}
-
-	private void initSurface() {
-		surfacehandler = new SurfaceHandler(this);
 	}
 }

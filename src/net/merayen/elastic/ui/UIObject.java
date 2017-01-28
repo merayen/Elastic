@@ -150,8 +150,11 @@ public class UIObject {
 	}
 
 	protected void sendMessage(Postmaster.Message message) {
-		UINodeUtil.getTop(this).sendMessage(message);
-		//System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", this.getClass().getName());
+		Top top = UINodeUtil.getTop(this);
+		if(top != null)
+			top.sendMessage(message);
+		else
+			System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", this.getClass().getName());
 	}
 
 	/**

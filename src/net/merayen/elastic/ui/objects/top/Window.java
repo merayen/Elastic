@@ -2,20 +2,24 @@ package net.merayen.elastic.ui.objects.top;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer;
-import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.ui.surface.Surface;
 
 /**
- * The very topmost UIObject containing absolutely everything.
- * Represents a certain UIData in a certain Node-group where it gets all the properties from.
+ * The very topmost UIObject for a Window, containing all the UI for that window.
+ * Represents a certain UIData in a certain Node-group where it gets all the properties from, like window-size.
  */
 public class Window extends UIObject {
-	private final Top top;
 
 	/**
 	 * The Node-group we represent. We get all our properties (like dimensions of our windows) from this group.
 	 * The group must have a UIData-node that actually contains all these properties. 
 	 */
 	private String group;
+
+	/**
+	 * Which surface this UIObject (window) will be drawn on.
+	 */
+	private final Surface surface;
 
 	// Scrolling, when dragging the background
 	float start_scroll_x, start_scroll_y;
@@ -32,8 +36,9 @@ public class Window extends UIObject {
 	public Debug debug;
 	private ViewportContainer viewport_container;
 
-	public Window(Top top) {
-		this.top = top;
+	public Window(Surface surface) {
+		this.surface = surface;
+
 		viewport_container = new ViewportContainer();
 		add(viewport_container);
 

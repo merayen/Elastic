@@ -3,7 +3,6 @@ package net.merayen.elastic.ui.objects.contextmenu;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
-import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;

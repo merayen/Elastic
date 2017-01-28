@@ -11,7 +11,11 @@ import net.merayen.elastic.ui.event.KeyboardEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 
-public class Swing implements Surface {
+/**
+ * Java Swing Surface.
+ * TODO move somewhere else?
+ */
+public class Swing extends Surface {
 	/*
 	 * A surface to draw on for the Java Swing GUI. 
 	 */	
@@ -68,8 +72,7 @@ public class Swing implements Surface {
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			super.paintComponent(g);
 
-			if(handler != null)
-				handler.onDraw((java.awt.Graphics2D)g);
+			handler.onDraw((java.awt.Graphics2D)g);
 		}
 
 		public void mousePressed(java.awt.event.MouseEvent e) {
@@ -93,8 +96,7 @@ public class Swing implements Surface {
 		}
 
 		public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
-			if(handler != null)
-				handler.onEvent(new MouseWheelEvent(e));
+			handler.onEvent(new MouseWheelEvent(e));
 		}
 
 		@Override
@@ -102,36 +104,26 @@ public class Swing implements Surface {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if(handler != null) {
-				if(!active_key_codes.contains(e.getKeyCode())) {
-					active_key_codes.add(e.getKeyCode());
-					handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.DOWN));
-				}
+			if(!active_key_codes.contains(e.getKeyCode())) {
+				active_key_codes.add(e.getKeyCode());
+				handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.DOWN));
 			}
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(handler != null) {
-				if(active_key_codes.contains(e.getKeyCode())) {
-					active_key_codes.remove(e.getKeyCode());
-					handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.UP));
-				}
+			if(active_key_codes.contains(e.getKeyCode())) {
+				active_key_codes.remove(e.getKeyCode());
+				handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.UP));
 			}
 		}
 	}
 
-	public interface Handler {
-		public void onDraw(java.awt.Graphics2D graphics2d);
-		public void onEvent(IEvent event);
-	}
-
-	private Handler handler;
 	private LolPanel panel;
 	private LolFrame frame;
 
-	public Swing(Handler handler) {
-		this.handler = handler;
+	public Swing(String id, Handler handler) {
+		super(id, handler);
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -156,20 +148,18 @@ public class Swing implements Surface {
 	}
 
 	private void createMouseEvent(java.awt.event.MouseEvent e, MouseEvent.Action action) {
-		if(handler != null) {
-			MouseEvent.Button button = null;
+		MouseEvent.Button button = null;
 
-			int b = e.getButton();
+		int b = e.getButton();
 
-			if(b == java.awt.event.MouseEvent.BUTTON1)
-				button = MouseEvent.Button.LEFT;
-			else if(b == java.awt.event.MouseEvent.BUTTON2)
-				button = MouseEvent.Button.MIDDLE;
-			else if(b == java.awt.event.MouseEvent.BUTTON3)
-				button = MouseEvent.Button.RIGHT;
-				
-			handler.onEvent(new MouseEvent(e.getX(), e.getY(), action, button));
-		}
+		if(b == java.awt.event.MouseEvent.BUTTON1)
+			button = MouseEvent.Button.LEFT;
+		else if(b == java.awt.event.MouseEvent.BUTTON2)
+			button = MouseEvent.Button.MIDDLE;
+		else if(b == java.awt.event.MouseEvent.BUTTON3)
+			button = MouseEvent.Button.RIGHT;
+			
+		handler.onEvent(new MouseEvent(e.getX(), e.getY(), action, button));
 	}
 
 	@Override
