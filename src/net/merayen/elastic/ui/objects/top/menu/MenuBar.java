@@ -1,10 +1,7 @@
-package net.merayen.elastic.ui.objects.top;
+package net.merayen.elastic.ui.objects.top.menu;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.dialogs.AboutDialog;
-import net.merayen.elastic.ui.objects.top.menu.Bar;
-import net.merayen.elastic.ui.objects.top.menu.MenuBarItem;
-import net.merayen.elastic.ui.objects.top.menu.MenuListItem;
 
 public class MenuBar extends UIObject {
 	public static abstract class Handler {
@@ -104,13 +101,6 @@ public class MenuBar extends UIObject {
 				add(new AboutDialog());
 			}
 		});
-
-		/*Label logo = new Label();
-		logo.label = "Elastic";
-		logo.font_size = 13f;
-		logo.translation.x = 5f;
-		logo.translation.y = height - 20f;
-		add(logo);*/
 	}
 
 	public void setHandler(Handler handler) {

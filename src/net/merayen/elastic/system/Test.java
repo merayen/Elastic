@@ -8,6 +8,7 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;
+import net.merayen.elastic.backend.storage.resource.ResourceManager;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -194,7 +195,7 @@ public class Test {
 
 		o.s = sync;
 
-		return new Environment(mixer, sync);
+		return new Environment(mixer, sync, new ResourceManager());
 	}
 
 	private String getFirstOutputDevice(Mixer mixer) {

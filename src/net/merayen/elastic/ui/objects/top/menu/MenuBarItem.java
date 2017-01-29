@@ -22,16 +22,15 @@ public class MenuBarItem extends UIObject {
 	private MouseHandler mouse_handler;
 	private boolean over = false;
 	private long allow_closing;
+	private boolean close_menu;
 
 	protected void onInit() {
-		//add(menu_list);
-		menu_list.translation.visible = false; // Not drawn until we get clicked on
 		menu_list.translation.y = 20f;
 		menu_list.setHandler(new MenuList.Handler() {
 			@Override
-			public void onOutsideClick() {
-				if(System.currentTimeMillis() > allow_closing) 
-					hideMenu();
+			public void onOutsideClick() { 
+				if(allow_closing < System.currentTimeMillis())
+				close_menu = true;
 			}
 		});
 		mouse_handler = new MouseHandler(this);
@@ -53,6 +52,7 @@ public class MenuBarItem extends UIObject {
 		});
 	}
 
+	@Override
 	protected void onDraw() {
 		draw.setFont("Geneva", 12f);
 		label_width = draw.getTextWidth(label);
@@ -69,6 +69,14 @@ public class MenuBarItem extends UIObject {
 			draw.setColor(200, 200, 200);
 
 		draw.text(label, 4.5f, 14.5f);
+	}
+
+	@Override
+	protected void onUpdate() {
+		if(close_menu) {
+			hideMenu();
+			close_menu = false;
+		}
 	}
 
 	protected void onEvent(IEvent e) {

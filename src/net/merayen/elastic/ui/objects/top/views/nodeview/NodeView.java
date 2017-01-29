@@ -9,7 +9,7 @@ import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.NodeGroupInitiator;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.UINode;
-import net.merayen.elastic.ui.objects.top.MenuBar;
+import net.merayen.elastic.ui.objects.top.menu.MenuBar;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Postmaster;

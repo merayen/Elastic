@@ -58,16 +58,22 @@ public class MouseEvent implements IEvent {
 
 		hits.sort( (a,b) -> b.draw_z - a.draw_z );
 
+		Window window;
+		if(uiobject instanceof Window)
+			window = (Window)uiobject;
+		else
+			window = UINodeUtil.getWindow(uiobject);
+
 		if(hits.size() > 0) {
 			String m = "Object hit: ";
 			for(UIObject o : hits)
 				m += o.getClass().getSimpleName() + ", ";
 
-			Window window = UINodeUtil.getWindow(uiobject);
+			
+
 			if(window != null)
 				window.debug.set("MouseEvent.calcHit", m);
 		} else {
-			Window window = UINodeUtil.getWindow(uiobject);
 			if(window != null)
 				window.debug.unset("MouseEvent.calcHit");
 		}

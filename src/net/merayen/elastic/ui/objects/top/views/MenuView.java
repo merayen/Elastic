@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views;
 
-import net.merayen.elastic.ui.objects.top.MenuBar;
+import net.merayen.elastic.ui.objects.top.menu.MenuBar;
 
 /**
  * The menu, usually at the top.
