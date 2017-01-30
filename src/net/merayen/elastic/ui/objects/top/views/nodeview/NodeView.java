@@ -9,7 +9,7 @@ import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.NodeGroupInitiator;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.UINode;
-import net.merayen.elastic.ui.objects.top.menu.MenuBar;
+import net.merayen.elastic.ui.objects.top.MenuBar;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Postmaster;
@@ -29,7 +29,7 @@ public class NodeView extends View implements NodeGroupInitiator {
 	private Movable movable;
 	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s";
-	private final MenuBar menu = new MenuBar();
+	private final MenuBar menu = new MenuBar(); // TODO should not be here, but in MenuView. Like how Blender does it
 
 	private final NodeViewContextMenu context_menu;
 

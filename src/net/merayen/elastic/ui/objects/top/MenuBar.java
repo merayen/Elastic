@@ -1,7 +1,10 @@
-package net.merayen.elastic.ui.objects.top.menu;
+package net.merayen.elastic.ui.objects.top;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.dialogs.AboutDialog;
+import net.merayen.elastic.ui.objects.top.menu.Bar;
+import net.merayen.elastic.ui.objects.top.menu.MenuBarItem;
+import net.merayen.elastic.ui.objects.top.menu.MenuListItem;
 
 public class MenuBar extends UIObject {
 	public static abstract class Handler {
