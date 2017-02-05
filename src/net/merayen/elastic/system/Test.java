@@ -1,14 +1,17 @@
 package net.merayen.elastic.system;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.merayen.elastic.Config;
+import net.merayen.elastic.backend.data.DataManager;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;
-import net.merayen.elastic.backend.storage.resource.ResourceManager;
+import net.merayen.elastic.backend.resource.ResourceManager;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -195,7 +198,11 @@ public class Test {
 
 		o.s = sync;
 
-		return new Environment(mixer, sync, new ResourceManager());
+		try {
+			return new Environment(mixer, sync, new DataManager(new File("./default.elastic").getCanonicalPath()));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String getFirstOutputDevice(Mixer mixer) {

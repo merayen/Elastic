@@ -1,12 +1,15 @@
-package net.merayen.elastic.backend.storage.resource;
+package net.merayen.elastic.backend.resource;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import net.merayen.elastic.util.UniqueID;
 
 public class ResourceManager {
 	final Map<String,Resource> list = new HashMap<>();
@@ -28,7 +31,7 @@ public class ResourceManager {
 			throw new RuntimeException(e);
 		}
 
-		r.id = new Integer(UUID.randomUUID().hashCode()).toString();
+		r.id = UniqueID.create();
 
 		return r;
 	}
@@ -37,17 +40,21 @@ public class ResourceManager {
 		return list.get(id);
 	}
 
+	public Collection<Resource> getResources() {
+		return list.values();
+	}
+
 	/**
 	 * Deletes resources that has no dependencies to itself.
 	 * Not tested.
 	 */
 	public void tidy() {
-		Set<Resource> ids = new HashSet<>();
+		Set<String> ids = new HashSet<>();
 		List<Resource> resources = new ArrayList<>(list.values());
 
 		for(Resource r : resources)
-			for(Resource d : r.depends)
-				ids.add(d);
+			for(String s : r.depends)
+				ids.add(s);
 
 		for(Resource r : resources)
 			if(!ids.contains(r))

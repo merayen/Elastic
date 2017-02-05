@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.storage.resource;
+package net.merayen.elastic.backend.resource;
 
 import java.util.Map;
 

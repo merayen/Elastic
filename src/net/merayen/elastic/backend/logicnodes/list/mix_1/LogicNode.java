@@ -30,7 +30,9 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onInit() {}
+	protected void onInit() {
+		
+	}
 
 	@Override
 	protected void onParameterChange(String key, Object value) {}
