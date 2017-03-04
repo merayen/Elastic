@@ -1,7 +1,6 @@
 package net.merayen.elastic;
 
 public class Test {
-
 	public static void main(String[] args) {
 		//net.merayen.elastic.util.Test.test();
 		//net.merayen.elastic.backend.buffer.FloatCircularBuffer.test();
@@ -17,6 +16,7 @@ public class Test {
 		//net.merayen.elastic.backend.mix.Test.test();
 		//net.merayen.elastic.ui.objects.top.viewport.Test.test();
 		//net.merayen.elastic.backend.storage.Test.test();
+		//net.merayen.elastic.backend.data.Test.test();
 		net.merayen.elastic.system.Test.test();
 		//net.merayen.elastic.ui.Test.test();
 

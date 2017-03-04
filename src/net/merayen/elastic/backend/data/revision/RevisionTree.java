@@ -1,24 +1,22 @@
-package net.merayen.elastic.backend.revision;
+package net.merayen.elastic.backend.data.revision;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base for the undo-functionality in Elastic.
  */
 public class RevisionTree {
-	private final List<Revision> list;
-	private Revision current;
+	final Map<String,Revision> list;
+	Revision current;
 
 	public RevisionTree() {
-		list = new ArrayList<>();
-		list.add(new Revision("top")); // Add top revision
-		current = list.get(0);
-	}
+		list = new HashMap<>();
 
-	RevisionTree(List<Revision> list, Revision current) {
-		this.list = list;
-		this.current = current;
+		// Add top revision
+		Revision r = new Revision("top");
+		list.put(r.id, r);
+		current = r;
 	}
 
 	/**
@@ -30,19 +28,13 @@ public class RevisionTree {
 
 		Revision r = new Revision();
 
-		previous.next = r;
-
-		list.add(r);
+		list.put(r.id, r);
 
 		return r;
 	}
 
 	public Revision getRevision(String id) {
-		for(Revision r : list)
-			if(r.id.equals(id))
-				return r;
-
-		throw new RuntimeException("Revision not found");
+		return list.get(id);
 	}
 
 	/**
@@ -53,6 +45,9 @@ public class RevisionTree {
 	}
 
 	public void setCurrent(Revision revision) {
+		if(list.get(revision.id) != revision)
+			throw new RuntimeException("Invalid Revision. From another RevisionTree() or already deleted?");
+
 		current = revision;
 	}
 }

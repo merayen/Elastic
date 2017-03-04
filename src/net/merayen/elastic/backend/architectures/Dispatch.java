@@ -84,6 +84,10 @@ public class Dispatch {
 			throw new RuntimeException("Not running");
 
 		runner.running = false;
+		synchronized (runner) {
+			runner.notifyAll();
+		}
+
 		try {
 			runner.join();
 		} catch (InterruptedException e) {

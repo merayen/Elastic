@@ -26,7 +26,7 @@ public class Synchronization {
 		public void behind();
 	}
 
-	private class Poller implements Runnable {
+	private class Poller extends Thread {
 		volatile boolean running;
 
 		@Override
@@ -105,7 +105,6 @@ public class Synchronization {
 	}
 
 	public void start() {
-		System.out.println("Start " + this);
 		new Thread(poller).start();
 	}
 
@@ -127,8 +126,12 @@ public class Synchronization {
 	}
 
 	public void end() {
-		System.out.println("End " + this);
 		poller.running = false;
+		try {
+			poller.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

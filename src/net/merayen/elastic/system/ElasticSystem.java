@@ -7,6 +7,8 @@ import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.ui.Supervisor;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
+import net.merayen.elastic.util.tap.Tap;
+import net.merayen.elastic.util.tap.TapSpreader;
 
 /**
  * This class binds together the backend and the UI.
@@ -18,37 +20,48 @@ public class ElasticSystem {
 		public void onMessageToBackend(Postmaster.Message message);
 	}
 
-	private IListener listener;
-
 	Supervisor ui;
 	BackendContext backend;
+	final Environment env;
+	private boolean running;
+	private final TapSpreader<Postmaster.Message> from_ui = new TapSpreader<>();
+	private final TapSpreader<Postmaster.Message> from_backend = new TapSpreader<>();
 
 	public ElasticSystem(Environment env) {
+		this.env = env;
+	}
+
+	private void start() {
+		if(running)
+			throw new RuntimeException("Already running");
+
 		backend = BackendContext.create(env); // Start blank, for now. Need some default file
 		ui = new Supervisor(new Supervisor.Handler() {
 
 			@Override
 			public void onMessageToBackend(Message message) { // Note! This is called from the UI-thread
 				backend.message_handler.handleFromUI(message);
-
-				if(listener != null)
-					listener.onMessageToBackend(message);
+				from_backend.push(message);
 			}
 
 			@Override
 			public void onReadyForMessages() { // Called by UI when it is ready to receive new messages from backend
 				for(Postmaster.Message message : backend.message_handler.receiveMessagesFromBackend()) {
 					ui.sendMessageToUI(message);
-
-					if(listener != null)
-						listener.onMessageToUI(message);
+					from_ui.push(message);
 				}
 			}
 		});
+
+		env.synchronization.start();
+		running = true;
 	}
 
 	@SuppressWarnings("unchecked")
 	public JSONObject dump() {
+		if(!running)
+			throw new RuntimeException("Not running");
+
 		JSONObject result = new JSONObject();
 		result.put("ui.java", ui.dump());
 		result.put("backend", backend.dump());
@@ -63,25 +76,48 @@ public class ElasticSystem {
 	}
 
 	public void end() {
+		if(!running)
+			return;
+
 		ui.end();
 		backend.end();
+		env.synchronization.end();
+
+		ui = null;
+		backend = null;
+		running = false;
+	}
+
+	public void restart() {
+		end();
+		start();
 	}
 
 	/**
 	* Send message to UI.
 	*/
-	void sendMessageToUI(Postmaster.Message message) {
+	public void sendMessageToUI(Postmaster.Message message) {
+		if(!running)
+			throw new RuntimeException("Not running");
+
 		ui.sendMessageToUI(message);
 	}
 
 	/**
 	* Only to be called outside the ElasticSystem, for testing, or for other control of it.
 	*/
-	void sendMessageToBackend(Postmaster.Message message) {
+	public void sendMessageToBackend(Postmaster.Message message) {
+		if(!running)
+			throw new RuntimeException("Not running");
+
 		backend.message_handler.handleFromUI(message);
 	}
 
-	public void listen(IListener listener) {
-		this.listener = listener;
+	public Tap<Postmaster.Message> tapIntoMessagesFromUI() {
+		return from_ui.create();
+	}
+
+	public Tap<Postmaster.Message> tapIntoMessagesFromBackend() {
+		return from_backend.create();
 	}
 }

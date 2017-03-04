@@ -1,7 +1,11 @@
 package net.merayen.elastic.backend.data;
 
-import net.merayen.elastic.backend.storage.StorageFile;
-import net.merayen.elastic.backend.storage.StorageView;
+import org.json.simple.JSONObject;
+
+import net.merayen.elastic.Info;
+import net.merayen.elastic.backend.data.resource.Resource;
+import net.merayen.elastic.backend.data.storage.StorageFile;
+import net.merayen.elastic.backend.data.storage.StorageView;
 
 /**
  * Builds a default project.
@@ -11,7 +15,15 @@ class DefaultProject {
 	static void build(DataManager dm) {
 		StorageView sv = dm.storage.createView();
 		StorageFile sf = sv.writeFile("project");
-		sf.write(new byte[]{40,41,42,43,44,45,46,47,48,49});
+
+		JSONObject obj = new JSONObject();
+		obj.put("storage_version", Info.storageVersion);
+
+		Resource r = dm.resource_manager.create("revisions/top");
+		dm.resource_manager.get("").depends.add(r); // Makes top-most resource depend on the revision, so that it doesn't disappear
+
+		sf.write(obj.toJSONString().getBytes());
+
 		sv.close();
 	}
 }

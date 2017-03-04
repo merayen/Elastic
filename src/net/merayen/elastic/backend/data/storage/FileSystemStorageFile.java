@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.storage;
+package net.merayen.elastic.backend.data.storage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,11 +29,41 @@ public class FileSystemStorageFile implements StorageFile {
 		}
 	}
 
+	public byte[] read() {
+		try {
+			long length = raf.length() - raf.getFilePointer();
+			if(length > 100000000)
+				throw new StorageException("Can not read more than 100MB. Use read(byte[]) instead");
+
+			byte[] buffer = new byte[(int)length];
+			raf.read(buffer);
+			return buffer;
+		} catch (IOException e) {
+			throw new StorageException();
+		}
+	}
+
 	public void write(byte[] buffer) {
 		try {
 			raf.write(buffer);
 		} catch (IOException e) {
 			throw new StorageException();
+		}
+	}
+
+	public void truncate(long length) {
+		try {
+			raf.setLength(length);
+		} catch (IOException e) {
+			throw new StorageException();
+		}
+	}
+
+	public long position() {
+		try {
+			return raf.getFilePointer();
+		} catch (IOException e) {
+			throw new RuntimeException();
 		}
 	}
 

@@ -1,6 +1,6 @@
-package net.merayen.elastic.backend.resource;
+package net.merayen.elastic.backend.data.resource;
 
-import net.merayen.elastic.backend.storage.StorageView;
+import net.merayen.elastic.backend.data.storage.StorageView;
 
 /**
  * A view into resources.

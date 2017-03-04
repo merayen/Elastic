@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.revision;
+package net.merayen.elastic.backend.data.revision;
 
 public class Test {
 	public static void test() {

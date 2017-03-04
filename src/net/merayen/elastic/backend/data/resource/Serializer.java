@@ -1,6 +1,4 @@
-package net.merayen.elastic.backend.resource;
-
-import java.util.Map;
+package net.merayen.elastic.backend.data.resource;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,7 +7,6 @@ import org.json.simple.JSONObject;
  * As usual: Not tested. Should work, but will probably not.
  */
 public class Serializer {
-	private static final String path = "net.merayen.elastic.backend.storage.resource.types.%s";
 	private Serializer() {}
 
 	@SuppressWarnings("unchecked")
@@ -21,25 +18,24 @@ public class Serializer {
 		JSONArray resources = new JSONArray();
 		r.put("list", resources);
 
-		for(Map.Entry<String, Resource> x : rm.list.entrySet()) {
+		for(Resource res : rm.list.values()) {
 			JSONObject resource = new JSONObject();
 			resources.add(resource);
 
 			// ID
-			resource.put("id", x.getValue().id);
-
-			// Type
-			resource.put("type", x.getValue().getClass().getSimpleName());
+			resource.put("id", res.id);
 
 			// Data (key-value)
 			JSONObject resource_data = new JSONObject();
 			resource.put("data", resource_data);
-			resource_data.putAll(x.getValue().data);
+			resource_data.putAll(res.data);
 
 			// Dependencies
 			JSONArray depends = new JSONArray();
 			resource.put("depends", depends);
-			depends.addAll(x.getValue().depends);
+
+			for(Resource rd : res.depends)
+				depends.add(rd.id);
 		}
 
 		return r;
@@ -51,13 +47,7 @@ public class Serializer {
 
 		for(Object x : (JSONArray)obj.get("list")) {
 			JSONObject r = (JSONObject)x;
-			Resource resource;
-
-			try {
-				resource = (Resource)Class.forName(String.format(path, r.get("type"))).newInstance();
-			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+			Resource resource = new Resource();
 
 			// ID
 			resource.id = (String)r.get("id");
@@ -65,10 +55,15 @@ public class Serializer {
 			// Data (key-value)
 			resource.data.putAll((JSONObject)r.get("data"));
 
-			// Dependencies
-			resource.depends.addAll((JSONArray)r.get("depends"));
+			rm.list.put(resource.id, resource);
+		}
 
-			rm.add(resource);
+		for(Object x : (JSONArray)obj.get("list")) {
+			JSONObject r = (JSONObject)x;
+			Resource resource = rm.list.get(r.get("id"));
+
+			for(Object y : (JSONArray)r.get("depends"))
+				resource.depends.add(rm.list.get((String)y));
 		}
 
 		return rm;

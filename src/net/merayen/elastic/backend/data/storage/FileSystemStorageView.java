@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.storage;
+package net.merayen.elastic.backend.data.storage;
 
 import java.util.ArrayList;
 import java.util.List;

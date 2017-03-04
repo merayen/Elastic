@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.revision;
+package net.merayen.elastic.backend.data.revision;
 
 import net.merayen.elastic.util.UniqueID;
 
@@ -10,8 +10,7 @@ public class Revision {
 	public final String id;
 	public final long created;
 
-	Revision next;
-	Revision previous;
+	Revision parent;
 
 	Revision() {
 		this.id = UniqueID.create();
@@ -26,13 +25,5 @@ public class Revision {
 	Revision(String id, long created) {
 		this.id = id;
 		this.created = created;
-	}
-
-	public Revision getNext() {
-		return next;
-	}
-
-	public Revision getPrevious() {
-		return previous;
 	}
 }

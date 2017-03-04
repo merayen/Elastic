@@ -6,12 +6,13 @@ import java.util.ArrayList;
 
 import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.data.DataManager;
+import net.merayen.elastic.backend.data.resource.ResourceManager;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;
-import net.merayen.elastic.backend.resource.ResourceManager;
+import net.merayen.elastic.system.action.NewProject;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -40,58 +41,28 @@ public class Test {
 
 		system = new ElasticSystem(env);
 
-		env.synchronization.start();
+		//env.synchronization.start();
 
-		try {
+		/*try {
 			Thread.sleep(1000); // Give some time for the UI to create the viewports and the NodeView
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
-		}
+		}*/
 
 		ArrayList<CreateNodeMessage> nodes = new ArrayList<>();
 
-		system.listen(new ElasticSystem.IListener() {
-			@Override
-			public void onMessageToUI(Message message) {
-				if(message instanceof CreateNodeMessage) {
-					nodes.add((CreateNodeMessage)message);
-				} else if(message instanceof ResetNetListMessage) {
-					nodes.clear();
-				} else if(message instanceof ProcessMessage) {
-					ProcessMessage pm = (ProcessMessage)message;
-					System.out.printf("Process response\n");
-				}
+		/*int i = 5;
+		while(i==5) {
+			final long t = System.currentTimeMillis() + 1 * 1000;
+			waitFor(() -> System.currentTimeMillis() > t);
+			system.end();
+			System.out.println("Restarting");
+			system.start();
+		}*/
 
-				//System.out.println("Message from Backend to UI: " + message);
-			}
+		new NewProject(system).run();
 
-			@Override
-			public void onMessageToBackend(Message message) {
-				if(Config.processor.debug.messages)
-					System.out.println("Message from UI to Backend: " + message);
-			}
-		});
-
-		system.sendMessageToBackend(new CreateNodeMessage("test", 100, null));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
-		system.sendMessageToBackend(new CreateNodeMessage("output", 1, null));
-		system.sendMessageToBackend(new CreateNodeMessage("mix", 1, null));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
-
-		waitFor(() -> nodes.size() == 6);
-
-		// Place the nodes
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(0).node_id, "ui.java.translation.y", 300f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.x", 400f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.y", 400f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(3).node_id, "ui.java.translation.x", 800f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(3).node_id, "ui.java.translation.y", 400f));
-
-		// Connect signal generator to output
-		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(3).node_id, "input"));
-
-		final long t = System.currentTimeMillis() + 1 * 1000;
+		final long t = System.currentTimeMillis() + 1 * 2000;
 		waitFor(() -> System.currentTimeMillis() > t);
 
 		// Test dumping
