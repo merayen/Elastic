@@ -6,7 +6,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import net.merayen.elastic.backend.data.resource.ResourceManager;
-import net.merayen.elastic.backend.data.revision.Revision;
 import net.merayen.elastic.backend.data.revision.RevisionTree;
 import net.merayen.elastic.backend.data.storage.FileSystemStorage;
 import net.merayen.elastic.backend.data.storage.Storage;

@@ -1,11 +1,12 @@
-package net.merayen.elastic.system.action;
+package net.merayen.elastic.system.actions;
 
+import net.merayen.elastic.system.Action;
 import net.merayen.elastic.system.ElasticSystem;
 
 /**
  * Store current states as a revision.
  */
-public class StoreRevision implements Action {
+public class StoreRevision extends Action {
 	public StoreRevision(ElasticSystem es) {
 		
 	}

@@ -3,11 +3,13 @@ package net.merayen.elastic.backend.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.merayen.elastic.system.actions.NewProject;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.tap.TapSpreader;
 import net.merayen.elastic.util.NetListMessages;
 
 /**
@@ -55,8 +57,7 @@ public class MessageHandler {
 				to_ui.send(refresh_messages); // Send all messages in a chunk so no other messages can get in-between.
 
 				continue; // Message handled by us directly, not sent further into the backend
-			} else if(message instanceof CreateNodeMessage)
-				System.console();
+			}
 
 			backend_context.logicnode_supervisor.handleMessageFromUI(message);
 		}

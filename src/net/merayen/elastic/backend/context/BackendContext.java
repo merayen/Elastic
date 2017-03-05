@@ -8,59 +8,54 @@ import net.merayen.elastic.backend.architectures.Dispatch;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.nodes.Supervisor;
 import net.merayen.elastic.netlist.Serializer;
+import net.merayen.elastic.system.ElasticSystem;
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.Postmaster;
 
 /**
  * Glues together NetList, MainNodes and the processing backend (architecture)
  */
 public class BackendContext {
-	final Environment env;
-
+	Environment env;
 	Supervisor logicnode_supervisor;
 	Dispatch dispatch;
 
 	public MessageHandler message_handler = new MessageHandler(this);
 
-	private BackendContext(Environment env) {
-		this.env = env;
-	}
-
 	/**
 	 * Create a new default context, and starts it automatically.
 	 * Remember to call end()!
 	 */
-	public static BackendContext create(Environment env) {
-		BackendContext context = new BackendContext(env);
-		context.dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
+	public BackendContext(ElasticSystem system, InitBackendMessage message) {
+		env = Env.create(system, message);
+		dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
 			@Override
 			public void onMessageFromProcessor(Postmaster.Message message) {
-				context.message_handler.queueFromProcessor(message);
+				message_handler.queueFromProcessor(message);
 			}
 		});
 
-		context.dispatch.launch(8); // TODO 8? Make it customizable/load it from somewhere
+		dispatch.launch(8); // TODO 8? Make it customizable/load it from somewhere
 
-		context.logicnode_supervisor = new Supervisor(env, new Supervisor.Handler() {
+		logicnode_supervisor = new Supervisor(env, new Supervisor.Handler() {
 			@Override
 			public void sendMessageToUI(net.merayen.elastic.util.Postmaster.Message message) { // Message sent from LogicNodes to the UI
-				context.message_handler.handleFromLogicToUI(message);
+				message_handler.handleFromLogicToUI(message);
 			}
 
 			@Override
 			public void sendMessageToProcessor(net.merayen.elastic.util.Postmaster.Message message) { // Messages sent further into the backend, from the LogicNodes
-				context.message_handler.handleFromLogicToProcessor(message);
+				message_handler.handleFromLogicToProcessor(message);
 			}
 
 			@Override
 			public void onProcessDone() {
-				// Rotate the buffers. XXX This should really not be here in BackendContext?
-				env.mixer.dispatch(512);
+				env.mixer.dispatch(message.buffer_size);
 				env.synchronization.push();
-				//System.out.println("A frame has been processed.");
 			}
 		});
 
-		return context;
+		env.synchronization.start();
 	}
 
 	/**
@@ -87,7 +82,16 @@ public class BackendContext {
 		message_handler.executeMessagesFromProcessor();
 	}
 
+	/**
+	 * Stops the whole backend. Not possible to restart it.
+	 */
 	public void end() {
 		dispatch.stop();
+		env.synchronization.end();
+
+		dispatch = null;
+		env = null;
+		logicnode_supervisor = null;
+		message_handler = null;
 	}
 }

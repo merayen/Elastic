@@ -1,9 +1,10 @@
 package net.merayen.elastic.system;
 
-import org.json.simple.JSONObject;
-
 import net.merayen.elastic.backend.context.BackendContext;
-import net.merayen.elastic.backend.logicnodes.Environment;
+import net.merayen.elastic.system.intercom.backend.EndBackendMessage;
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
+import net.merayen.elastic.system.intercom.ui.EndUIMessage;
+import net.merayen.elastic.system.intercom.ui.InitUIMessage;
 import net.merayen.elastic.ui.Supervisor;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
@@ -22,95 +23,81 @@ public class ElasticSystem {
 
 	Supervisor ui;
 	BackendContext backend;
-	final Environment env;
-	private boolean running;
 	private final TapSpreader<Postmaster.Message> from_ui = new TapSpreader<>();
 	private final TapSpreader<Postmaster.Message> from_backend = new TapSpreader<>();
-
-	public ElasticSystem(Environment env) {
-		this.env = env;
-	}
-
-	private void start() {
-		if(running)
-			throw new RuntimeException("Already running");
-
-		backend = BackendContext.create(env); // Start blank, for now. Need some default file
-		ui = new Supervisor(new Supervisor.Handler() {
-
-			@Override
-			public void onMessageToBackend(Message message) { // Note! This is called from the UI-thread
-				backend.message_handler.handleFromUI(message);
-				from_backend.push(message);
-			}
-
-			@Override
-			public void onReadyForMessages() { // Called by UI when it is ready to receive new messages from backend
-				for(Postmaster.Message message : backend.message_handler.receiveMessagesFromBackend()) {
-					ui.sendMessageToUI(message);
-					from_ui.push(message);
-				}
-			}
-		});
-
-		env.synchronization.start();
-		running = true;
-	}
-
-	@SuppressWarnings("unchecked")
-	public JSONObject dump() {
-		if(!running)
-			throw new RuntimeException("Not running");
-
-		JSONObject result = new JSONObject();
-		result.put("ui.java", ui.dump());
-		result.put("backend", backend.dump());
-		return result;
-	}
 
 	/**
 	 * Needs to be called often by main thread.
 	 */
 	public void update() { // TODO perhaps don't do this, but rather trigger on events
-		backend.update();
+		if(backend != null) {
+			backend.update();
+			if(ui == null) // UI is not present, we retrieve messages from the backend, as UI usually does this
+				for(Postmaster.Message message : backend.message_handler.receiveMessagesFromBackend())
+					from_backend.push(message);
+		}
 	}
 
 	public void end() {
-		if(!running)
-			return;
+		if(ui != null)
+			ui.end();
 
-		ui.end();
-		backend.end();
-		env.synchronization.end();
+		if(backend != null)
+			backend.end();
 
 		ui = null;
 		backend = null;
-		running = false;
-	}
-
-	public void restart() {
-		end();
-		start();
 	}
 
 	/**
 	* Send message to UI.
 	*/
 	public void sendMessageToUI(Postmaster.Message message) {
-		if(!running)
-			throw new RuntimeException("Not running");
+		if(ui == null && message instanceof InitUIMessage) {
+			ui = new Supervisor(new Supervisor.Handler() {
+				@Override
+				public void onMessageToBackend(Message message) { // Note! This is called from the UI-thread
+					if(backend != null)
+						backend.message_handler.handleFromUI(message);
 
-		ui.sendMessageToUI(message);
+					from_ui.push(message);
+				}
+
+				@Override
+				public void onReadyForMessages() { // Called by UI when it is ready to receive new messages from backend
+					if(backend != null) {
+						for(Postmaster.Message message : backend.message_handler.receiveMessagesFromBackend()) {
+							ui.sendMessageToUI(message);
+							from_backend.push(message);
+						}
+					}
+				}
+			});
+		}
+
+		if(ui != null && message instanceof EndUIMessage) {
+			ui.end();
+			ui = null;
+		}
+
+		if(ui != null)
+			ui.sendMessageToUI(message);
 	}
 
 	/**
 	* Only to be called outside the ElasticSystem, for testing, or for other control of it.
 	*/
 	public void sendMessageToBackend(Postmaster.Message message) {
-		if(!running)
-			throw new RuntimeException("Not running");
+		if(message instanceof InitBackendMessage && backend == null)
+			backend = new BackendContext(this, (InitBackendMessage)message);
 
-		backend.message_handler.handleFromUI(message);
+		if(backend != null && message instanceof EndBackendMessage) {
+			backend.end();
+			backend = null;
+		}
+
+		if(backend != null)
+			backend.message_handler.handleFromUI(message);
 	}
 
 	public Tap<Postmaster.Message> tapIntoMessagesFromUI() {
@@ -119,5 +106,9 @@ public class ElasticSystem {
 
 	public Tap<Postmaster.Message> tapIntoMessagesFromBackend() {
 		return from_backend.create();
+	}
+
+	public void runAction(Action action) {
+		action.start(this);
 	}
 }
