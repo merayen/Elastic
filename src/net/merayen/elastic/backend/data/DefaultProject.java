@@ -12,7 +12,7 @@ import net.merayen.elastic.backend.data.storage.StorageView;
  * Makes a completely empty project. No nodes or anything is set up here, this should be done elsewhere (using messaging etc).
  */
 class DefaultProject {
-	static void build(DataManager dm) {
+	static void build(Project dm) {
 		StorageView sv = dm.storage.createView();
 		StorageFile sf = sv.writeFile("project");
 

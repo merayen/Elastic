@@ -1,14 +1,14 @@
 package net.merayen.elastic.system;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Comparator;
 
-import net.merayen.elastic.backend.interfacing.AbstractDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
-import net.merayen.elastic.backend.logicnodes.Environment;
-import net.merayen.elastic.backend.mix.Mixer;
-import net.merayen.elastic.backend.mix.Synchronization;
+import net.merayen.elastic.system.actions.LoadProject;
 import net.merayen.elastic.system.actions.NewProject;
-import net.merayen.elastic.system.intercom.*;
 
 public class Test {
 	public static void test() {
@@ -17,21 +17,40 @@ public class Test {
 
 	private ElasticSystem system;
 
-	
+	private final static String PROJECT_PATH = "NewProject.elastic"; 
 
 	int fires;
 	long start = System.currentTimeMillis();
 	long ispinne;
+
+	class roflmao {long t;}
 	private Test() {
 		system = new ElasticSystem();
 
-		system.runAction(new NewProject("NewProject.project"));
+		// Temporary XXX
+		File file = new File(PROJECT_PATH);
+		if(file.exists()) {
+			try {
+				Files.walk(Paths.get(PROJECT_PATH)).sorted(Comparator.reverseOrder()).forEach((x) -> x.toFile().delete());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
-		final long t = System.currentTimeMillis() + 1 * 2000;
-		waitFor(() -> System.currentTimeMillis() > t);
+		system.runAction(new NewProject(PROJECT_PATH));
+
+		roflmao roflmao = new roflmao();
+		roflmao.t = System.currentTimeMillis() + 1 * 2000;
+		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
 		// Now just run
-		startProcessing();
+		roflmao.t = System.currentTimeMillis() + 5000;
+		waitFor(() -> System.currentTimeMillis() > roflmao.t);
+
+		system.runAction(new LoadProject(PROJECT_PATH));
+
+		roflmao.t = System.currentTimeMillis() + 1000 * 3600;
+		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
 		system.end();
 	}
@@ -39,18 +58,6 @@ public class Test {
 	private void startProcessing() {
 		final long t = System.currentTimeMillis() + 3600 * 1000;
 		waitFor(() -> System.currentTimeMillis() > t);
-	}
-
-	
-
-	private String getFirstOutputDevice(Mixer mixer) {
-		for(AbstractDevice ad : mixer.getAvailableDevices()) { // Test the first output device
-			if(ad instanceof AudioOutputDevice) {
-				return ad.getID();
-			}
-		}
-
-		throw new RuntimeException("No output audio device found");
 	}
 
 	interface Func {

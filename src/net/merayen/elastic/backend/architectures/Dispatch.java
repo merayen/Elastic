@@ -63,7 +63,7 @@ public class Dispatch {
 	/**
 	 * Sends the NetList to the chosen architecture and begins processing.
 	 */
-	public void launch(int buffer_size) {
+	public void launch() {
 		if(executor != null)
 			throw new RuntimeException("Already started");
 

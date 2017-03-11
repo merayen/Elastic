@@ -53,6 +53,10 @@ public class FileSystemStorage implements Storage {
 		return new File(translatePath(path)).exists();
 	}
 
+	String[] list(String path) {
+		return new File(translatePath(path)).list();
+	}
+
 	@Override
 	public void close() {
 		for(FileSystemStorageView v : open_views)

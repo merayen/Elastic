@@ -36,4 +36,10 @@ public class FileSystemStorageView implements StorageView {
 	public boolean exists(String path) {
 		return storage.exists(path);
 	}
+
+	@Override
+	public String[] list(String path) {
+		String[] result = storage.list(path);
+		return result != null ? result : new String[0];
+	}
 }

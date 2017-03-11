@@ -1,5 +1,6 @@
 package net.merayen.elastic.system.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import net.merayen.elastic.system.Action;
@@ -22,6 +23,8 @@ public class NewProject extends Action {
 	private final String path;
 
 	public NewProject(String path) {
+		if(new File(path).exists())
+			throw new RuntimeException("Project already exists. Use LoadProject()-action instead.");
 		this.path = path;
 	}
 
@@ -48,9 +51,11 @@ public class NewProject extends Action {
 	}
 
 	private void init() {
+		system.end();
+
 		system.sendMessageToUI(new InitUIMessage());
 
-		system.sendMessageToBackend(new InitBackendMessage(44100, 16, 512));
+		system.sendMessageToBackend(new InitBackendMessage(44100, 16, 512, path));
 
 		system.sendMessageToBackend(new CreateNodeMessage("test", 100, null));
 		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, null));
