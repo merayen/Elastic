@@ -2,8 +2,14 @@ package net.merayen.elastic.backend.data.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+
+import net.merayen.elastic.backend.logicnodes.Environment;
 
 /**
  * File System storage.
@@ -53,8 +59,32 @@ public class FileSystemStorage implements Storage {
 		return new File(translatePath(path)).exists();
 	}
 
-	String[] list(String path) {
-		return new File(translatePath(path)).list();
+	List<String> list(String path) {
+		String[] result = new File(translatePath(path)).list();
+		return Arrays.asList(result != null ? result : new String[0]);
+	}
+
+	List<String> listAll(String relative_path) {
+		String path = translatePath(relative_path);
+
+		List<String> result = new ArrayList<>();
+
+		try {
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).forEach((x) -> {
+				if(x.toFile().isFile()) {
+					String file_path = x.toFile().getAbsolutePath();
+
+					if(!file_path.startsWith(path))
+						throw new RuntimeException("Path outside project path: " + file_path);
+
+					result.add(file_path.substring(path.length() + 1));
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	@Override

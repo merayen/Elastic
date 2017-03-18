@@ -13,12 +13,13 @@ import net.merayen.elastic.backend.data.storage.FileSystemStorage;
 import net.merayen.elastic.backend.data.storage.Storage;
 import net.merayen.elastic.backend.data.storage.StorageFile;
 import net.merayen.elastic.backend.data.storage.StorageView;
+import net.merayen.elastic.system.actions.TidyProject;
 
 /**
  * Takes care off storage, revisions and resources.
  */
 public class Project {
-	private final String path;
+	public final String path;
 	public final Storage storage;
 	public final RevisionTree revision_tree;
 	public final ResourceManager resource_manager;
@@ -93,8 +94,6 @@ public class Project {
 			sf.truncate(sf.position());
 	
 			sv.close();
-			
-			// TODO tidy project? If we fail before this, we have not replaced the project-file, and not deleted any files. This should be atomic enough, or?
 		}
 	}
 

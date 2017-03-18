@@ -20,13 +20,12 @@ public class ResourceManager {
 		create(""); // Create "top"-object that is permanent. Never to be deleted
 	}
 
-	public Resource create(String id) {
+	public synchronized Resource create(String id) {
 		if(list.containsKey(id))
 			throw new RuntimeException("Resource already exists");
 
-		Resource r = new Resource();
+		Resource r = new Resource(id);
 
-		r.id = id;
 		list.put(r.id, r);
 
 		return r;
@@ -40,11 +39,15 @@ public class ResourceManager {
 		return list.get("");
 	}
 
+	public synchronized Map<String, Resource> getAll() {
+		return new HashMap<>(list);
+	}
+
 	/**
 	 * Deletes resources that has no dependencies to itself.
 	 * Not tested.
 	 */
-	public void tidy() {
+	public synchronized void tidy() {
 		Set<Resource> active = getActive();
 
 		Iterator<Map.Entry<String,Resource>> iter = list.entrySet().iterator();

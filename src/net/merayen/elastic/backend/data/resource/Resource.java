@@ -15,7 +15,11 @@ public final class Resource {
 	 * Unique ID for this resource. This is also the path, so id can typically be:
 	 * "audio/samples/somefile.wav"
 	 */
-	String id;
+	public final String id;
+
+	Resource(String id) {
+		this.id = id;
+	}
 
 	/**
 	 * Resources this resource depends on.
@@ -27,8 +31,6 @@ public final class Resource {
 	 * Key-value properties for the resource. Free to use. Must be JSON-compatible.
 	 */
 	public final Map<String, Object> data = new HashMap<>();
-
-	Resource() {}
 
 	public String getID() {
 		return id;

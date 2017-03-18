@@ -1,6 +1,10 @@
 package net.merayen.elastic.backend.data.storage;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -38,8 +42,12 @@ public class FileSystemStorageView implements StorageView {
 	}
 
 	@Override
-	public String[] list(String path) {
-		String[] result = storage.list(path);
-		return result != null ? result : new String[0];
+	public List<String> list(String path) {
+		return storage.list(path);
+	}
+
+	@Override
+	public List<String> listAll(String path) {
+		return storage.listAll(path);
 	}
 }

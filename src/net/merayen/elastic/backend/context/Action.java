@@ -11,8 +11,10 @@ public abstract class Action {
 	protected abstract void run();
 
 	public final void start(BackendContext bc) {
-		backend_context = bc;
-		env = bc.env;
-		run();
+		synchronized (bc.env.project) {
+			backend_context = bc;
+			env = bc.env;
+			run();
+		}
 	}
 }

@@ -47,10 +47,7 @@ public class Serializer {
 
 		for(Object x : (JSONArray)obj.get("list")) {
 			JSONObject r = (JSONObject)x;
-			Resource resource = new Resource();
-
-			// ID
-			resource.id = (String)r.get("id");
+			Resource resource = new Resource((String)r.get("id"));
 
 			// Data (key-value)
 			resource.data.putAll((JSONObject)r.get("data"));

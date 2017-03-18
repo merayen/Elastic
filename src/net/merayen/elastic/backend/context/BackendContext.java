@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 import net.merayen.elastic.Info;
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
-import net.merayen.elastic.backend.data.Project;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.nodes.Supervisor;
 import net.merayen.elastic.netlist.Serializer;
@@ -20,7 +19,6 @@ public class BackendContext {
 	Environment env;
 	Supervisor logicnode_supervisor;
 	Dispatch dispatch;
-	Project project;
 
 	public MessageHandler message_handler = new MessageHandler(this);
 
@@ -29,8 +27,6 @@ public class BackendContext {
 	 * Remember to call end()!
 	 */
 	public BackendContext(ElasticSystem system, InitBackendMessage message) {
-		project = new Project(message.project_path);
-
 		env = Env.create(system, message);
 
 		dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {

@@ -3,11 +3,13 @@ package net.merayen.elastic.backend.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.merayen.elastic.backend.context.action.CreateCheckpoint;
+import net.merayen.elastic.backend.context.action.CreateCheckpointAction;
+import net.merayen.elastic.backend.context.action.TidyProjectAction;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
+import net.merayen.elastic.system.intercom.backend.TidyProjectMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.NetListMessages;
 
@@ -56,7 +58,10 @@ public class MessageHandler {
 				to_ui.send(refresh_messages); // Send all messages in a chunk so no other messages can get in-between.
 
 			} else if(message instanceof CreateCheckpointMessage) {
-				new CreateCheckpoint().start(backend_context);
+				new CreateCheckpointAction().start(backend_context);
+
+			} else if(message instanceof TidyProjectMessage) {
+				new TidyProjectAction().start(backend_context);
 
 			} else {
 				backend_context.logicnode_supervisor.handleMessageFromUI(message);

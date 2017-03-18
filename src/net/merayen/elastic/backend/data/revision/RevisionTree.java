@@ -30,6 +30,8 @@ public class RevisionTree {
 
 		list.put(r.id, r);
 
+		r.parent = previous;
+
 		return r;
 	}
 
