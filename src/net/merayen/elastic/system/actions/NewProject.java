@@ -2,6 +2,7 @@ package net.merayen.elastic.system.actions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.merayen.elastic.system.Action;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
@@ -9,6 +10,7 @@ import net.merayen.elastic.system.intercom.NodeConnectMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
+import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.ui.InitUIMessage;
 import net.merayen.elastic.util.tap.Tap;
@@ -75,6 +77,18 @@ public class NewProject extends Action {
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(3).node_id, "input"));
+		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(1).node_id, "frequency"));
+
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "data.frequency", 1f));
+
+		{long t = System.currentTimeMillis() + 1000; waitFor(() -> t > System.currentTimeMillis());}
+
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "data.InputSignalParameters:frequency", new HashMap<String,Object>(){{
+			put("amplitude", 1000f);
+			put("offset", 440f*4);
+		}}));
+
+		system.sendMessageToBackend(new CreateCheckpointMessage());
 	}
 
 	interface Func {

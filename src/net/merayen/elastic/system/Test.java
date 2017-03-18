@@ -2,7 +2,6 @@ package net.merayen.elastic.system;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -27,6 +26,15 @@ public class Test {
 	private Test() {
 		system = new ElasticSystem();
 
+		/*Tap<Postmaster.Message> a = system.tapIntoMessagesFromUI();
+		a.set(new TapSpreader.Func<Postmaster.Message>() {
+			@Override
+			public void receive(Postmaster.Message message) {
+				if(message instanceof RequestCheckpointMessage)
+					system.runAction(new CreateRevision());
+			}
+		});*/
+
 		// Temporary XXX
 		File file = new File(PROJECT_PATH);
 		if(file.exists()) {
@@ -44,11 +52,13 @@ public class Test {
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
 		// Now just run
-		roflmao.t = System.currentTimeMillis() + 5000;
+		roflmao.t = System.currentTimeMillis() + 10000;
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
+		// Load the project
 		system.runAction(new LoadProject(PROJECT_PATH));
 
+		// Run "forever", project should be identical to the one created at the beginning
 		roflmao.t = System.currentTimeMillis() + 1000 * 3600;
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 

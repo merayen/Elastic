@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview;
 import java.util.ArrayList;
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
+import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
@@ -57,6 +58,13 @@ public class NodeView extends View implements NodeGroupInitiator {
 		menu.translation.y = 0;
 		menu.width = 200;
 		add(menu);
+
+		menu.setHandler(new MenuBar.Handler() {
+			@Override
+			public void onMakeCheckpoint() {
+				sendMessage(new CreateCheckpointMessage());
+			}
+		});
 
 		container.add(context_menu);
 	}

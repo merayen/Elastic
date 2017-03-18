@@ -99,4 +99,8 @@ public class BackendContext {
 		logicnode_supervisor = null;
 		message_handler = null;
 	}
+
+	public Environment getEnvironment() {
+		return env;
+	}
 }

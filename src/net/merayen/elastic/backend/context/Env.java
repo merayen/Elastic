@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.context;
 
+import net.merayen.elastic.backend.data.Project;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;
@@ -26,6 +27,6 @@ class Env {
 			}
 		});
 
-		return new Environment(mixer, sync, message.sample_rate, message.buffer_size);
+		return new Environment(mixer, sync, message.sample_rate, message.buffer_size, new Project(message.project_path));
 	}
 }

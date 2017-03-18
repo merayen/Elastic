@@ -9,7 +9,7 @@ import net.merayen.elastic.ui.objects.top.menu.MenuListItem;
 public class MenuBar extends UIObject {
 	public static abstract class Handler {
 		public void onOpenProject(String path) {}
-		public void onSaveProject() {}
+		public void onMakeCheckpoint() {}
 		public void onSaveProjectAs() {}
 		public void onClose() {}
 	}
@@ -56,14 +56,14 @@ public class MenuBar extends UIObject {
 			}
 		});
 
-		MenuListItem save = new MenuListItem();
-		save.label = "Save";
-		file.menu_list.addMenuItem(save);
-		save.setHandler(new MenuListItem.Handler() {
+		MenuListItem checkpoint = new MenuListItem();
+		checkpoint.label = "Make checkpoint";
+		file.menu_list.addMenuItem(checkpoint);
+		checkpoint.setHandler(new MenuListItem.Handler() {
 			@Override
 			public void onClick() {
 				if(handler != null)
-					handler.onSaveProject();
+					handler.onMakeCheckpoint();
 			}
 		});
 

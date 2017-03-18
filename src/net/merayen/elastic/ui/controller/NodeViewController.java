@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.Config;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
@@ -83,10 +84,11 @@ public class NodeViewController extends Controller {
 					nv.messageNode(m.node_id, message); // Forward messages with parameters used by us (only)
 
 			sendToBackend(message); // Forward message to backend 
-		} else if(message instanceof RemoveNodeMessage) {
-			sendToBackend(message);
-
-		} else if(message instanceof CreateNodeMessage) {
+		} else if(
+			message instanceof RemoveNodeMessage ||
+			message instanceof CreateNodeMessage ||
+			message instanceof CreateCheckpointMessage
+		) {
 			sendToBackend(message);
 		}
 	}

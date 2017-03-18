@@ -12,7 +12,7 @@ public abstract class Action {
 		run();
 	}
 
-	Environment getEnvironment() {
-		return system.env;
+	protected Environment getEnvironment() {
+		return system.backend.getEnvironment();
 	}
 }

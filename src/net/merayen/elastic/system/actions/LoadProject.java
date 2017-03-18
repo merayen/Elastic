@@ -1,10 +1,8 @@
 package net.merayen.elastic.system.actions;
 
-import net.merayen.elastic.netlist.Serializer;
 import net.merayen.elastic.system.Action;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.ui.InitUIMessage;
-import net.merayen.elastic.util.NetListMessages;
 
 /**
  * Loads a main project.
