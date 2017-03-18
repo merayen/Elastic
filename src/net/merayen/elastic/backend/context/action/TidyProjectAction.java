@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.context.action;
 
+import java.io.File;
 import java.util.Set;
 
 import net.merayen.elastic.backend.context.Action;
@@ -20,9 +21,13 @@ public class TidyProjectAction extends Action {
 		Set<String> resources = env.project.resource_manager.getAll().keySet();
 
 		try (StorageView sv = env.project.storage.createView()) {
-			for(String m : sv.listAll("."))
-				if(!resources.contains(m) && !m.equals("project"))
-					System.out.println("File to tidy up in the future: " + env.project.path + "/" + m);
+			for(String m : sv.listAll(".")) {
+				if(!resources.contains(m) && !m.equals("project")) {
+					String p = env.project.path + "/" + m;
+					System.out.println("Tidying file " + p);
+					new File(p).delete();
+				}
+			}
 		}
 	}
 }
