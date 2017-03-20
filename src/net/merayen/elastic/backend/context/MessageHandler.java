@@ -3,12 +3,12 @@ package net.merayen.elastic.backend.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.merayen.elastic.backend.context.action.CreateCheckpointAction;
-import net.merayen.elastic.backend.context.action.TidyProjectAction;
+import net.merayen.elastic.backend.context.action.LoadProjectAction;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.backend.TidyProjectMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.NetListMessages;
@@ -53,16 +53,18 @@ public class MessageHandler {
 
 				List<Postmaster.Message> refresh_messages = new ArrayList<>();
 				refresh_messages.add(new ResetNetListMessage(m.group_id)); // This will clear the receiver's NetList
-				refresh_messages.addAll(NetListMessages.disassemble(backend_context.logicnode_supervisor.getNetList(), m.group_id)); // All these messages will rebuild the receiver's NetList
+				refresh_messages.addAll(NetListMessages.disassemble(backend_context.env.project.getNetList(), m.group_id)); // All these messages will rebuild the receiver's NetList
 
 				to_ui.send(refresh_messages); // Send all messages in a chunk so no other messages can get in-between.
 
 			} else if(message instanceof CreateCheckpointMessage) {
-				new CreateCheckpointAction().start(backend_context);
+				backend_context.env.project.checkpoint.create();
 
 			} else if(message instanceof TidyProjectMessage) {
-				new TidyProjectAction().start(backend_context);
+				backend_context.env.project.tidy();
 
+			} else if(message instanceof InitBackendMessage) {
+				new LoadProjectAction().start(backend_context);
 			} else {
 				backend_context.logicnode_supervisor.handleMessageFromUI(message);
 			}

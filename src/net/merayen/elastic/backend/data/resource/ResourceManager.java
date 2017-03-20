@@ -31,7 +31,7 @@ public class ResourceManager {
 		return r;
 	}
 
-	public Resource get(String id) {
+	public synchronized Resource get(String id) {
 		return list.get(id);
 	}
 

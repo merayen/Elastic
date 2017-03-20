@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import net.merayen.elastic.backend.logicnodes.Environment;
-
 /**
  * File System storage.
  */
@@ -38,7 +36,7 @@ public class FileSystemStorage implements Storage {
 		path = translatePath(path);
 
 		if(!new File(path).exists())
-			throw new StorageFileNotFound();
+			throw new StorageFileNotFound(path);
 
 		FileSystemStorageFile v = new FileSystemStorageFile(path, StorageFile.READ);
 

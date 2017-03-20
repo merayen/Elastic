@@ -13,24 +13,24 @@ public class RevisionTree {
 	public RevisionTree() {
 		list = new HashMap<>();
 
-		// Add top revision
+		/* // Add top revision
 		Revision r = new Revision("top");
 		list.put(r.id, r);
-		current = r;
+		current = r;*/
 	}
 
 	/**
-	 * Create a revision.
+	 * Create a revision, makes current revision as the parent, sets this as the
+	 * new revision, and returns it.
 	 */
-	public Revision create(Revision previous) {
-		if(getRevision(previous.id) == null)
-			throw new RuntimeException("Revision not found");
-
+	public Revision create() {
 		Revision r = new Revision();
 
 		list.put(r.id, r);
 
-		r.parent = previous;
+		r.parent = current;
+
+		current = r;
 
 		return r;
 	}

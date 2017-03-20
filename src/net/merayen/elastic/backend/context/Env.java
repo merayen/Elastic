@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.context;
 
-import net.merayen.elastic.backend.data.Project;
+import net.merayen.elastic.backend.data.project.Project;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.Mixer;
 import net.merayen.elastic.backend.mix.Synchronization;

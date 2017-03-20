@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.logicnodes.Environment;
+import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
 class LogicNodeList {
@@ -17,7 +19,9 @@ class LogicNodeList {
 	}
 
 	void createLogicNode(Node node) {
-		NodeProperties np = new NodeProperties(supervisor.netlist);
+		NetList netlist = ((Environment)supervisor.env).project.getNetList();
+
+		NodeProperties np = new NodeProperties(netlist);
 		String name = np.getName(node);
 		Integer version = np.getVersion(node);
 		String group = np.getGroup(node);

@@ -34,7 +34,7 @@ public class Serializer {
 		JSONArray list = new JSONArray();
 		r.put("list", list);
 
-		r.put("current", rt.current.id);
+		r.put("current", rt.current != null ? rt.current.id: null);
 
 		for(Revision x : rt.list.values()) {
 			JSONObject rev = new JSONObject();

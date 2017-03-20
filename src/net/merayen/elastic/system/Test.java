@@ -45,7 +45,7 @@ public class Test {
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
 		// Create a file in the project path, which should get deleted by the tidy operation below
-		system.backend.getEnvironment().project.storage.createView().writeFile("mappe/test.txt").write("Hei på deg".getBytes(Charset.forName("UTF-8")));
+		system.backend.getEnvironment().project.data.storage.createView().writeFile("mappe/test.txt").write("Hei på deg".getBytes(Charset.forName("UTF-8")));
 
 		// Now just run
 		roflmao.t = System.currentTimeMillis() + 5000;

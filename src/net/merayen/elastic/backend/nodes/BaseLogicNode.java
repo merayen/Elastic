@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.nodes;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -139,7 +140,7 @@ public abstract class BaseLogicNode {
 		this.id = id;
 		this.supervisor = supervisor;
 		this.logicnode_list = supervisor.logicnode_list;
-		this.netlist = supervisor.netlist;
+		this.netlist = ((Environment)supervisor.env).project.getNetList();
 		this.node = node;
 		this.env = supervisor.env;
 	}

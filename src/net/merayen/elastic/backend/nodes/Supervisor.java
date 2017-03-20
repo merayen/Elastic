@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.nodes;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
@@ -30,7 +31,7 @@ public class Supervisor {
 	private final Handler handler;
 	final LogicEnvironment env;
 
-	final NetList netlist = new NetList(); // This is the main NetList
+	//NetList netlist; // This is the main NetList
 	final LogicNodeList logicnode_list;
 	private Postmaster while_processing_queue = new Postmaster();
 	private volatile boolean is_processing; // Set to true when LogicNodes (and nodes) are processing, as we then can not take any messages
@@ -47,9 +48,9 @@ public class Supervisor {
 
 		Node node;
 		if(node_id == null)
-			node = netlist.createNode();
+			node = ((Environment)env).project.getNetList().createNode();
 		else
-			node = netlist.createNode(node_id);
+			node = ((Environment)env).project.getNetList().createNode(node_id);
 
 		node.properties.put("name", name);
 		node.properties.put("version", version);
@@ -69,6 +70,8 @@ public class Supervisor {
 
 	private void executeMessageFromUI(Postmaster.Message message) {
 		synchronized (PROCESS_LOCK) {
+			NetList netlist = ((Environment)env).project.getNetList();
+
 			if(message instanceof CreateNodeMessage) {
 				CreateNodeMessage m = (CreateNodeMessage)message;
 				createNode(m.node_id, m.name, m.version);
@@ -157,6 +160,8 @@ public class Supervisor {
 	 */
 	public void handleResponseFromProcessor(ProcessMessage message) {
 		synchronized (PROCESS_LOCK) {
+			NetList netlist = ((Environment)env).project.getNetList();
+
 			if(!is_processing)
 				throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
 
@@ -177,16 +182,8 @@ public class Supervisor {
 		}
 	}
 
-	/**
-	 * Get the NetList. A copy is returned and can be changed at will.
-	 */
-	public NetList getNetList() {
-		synchronized (PROCESS_LOCK) {
-			return netlist.copy();
-		}
-	}
-
 	private void doProcessFrame(ProcessMessage message) {
+		NetList netlist = ((Environment)env).project.getNetList();
 		if(is_processing)
 			throw new RuntimeException("Already processing");
 

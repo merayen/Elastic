@@ -48,7 +48,7 @@ public class DrawContext {
 			throw new RuntimeException("Cyclic drawing of object detected");
 
 		draw_stack.addLast(uiobject);
-		translation_stack.push(uiobject.translation);
+		translation_stack.push(uiobject.translation); // XXX occasionally NullPointerException here
 	}
 
 	/**
