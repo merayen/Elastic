@@ -48,7 +48,7 @@ public class Test {
 		system.backend.getEnvironment().project.data.storage.createView().writeFile("mappe/test.txt").write("Hei på deg".getBytes(Charset.forName("UTF-8")));
 
 		// Now just run
-		roflmao.t = System.currentTimeMillis() + 5000;
+		roflmao.t = System.currentTimeMillis() + 5000000;
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
 		// Tidy project

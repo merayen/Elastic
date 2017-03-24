@@ -87,9 +87,15 @@ public class ElasticSystem {
 	/**
 	* Only to be called outside the ElasticSystem, for testing, or for other control of it.
 	*/
-	public void sendMessageToBackend(Postmaster.Message message) {
-		if(message instanceof InitBackendMessage && backend == null)
-			backend = new BackendContext(this, (InitBackendMessage)message);
+	public synchronized void sendMessageToBackend(Postmaster.Message message) {
+		if(message instanceof InitBackendMessage) {
+			if(backend == null) {
+				backend = new BackendContext(this, (InitBackendMessage)message);
+			}
+		} else if(backend == null) {
+			System.out.println("Ignoring message as backend is not running: " + message);
+		}
+				
 
 		if(backend != null && message instanceof EndBackendMessage) {
 			backend.end();

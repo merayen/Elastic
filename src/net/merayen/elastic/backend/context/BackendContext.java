@@ -2,12 +2,10 @@ package net.merayen.elastic.backend.context;
 
 import org.json.simple.JSONObject;
 
-import net.merayen.elastic.Info;
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.nodes.Supervisor;
-import net.merayen.elastic.netlist.Serializer;
 import net.merayen.elastic.system.ElasticSystem;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.Postmaster;
@@ -64,14 +62,6 @@ public class BackendContext {
 	 */
 	public static BackendContext load(JSONObject dump) {
 		return null; // TODO
-	}
-
-	@SuppressWarnings("unchecked")
-	public JSONObject dump() {
-		JSONObject result = new JSONObject();
-		result.put("version", Info.getVersion());
-		result.put("netlist", Serializer.dump(logicnode_supervisor.getNetList()));
-		return result;
 	}
 
 	public Supervisor getLogicNodeList() {

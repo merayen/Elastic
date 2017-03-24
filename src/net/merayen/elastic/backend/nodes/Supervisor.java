@@ -183,6 +183,7 @@ public class Supervisor {
 	}
 
 	private void doProcessFrame(ProcessMessage message) {
+		System.out.println("processing");
 		NetList netlist = ((Environment)env).project.getNetList();
 		if(is_processing)
 			throw new RuntimeException("Already processing");
