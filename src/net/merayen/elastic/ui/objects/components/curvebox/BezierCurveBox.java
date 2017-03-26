@@ -229,22 +229,50 @@ public class BezierCurveBox extends UIObject {
 	 * Gets all points as a flat list of floats in this format: [p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, ...]
 	 * @return
 	 */
-	public float[] getFloats() {
-		float[] result = new float[points.size() * 3 * 2];
+	public List<Number> getFloats() {
+		List<Number> result = new ArrayList<Number>();
 
 		int i = 0;
 		for(BezierDot bd : points) {
-			result[i++] = bd.left_dot.translation.x;
-			result[i++] = bd.left_dot.translation.y;
+			result.add(bd.left_dot.translation.x);
+			result.add(bd.left_dot.translation.y);
 
-			result[i++] = bd.position.translation.x;
-			result[i++] = bd.position.translation.y;
+			result.add(bd.position.translation.x);
+			result.add(bd.position.translation.y);
 
-			result[i++] = bd.right_dot.translation.x;
-			result[i++] = bd.right_dot.translation.y;
+			result.add(bd.right_dot.translation.x);
+			result.add(bd.right_dot.translation.y);
 		}
 
 		return result;
+	}
+
+	public void setPoints(List<Number> new_points) {
+		if(new_points.size() % 6 != 0)
+			throw new RuntimeException("Invalid point length");
+
+		clearPoints();
+
+		int i = 0;
+		while(i < new_points.size()) {
+			BezierDot dot = new BezierDot();
+			dot.left_dot.translation.x = new_points.get(i++).floatValue();
+			dot.left_dot.translation.y = new_points.get(i++).floatValue();
+			dot.position.translation.x = new_points.get(i++).floatValue();
+			dot.position.translation.y = new_points.get(i++).floatValue();
+			dot.right_dot.translation.x = new_points.get(i++).floatValue();
+			dot.right_dot.translation.y = new_points.get(i++).floatValue();
+
+			points.add(dot);
+			add(dot);
+		}
+	}
+
+	private void clearPoints() {
+		for(UIObject o : points)
+			remove(o);
+
+		points.clear();
 	}
 
 	private void drawDiagnostics() {

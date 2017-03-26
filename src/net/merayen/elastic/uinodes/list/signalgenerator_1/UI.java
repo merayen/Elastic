@@ -1,5 +1,7 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1;
 
+import java.util.List;
+
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.components.InputSignalParameters;
@@ -8,7 +10,6 @@ import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox;
 import net.merayen.elastic.ui.objects.components.framework.PortParameter;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
-import net.merayen.elastic.util.pack.FloatArray;
 
 public class UI extends UINode {
 	private PortParameter frequency_port_parameter;
@@ -31,11 +32,15 @@ public class UI extends UINode {
 			getPort("output").translation.x = width;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
 		if(message.key.equals("data.frequency")) {
 			((PopupParameter1D)frequency_port_parameter.not_connected).setValue((float)(Math.pow(((Number)message.value).floatValue(), 1/4.301029995663981) / 10.0));
 			updateFrequencyText();
+		}
+		if(message.key.equals("data.curve")) {
+			curve.setPoints((List<Number>)message.value);
 		}
 	}
 
@@ -77,29 +82,30 @@ public class UI extends UINode {
 		bwb.height = 100;
 		add(bwb);
 		curve = bwb;
-		UI self = this;
 
 		bwb.setHandler(new SignalBezierCurveBox.Handler() {
 			int i;
 			@Override
 			public void onChange() {
-				self.sendParameter("data.curve", new FloatArray(bwb.getFloats()));
+				sendParameter("data.curve", bwb.getFloats());
 			}
 
 			@Override
 			public void onMove() {
 				if(i++ % 10 == 0)
-					self.sendParameter("data.curve", new FloatArray(bwb.getFloats()));
+					sendParameter("data.curve", bwb.getFloats());
 			}
 		});
 
-		bwb.insertPoint(1);
-		bwb.insertPoint(2);
-		bwb.insertPoint(1);
+		//bwb.insertPoint(1);
+		//bwb.insertPoint(2);
+		//bwb.insertPoint(1);
 	}
 
 	@Override
-	protected void onData(NodeDataMessage message) {}
+	protected void onData(NodeDataMessage message) {
+		System.out.println(message);
+	}
 
 	@Override
 	protected void onRemovePort(UIPort port) {}

@@ -1,10 +1,11 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
+import java.util.List;
+
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
-import net.merayen.elastic.util.pack.FloatArray;
 import net.merayen.elastic.util.pack.PackDict;
 
 /**
@@ -40,7 +41,7 @@ public class LNode extends LocalNode {
 			frequency = ((Number)value).floatValue();
 
 		if(key.equals("data.curve")) {
-			setCurveWave(((FloatArray)value).data);
+			setCurveWave((List<Number>)value);
 		}
 	}
 
@@ -53,15 +54,9 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onFinishFrame() {}
 
-	private void setCurveWave(float[] points) {
+	private void setCurveWave(List<Number> points) {
 		curve_wave = new float[curve_wave.length];
 		BezierCurve.Dot[] dots = BezierCurve.fromFlat(points);
 		SignalBezierCurve.getValues(dots, curve_wave);
-
-		/*for(int i = 0; i < curve_wave.length; i++) {
-			curve_wave[i] -= 0.5f;
-			System.out.printf("%.3f\n", curve_wave[i]);
-		}*/
-		//System.out.println();
 	}
 }

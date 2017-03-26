@@ -1,5 +1,7 @@
 package net.merayen.elastic.ui.objects.components.curvebox;
 
+import java.util.List;
+
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDot;
 import net.merayen.elastic.util.Point;
@@ -9,7 +11,6 @@ import net.merayen.elastic.util.math.SignalBezierCurve;
 /**
  * Bezier curve for shaping signals.
  * It limits how the curve can be managed.
- *
  */
 public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 	public interface Handler {
@@ -40,6 +41,8 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 	private float offset;
 	private Handler handler;
 
+	private boolean moving; // Don't accept new points when user is interacting with us
+
 	public SignalBezierCurveBox() {
 		// We do not allow user moving the start and stop point
 		curve.getBezierPoint(0).position.visible = false;
@@ -51,6 +54,8 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 		curve.setHandler(new BezierCurveBox.Handler() {
 			@Override
 			public void onMove(BezierDot point) {
+				moving = true;
+
 				constrainPoint(point);
 				offset = getOffset();
 
@@ -60,6 +65,7 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 
 			@Override
 			public void onChange() {
+				moving = false;
 				if(handler != null)
 					handler.onChange();
 			}
@@ -154,7 +160,6 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 	private final static int OFFSET_LINE_RESOLUTION = 100;
 
 	public float getOffset() {
-		
 		float[] data = new float[OFFSET_LINE_RESOLUTION];
 		SignalBezierCurve.getValues(getDots(), data);
 
@@ -163,6 +168,25 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 			result += f;
 
 		return (float)(result / OFFSET_LINE_RESOLUTION);
+	}
+
+	public void setPoints(List<Number> new_points) {
+		if(moving)
+			return; // Don't accept new points when user is interacting with us
+
+		curve.setPoints(new_points);
+
+		BezierCurveBox.BezierDot start = curve.getBezierPoint(0);
+		start.left_dot.visible = false;
+		start.position.visible = false;
+		start.position.translation.x = 0;
+		start.position.translation.y = 0.5f;
+
+		BezierCurveBox.BezierDot stop = curve.getBezierPoint(curve.getPointCount() - 1);
+		stop.position.visible = false;
+		stop.right_dot.visible = false;
+		stop.position.translation.x = 1;
+		stop.position.translation.y = 0.5f;
 	}
 
 	public BezierCurve.Dot[] getDots() {
@@ -181,7 +205,7 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 		return result;
 	}
 
-	public float[] getFloats() {
+	public List<Number> getFloats() {
 		return curve.getFloats();
 	}
 }

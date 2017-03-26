@@ -6,9 +6,14 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
 
 import net.merayen.elastic.system.actions.LoadProject;
 import net.merayen.elastic.system.actions.NewProject;
+import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.StartBackendMessage;
 import net.merayen.elastic.system.intercom.backend.TidyProjectMessage;
 
@@ -27,21 +32,33 @@ public class Test {
 
 	class roflmao {long t;}
 	private Test() {
+		/*try {
+			List<Number> test = ((List<Number>)new org.json.simple.parser.JSONParser().parse("[1,2,3,4,5.5,\"hei\"]"));
+			System.out.println(test.get(5).doubleValue());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(5+6 > 6)
+			return;*/
+
 		system = new ElasticSystem();
 
 		// Temporary XXX
 		File file = new File(PROJECT_PATH);
 		if(file.exists()) {
-			try {
+			/*try {
 				Files.walk(Paths.get(PROJECT_PATH)).sorted(Comparator.reverseOrder()).forEach((x) -> x.toFile().delete());
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
+			// Load the project
+			system.runAction(new LoadProject(PROJECT_PATH));
+		} else {
+			system.runAction(new NewProject(PROJECT_PATH));
 		}
 
-		system.runAction(new NewProject(PROJECT_PATH));
-
-		system.sendMessageToBackend(new StartBackendMessage());
+		//system.sendMessageToBackend(new StartBackendMessage());
 
 		roflmao roflmao = new roflmao();
 		roflmao.t = System.currentTimeMillis() + 1 * 2000;
@@ -53,6 +70,8 @@ public class Test {
 		// Now just run
 		roflmao.t = System.currentTimeMillis() + 2000;
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
+
+		system.sendMessageToBackend(new CreateCheckpointMessage());
 
 		// Tidy project
 		system.sendMessageToBackend(new TidyProjectMessage());
@@ -66,10 +85,14 @@ public class Test {
 		system.sendMessageToBackend(new StartBackendMessage());
 
 		// Run "forever", project should be identical to the one created at the beginning
-		roflmao.t = System.currentTimeMillis() + 1000 * 3600;
-		waitFor(() -> System.currentTimeMillis() > roflmao.t);
+		while(true) {
+			roflmao.t = System.currentTimeMillis() + 1000 * 10;
+			waitFor(() -> System.currentTimeMillis() > roflmao.t);
+			System.out.println("Saving checkpoint");
+			system.sendMessageToBackend(new CreateCheckpointMessage());
+		}
 
-		system.end();
+		//system.end();
 	}
 
 	interface Func {
