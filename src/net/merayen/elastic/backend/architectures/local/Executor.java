@@ -5,13 +5,18 @@ import net.merayen.elastic.backend.analyzer.Analyzer;
 import net.merayen.elastic.backend.architectures.AbstractExecutor;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
+	public Executor(InitBackendMessage message) {
+		super(message);
+	}
+
 	private NetList netlist = new NetList(); // Our local copy of the NetList that we build by the messages we receive. Contains properties only for us
 	private NetList upcoming_netlist; // Is set to true when netlist has been changed and needing to analyze and prepare on next ProcessMessage()
-	private Supervisor supervisor = new Supervisor(new NetList(), 44100, 512);
+	private Supervisor supervisor;
 
 	@Override
 	protected void onMessage(Postmaster.Message message) {
@@ -50,7 +55,8 @@ public class Executor extends AbstractExecutor {
 			if(supervisor != null)
 				supervisor.clear();
 
-			supervisor = new Supervisor(netlist, 44100, 512);
+			System.out.println(sample_rate);
+			supervisor = new Supervisor(netlist, sample_rate, sample_buffer_size);
 			supervisor.begin();
 
 			if(Config.processor.debug.verbose)

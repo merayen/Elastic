@@ -91,6 +91,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void generateWithFrequency() {
+		//System.out.println(sample_rate + " " + frequency);
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 		AudioInlet frequency = (AudioInlet)getInlet("frequency");
 

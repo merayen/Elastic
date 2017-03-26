@@ -32,6 +32,10 @@ public class Synchronization {
 		@Override
 		public void run() {
 			running = true;
+
+			internal_clock_start = System.nanoTime();
+			sample_count = 0;
+
 			while(running) {
 				int in_available = Integer.MAX_VALUE;
 				int out_available = Integer.MAX_VALUE;
@@ -43,44 +47,69 @@ public class Synchronization {
 						in_available = Math.min(in_available, ad.available());
 				}
 
-				//System.out.println("Out available: " + out_available);
+				if(processing)
+					throw new RuntimeException("Should not happen");
 
 				if(in_available != Integer.MAX_VALUE) { // We have active input-source, we use that as a time-source
-					// TODO
-				} else if(out_available != Integer.MAX_VALUE) { // Only outputs, we use them as clock
-					if(!processing && out_available < buffer_size) { // TODO automatically minimize the data in the output buffer based on how much time the processing takes
-						//if(out_available < 1024) System.out.println(out_available);
+					if(in_available >= buffer_size) {
 						processing = true;
 						handler.needData();
-					} else if(processing && out_available < buffer_size / 2) { // Dangerous small amount of data left. We fake a frame so that no outputs/inputs starve/overflows
-						behind();
-						//dropFrame();
+						waitForData();
+						continue;
 					}
+				} else if(out_available != Integer.MAX_VALUE) { // Only output, using that as clock, where the output buffer blocking actually keeps us in in pace
+					processing = true;
+					handler.needData();
+					waitForData();
+					continue;
 				} else { // No input or outputs. Gotta use our own clock
-					long duration = (System.nanoTime() - start) / 1000; // in microseconds
+					if(internal_clock_start == 0) {
+						internal_clock_start = System.nanoTime();
+						continue;
+					}
+
+					long duration = (System.nanoTime() - internal_clock_start) / 1000; // in microseconds
 					long samples = (duration * sample_rate) / 1000000;
 					long sample_lag = samples - sample_count;
 
-					if(!processing & sample_lag > 0) { // TODO calculate a bit better, perhaps
+					if(sample_lag > 0) { // TODO calculate a bit better, perhaps
 						processing = true;
 						handler.needData();
-					} else if(sample_lag >= buffer_size) {
+						waitForData();
+						continue;
+					}/* else if(sample_lag >= buffer_size) {
 						behind(); // Hurry up, you are not fast enough
 						//dropFrame();
-					}
+					}*/
 				}
 
+				// If we get here, there is no input or output
 				try {
-					int wait_msec = (int)(Math.max(1, (buffer_size / (float)sample_rate) * 1000 / 10));
-					//if(!processing && running)
-					Thread.sleep(1);
-					/*else
-						while(processing && running)
-							Thread.sleep(wait_msec);*/
+					synchronized(this) {
+						wait(1);
+					}
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
-					return;
 				}
+			}
+		}
+
+		private void waitForData() {
+			try {
+				//int wait_msec = (int)(Math.max(1, (buffer_size / (float)sample_rate) * 1000 / 10));
+				//if(!processing && running) {
+					synchronized (this) {
+						while(processing && running)
+							wait(1000);
+					}
+				//}
+				/*else
+					while(processing && running)
+						Thread.sleep(wait_msec);*/
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return;
 			}
 		}
 	}
@@ -91,7 +120,7 @@ public class Synchronization {
 	private final int sample_rate; // Only used when using the internal timer, as we then need to know the duration of the buffer
 	private final Handler handler;
 	private int buffer_size;
-	private final long start = System.nanoTime();
+	private long internal_clock_start;
 	private volatile long sample_count; // samples from start. Counts upwards
 	private boolean reported_behind;
 
@@ -123,6 +152,12 @@ public class Synchronization {
 		reported_behind = false;
 
 		sample_count += buffer_size;
+
+		//System.out.printf("Process time: %d ms\n", System.currentTimeMillis() - poller.last_request);
+
+		synchronized (poller) {
+			poller.notifyAll();
+		}
 	}
 
 	public void end() {

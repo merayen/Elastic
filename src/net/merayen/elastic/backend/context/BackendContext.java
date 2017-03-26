@@ -32,7 +32,7 @@ public class BackendContext {
 			}
 		});
 
-		dispatch.launch();
+		dispatch.launch(message);
 
 		logicnode_supervisor = new Supervisor(env, new Supervisor.Handler() {
 			@Override

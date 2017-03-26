@@ -39,23 +39,12 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	}
 
 	@Override
-	protected void onBegin() {
-		Configuration c = (Configuration)configuration;
-
-		try {
-			line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), 1024*16);
-		} catch (LineUnavailableException e) {
-			throw new RuntimeException("Can not open audio output line with current configuration");
-		}
+	public void onReconfigure() {
+		line.close();
 	}
 
 	@Override
 	public int available() {
-		Configuration c = (Configuration)configuration;
-		/*int buff = line.getBufferSize();
-		int avail = line.available();
-		return (buff - avail) / c.channels / (c.depth / 8);*/
-
 		return (int)(written_frame_position - line.getLongFramePosition());
 	}
 
@@ -94,15 +83,14 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	public void onWrite(float[] audio) {
 		Configuration c = (Configuration)configuration;
 
-		if(!line.isActive())
-			line.start();
-
 		if(buffer.length * c.depth / 8 != audio.length) 
 			buffer = new byte[audio.length * c.depth / 8];
 
 		convertToBytes(audio, buffer, c.channels, c.depth);
 
 		written_frame_position += audio.length / c.channels;
+
+		prepareLine(buffer.length);
 
 		line.write(buffer, 0, buffer.length);
 	}
@@ -115,8 +103,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	}
 
 	public void directWrite(byte[] audio) {
-		if(!line.isActive())
-			line.start();
+		prepareLine(audio.length);
 
 		line.write(audio, 0, audio.length);
 	}
@@ -143,5 +130,21 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 			result.add(new Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
 
 		return result;
+	}
+
+	private void prepareLine(int buffer_size) {
+		Configuration c = (Configuration)configuration;
+
+		if(!line.isOpen() || line.getBufferSize() != buffer_size) {
+			try {
+				System.out.printf("Reconfiggen %s, buffer_size=%d\n", c.getDescription(), buffer_size);
+				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), buffer.length);
+			} catch (LineUnavailableException e) {
+				throw new RuntimeException("Can not open audio output line with current configuration");
+			}
+		}
+
+		if(!line.isActive())
+			line.start();
 	}
 }

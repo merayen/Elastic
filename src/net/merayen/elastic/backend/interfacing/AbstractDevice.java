@@ -20,8 +20,16 @@ public abstract class AbstractDevice {
 	 * Called when device is asked to start processing.
 	 * Not required to start, but if devices has some start-up time, it is advised
 	 * to at least prepare the device in this call.
+	 * 
+	 * XXX remove? Every device should read their config and check for changes, and care if only necessary?
 	 */
-	protected abstract void onBegin();
+	//protected abstract void onBegin();
+
+	/**
+	 * Called when a configuration has been changed.
+	 * Device should be re-inited to confirm to the new configuration.
+	 */
+	public abstract void onReconfigure();
 
 	protected abstract void onStop();
 
@@ -94,7 +102,6 @@ public abstract class AbstractDevice {
 		if(dead)
 			throw new RuntimeException("Device has been closed. Future processing is not possible");
 
-		onBegin();
 		running = true;
 	}
 

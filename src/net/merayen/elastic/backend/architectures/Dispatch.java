@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures;
 
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -63,11 +64,11 @@ public class Dispatch {
 	/**
 	 * Sends the NetList to the chosen architecture and begins processing.
 	 */
-	public void launch() {
+	public void launch(InitBackendMessage message) {
 		if(executor != null)
 			throw new RuntimeException("Already started");
 
-		executor = architecture.instance.getExecutor();
+		executor = architecture.instance.getExecutor(message);
 		executor.setHandler(new AbstractExecutor.Handler() {
 
 			@Override

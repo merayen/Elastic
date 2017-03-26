@@ -1,7 +1,5 @@
 package net.merayen.elastic.system.actions;
 
-import java.io.File;
-
 import net.merayen.elastic.system.Action;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.ui.InitUIMessage;
@@ -26,6 +24,6 @@ public class LoadProject extends Action {
 
 		system.sendMessageToUI(new InitUIMessage());
 
-		system.sendMessageToBackend(new InitBackendMessage(44100, 16, 512, path));
+		system.sendMessageToBackend(new InitBackendMessage(44100, 16, 2048, path));
 	}
 }

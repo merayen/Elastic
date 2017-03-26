@@ -77,7 +77,7 @@ public class NewProject extends Action {
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(3).node_id, "input"));
-		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(1).node_id, "frequency"));
+		//system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(1).node_id, "frequency"));
 
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "data.frequency", 1f));
 

@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures;
 
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class AbstractExecutor {
@@ -9,6 +10,13 @@ public abstract class AbstractExecutor {
 		 * Do not do any time consuming tasks in this callback, rather queue the message and notify someone to react on it.
 		 */
 		public void onMessageFromProcessor(Postmaster.Message message);
+	}
+
+	protected final int sample_rate, sample_buffer_size;
+
+	public AbstractExecutor(InitBackendMessage message) {
+		sample_rate = message.sample_rate;
+		sample_buffer_size = message.buffer_size;
 	}
 
 	private Handler handler;

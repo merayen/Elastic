@@ -78,11 +78,14 @@ public class Mixer { // Rename to e.g "IODispatch"?
 	 * Reconfigures all devices
 	 */
 	private void reconfigure() {
-		for(AbstractDevice device : device_scanner.getDevices())
+		for(AbstractDevice device : device_scanner.getDevices()) {
 			if(device instanceof AudioOutputDevice)
 				((AudioOutputDevice)device).configure(sample_rate, audio_channels, audio_depth);
 			else if(device instanceof AudioInputDevice)
 				((AudioInputDevice)device).configure(sample_rate, audio_channels, audio_depth);
+
+			device.onReconfigure(); // Notify device that we might have changed something
+		}
 	}
 
 	public List<AbstractDevice> getAvailableDevices() {
@@ -181,8 +184,6 @@ public class Mixer { // Rename to e.g "IODispatch"?
 	}
 
 	private void sendToDevices(Map<AbstractDevice, DataType> data) {
-		//long t = System.currentTimeMillis();
-		//int avail = 0;
 		for(Map.Entry<AbstractDevice, DataType> o : data.entrySet()) {
 			if(!o.getKey().isRunning())
 				o.getKey().begin();
