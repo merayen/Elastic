@@ -14,7 +14,7 @@ public class Environment extends LogicEnvironment {
 	public final Mixer mixer;
 	public final int sample_rate;
 	public final int buffer_size;
-	public Project project; // TODO add a middle-class that communicates with the DataManager?
+	public final Project project; // TODO add a middle-class that communicates with the DataManager?
 
 	public Environment(Mixer mixer, Synchronization synchronization, int sample_rate, int buffer_size, Project project) {
 		this.synchronization = synchronization;

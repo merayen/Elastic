@@ -37,7 +37,7 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onParameter(String key, Object value) {
 		if(key.equals("data.frequency"))
-			frequency = (float)value;
+			frequency = ((Number)value).floatValue();
 
 		if(key.equals("data.curve")) {
 			setCurveWave(((FloatArray)value).data);

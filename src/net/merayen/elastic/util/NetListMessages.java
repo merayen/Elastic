@@ -29,7 +29,7 @@ public class NetListMessages {
 		for(Node node : netlist.getNodes()) {
 
 			// Restore the Node() itself
-			result.add(new CreateNodeMessage(node.getID(), (String)node.properties.get("name"), (Integer)node.properties.get("version"), np.getGroup(node)));
+			result.add(new CreateNodeMessage(node.getID(), (String)node.properties.get("name"), ((Number)node.properties.get("version")).intValue(), np.getGroup(node)));
 
 			// Restore the Node()'s ports
 			for(String port : netlist.getPorts(node)) {

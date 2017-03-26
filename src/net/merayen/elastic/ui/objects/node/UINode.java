@@ -110,9 +110,9 @@ public abstract class UINode extends UIObject {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 
 			if(m.key.equals("ui.java.translation.x") && !titlebar.isDragging())
-				translation.x = (Float)m.value;
+				translation.x = ((Number)m.value).floatValue();
 			else if(m.key.equals("ui.java.translation.y") && !titlebar.isDragging())
-				translation.y = (Float)m.value;
+				translation.y = ((Number)m.value).floatValue();
 
 			onMessage(m);
 

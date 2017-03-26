@@ -22,7 +22,7 @@ public class ElasticSystem {
 	}
 
 	Supervisor ui;
-	BackendContext backend;
+	volatile BackendContext backend;
 	private final TapSpreader<Postmaster.Message> from_ui = new TapSpreader<>();
 	private final TapSpreader<Postmaster.Message> from_backend = new TapSpreader<>();
 
@@ -58,7 +58,7 @@ public class ElasticSystem {
 				@Override
 				public void onMessageToBackend(Message message) { // Note! This is called from the UI-thread
 					if(backend != null)
-						backend.message_handler.handleFromUI(message);
+						backend.message_handler.sendToBackend(message);
 
 					from_ui.push(message);
 				}
@@ -94,16 +94,15 @@ public class ElasticSystem {
 			}
 		} else if(backend == null) {
 			System.out.println("Ignoring message as backend is not running: " + message);
+			return;
 		}
-				
 
-		if(backend != null && message instanceof EndBackendMessage) {
+		if(message instanceof EndBackendMessage) {
 			backend.end();
 			backend = null;
 		}
 
-		if(backend != null)
-			backend.message_handler.handleFromUI(message);
+		backend.message_handler.sendToBackend(message);
 	}
 
 	public Tap<Postmaster.Message> tapIntoMessagesFromUI() {

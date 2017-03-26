@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.context;
 
-import org.json.simple.JSONObject;
-
 import net.merayen.elastic.backend.architectures.Architecture;
 import net.merayen.elastic.backend.architectures.Dispatch;
 import net.merayen.elastic.backend.logicnodes.Environment;
@@ -53,22 +51,17 @@ public class BackendContext {
 				env.synchronization.push();
 			}
 		});
-
-		env.synchronization.start();
 	}
 
-	/**
-	 * Load from a dump.
-	 */
-	public static BackendContext load(JSONObject dump) {
-		return null; // TODO
+	public void start() {
+		env.synchronization.start();
 	}
 
 	public Supervisor getLogicNodeList() {
 		return logicnode_supervisor;
 	}
 
-	public void update() {
+	public synchronized void update() {
 		message_handler.executeMessagesToBackend();
 		message_handler.executeMessagesFromProcessor();
 	}

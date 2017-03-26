@@ -27,7 +27,5 @@ public class LoadProject extends Action {
 		system.sendMessageToUI(new InitUIMessage());
 
 		system.sendMessageToBackend(new InitBackendMessage(44100, 16, 512, path));
-
-		
 	}
 }

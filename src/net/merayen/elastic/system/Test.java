@@ -9,6 +9,7 @@ import java.util.Comparator;
 
 import net.merayen.elastic.system.actions.LoadProject;
 import net.merayen.elastic.system.actions.NewProject;
+import net.merayen.elastic.system.intercom.backend.StartBackendMessage;
 import net.merayen.elastic.system.intercom.backend.TidyProjectMessage;
 
 public class Test {
@@ -40,6 +41,8 @@ public class Test {
 
 		system.runAction(new NewProject(PROJECT_PATH));
 
+		system.sendMessageToBackend(new StartBackendMessage());
+
 		roflmao roflmao = new roflmao();
 		roflmao.t = System.currentTimeMillis() + 1 * 2000;
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
@@ -48,7 +51,7 @@ public class Test {
 		system.backend.getEnvironment().project.data.storage.createView().writeFile("mappe/test.txt").write("Hei på deg".getBytes(Charset.forName("UTF-8")));
 
 		// Now just run
-		roflmao.t = System.currentTimeMillis() + 5000000;
+		roflmao.t = System.currentTimeMillis() + 2000;
 		waitFor(() -> System.currentTimeMillis() > roflmao.t);
 
 		// Tidy project
@@ -59,6 +62,8 @@ public class Test {
 
 		// Load the project
 		system.runAction(new LoadProject(PROJECT_PATH));
+
+		system.sendMessageToBackend(new StartBackendMessage());
 
 		// Run "forever", project should be identical to the one created at the beginning
 		roflmao.t = System.currentTimeMillis() + 1000 * 3600;

@@ -34,8 +34,8 @@ public class InputSignalParametersProcessor {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> parameters = (Map<String, Object>)p_object;
 
-			float amplitude = (float)parameters.get("amplitude");
-			float offset = (float)parameters.get("offset");
+			float amplitude = ((Number)parameters.get("amplitude")).floatValue();
+			float offset = ((Number)parameters.get("offset")).floatValue();
 
 			for(int channel = 0; channel < input.length; channel++) {
 				for(int i = start; i < start + length; i++) {

@@ -9,6 +9,7 @@ import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.ResetNetListMessage;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
+import net.merayen.elastic.system.intercom.backend.StartBackendMessage;
 import net.merayen.elastic.system.intercom.backend.TidyProjectMessage;
 import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.NetListMessages;
@@ -39,10 +40,14 @@ public class MessageHandler {
 	}
 
 	/**
-	 * Handles messages sent from UI.
+	 * Handles messages to backend.
 	 */
-	public void handleFromUI(Postmaster.Message message) {
+	public void sendToBackend(Postmaster.Message message) {
 		to_backend.send(message);
+	}
+
+	public void sendToBackend(List<Postmaster.Message> messages) {
+		to_backend.send(messages);
 	}
 
 	void executeMessagesToBackend() {
@@ -65,6 +70,10 @@ public class MessageHandler {
 
 			} else if(message instanceof InitBackendMessage) {
 				new LoadProjectAction().start(backend_context);
+
+			} else if(message instanceof StartBackendMessage) {
+				backend_context.start();
+
 			} else {
 				backend_context.logicnode_supervisor.handleMessageFromUI(message);
 			}

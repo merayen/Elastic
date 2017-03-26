@@ -26,8 +26,6 @@ public class Supervisor {
 		public void onProcessDone();
 	}
 
-	private final Object PROCESS_LOCK = new Object();
-
 	private final Handler handler;
 	final LogicEnvironment env;
 
@@ -58,86 +56,81 @@ public class Supervisor {
 		logicnode_list.createLogicNode(node);
 	}
 
-	public void handleMessageFromUI(Postmaster.Message message) {
-		synchronized (PROCESS_LOCK) {
-			if(is_processing) {
-				while_processing_queue.send(message);
-			} else {
-				executeMessageFromUI(message);
-			}
+	public synchronized void handleMessageFromUI(Postmaster.Message message) {
+		if(is_processing) {
+			while_processing_queue.send(message);
+		} else {
+			executeMessageFromUI(message);
 		}
 	}
 
-	private void executeMessageFromUI(Postmaster.Message message) {
-		synchronized (PROCESS_LOCK) {
-			NetList netlist = ((Environment)env).project.getNetList();
+	private synchronized void executeMessageFromUI(Postmaster.Message message) {
+		NetList netlist = ((Environment)env).project.getNetList();
 
-			if(message instanceof CreateNodeMessage) {
-				CreateNodeMessage m = (CreateNodeMessage)message;
-				createNode(m.node_id, m.name, m.version);
-				return;
+		if(message instanceof CreateNodeMessage) {
+			CreateNodeMessage m = (CreateNodeMessage)message;
+			createNode(m.node_id, m.name, m.version);
+			return;
 
-			} else if(message instanceof NodeParameterMessage) {
-				NodeParameterMessage m = (NodeParameterMessage)message;
+		} else if(message instanceof NodeParameterMessage) {
+			NodeParameterMessage m = (NodeParameterMessage)message;
 
-				NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
+			NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
 
-				logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
+			logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
 
-				return;
+			return;
 
-			} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
-				NodeConnectMessage m = (NodeConnectMessage)message;
-				NodeProperties np = new NodeProperties(netlist);
+		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
+			NodeConnectMessage m = (NodeConnectMessage)message;
+			NodeProperties np = new NodeProperties(netlist);
 
-				// Validate the connection
-				boolean output_a = np.isOutput(netlist.getPort(m.node_a, m.port_a));
-				boolean output_b = np.isOutput(netlist.getPort(m.node_b, m.port_b));
+			// Validate the connection
+			boolean output_a = np.isOutput(netlist.getPort(m.node_a, m.port_a));
+			boolean output_b = np.isOutput(netlist.getPort(m.node_b, m.port_b));
 
-				if(output_a == output_b)
-					return; // Only inputs and outputs can be connected
+			if(output_a == output_b)
+				return; // Only inputs and outputs can be connected
 
-				if(m.node_a.equals(m.node_b))
-					return; // Node can not be connected to itself
+			if(m.node_a.equals(m.node_b))
+				return; // Node can not be connected to itself
 
-				if(!output_a && netlist.getConnections(netlist.getNode(m.node_a), m.port_a).size() > 0)
-					return; // Input ports can only have 1 line connected
+			if(!output_a && netlist.getConnections(netlist.getNode(m.node_a), m.port_a).size() > 0)
+				return; // Input ports can only have 1 line connected
 
-				if(!output_b && netlist.getConnections(netlist.getNode(m.node_b), m.port_b).size() > 0)
-					return; // Input ports can only have 1 line connected
+			if(!output_b && netlist.getConnections(netlist.getNode(m.node_b), m.port_b).size() > 0)
+				return; // Input ports can only have 1 line connected
 
-				logicnode_list.get(m.node_a).notifyConnect(m.port_a);
-				logicnode_list.get(m.node_b).notifyConnect(m.port_b);
+			logicnode_list.get(m.node_a).notifyConnect(m.port_a);
+			logicnode_list.get(m.node_b).notifyConnect(m.port_b);
 
-				NodeConnectMessage connect_message = new NodeConnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
-				handler.sendMessageToUI(connect_message); // Acknowledge connection
-				handler.sendMessageToProcessor(connect_message);
+			NodeConnectMessage connect_message = new NodeConnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
+			handler.sendMessageToUI(connect_message); // Acknowledge connection
+			handler.sendMessageToProcessor(connect_message);
 
-			} else if(message instanceof NodeDisconnectMessage) { // Notifies LogicNodes about changing of connections
-				NodeDisconnectMessage m = (NodeDisconnectMessage)message;
-				logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
-				logicnode_list.get(m.node_b).notifyDisconnect(m.port_b);
+		} else if(message instanceof NodeDisconnectMessage) { // Notifies LogicNodes about changing of connections
+			NodeDisconnectMessage m = (NodeDisconnectMessage)message;
+			logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
+			logicnode_list.get(m.node_b).notifyDisconnect(m.port_b);
 
-				NodeDisconnectMessage disconnect_message = new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
-				handler.sendMessageToUI(disconnect_message); // Acknowledge disconnection
-				handler.sendMessageToProcessor(disconnect_message); // Acknowledge disconnection
+			NodeDisconnectMessage disconnect_message = new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
+			handler.sendMessageToUI(disconnect_message); // Acknowledge disconnection
+			handler.sendMessageToProcessor(disconnect_message); // Acknowledge disconnection
 
-			} else if(message instanceof RemoveNodeMessage) {
-				RemoveNodeMessage m = (RemoveNodeMessage)message;
-				logicnode_list.get(m.node_id).onRemove();
-				logicnode_list.remove(m.node_id);
-				handler.sendMessageToUI(new RemoveNodeMessage(m.node_id));
-				handler.sendMessageToProcessor(new RemoveNodeMessage(m.node_id));
+		} else if(message instanceof RemoveNodeMessage) {
+			RemoveNodeMessage m = (RemoveNodeMessage)message;
+			logicnode_list.get(m.node_id).onRemove();
+			logicnode_list.remove(m.node_id);
+			handler.sendMessageToUI(new RemoveNodeMessage(m.node_id));
+			handler.sendMessageToProcessor(new RemoveNodeMessage(m.node_id));
 
-			} else if(message instanceof ProcessMessage) {
-				doProcessFrame((ProcessMessage)message);
-			}
-
-			// Apply the changes to the NetList itself
-			NetListMessages.apply(netlist, message);
+		} else if(message instanceof ProcessMessage) {
+			doProcessFrame((ProcessMessage)message);
 		}
 
-		// XXX Should we handle adding and removing of nodes here? Hmm.
+		// Apply the changes to the NetList itself
+		NetListMessages.apply(netlist, message);
+
 		// Connecting/disconnect should probably not be handled here in any way, other than notifying the LogicNode about it. Yes.
 	}
 
@@ -158,32 +151,29 @@ public class Supervisor {
 	/**
 	 * Messages sent from processing should be sent into this function.
 	 */
-	public void handleResponseFromProcessor(ProcessMessage message) {
-		synchronized (PROCESS_LOCK) {
-			NetList netlist = ((Environment)env).project.getNetList();
+	public synchronized void handleResponseFromProcessor(ProcessMessage message) {
+		NetList netlist = ((Environment)env).project.getNetList();
 
-			if(!is_processing)
-				throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
+		if(!is_processing)
+			throw new RuntimeException("Should not happen"); // Got response from processor without requesting it
 
-			// Call all LogicNodes to work on the frame
-			for(Node node : netlist.getNodes()) {
-				BaseLogicNode bln = logicnode_list.get(node.getID());
-				bln.onFinishFrame((PackDict)message.dict.data.get(node.getID()));
-			}
+		// Call all LogicNodes to work on the frame
+		for(Node node : netlist.getNodes()) {
+			BaseLogicNode bln = logicnode_list.get(node.getID());
+			bln.onFinishFrame((PackDict)message.dict.data.get(node.getID()));
+		}
 
-			handler.onProcessDone();
+		handler.onProcessDone();
 
-			// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
-			is_processing = false;
-			Postmaster.Message m;
-			while((m = while_processing_queue.receive()) != null) {
-				handleMessageFromUI(m);
-			}
+		// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
+		is_processing = false;
+		Postmaster.Message m;
+		while((m = while_processing_queue.receive()) != null) {
+			handleMessageFromUI(m);
 		}
 	}
 
 	private void doProcessFrame(ProcessMessage message) {
-		System.out.println("processing");
 		NetList netlist = ((Environment)env).project.getNetList();
 		if(is_processing)
 			throw new RuntimeException("Already processing");
@@ -197,6 +187,9 @@ public class Supervisor {
 			BaseLogicNode bln = logicnode_list.get(n.getID());
 
 			PackDict p = new PackDict();
+
+			if(bln == null)
+				System.console();
 
 			if(!bln.inited) {
 				bln.inited = true;

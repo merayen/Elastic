@@ -27,9 +27,8 @@ public class Project {
 	}
 
 	/**
-	 * Retrieve the current active NetList. Feel free to change it, though
-	 * calling save() will overwrite the current NetList. Do checkpoint.create()
-	 * first.
+	 * Retrieve the current active NetList that can be freely changed.
+	 * Its content will be saved when save() is called.
 	 */
 	public NetList getNetList() {
 		return data.getNetList();

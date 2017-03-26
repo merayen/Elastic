@@ -20,7 +20,7 @@ public class ProjectData {
 	public final Storage storage;
 	public final RevisionTree revision_tree;
 	public final ResourceManager resource_manager;
-	private NetList netlist;
+	private NetList netlist = new NetList();
 
 	private final boolean new_project;
 
@@ -103,21 +103,24 @@ public class ProjectData {
 	 * newRevision is called before Project().save().
 	 */
 	public NetList getNetList() {
-		if (netlist == null) {
-			if(revision_tree.getCurrent() == null) {
-				netlist = new NetList();
-			} else {
-				String path = "netlists/" + revision_tree.getCurrent().id;
-				try (StorageView sv = storage.createView()) {
-					String s = new String(sv.readFile(path).read());
-					netlist = net.merayen.elastic.netlist.Serializer.restore((JSONObject)new org.json.simple.parser.JSONParser().parse(s));
-				} catch (ParseException e) {
-					throw new RuntimeException("Failed to load NetList from project: " + path);
-				}
-			}
-		}
-
 		return netlist;
+	}
+
+	/**
+	 * Returns the current, raw NetList from the current revision.
+	 * Returned NetList is always a new instance.
+	 */
+	public NetList getRawNetList() {
+		if(revision_tree.getCurrent() == null)
+			return new NetList();
+
+		String path = "netlists/" + revision_tree.getCurrent().id;
+		try (StorageView sv = storage.createView()) {
+			String s = new String(sv.readFile(path).read());
+			return net.merayen.elastic.netlist.Serializer.restore((JSONObject)new org.json.simple.parser.JSONParser().parse(s));
+		} catch (ParseException e) {
+			throw new RuntimeException("Failed to load NetList from project: " + path);
+		}
 	}
 
 	void tidy() {
