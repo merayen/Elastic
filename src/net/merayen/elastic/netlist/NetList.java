@@ -259,9 +259,9 @@ public final class NetList {
 
 	private boolean hasConnection(Node node_a, String port_a, Node node_b, String port_b) {
 		for(Line l : getConnections(node_a, port_a))
-			if((l.node_a == node_a && l.port_a == port_a) && (l.node_b == node_b && l.port_b.equals(port_b)))
+			if((l.node_a == node_a && l.port_a.equals(port_a)) && (l.node_b == node_b && l.port_b.equals(port_b)))
 				return true;
-			else if((l.node_a == node_b && l.port_a == port_b) && (l.node_b == node_a && l.port_b.equals(port_a)))
+			else if((l.node_a == node_b && l.port_a.equals(port_b)) && (l.node_b == node_a && l.port_b.equals(port_a)))
 				return true;
 
 		return false;

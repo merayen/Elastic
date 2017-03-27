@@ -97,16 +97,10 @@ public class Synchronization {
 
 		private void waitForData() {
 			try {
-				//int wait_msec = (int)(Math.max(1, (buffer_size / (float)sample_rate) * 1000 / 10));
-				//if(!processing && running) {
-					synchronized (this) {
-						while(processing && running)
-							wait(1000);
-					}
-				//}
-				/*else
+				synchronized (this) {
 					while(processing && running)
-						Thread.sleep(wait_msec);*/
+						wait(100);
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return;
