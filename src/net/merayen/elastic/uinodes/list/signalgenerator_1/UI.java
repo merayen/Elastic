@@ -35,12 +35,15 @@ public class UI extends UINode {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
+		//System.out.println(message);
 		if(message.key.equals("data.frequency")) {
 			((PopupParameter1D)frequency_port_parameter.not_connected).setValue((float)(Math.pow(((Number)message.value).floatValue(), 1/4.301029995663981) / 10.0));
 			updateFrequencyText();
 		}
-		if(message.key.equals("data.curve")) {
+		else if(message.key.equals("data.curve")) {
 			curve.setPoints((List<Number>)message.value);
+		} else if(message.key.equals("data.InputSignalParameters:frequency")) {
+			((InputSignalParameters)frequency_port_parameter.connected).handleMessage(message);
 		}
 	}
 
@@ -104,7 +107,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onData(NodeDataMessage message) {
-		System.out.println(message);
+		//System.out.println(message);
 	}
 
 	@Override

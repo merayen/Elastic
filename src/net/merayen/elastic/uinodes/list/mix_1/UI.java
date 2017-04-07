@@ -11,6 +11,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onInit() {
+		super.onInit();
 		width = 100;
 		height = 100;
 

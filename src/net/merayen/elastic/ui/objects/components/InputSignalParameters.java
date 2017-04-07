@@ -1,7 +1,9 @@
 package net.merayen.elastic.ui.objects.components;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 
@@ -11,6 +13,9 @@ import net.merayen.elastic.ui.objects.node.UINode;
 public class InputSignalParameters extends UIObject {
 	public final PopupParameter1D amplitude = new PopupParameter1D();
 	public final PopupParameter1D offset = new PopupParameter1D();
+
+	private float amplitude_value;
+	private float offset_value;
 
 	public final String name;
 	private final UINode node;
@@ -40,6 +45,7 @@ public class InputSignalParameters extends UIObject {
 		amplitude.setHandler(new PopupParameter1D.Handler() {
 			@Override
 			public void onMove(float value) {
+				amplitude_value = (float)Math.pow(value * 2, 14);
 				updateTexts();
 				sendParameters();
 			}
@@ -51,6 +57,8 @@ public class InputSignalParameters extends UIObject {
 		offset.setHandler(new PopupParameter1D.Handler() {
 			@Override
 			public void onMove(float value) {
+				offset_value = (float)(Math.pow(Math.max(0.5f, value) * 2, 14) - Math.pow(Math.max(0.5f, 1-value) * 2, 14));
+				System.out.println(value + " hoh " + offset_value);
 				updateTexts();
 				sendParameters();
 			}
@@ -59,6 +67,7 @@ public class InputSignalParameters extends UIObject {
 			public void onChange(float value) {}
 		});
 
+		System.out.println("Voff");
 		amplitude.setValue(0.5f);
 		offset.setValue(0.5f);
 
@@ -71,12 +80,36 @@ public class InputSignalParameters extends UIObject {
 	}
 
 	public float getAmplitude() {
-		return (float)Math.pow(amplitude.getValue() * 2, 14);
+		return amplitude_value;
+	}
+
+	private void setAmplitude(float v) {
+		amplitude.setValue((float)Math.pow(v, 1/14.0) / 2);
+		amplitude_value = v;
 	}
 
 	public float getOffset() {
-		float v = offset.getValue();
-		return (float)(Math.pow(Math.max(0.5f, v) * 2, 14) + -Math.pow(Math.max(0.5f, 1-v) * 2, 14));
+		return offset_value;
+	}
+
+	private void setOffset(float v) {
+		float value = (float)(Math.pow(Math.max(1, v), 1/14.0) - Math.pow(Math.max(1, -v), 1/14.0)) / 2 + .5f;
+		offset.setValue(value);
+		offset_value = v;
+		//System.out.println(v + " lol " + value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void handleMessage(NodeParameterMessage message) {
+		if(message.key.equals("data.InputSignalParameters:" + name)) {
+			//double a = ((Number)((Map<String,Object>)message.value).get("amplitude")).doubleValue();
+			//amplitude.setValue((float)Math.pow(a, 1 / 14.0));
+			System.out.println("Mjau");
+			setAmplitude(((Number)((Map<String,Object>)message.value).get("amplitude")).floatValue());
+			setOffset(((Number)((Map<String,Object>)message.value).get("offset")).floatValue());
+
+			updateTexts();
+		}
 	}
 
 	private void updateTexts() {

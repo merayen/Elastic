@@ -46,7 +46,8 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 			public void onMove() {
 				box.popup.translation.x = 0; // Constrain X-axis
 				if(handler != null)
-					handler.onMove(box.popup.translation.y / popup_height);
+					//handler.onMove(box.popup.translation.y / popup_height);
+					handler.onMove(box.getY());
 			}
 
 			@Override
@@ -83,6 +84,7 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 	}
 
 	public void setValue(float value) {
+		System.out.println("Box setY " + this + " " + value);
 		box.setY(value);
 	}
 

@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -23,6 +24,12 @@ public abstract class UINode extends UIObject {
 	protected Titlebar titlebar;
 	protected ArrayList<UIPort> ports = new ArrayList<UIPort>();
 
+	/**
+	 * As we may not be initialized when receiving messages, we store them in this array
+	 * and execute them whenever initialized.
+	 */
+	private List<Postmaster.Message> queued_messages;
+
 	// Dumping and restoring of simple things like position and scaling. All other dumping should be done by GlueNode (and maybe netnode too)
 	protected void onDump(JSONObject state) {}
 	protected void onRestore(JSONObject state) {}
@@ -37,7 +44,15 @@ public abstract class UINode extends UIObject {
 	public UINode() {
 		titlebar = new Titlebar();
 		add(titlebar);
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
 		inited = true;
+		if(queued_messages != null)
+			for(Postmaster.Message message : queued_messages)
+				executeMessage(message);
 	}
 
 	@Override
@@ -106,6 +121,13 @@ public abstract class UINode extends UIObject {
 	}
 
 	public void executeMessage(Postmaster.Message message) {
+		if(!inited) {
+			if(queued_messages == null)
+				queued_messages = new ArrayList<>();
+			queued_messages.add(message);
+			return;
+		}
+
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 
