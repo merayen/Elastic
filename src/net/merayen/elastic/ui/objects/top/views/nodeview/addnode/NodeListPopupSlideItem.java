@@ -47,15 +47,6 @@ class NodeListPopupSlideItem extends PopupSlideItem {
 			list.reflowVertically(4);
 		}
 
-		@Override
-		protected void onDraw() {
-			super.onDraw();
-
-			draw.setColor(200, 200, 200);
-			draw.setFont("", 12);
-			draw.text("Will show nodes in category chosen", 20, 20);
-		}
-
 		private void addNode(BaseInfo info) {
 			list.addItem(0, new UIListItem() {
 				MouseHandler mouse = new MouseHandler(this);

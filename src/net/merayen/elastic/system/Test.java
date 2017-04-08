@@ -58,29 +58,7 @@ public class Test {
 			system.runAction(new NewProject(PROJECT_PATH));
 		}
 
-		//system.sendMessageToBackend(new StartBackendMessage());
-
 		roflmao roflmao = new roflmao();
-		roflmao.t = System.currentTimeMillis() + 1 * 2000;
-		waitFor(() -> System.currentTimeMillis() > roflmao.t);
-
-		// Create a file in the project path, which should get deleted by the tidy operation below
-		system.backend.getEnvironment().project.data.storage.createView().writeFile("mappe/test.txt").write("Hei på deg".getBytes(Charset.forName("UTF-8")));
-
-		// Now just run
-		roflmao.t = System.currentTimeMillis() + 2000;
-		waitFor(() -> System.currentTimeMillis() > roflmao.t);
-
-		system.sendMessageToBackend(new CreateCheckpointMessage());
-
-		// Tidy project
-		system.sendMessageToBackend(new TidyProjectMessage());
-
-		roflmao.t = System.currentTimeMillis() + 1000;
-		waitFor(() -> System.currentTimeMillis() > roflmao.t);
-
-		// Load the project
-		system.runAction(new LoadProject(PROJECT_PATH));
 
 		system.sendMessageToBackend(new StartBackendMessage());
 
@@ -91,8 +69,6 @@ public class Test {
 			System.out.println("Saving checkpoint");
 			system.sendMessageToBackend(new CreateCheckpointMessage());
 		}
-
-		//system.end();
 	}
 
 	interface Func {

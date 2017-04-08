@@ -37,6 +37,7 @@ public class UI extends UINode {
 	protected void onMessage(NodeParameterMessage message) {
 		//System.out.println(message);
 		if(message.key.equals("data.frequency")) {
+			System.out.println(message.value);
 			((PopupParameter1D)frequency_port_parameter.not_connected).setValue((float)(Math.pow(((Number)message.value).floatValue(), 1/4.301029995663981) / 10.0));
 			updateFrequencyText();
 		}
@@ -106,9 +107,7 @@ public class UI extends UINode {
 	}
 
 	@Override
-	protected void onData(NodeDataMessage message) {
-		//System.out.println(message);
-	}
+	protected void onData(NodeDataMessage message) {}
 
 	@Override
 	protected void onRemovePort(UIPort port) {}

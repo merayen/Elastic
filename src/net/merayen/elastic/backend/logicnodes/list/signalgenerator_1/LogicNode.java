@@ -16,12 +16,12 @@ public class LogicNode extends BaseLogicNode {
 			format = Format.AUDIO;
 			output = true;
 		}});
+
+		set("data.frequency", 440.0f);
 	}
 
 	@Override
-	protected void onInit() {
-		set("data.frequency", 440.0f);
-	}
+	protected void onInit() {}
 
 	@Override
 	protected void onParameterChange(String key, Object value) { // Parameter change from UI
