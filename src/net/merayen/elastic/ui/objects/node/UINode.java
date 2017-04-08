@@ -50,9 +50,6 @@ public abstract class UINode extends UIObject {
 	protected void onInit() {
 		super.onInit();
 		inited = true;
-		if(queued_messages != null)
-			for(Postmaster.Message message : queued_messages)
-				executeMessage(message);
 	}
 
 	@Override
@@ -121,13 +118,6 @@ public abstract class UINode extends UIObject {
 	}
 
 	public void executeMessage(Postmaster.Message message) {
-		if(!inited) {
-			if(queued_messages == null)
-				queued_messages = new ArrayList<>();
-			queued_messages.add(message);
-			return;
-		}
-
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 

@@ -58,7 +58,6 @@ public class InputSignalParameters extends UIObject {
 			@Override
 			public void onMove(float value) {
 				offset_value = (float)(Math.pow(Math.max(0.5f, value) * 2, 14) - Math.pow(Math.max(0.5f, 1-value) * 2, 14));
-				System.out.println(value + " hoh " + offset_value);
 				updateTexts();
 				sendParameters();
 			}
@@ -66,10 +65,6 @@ public class InputSignalParameters extends UIObject {
 			@Override
 			public void onChange(float value) {}
 		});
-
-		System.out.println("Voff");
-		amplitude.setValue(0.5f);
-		offset.setValue(0.5f);
 
 		updateTexts();
 	}
@@ -96,15 +91,11 @@ public class InputSignalParameters extends UIObject {
 		float value = (float)(Math.pow(Math.max(1, v), 1/14.0) - Math.pow(Math.max(1, -v), 1/14.0)) / 2 + .5f;
 		offset.setValue(value);
 		offset_value = v;
-		//System.out.println(v + " lol " + value);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void handleMessage(NodeParameterMessage message) {
 		if(message.key.equals("data.InputSignalParameters:" + name)) {
-			//double a = ((Number)((Map<String,Object>)message.value).get("amplitude")).doubleValue();
-			//amplitude.setValue((float)Math.pow(a, 1 / 14.0));
-			System.out.println("Mjau");
 			setAmplitude(((Number)((Map<String,Object>)message.value).get("amplitude")).floatValue());
 			setOffset(((Number)((Map<String,Object>)message.value).get("offset")).floatValue());
 
