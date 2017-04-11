@@ -1,5 +1,8 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
@@ -9,6 +12,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
+import net.merayen.elastic.backend.midi.devices.implementations.OracleJavaDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 
 /**
@@ -22,6 +26,7 @@ public class DeviceScanner extends AbstractDeviceScanner {
 
 	private void scan() {
 		addJavaAudio();
+		addJavaMidi();
 		// TODO scan for external sources too, like VST / AUs
 		// TODO add support for file output?
 	}
@@ -65,6 +70,28 @@ public class DeviceScanner extends AbstractDeviceScanner {
 					addDevice(device);
 				}
 			}
+		}
+	}
+
+	private void addJavaMidi() {
+		for(MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
+			MidiDevice device;
+
+			try {
+				device = MidiSystem.getMidiDevice(info);
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+				throw new RuntimeException();
+			}
+
+			if(device.getMaxTransmitters() == 0)
+				continue;
+
+			//System.out.printf("Device found: %s: %s, %s, %s, %s, %d\n", info, info.getName(), info.getDescription(), info.getVendor(), info.getVersion(), device.getMaxTransmitters());
+
+			AbstractDevice ad = new OracleMidiInputDevice(device);
+
+			addDevice(ad);
 		}
 	}
 }

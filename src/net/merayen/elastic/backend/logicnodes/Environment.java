@@ -10,17 +10,9 @@ import net.merayen.elastic.backend.nodes.LogicEnvironment;
  */
 @SuppressWarnings("serial")
 public class Environment extends LogicEnvironment {
-	public final Synchronization synchronization;
-	public final Mixer mixer;
-	public final int sample_rate;
-	public final int buffer_size;
-	public final Project project; // TODO add a middle-class that communicates with the DataManager?
 
-	public Environment(Mixer mixer, Synchronization synchronization, int sample_rate, int buffer_size, Project project) {
-		this.synchronization = synchronization;
-		this.mixer = mixer;
-		this.sample_rate = sample_rate;
-		this.buffer_size = buffer_size;
-		this.project = project;
-	}
-}
+	public Environment(Mixer mixer, Synchronization synchronization, int sample_rate, int buffer_size,
+			Project project) {
+		super(mixer, synchronization, sample_rate, buffer_size, project);
+		// TODO Auto-generated constructor stub
+	}} // TODO delete}

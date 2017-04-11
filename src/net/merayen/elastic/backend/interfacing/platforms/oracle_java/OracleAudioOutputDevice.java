@@ -29,12 +29,10 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		super("oracle_java:" + /*mixer.getMixerInfo().getVendor() + "/" + */mixer.getMixerInfo().getName(), "Lalala", mixer.getMixerInfo().getVendor());
 		this.line = line;
 		line.addLineListener(new LineListener() {
-
 			@Override
 			public void update(LineEvent event) {
 				// TODO try to detect if device gets disconnected
 			}
-			
 		});
 	}
 

@@ -35,9 +35,7 @@ public class UI extends UINode {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
-		//System.out.println(message);
 		if(message.key.equals("data.frequency")) {
-			System.out.println(message.value);
 			((PopupParameter1D)frequency_port_parameter.not_connected).setValue((float)(Math.pow(((Number)message.value).floatValue(), 1/4.301029995663981) / 10.0));
 			updateFrequencyText();
 		}

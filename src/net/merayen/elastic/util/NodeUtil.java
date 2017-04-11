@@ -1,16 +1,19 @@
 package net.merayen.elastic.util;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class NodeUtil {
 	private NodeUtil() {}
 
 	public static String getNodeName(String text) {
-		return text.split("_")[0];
+		String[] parts = text.split("_");
+		return String.join("_", Arrays.copyOf(parts, parts.length - 1));
 	}
 
 	public static int getNodeVersion(String text) {
-		return Integer.valueOf(text.split("_")[1]);
+		String[] parts = text.split("_");
+		return Integer.valueOf(parts[parts.length - 1]);
 	}
 
 	public static String createID() {

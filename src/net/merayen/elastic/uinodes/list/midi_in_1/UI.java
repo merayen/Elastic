@@ -1,12 +1,12 @@
-package net.merayen.elastic.uinodes.list.midi_input;
+package net.merayen.elastic.uinodes.list.midi_in_1;
 
+import net.merayen.elastic.system.intercom.NodeDataMessage;
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.components.Label;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 
 public class UI extends UINode {
-	private UIPort port;
-
 	private Label midi_device;
 
 	public void onInit() {
@@ -30,19 +30,34 @@ public class UI extends UINode {
 		super.onDraw();
 	}
 
+	public void onRemovePort(String name) {
+		// Never removes any port anyway, so not implemented
+	}
+
 	@Override
-	public void onCreatePort(String name) {
-		if(name.equals("output")) {
-			port = new UIPort("output", true);
+	protected void onCreatePort(UIPort port) {
+		if(port.name.equals("output")) {
 			port.translation.x = width;
 			port.translation.y = 20f;
 			port.color = UIPort.MIDI_PORT;
-			addPort(port);
 		}
 	}
 
 	@Override
-	public void onRemovePort(String name) {
-		// Never removes any port anyway, so not implemented
+	protected void onRemovePort(UIPort port) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onMessage(NodeParameterMessage message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onData(NodeDataMessage message) {
+		// TODO Auto-generated method stub
+		
 	}
 }

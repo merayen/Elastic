@@ -84,7 +84,6 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 	}
 
 	public void setValue(float value) {
-		System.out.println("Box setY " + this + " " + value);
 		box.setY(value);
 	}
 

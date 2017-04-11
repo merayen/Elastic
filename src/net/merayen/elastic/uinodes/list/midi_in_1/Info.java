@@ -1,16 +1,16 @@
-package net.merayen.elastic.uinodes.list.output_1;
+package net.merayen.elastic.uinodes.list.midi_in_1;
 
 import net.merayen.elastic.uinodes.BaseInfo;
 
 public class Info implements BaseInfo {
 	@Override
 	public String getName() {
-		return "Output";
+		return "MIDI input";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Outputs audio to speakers";
+		return "MIDI from devices";
 	}
 
 	@Override

@@ -17,5 +17,4 @@ public class Info implements BaseInfo {
 	public String[] getCategories() {
 		return new String[]{"Generators"};
 	}
-	 
 }

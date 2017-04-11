@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.mix.datatypes.Audio;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.util.pack.FloatArray;
 import net.merayen.elastic.util.pack.PackArray;
 import net.merayen.elastic.util.pack.PackDict;
