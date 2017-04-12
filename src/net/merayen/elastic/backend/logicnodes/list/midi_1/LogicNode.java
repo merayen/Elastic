@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1;
 
+import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.util.pack.PackDict;
 
@@ -7,8 +8,15 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onCreate() {
-		// TODO Auto-generated method stub
+		createPort(new PortDefinition() {{
+			name = "in";
+		}});
 
+		createPort(new PortDefinition() {{
+			name = "out";
+			output = true;
+			format = Format.AUDIO;
+		}});
 	}
 
 	@Override

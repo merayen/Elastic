@@ -39,30 +39,26 @@ public class UI extends UINode {
 
 	@Override
 	protected void onCreatePort(UIPort port) {
-		// TODO Auto-generated method stub
-
+		if(port.name.equals("in")) {
+			port.translation.y = 20;
+		} else if(port.name.equals("out")) {
+			port.translation.y = 20;
+		}
 	}
 
 	@Override
-	protected void onRemovePort(UIPort port) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onRemovePort(UIPort port) {}
 
 	@Override
-	protected void onMessage(NodeParameterMessage message) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onMessage(NodeParameterMessage message) {}
 
 	@Override
-	protected void onData(NodeDataMessage message) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onData(NodeDataMessage message) {}
 
 	private void updateLayout() {
 		midi_roll.width = width - 40;
 		midi_roll.height = height - 25;
+		if(getPort("out") != null)
+			getPort("out").translation.x = width;
 	}
 }

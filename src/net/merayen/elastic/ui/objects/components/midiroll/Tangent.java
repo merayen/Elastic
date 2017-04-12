@@ -16,6 +16,7 @@ class Tangent extends UIObject {
 	private final boolean black;
 	private MouseHandler mouse_handler;
 	private boolean active;
+	private boolean standby;
 
 	Tangent(boolean black, Handler handler) {
 		this.black = black;
@@ -27,9 +28,30 @@ class Tangent extends UIObject {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
+			public void onMouseOutsideDown(Point global_position) {
+				standby = true;
+			}
+
+			@Override
 			public void onMouseDown(Point position) {
 				active = true;
 				handler.onDown();
+			}
+
+			@Override
+			public void onMouseOver() {
+				if(standby) {
+					active = true;
+					handler.onDown();
+				}
+			}
+
+			@Override
+			public void onMouseOut() {
+				if(active) {
+					active = false;
+					handler.onUp();
+				}
 			}
 
 			@Override
@@ -38,6 +60,7 @@ class Tangent extends UIObject {
 					active = false;
 					handler.onUp();
 				}
+				standby = false;
 			}
 		});
 	}

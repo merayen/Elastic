@@ -6,6 +6,13 @@ import java.util.List;
 import net.merayen.elastic.ui.UIObject;
 
 class Piano extends UIObject {
+	public interface Handler {
+		/**
+		 * User clicks on a tangent.
+		 */
+		public void onClick();
+	}
+
 	float width = 20;
 	float height = 100;
 	float octave_width = 5 * 7;
@@ -32,10 +39,8 @@ class Piano extends UIObject {
 			y += octave_width / 7;
 		}
 
-		System.out.println("===");
 		y = 0;
 		int pos = 0;
-		int tangent_pos = 0;
 		for(int i = 0; i < OCTAVE_COUNT * 7; i++) {
 			if(pos != 2 && pos != 6) {
 				Tangent t = new Tangent(true, getTangentHandler((WHITE_POSITIONS[i % 7] + 1) + 12 * (i / 7)));
@@ -54,7 +59,6 @@ class Piano extends UIObject {
 	}
 
 	private Tangent.Handler getTangentHandler(int tangent_no) {
-		System.out.println(tangent_no);
 		return new Tangent.Handler() {
 
 			@Override
