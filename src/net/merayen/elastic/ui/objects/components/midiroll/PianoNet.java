@@ -1,0 +1,36 @@
+package net.merayen.elastic.ui.objects.components.midiroll;
+
+import net.merayen.elastic.ui.UIObject;
+
+public class PianoNet extends UIObject {
+	float width = 100;
+	float height = 100;
+	float octave_width = 5 * 7;
+
+	private final boolean[] BLACK_TANGENTS = new boolean[]{false,true,false,true,false,false,true,false,true,false,true,false};
+
+	private final int OCTAVE_COUNT = 4;
+
+	@Override
+	protected void onDraw() {
+		float y = 0;
+
+		draw.setStroke(0.5f);
+
+		int pos = 0;
+		for(int i = 0; i < OCTAVE_COUNT * 12; i++) {
+			int b = BLACK_TANGENTS[pos] ? 1 : 0;
+
+			draw.setColor(50 - b * 20, 50 - b * 20, 50 - b * 20);
+			
+			draw.fillRect(0, y, width, octave_width / 12);
+
+			draw.setColor(0, 0, 0);
+			draw.rect(0, y, width, octave_width / 12);
+
+			y += octave_width / 12;
+			pos++;
+			pos %= 12;
+		}
+	}
+}

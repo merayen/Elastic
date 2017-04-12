@@ -1,0 +1,72 @@
+package net.merayen.elastic.ui.objects.components.midiroll;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.merayen.elastic.ui.UIObject;
+
+class Piano extends UIObject {
+	float width = 20;
+	float height = 100;
+	float octave_width = 5 * 7;
+	float spacing = 0.2f;
+
+	private final int OCTAVE_COUNT = 4;
+
+	private List<Tangent> tangents = new ArrayList<>();
+	private final int[] WHITE_POSITIONS = new int[]{0,2,4,5,7,9,11};
+
+	@Override
+	protected void onInit() {
+		float y = 0;
+
+		for(int i = 0; i < OCTAVE_COUNT * 7; i++) {
+			Tangent t = new Tangent(false, getTangentHandler(WHITE_POSITIONS[i % 7] + 12 * (i / 7)));
+			t.translation.x = spacing;
+			t.translation.y = y + spacing;
+			t.width = width - spacing * 2;
+			t.height = octave_width / 7 - spacing * 2;
+			tangents.add(t);
+			add(t);
+
+			y += octave_width / 7;
+		}
+
+		System.out.println("===");
+		y = 0;
+		int pos = 0;
+		int tangent_pos = 0;
+		for(int i = 0; i < OCTAVE_COUNT * 7; i++) {
+			if(pos != 2 && pos != 6) {
+				Tangent t = new Tangent(true, getTangentHandler((WHITE_POSITIONS[i % 7] + 1) + 12 * (i / 7)));
+				t.translation.x = spacing;
+				t.translation.y = y + (octave_width / 7) / 1.5f + spacing * 2;
+				t.width = width / 2;
+				t.height = (octave_width / 7) / 2 - spacing * 2;
+				tangents.add(t);
+				add(t);
+			}
+
+			y += octave_width / 7;
+			pos++;
+			pos %= 7;
+		}
+	}
+
+	private Tangent.Handler getTangentHandler(int tangent_no) {
+		System.out.println(tangent_no);
+		return new Tangent.Handler() {
+
+			@Override
+			public void onDown() {
+				System.out.println(tangent_no + " DOWN");
+			}
+
+			@Override
+			public void onUp() {
+				System.out.println(tangent_no + " UP");
+			}
+			
+		};
+	}
+}
