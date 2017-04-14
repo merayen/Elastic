@@ -44,7 +44,7 @@ public abstract class BaseLogicNode {
 	protected abstract void onInit();
 
 	/**
-	 * Called when a parameter change has occured.
+	 * Called when a parameter change has occurred.
 	 * This could be the UI changing a parameter, or a restore loading parameters.
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
 	 */
@@ -118,11 +118,11 @@ public abstract class BaseLogicNode {
 		np.parameters.set(node, key, value);
 	}
 
-	protected void sendDataToUI(String key, PackType data) {
+	protected void sendDataToUI(String key, Object data) {
 		sendMessageToUI(new NodeDataMessage(id, key, data));
 	}
 
-	protected void sendDataToProcessor(String key, PackType data) {
+	protected void sendDataToProcessor(String key, Object data) {
 		sendMessageToProcessor(new NodeDataMessage(id, key, data));
 	}
 

@@ -7,10 +7,8 @@ import net.merayen.elastic.ui.UIObject;
 
 class Piano extends UIObject {
 	public interface Handler {
-		/**
-		 * User clicks on a tangent.
-		 */
-		public void onClick();
+		public void onDown(int tangent_no);
+		public void onUp(int tangent_no);
 	}
 
 	float width = 20;
@@ -22,6 +20,12 @@ class Piano extends UIObject {
 
 	private List<Tangent> tangents = new ArrayList<>();
 	private final int[] WHITE_POSITIONS = new int[]{0,2,4,5,7,9,11};
+
+	private final Handler handler;
+
+	Piano(Handler handler) {
+		this.handler = handler;
+	}
 
 	@Override
 	protected void onInit() {
@@ -60,17 +64,17 @@ class Piano extends UIObject {
 
 	private Tangent.Handler getTangentHandler(int tangent_no) {
 		return new Tangent.Handler() {
-
 			@Override
 			public void onDown() {
 				System.out.println(tangent_no + " DOWN");
+				for(Tangent t : tangents)
+					t.goStandby();
 			}
 
 			@Override
 			public void onUp() {
 				System.out.println(tangent_no + " UP");
 			}
-			
 		};
 	}
 }

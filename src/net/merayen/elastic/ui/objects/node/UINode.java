@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -115,6 +116,10 @@ public abstract class UINode extends UIObject {
 
 	public void sendParameter(String key, Object value) {
 		sendMessage(new NodeParameterMessage(node_id, key, value));
+	}
+
+	public void sendData(String key, Object value) {
+		sendMessage(new NodeDataMessage(node_id, key, value));
 	}
 
 	public void executeMessage(Postmaster.Message message) {

@@ -17,7 +17,17 @@ public class UI extends UINode {
 		height = 200;
 		titlebar.title = "MIDI Roll";
 
-		midi_roll = new MidiRoll();
+		midi_roll = new MidiRoll(new MidiRoll.Handler() {
+			@Override
+			public void onUp(int tangent_no) {
+				sendData("tangent_up", tangent_no);
+			}
+
+			@Override
+			public void onDown(int tangent_no) {
+				sendData("tangent_down", tangent_no);
+			}
+		});
 		midi_roll.translation.x = 20;
 		midi_roll.translation.y = 20;
 		add(midi_roll);

@@ -4,12 +4,23 @@ import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UIClip;
 
 public class MidiRoll extends UIObject {
+	public interface Handler {
+		public void onDown(int tangent_no);
+		public void onUp(int tangent_no);
+	}
+
 	public float width = 100;
 	public float height = 100;
 
 	private Piano piano;
 	private PianoNet net;
 	private UIClip clip;
+
+	private Handler handler;
+
+	public MidiRoll(Handler handler) {
+		this.handler = handler;
+	}
 
 	@Override
 	protected void onInit() {
@@ -19,7 +30,17 @@ public class MidiRoll extends UIObject {
 		net = new PianoNet();
 		clip.add(net);
 
-		piano = new Piano();
+		piano = new Piano(new Piano.Handler() {
+			@Override
+			public void onUp(int tangent_no) {
+				handler.onUp(tangent_no);
+			}
+
+			@Override
+			public void onDown(int tangent_no) {
+				handler.onDown(tangent_no);
+			}
+		});
 		clip.add(piano);
 	}
 
