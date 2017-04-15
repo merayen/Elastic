@@ -1,7 +1,7 @@
 package net.merayen.elastic.system.intercom.coop;
 
-import net.merayen.elastic.util.pack.PackDict;
-import net.merayen.elastic.util.pack.PackString;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * When sent from client to server, client asks to unlock the node.
@@ -15,9 +15,9 @@ public class UnlockNodeMessage extends CoopMessage {
 	}
 
 	@Override
-	public PackDict dump() {
-		PackDict result = new PackDict();
-		result.data.put("node_id", new PackString(node_id));
-		return null;
+	public Map<String, Object> dump() {
+		Map<String, Object> result = new HashMap<>();
+		result.put("node_id", node_id);
+		return result;
 	}
 }

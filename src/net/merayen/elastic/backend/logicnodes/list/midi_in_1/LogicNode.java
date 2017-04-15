@@ -1,10 +1,11 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_in_1;
 
+import java.util.Map;
+
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.MidiInputDevice;
 import net.merayen.elastic.backend.interfacing.types.MidiPacket;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.util.pack.PackDict;
 
 public class LogicNode extends BaseLogicNode {
 	MidiInputDevice device;
@@ -45,7 +46,7 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onPrepareFrame(PackDict data) {
+	protected void onPrepareFrame(Map<String, Object> data) {
 		if(device != null) {
 			for(MidiPacket mp : device.read(getEnv().buffer_size)) {
 				System.out.print(mp.sample_offset);
@@ -57,9 +58,6 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onFinishFrame(PackDict data) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onFinishFrame(Map<String, Object> data) {}
 
 }

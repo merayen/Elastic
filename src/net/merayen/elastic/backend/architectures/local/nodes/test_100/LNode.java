@@ -4,7 +4,6 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.util.pack.PackDict;
 
 public class LNode extends LocalNode {
 
@@ -19,7 +18,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(PackDict data) {
+	protected void onProcess(Map<String, Object> data) {
 		// TODO Auto-generated method stub
 		
 	}

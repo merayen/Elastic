@@ -1,9 +1,9 @@
 package net.merayen.elastic.system.intercom;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import net.merayen.elastic.system.intercom.coop.ResourceListMessage;
-import net.merayen.elastic.util.pack.PackDict;
 
 public class Test {
 	private Test() {}
@@ -16,7 +16,7 @@ public class Test {
 		{
 			ResourceListMessage.ResourceList rl = new ResourceListMessage.ResourceList();
 			rl.add(new ResourceListMessage.ResourceItem("id", "name", "hash".getBytes()));
-			PackDict pd = new ResourceListMessage(rl).dump();
+			Map<String, Object> pd = new ResourceListMessage(rl).dump();
 
 			ResourceListMessage m = new ResourceListMessage(pd);
 

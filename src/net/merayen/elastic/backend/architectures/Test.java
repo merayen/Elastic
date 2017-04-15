@@ -2,6 +2,9 @@ package net.merayen.elastic.backend.architectures;
 
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
+import net.merayen.elastic.util.NetListMessages;
+import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.Postmaster.Message;
 
 public class Test {
@@ -20,7 +23,10 @@ public class Test {
 			}
 		});
 
-		dispatch.launch(netlist, 8);
+		dispatch.launch(new InitBackendMessage(44100, 16, 1024, ""));
+
+		for(Postmaster.Message m : NetListMessages.disassemble(netlist))
+			dispatch.executeMessage(m);
 
 		long t = System.currentTimeMillis() + 3000;
 		while(t > System.currentTimeMillis()) { // Let it run for 3 seconds
@@ -40,8 +46,8 @@ public class Test {
 		n.properties.put("version", 100);
 
 		n.properties.put("test", "Hello on you!");
-		n.createPort("input");
-		n.createPort("output");
+		netlist.createPort(n, "input");
+		netlist.createPort(n, "output");
 		return n;
 	}
 }

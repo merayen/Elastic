@@ -1,6 +1,10 @@
 package net.merayen.elastic.ui.surface;
 
-public class Fake implements Surface {
+public class Fake extends Surface {
+	public Fake(String id, Handler handler) {
+		super(id, handler);
+	}
+
 	/*
 	 * Fake portal. Used with nodes that has its own draw canvas inside another NodeSystem.
 	 */

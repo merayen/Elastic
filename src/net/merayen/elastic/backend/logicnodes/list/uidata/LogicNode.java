@@ -1,7 +1,8 @@
 package net.merayen.elastic.backend.logicnodes.list.uidata;
 
+import java.util.Map;
+
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * Generic data storage for the user interface.
@@ -30,9 +31,9 @@ public class LogicNode extends BaseLogicNode {
 	protected void onRemove() {}
 
 	@Override
-	protected void onPrepareFrame(PackDict data) {}
+	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onFinishFrame(PackDict data) {}
+	protected void onFinishFrame(Map<String, Object> data) {}
 
 }

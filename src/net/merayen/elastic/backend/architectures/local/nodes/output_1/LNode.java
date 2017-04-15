@@ -2,12 +2,10 @@ package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.util.pack.PackDict;
-import net.merayen.elastic.util.pack.FloatArray;
-import net.merayen.elastic.util.pack.PackArray;
 
 public class LNode extends LocalNode {
 	public LNode() {
@@ -25,7 +23,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(PackDict data) {
+	protected void onProcess(Map<String, Object> data) {
 		//System.out.println("Output " + getID() + " is processing");
 	}
 
@@ -66,12 +64,11 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onFinishFrame() {
 		int channel_count = countChannels();
-		PackArray channels = new PackArray();
-		FloatArray[] fa;
-		channels.data = fa = new FloatArray[channel_count];
+		float[][] fa;
+		float[][] channels = fa = new float[channel_count][];
 
 		for(int i = 0; i < channel_count; i++) // Creating new outgoing buffers to separate the processor and external receivers of this data
-			fa[i] = new FloatArray(new float[buffer_size]);
+			fa[i] = new float[buffer_size];
 
 		float[] amplitude = new float[channel_count];
 
@@ -81,7 +78,7 @@ public class LNode extends LocalNode {
 	
 					//System.arraycopy(output[voice_no][channel_no], 0, output[voice_no][channel_no], 0, buffer_size);
 					float[] in = output[voice_no][channel_no];
-					float[] out = fa[channel_no].data;
+					float[] out = fa[channel_no];
 
 					for(int i = 0; i < buffer_size; i++)
 						out[i] += in[i];
@@ -94,10 +91,10 @@ public class LNode extends LocalNode {
 			}
 		}
 
-		outgoing.data.put("audio", channels);
+		outgoing.put("audio", channels);
 
 		if(channel_count > 0)
-			outgoing.data.put("vu", new FloatArray(amplitude));
+			outgoing.put("vu", amplitude);
 	}
 
 	private int countChannels() {

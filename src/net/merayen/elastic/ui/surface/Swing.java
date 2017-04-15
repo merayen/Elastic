@@ -1,12 +1,10 @@
 package net.merayen.elastic.ui.surface;
 
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.KeyboardEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;

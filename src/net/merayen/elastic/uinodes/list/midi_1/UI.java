@@ -1,5 +1,8 @@
 package net.merayen.elastic.uinodes.list.midi_1;
 
+import java.io.ObjectOutputStream.PutField;
+import java.util.HashMap;
+
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.components.midiroll.MidiRoll;
@@ -18,14 +21,20 @@ public class UI extends UINode {
 		titlebar.title = "MIDI Roll";
 
 		midi_roll = new MidiRoll(new MidiRoll.Handler() {
+			@SuppressWarnings("serial")
 			@Override
 			public void onUp(int tangent_no) {
-				sendData("tangent_up", tangent_no);
+				sendData(new HashMap<String, Object>() {{
+					put("tangent_up", tangent_no);
+				}});
 			}
 
+			@SuppressWarnings("serial")
 			@Override
 			public void onDown(int tangent_no) {
-				sendData("tangent_down", tangent_no);
+				sendData(new HashMap<String, Object>() {{
+					put("tangent_down", tangent_no);
+				}});
 			}
 		});
 		midi_roll.translation.x = 20;

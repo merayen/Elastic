@@ -1,12 +1,12 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import java.util.List;
+import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
-import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * TODO change mode when frequency-port is connected/disconnected
@@ -30,7 +30,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(PackDict data) {
+	protected void onProcess(Map<String, Object> data) {
 		for(LocalProcessor lp : getProcessors())
 			lp.schedule();
 	}

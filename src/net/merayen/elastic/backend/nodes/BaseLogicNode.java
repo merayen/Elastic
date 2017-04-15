@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.nodes;
 
+import java.util.Map;
+
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
@@ -8,8 +10,6 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
-import net.merayen.elastic.util.pack.PackDict;
-import net.merayen.elastic.util.pack.PackType;
 
 public abstract class BaseLogicNode {
 	/**
@@ -62,13 +62,13 @@ public abstract class BaseLogicNode {
 	 * Called when a ProcessMessage()-request has been received. All LogicNodes must prepare data to be sent to processor.
 	 * Change the data-argument directly. 
 	 */
-	protected abstract void onPrepareFrame(PackDict data);
+	protected abstract void onPrepareFrame(Map<String, Object> data);
 
 	/**
 	 * Called when the processor has processed.
 	 * The result data is put into the data argument.
 	 */
-	protected abstract void onFinishFrame(PackDict data);
+	protected abstract void onFinishFrame(Map<String, Object> data);
 
 	/**
 	 * Call this to create a port.
@@ -118,12 +118,12 @@ public abstract class BaseLogicNode {
 		np.parameters.set(node, key, value);
 	}
 
-	protected void sendDataToUI(String key, Object data) {
-		sendMessageToUI(new NodeDataMessage(id, key, data));
+	protected void sendDataToUI(Map<String, Object> data) {
+		sendMessageToUI(new NodeDataMessage(id, data));
 	}
 
-	protected void sendDataToProcessor(String key, Object data) {
-		sendMessageToProcessor(new NodeDataMessage(id, key, data));
+	protected void sendDataToProcessor(String key, Map<String, Object> data) {
+		sendMessageToProcessor(new NodeDataMessage(id, data));
 	}
 
 	void create(String name, Integer version, String group) {

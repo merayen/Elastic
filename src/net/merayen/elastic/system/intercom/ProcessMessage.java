@@ -1,6 +1,8 @@
 package net.merayen.elastic.system.intercom;
 
-import net.merayen.elastic.util.pack.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -11,5 +13,5 @@ public class ProcessMessage extends Postmaster.Message {
 	/**
 	 * Format: (node-id, (data-identifier, the data))
 	 */
-	public final PackDict dict = new PackDict();
+	public final Map<String, Map<String, Object>> data = new HashMap<>();
 }

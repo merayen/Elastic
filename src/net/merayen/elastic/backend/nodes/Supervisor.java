@@ -1,5 +1,8 @@
 package net.merayen.elastic.backend.nodes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.netlist.NetList;
@@ -7,7 +10,6 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
-import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * This is the "central control". All node-related messages from UI and processor is sent into this class.
@@ -160,7 +162,7 @@ public class Supervisor {
 		// Call all LogicNodes to work on the frame
 		for(Node node : netlist.getNodes()) {
 			BaseLogicNode bln = logicnode_list.get(node.getID());
-			bln.onFinishFrame((PackDict)message.dict.data.get(node.getID()));
+			bln.onFinishFrame(message.data.get(node.getID()));
 		}
 
 		handler.onProcessDone();
@@ -186,7 +188,7 @@ public class Supervisor {
 		for(Node n : netlist.getNodes()) {
 			BaseLogicNode bln = logicnode_list.get(n.getID());
 
-			PackDict p = new PackDict();
+			Map<String, Object> p = new HashMap<>();
 
 			if(bln == null)
 				System.console();
@@ -198,7 +200,7 @@ public class Supervisor {
 
 			bln.onPrepareFrame(p);
 
-			m.dict.data.put(n.getID(), p);
+			m.data.put(n.getID(), p);
 		}
 
 		handler.sendMessageToProcessor(m); // Forward process message to processor

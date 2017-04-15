@@ -1,8 +1,9 @@
 package net.merayen.elastic.system.intercom.coop;
 
 import java.util.ArrayList;
-
-import net.merayen.elastic.util.pack.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Sent by the client to get a list of all the resources on the server.
@@ -12,16 +13,13 @@ import net.merayen.elastic.util.pack.*;
  * missing/mismatching resources using ResourcePullMessage()
  */
 public class ResourceListMessage extends CoopMessage {
+	@SuppressWarnings("serial")
 	public static class ResourceList extends ArrayList<ResourceItem> {
-		private PackArray dump() {
-			PackArray result = new PackArray();
+		private List<Object> dump() {
+			List<Object> result = new ArrayList<>();
 
-			result.data = new PackType[size()];
-
-			int i = 0;
-			for(ResourceItem d : this) {
-				result.data[i++] = d.dump();
-			}
+			for(ResourceItem d : this)
+				result.add(d.dump());
 
 			return result;
 		}
@@ -38,18 +36,18 @@ public class ResourceListMessage extends CoopMessage {
 			this.hash = hash;
 		}
 
-		private ResourceItem(PackDict data) {
-			this.id = ((PackString)data.data.get("id")).data;
-			this.name = ((PackString)data.data.get("name")).data;
-			this.hash = ((ByteArray)data.data.get("hash")).data;
+		private ResourceItem(Map<String, Object> data) {
+			this.id = (String)data.get("id");
+			this.name = (String)data.get("name");
+			this.hash = (byte[])data.get("hash");
 		}
 
-		private PackDict dump() {
-			PackDict result = new PackDict();
+		private Map<String, Object> dump() {
+			Map<String, Object> result = new HashMap<>();
 
-			result.data.put("id", new PackString(id));
-			result.data.put("name", new PackString(name));
-			result.data.put("hash", new ByteArray(hash));
+			result.put("id", id);
+			result.put("name", name);
+			result.put("hash", hash);
 
 			return result;
 		}
@@ -65,18 +63,19 @@ public class ResourceListMessage extends CoopMessage {
 		resourcelist = null;
 	}
 
-	public ResourceListMessage(PackDict data) {
+	@SuppressWarnings("unchecked")
+	public ResourceListMessage(Map<String, Object> data) {
 		resourcelist = new ResourceList();
 
-		for(PackType d : ((PackArray)data.data.get("list")).data)
-			resourcelist.add(new ResourceItem((PackDict)d));
+		for(Object o : (List<Object>)data.get("list"))
+			resourcelist.add(new ResourceItem((Map<String, Object>)o));
 	}
 
 	@Override
-	public PackDict dump() {
-		PackDict result = new PackDict();
+	public Map<String, Object> dump() {
+		Map<String, Object> result = new HashMap<>();
 
-		result.data.put("list", resourcelist.dump());
+		result.put("list", resourcelist.dump());
 
 		return result;
 	}

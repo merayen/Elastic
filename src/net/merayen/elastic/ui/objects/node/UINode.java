@@ -118,8 +118,8 @@ public abstract class UINode extends UIObject {
 		sendMessage(new NodeParameterMessage(node_id, key, value));
 	}
 
-	public void sendData(String key, Object value) {
-		sendMessage(new NodeDataMessage(node_id, key, value));
+	public void sendData(Map<String, Object> value) {
+		sendMessage(new NodeDataMessage(node_id, value));
 	}
 
 	public void executeMessage(Postmaster.Message message) {

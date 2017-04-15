@@ -11,7 +11,6 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.util.Postmaster.Message;
-import net.merayen.elastic.util.pack.PackDict;
 
 /**
  * Emulates the Analyzer() and fakes nodes for testing Supervisor().
@@ -130,7 +129,7 @@ class GeneratorNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(PackDict data) {
+	protected void onProcess(Map<String, Object> data) {
 		if(tick++ == 0) {
 			GeneratorProcessor gp = (GeneratorProcessor)getProcessor(spawnVoice("output", 0));
 			gp.sendStuff();
@@ -174,7 +173,7 @@ class GeneratorProcessor extends LocalProcessor {
 
 	void sendStuff() {
 		for(int i = output.written; i < output.audio.length; i++)
-			output.audio[i] = i;
+			output.audio[i][0] = i; // ??? added 0 here, might be wrong, not tested
 
 		output.written += output.audio.length - output.written;
 		output.push();
@@ -203,7 +202,7 @@ class MiddleNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(PackDict data) {}
+	protected void onProcess(Map<String, Object> data) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -274,9 +273,9 @@ class ConsumerNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(PackDict data) {}
+	protected void onProcess(Map<String, Object> data) {}
 
-	void addVoiceData(int session_id, float[] audio, int start, int stop) {
+	void addVoiceData(int session_id, float[][] audio, int start, int stop) {
 		((ConsumerProcessor)this.getProcessor(0)).emit(audio, start, stop);
 	}
 
@@ -328,15 +327,16 @@ class ConsumerProcessor extends LocalProcessor {
 	protected void onPrepare() {
 		if(output != null)
 			for(int i = 0; i < output.audio.length; i++)
-				output.audio[i] = 0;
+				output.audio[i][0] = 0;
 	}
 
-	void emit(float[] audio, int start, int stop) {
+	void emit(float[][] audio, int start, int stop) {
 		if(output != null) {
 			System.out.printf("Consumer %d session %d: re-emits %d samples (%s)\n", ((ConsumerNode)localnode).number, session_id, stop-start, this);
 
-			for(int i = start; i < stop; i++)
-				output.audio[i] += audio[i];
+			for(int ch = 0; ch < audio.length; ch++)
+				for(int i = start; i < stop; i++)
+					output.audio[ch][i] += audio[ch][i];
 	
 			output.written = stop;
 	
@@ -345,8 +345,5 @@ class ConsumerProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onDestroy() {}
 }

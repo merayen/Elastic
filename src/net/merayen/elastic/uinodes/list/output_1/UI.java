@@ -4,7 +4,6 @@ import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
-import net.merayen.elastic.util.pack.FloatArray;
 
 public class UI extends UINode {
 
@@ -49,8 +48,8 @@ public class UI extends UINode {
 
 	@Override
 	protected void onData(NodeDataMessage message) {
-		if(message.key.equals("vu") && vu != null) {
-			vu.updateVU(((FloatArray)message.value).data);
+		if(message.value.containsKey("vu") && vu != null) {
+			vu.updateVU((float[])message.value.get("vu"));
 		}
 	}
 

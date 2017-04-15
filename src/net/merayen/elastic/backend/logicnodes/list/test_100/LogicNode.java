@@ -1,7 +1,8 @@
 package net.merayen.elastic.backend.logicnodes.list.test_100;
 
+import java.util.Map;
+
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.util.pack.PackDict;
 
 public class LogicNode extends BaseLogicNode {
 
@@ -27,10 +28,10 @@ public class LogicNode extends BaseLogicNode {
 	protected void onDisconnect(String port) {}
 
 	@Override
-	protected void onPrepareFrame(PackDict data) {}
+	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onFinishFrame(PackDict data) {}
+	protected void onFinishFrame(Map<String, Object> data) {}
 
 	@Override
 	protected void onRemove() {}
