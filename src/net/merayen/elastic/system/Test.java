@@ -1,21 +1,11 @@
 package net.merayen.elastic.system;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
-
-import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 
 import net.merayen.elastic.system.actions.LoadProject;
 import net.merayen.elastic.system.actions.NewProject;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.StartBackendMessage;
-import net.merayen.elastic.system.intercom.backend.TidyProjectMessage;
 
 public class Test {
 	public static void test() {

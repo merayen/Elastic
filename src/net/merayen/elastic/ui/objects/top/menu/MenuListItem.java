@@ -22,7 +22,7 @@ public class MenuListItem extends UIObject {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onMouseClick(Point position) {
+			public void onMouseUp(Point position) {
 				if(handler != null)
 					handler.onClick();
 			}
