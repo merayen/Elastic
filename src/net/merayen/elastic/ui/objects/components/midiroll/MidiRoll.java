@@ -16,6 +16,8 @@ public class MidiRoll extends UIObject {
 	private PianoNet net;
 	private UIClip clip;
 
+	private final int OCTAVE_COUNT = 8;
+
 	private Handler handler;
 
 	public MidiRoll(Handler handler) {
@@ -27,10 +29,10 @@ public class MidiRoll extends UIObject {
 		clip = new UIClip();
 		add(clip);
 
-		net = new PianoNet();
+		net = new PianoNet(OCTAVE_COUNT);
 		clip.add(net);
 
-		piano = new Piano(new Piano.Handler() {
+		piano = new Piano(OCTAVE_COUNT, new Piano.Handler() {
 			@Override
 			public void onUp(int tangent_no) {
 				handler.onUp(tangent_no);
@@ -48,7 +50,6 @@ public class MidiRoll extends UIObject {
 	protected void onUpdate() {
 		clip.width = width;
 		clip.height = height;
-		piano.height = height;
 		net.width = width;
 		net.height = height;
 	}

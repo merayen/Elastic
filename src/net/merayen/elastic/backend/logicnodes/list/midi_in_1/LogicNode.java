@@ -60,4 +60,10 @@ public class LogicNode extends BaseLogicNode {
 	@Override
 	protected void onFinishFrame(Map<String, Object> data) {}
 
+	@Override
+	protected void onData(Map<String, Object> data) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -4,7 +4,6 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 
 public class LogicNode extends BaseLogicNode {
 
@@ -52,4 +51,10 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onRemove() {}
+
+	@Override
+	protected void onData(Map<String, Object> data) {
+		// TODO Auto-generated method stub
+		
+	}
 }

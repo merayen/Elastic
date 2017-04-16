@@ -53,4 +53,10 @@ public class LogicNode extends BaseLogicNode {
 		
 	}
 
+	@Override
+	protected void onData(Map<String, Object> data) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

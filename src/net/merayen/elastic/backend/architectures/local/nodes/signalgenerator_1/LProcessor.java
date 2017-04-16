@@ -1,16 +1,20 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
+
+import javax.sound.midi.MidiFileFormat;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
+import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
+import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.util.Postmaster.Message;
 
 /*
@@ -34,8 +38,7 @@ public class LProcessor extends LocalProcessor {
 
 	private float[][] input_frequency_buffer;
 
-	int standalone_to_generate;
-	List<Short> keys_down = new ArrayList<>();
+	List<short[]> keys_down = new ArrayList<>();
 
 	private double pos = 0;
 
@@ -70,6 +73,8 @@ public class LProcessor extends LocalProcessor {
 			generateRaw();
 		else if(mode == Mode.FREQUENCY)
 			generateWithFrequency();
+		else if(mode == Mode.MIDI)
+			generateWithMidi();
 		else
 			throw new RuntimeException("Not implemented");
 	}
@@ -117,6 +122,62 @@ public class LProcessor extends LocalProcessor {
 		outlet.written = i;
 		frequency.read = i;
 		outlet.push();
+	}
+
+	private void generateWithMidi() {
+		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
+		MidiInlet inlet = (MidiInlet)getInlet("frequency");
+		int available = inlet.available();
+
+		if(available == 0)
+			return;
+
+		updateKeysDown();
+
+		outlet.setChannelCount(1);
+
+		if(!keys_down.isEmpty()) {
+			short[] active_key = keys_down.get(keys_down.size() - 1);
+			float freq = midiNoteToFreq(active_key[1]); // TODO take care of pitch wheel
+
+			for(int i = outlet.written; i < outlet.written + available; i++) {
+				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
+				pos += freq;
+			}
+		} else { // No key down? Silence!
+			for(int ch = 0; ch < outlet.audio.length; ch++)
+				for(int i = 0; i < buffer_size; i++)
+					outlet.audio[ch][i] = 0;
+		}
+
+		outlet.written += available;
+		outlet.push();
+	}
+
+	private void updateKeysDown() {
+		MidiInlet inlet = (MidiInlet)getInlet("frequency");
+		if(inlet.available() > 0) {
+			short[][][] midi = ((MidiOutlet)inlet.outlet).midi;
+
+			for(short[][] sample : midi) {
+				if(sample != null) {
+					for(short[] midi_packet : sample) {
+						if((midi_packet[0] & MidiStatuses.KEY_DOWN) == MidiStatuses.KEY_DOWN) {
+							keys_down.add(midi_packet);
+						} else if((midi_packet[0] & MidiStatuses.KEY_UP) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
+							Iterator<short[]> iter = keys_down.iterator();
+							while(iter.hasNext()) {
+								short[] m = iter.next();
+								if(m[1] == midi_packet[1])
+									iter.remove();
+							}
+						}
+					}
+				}
+			}
+
+			inlet.read += inlet.available();
+		}
 	}
 
 	/**
@@ -214,9 +275,9 @@ public class LProcessor extends LocalProcessor {
 		midi_frequency = (float)(midi_tangent_frequency * Math.pow(2, midi_pitch_factor / 6f));
 	}*/
 
-	/*private float midiNoteToFreq(short n) {
+	private float midiNoteToFreq(short n) {
 		return (float)(440 * Math.pow(2, (n - 69) / 12.0f));
-	}*/
+	}
 
 	/*private float[] generateFromFrequency() {
 		boolean amplitude_connected = net_node.isConnected("amplitude");

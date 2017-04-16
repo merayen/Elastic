@@ -9,7 +9,11 @@ public class PianoNet extends UIObject {
 
 	private final boolean[] BLACK_TANGENTS = new boolean[]{false,true,false,true,false,false,true,false,true,false,true,false};
 
-	private final int OCTAVE_COUNT = 4;
+	private final int octave_count;
+
+	public PianoNet(int octave_count) {
+		this.octave_count = octave_count;
+	}
 
 	@Override
 	protected void onDraw() {
@@ -18,7 +22,7 @@ public class PianoNet extends UIObject {
 		draw.setStroke(0.5f);
 
 		int pos = 0;
-		for(int i = 0; i < OCTAVE_COUNT * 12; i++) {
+		for(int i = 0; i < octave_count * 12; i++) {
 			int b = BLACK_TANGENTS[pos] ? 1 : 0;
 
 			draw.setColor(50 - b * 20, 50 - b * 20, 50 - b * 20);

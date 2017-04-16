@@ -50,6 +50,11 @@ public abstract class BaseLogicNode {
 	 */
 	protected abstract void onParameterChange(String key, Object value);
 
+	/**
+	 * Data received from UI.
+	 */
+	protected abstract void onData(Map<String, Object> data);
+
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
 

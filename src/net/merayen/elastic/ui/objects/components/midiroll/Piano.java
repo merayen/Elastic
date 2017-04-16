@@ -12,18 +12,18 @@ class Piano extends UIObject {
 	}
 
 	float width = 20;
-	float height = 100;
 	float octave_width = 5 * 7;
 	float spacing = 0.2f;
 
-	private final int OCTAVE_COUNT = 4;
+	private final int octave_count;
 
 	private List<Tangent> tangents = new ArrayList<>();
 	private final int[] WHITE_POSITIONS = new int[]{0,2,4,5,7,9,11};
 
 	private final Handler handler;
 
-	Piano(Handler handler) {
+	Piano(int octave_count, Handler handler) {
+		this.octave_count = octave_count;
 		this.handler = handler;
 	}
 
@@ -31,10 +31,10 @@ class Piano extends UIObject {
 	protected void onInit() {
 		float y = 0;
 
-		for(int i = 0; i < OCTAVE_COUNT * 7; i++) {
+		for(int i = 0; i < octave_count * 7; i++) {
 			Tangent t = new Tangent(false, getTangentHandler(WHITE_POSITIONS[i % 7] + 12 * (i / 7)));
 			t.translation.x = spacing;
-			t.translation.y = (octave_width * OCTAVE_COUNT) - (y + spacing + octave_width / 7);
+			t.translation.y = (octave_width * octave_count) - (y + spacing + octave_width / 7);
 			t.width = width - spacing * 2;
 			t.height = octave_width / 7 - spacing * 2;
 			tangents.add(t);
@@ -45,11 +45,11 @@ class Piano extends UIObject {
 
 		y = 0;
 		int pos = 0;
-		for(int i = 0; i < OCTAVE_COUNT * 7; i++) {
+		for(int i = 0; i < octave_count * 7; i++) {
 			if(pos != 2 && pos != 6) {
 				Tangent t = new Tangent(true, getTangentHandler((WHITE_POSITIONS[i % 7] + 1) + 12 * (i / 7)));
 				t.translation.x = spacing;
-				t.translation.y = (octave_width * OCTAVE_COUNT) - (y + spacing + octave_width / 7) - octave_width / (7*3);
+				t.translation.y = (octave_width * octave_count) - (y + spacing + octave_width / 7) - octave_width / (7*3);
 				t.width = width / 2;
 				t.height = (octave_width / 7) / 1.5f - spacing * 2;
 				tangents.add(t);
@@ -66,14 +66,15 @@ class Piano extends UIObject {
 		return new Tangent.Handler() {
 			@Override
 			public void onDown() {
-				System.out.println(tangent_no + " DOWN");
 				for(Tangent t : tangents)
 					t.goStandby();
+
+				handler.onDown(tangent_no + 12*6);
 			}
 
 			@Override
 			public void onUp() {
-				System.out.println(tangent_no + " UP");
+				handler.onUp(tangent_no + 12*6);
 			}
 		};
 	}

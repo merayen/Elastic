@@ -76,11 +76,13 @@ public class Supervisor {
 
 		} else if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
-
 			NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
-
 			logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
 
+			return;
+		} else if (message instanceof NodeDataMessage) {
+			NodeDataMessage m = (NodeDataMessage) message;
+			logicnode_list.get(m.node_id).onData(m.value);
 			return;
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
