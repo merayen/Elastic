@@ -8,6 +8,7 @@ import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.util.AverageStat;
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -29,6 +30,10 @@ class Supervisor {
 	private boolean dead;
 
 	private List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution
+
+	// Statistics
+	private AverageStat<Long> proccess_time = new AverageStat<>(1000);
+	private long process_time_last;
 
 	public Supervisor(NetList netlist, int sample_rate, int buffer_size) {
 		this.netlist = netlist; // Our own, compiled NetList
@@ -178,6 +183,8 @@ class Supervisor {
 		if(dead)
 			throw new RuntimeException("Should not be called after clear()");
 
+		long start = System.nanoTime();
+
 		// Reset all frame-state in the processors
 		processor_list.forEach((x) -> x.prepare());
 
@@ -226,6 +233,13 @@ class Supervisor {
 
 			if(!active)
 				removeSession(session_id);
+		}
+
+		proccess_time.add(System.nanoTime() - start);
+
+		if(process_time_last < System.currentTimeMillis()) {
+			System.out.printf("Average process time: %.3fms\n", proccess_time.getAvg() / 1000000.0);
+			process_time_last = System.currentTimeMillis() + 1000;
 		}
 
 		return response;

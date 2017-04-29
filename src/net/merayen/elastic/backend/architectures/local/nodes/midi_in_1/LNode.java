@@ -1,11 +1,14 @@
 package net.merayen.elastic.backend.architectures.local.nodes.midi_in_1;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 
 public class LNode extends LocalNode {
+	List<short[]> buffer = new ArrayList<>();
 
 	public LNode() {
 		super(LProcessor.class);
@@ -17,14 +20,14 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onSpawnProcessor(LocalProcessor lp) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onSpawnProcessor(LocalProcessor lp) {}
 
 	@Override
 	protected void onProcess(Map<String, Object> data) {
-
+		if(data.containsKey("midi")) {
+			for(short[] midi_packet : (short[][])data.get("midi"))
+				buffer.add(midi_packet);
+		}
 	}
 
 	@Override
@@ -35,8 +38,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onFinishFrame() {
-		// TODO Auto-generated method stub
-
+		buffer.clear();
 	}
 
 	@Override

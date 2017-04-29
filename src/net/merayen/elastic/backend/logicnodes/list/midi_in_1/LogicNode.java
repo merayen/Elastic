@@ -5,13 +5,20 @@ import java.util.Map;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.MidiInputDevice;
 import net.merayen.elastic.backend.interfacing.types.MidiPacket;
+import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 
 public class LogicNode extends BaseLogicNode {
 	MidiInputDevice device;
 
 	@Override
-	protected void onCreate() {}
+	protected void onCreate() {
+		createPort(new PortDefinition() {{
+			name = "output";
+			output = true;
+			format = Format.MIDI;
+		}});
+	}
 
 	@Override
 	protected void onInit() {
@@ -48,12 +55,15 @@ public class LogicNode extends BaseLogicNode {
 	@Override
 	protected void onPrepareFrame(Map<String, Object> data) {
 		if(device != null) {
-			for(MidiPacket mp : device.read(getEnv().buffer_size)) {
-				System.out.print(mp.sample_offset);
-				for(short s : mp.midi)
-					System.out.print(" " + s);
-				System.out.println();
-			}
+			MidiPacket[] midi_packets = device.read(getEnv().buffer_size);
+
+			short[][] midi = new short[midi_packets.length][];
+
+			int i = 0;
+			for(MidiPacket mp : midi_packets)
+				midi[i++] = mp.midi;
+
+			data.put("midi", midi);
 		}
 	}
 

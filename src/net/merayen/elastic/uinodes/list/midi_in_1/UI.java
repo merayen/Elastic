@@ -58,7 +58,7 @@ public class UI extends UINode {
 	@Override
 	protected void onCreatePort(UIPort port) {
 		if(port.name.equals("output")) {
-			port.translation.x = width;
+			port.translation.x = 150;
 			port.translation.y = 20f;
 			port.color = UIPort.MIDI_PORT;
 		}

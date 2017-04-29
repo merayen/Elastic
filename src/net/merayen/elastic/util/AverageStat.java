@@ -1,8 +1,9 @@
 package net.merayen.elastic.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class AverageStat<T extends Number> {
+public class AverageStat<T extends Number> implements Iterable<T> {
 	private ArrayList<T> array;
 	private int pos = 0;
 	private int length;
@@ -33,5 +34,9 @@ public class AverageStat<T extends Number> {
 			return r / i;
 		else
 			return 0;
+	}
+
+	public Iterator<T> iterator() {
+		return array.iterator();
 	}
 }

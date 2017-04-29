@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.sound.midi.MidiFileFormat;
-
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
@@ -85,7 +83,6 @@ public class LProcessor extends LocalProcessor {
 		outlet.setChannelCount(1);
 
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
-		float amplitude = lnode.amplitude;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
 			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
 			pos += step;
@@ -96,7 +93,6 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void generateWithFrequency() {
-		//System.out.println(sample_rate + " " + frequency);
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 		AudioInlet frequency = (AudioInlet)getInlet("frequency");
 
@@ -180,207 +176,17 @@ public class LProcessor extends LocalProcessor {
 		}
 	}
 
-	/**
-	 * Generate sine wave from frequency port connected to a MIDI source.
-	 * Amplitude may or may not be connected.
-	 */
-	/*private float[] generateWithMidi() {
-		boolean amplitude_connected = net_node.isConnected("amplitude");
-		PortBuffer frequency_buffer = getPortBuffer("frequency");
-		PortBuffer amplitude_buffer = getPortBuffer("amplitude");
-
-		int to_generate = Math.min(frequency_buffer.available(), Integer.MAX_VALUE);
-		if(amplitude_connected)
-			to_generate = Math.min(amplitude_buffer.available(), to_generate);
-
-		if(to_generate == 0)
-			return null;
-
-		float[] output = new float[to_generate];
-
-		PortBuffer[] ports;
-		if(amplitude_connected)
-			ports = new PortBuffer[]{frequency_buffer, amplitude_buffer};
-		else
-			ports = new PortBuffer[]{frequency_buffer};
-
-		new PortBufferIterator(ports, new PortBufferIterator.IteratorFunc() {
-
-			private MidiResponse last_mr_packet = null;
-
-			@Override
-			public void loop(DataPacket[] port_packets, int[] packet_offsets, int offset, int sample_count) {
-				// MIDI packet swapped? We update ourself
-				if(port_packets[0] != last_mr_packet) {
-					last_mr_packet = (MidiResponse)port_packets[0];
-					for(short[] midi : last_mr_packet.midi) { // XXX Placing MIDI interpreting here is not 100% accurate. Problem?
-						updateFromMidi(midi);
-					}
-				}
-
-				if(amplitude_connected) {
-					/*float[] f = ((AudioResponse)port_packets[2]).samples;
-
-					for(int i = 0; i < sample_count; i++)
-						output[offset + i] =
-							a[packet_offsets[0] + i]  * f[packet_offsets[2] + i] + // TODO retrieve the fac_value from fac-port, if connected
-							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);* /
-					// TODO
-					throw new RuntimeException("Not implemented");
-				} else {
-					for(int i = 0; i < sample_count; i++)
-						output[offset + i] = (float)Math.sin(pos += (Math.PI * 2.0 * midi_frequency) / sample_rate) * midi_amplitude * net_node.amplitude * 0.2f;
-				}
-			}
-		});
-
-		// Forward the buffer
-		if(isAlive()) { // We might kill ourself in the loop above, and since the buffers get cleared, we will fail here
-			frequency_buffer.forward(to_generate);
-			if(amplitude_connected)
-				amplitude_buffer.forward(to_generate);
-		}
-
-		return output;
-	}*/
-
-	/*private void updateFromMidi(short[] midi) {
-		if(midi[0] == MidiStatuses.KEY_DOWN) {
-			keys_down.add(midi[1]);
- 
-			float freq = midiNoteToFreq(midi[1]);
-			midi_tangent_frequency = freq;
-			midi_amplitude = midi[2] / 128f;
-		} else if(midi[0] == MidiStatuses.KEY_UP) {
-			if(inPolyMode())
-				end();
-
-			// Remove the key from our memory. This is mostly used when in mono-mode
-			for(int i = keys_down.size() - 1; i >= 0; i--)
-				if(keys_down.get(i) == midi[1])
-					keys_down.remove(i);
-
-			if(keys_down.size() > 0) {
-				midi_tangent_frequency = midiNoteToFreq(keys_down.get(keys_down.size() - 1)); // Play the previous pushed tangent
-			} else {
-				midi_tangent_frequency = 0;
-				midi_amplitude = 0;
-				pos = 0;
-			}
-		} else if(midi[0] == MidiStatuses.PITCH_CHANGE) {
-			midi_pitch_factor = (midi[1] + midi[2] * 128) / 8192f - 1;
-			System.out.printf("Pitch factor: %f\n", midi_pitch_factor);
-		}
-
-		midi_frequency = (float)(midi_tangent_frequency * Math.pow(2, midi_pitch_factor / 6f));
-	}*/
-
 	private float midiNoteToFreq(short n) {
+		System.out.println((float)(440 * Math.pow(2, (n - 69) / 12.0f)));
 		return (float)(440 * Math.pow(2, (n - 69) / 12.0f));
 	}
 
-	/*private float[] generateFromFrequency() {
-		boolean amplitude_connected = net_node.isConnected("amplitude");
-		PortBuffer frequency_buffer = this.getPortBuffer("frequency");
-		PortBuffer amplitude_buffer = this.getPortBuffer("amplitude");
-
-		int to_generate = Math.min(frequency_buffer.available(), Integer.MAX_VALUE);
-		if(amplitude_connected)
-			to_generate = Math.min(amplitude_buffer.available(), to_generate);
-
-		if(to_generate == 0)
-			return null;
-
-		float[] output = new float[to_generate];
-
-		PortBuffer[] ports = amplitude_connected ? new PortBuffer[]{frequency_buffer, amplitude_buffer} : new PortBuffer[]{frequency_buffer};
-
-		float amplitude_offset = ((Node)net_node).offset;
-
-		PortBufferIterator pbi = new PortBufferIterator(ports, new PortBufferIterator.IteratorFunc() {
-
-			@Override
-			public void loop(DataPacket[] port_packets, int[] packet_offsets, int offset, int sample_count) {
-				if(amplitude_connected) {
-					/*float[] f = ((AudioResponse)port_packets[2]).samples;
-
-					for(int i = 0; i < sample_count; i++)
-						output[offset + i] =
-							a[packet_offsets[0] + i]  * f[packet_offsets[2] + i] + // TODO retrieve the fac_value from fac-port, if connected
-							b[packet_offsets[1] + i]  * (1 - f[packet_offsets[2] + i]);* /
-					// TODO
-					throw new RuntimeException("Not implemented");
-				} else {
-					float[] f = ((AudioResponse)port_packets[0]).samples;
-					for(int i = 0; i < sample_count; i++)
-						output[offset + i] = (float)Math.sin(pos += (Math.PI * 2.0 * f[packet_offsets[0] + i]) / sample_rate) * net_node.amplitude + amplitude_offset;
-				}
-			}
-		});
-
-		pbi.forward();
-
-		return output;
-	}*/
-
-	/*@Override
-	protected void onReceive(String port_name) {
-		tryToGenerate();
-	}*/
-
-	/*protected void onReceiveControl(String port_name, DataPacket dp) {
-		if(port_name.equals("frequency")) {
-			if(dp instanceof EndSessionResponse)
-				terminate();
-		}
-	}*/
-
-	/*private int n;
+	@Override
+	protected void onPrepare() {}
 
 	@Override
-	protected void onProcess() {
-		Outlet outlet = getOutlet("output");
-		Inlet frequency = getInlet("frequency");
-		Inlet amplitude = getInlet("amplitude");
-
-		int available = available();
-
-		if(outlet != null && available > 0) {
-			AudioOutlet ao = (AudioOutlet)outlet;
-			System.out.println("Signalgenerator LProcessor processing " + outlet);
-
-			for(int i = ao.written; i < ao.written + available; i++)
-				ao.audio[i] = i + n;
-
-			ao.written += available;
-
-			if(frequency != null)
-				frequency.read += available;
-
-			if(amplitude != null)
-				amplitude.read += available;
-
-			n++;
-
-			outlet.push();
-		}
-	}*/
+	protected void onMessage(Message message) {}
 
 	@Override
-	protected void onPrepare() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void onMessage(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onDestroy() {}
 }
