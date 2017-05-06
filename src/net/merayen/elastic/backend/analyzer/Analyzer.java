@@ -60,14 +60,6 @@ public class Analyzer {
 			}
 		}
 	}
-
-	/**
-	 * Analyzes which format is sent and received on every port.
-	 * Nodes can later poll this to see which format to expect.
-	 */
-	private static void analyzeFormat(NetList netlist) {
-		
-	}
 }
 
 /**
@@ -176,9 +168,6 @@ class ChainAnalyzer {
 			ports_traversed.add(port);
 
 			List<Line> lines = netlist.getConnections(node, port_name);
-
-			if(node == netlist.getNode("adsr_tail2"))
-				System.console();
 
 			// Add all connected ports we should check
 			for(Line line : lines) {

@@ -2,6 +2,7 @@ package net.merayen.elastic.netlist;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -113,11 +114,11 @@ public final class NetList {
 	}
 
 	public void removePort(Node node, String port) {
-		for(int i = lines.size(); i > -1; i--) { // Remove all connections to port
+		for(int i = lines.size() - 1; i > -1; i--) { // Remove all connections to port
 			Line line = lines.get(i);
 			if((line.node_a == node && line.port_a.equals(port)) || (line.node_b == node && line.port_b.equals(port)))
 				lines.remove(i);
-		}
+		}	
 
 		node.ports.remove(port);
 	}

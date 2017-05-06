@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -294,24 +295,27 @@ public class Test {
 	}
 
 	private static Node createNode(NetList netlist, String name) {
+		NodeProperties np = new NodeProperties(netlist);
 		Node n = netlist.createNode(name);
-		n.properties.put("name", name);
-		n.properties.put("version", 1);
+		np.setName(n, name);
+		np.setVersion(n, 1);
 		return n;
 	}
 
 	private static Port addPort(NetList netlist, Node node, String port, boolean output, String chain_ident) {
-		NodeProperties properties = new NodeProperties(netlist);
+		NodeProperties np = new NodeProperties(netlist);
 		Port p = netlist.createPort(node, port);
-		if(output)
-			properties.setOutput(p);
-		
+		if(output) {
+			np.setOutput(p);
+			np.setFormat(p, Format.AUDIO);
+		}
+
 		if(chain_ident == null)
 			; // Normal port
 		else if(chain_ident.equals("chain_consumer"))
-			properties.setChainConsumer(p);
+			np.setChainConsumer(p);
 		else
-			properties.setPortChainIdent(p, chain_ident);
+			np.setPortChainIdent(p, chain_ident);
 
 		return p;
 	}

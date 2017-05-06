@@ -28,12 +28,13 @@ public class Executor extends AbstractExecutor {
 			ProcessMessage pm = supervisor.process((ProcessMessage)message);
 			sendFromProcessing(pm);
 
-		} else if(message instanceof NodeParameterMessage) {
+		} else if(message instanceof NodeParameterMessage || message instanceof NodeDataMessage) {
 			applyNetList();
 			supervisor.handleMessage(message);
 			NetListMessages.apply(getNetList(), message);
 
 		} else if(message instanceof NetListMessage) {
+			System.out.println("Executor message: " + message);
 			NetListMessages.apply(branchNetList(), message);
 
 		}

@@ -149,7 +149,6 @@ public abstract class UINode extends UIObject {
 			remove(port);
 			ports.remove(port);
 			onRemovePort(port);
-
 		}
 	}
 

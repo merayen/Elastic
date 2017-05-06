@@ -86,11 +86,14 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 		convertToBytes(audio, buffer, c.channels, c.depth);
 
+		//System.out.print(available());
+
 		written_frame_position += audio.length / c.channels;
 
 		prepareLine(buffer.length);
 
 		line.write(buffer, 0, buffer.length);
+		//System.out.println(" " + available());
 	}
 
 	@Override

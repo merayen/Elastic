@@ -1,10 +1,12 @@
 package net.merayen.elastic.backend.nodes;
 
+import java.util.List;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
+import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
@@ -26,10 +28,11 @@ public abstract class BaseLogicNode {
 
 	private String id; // Same ID as the one in NetList
 	private Supervisor supervisor;
-	private Node node; // NetList-node that this LogicNode represents
+	Node node; // NetList-node that this LogicNode represents
 	private NetList netlist;
 	private LogicNodeList logicnode_list; // Only used for look-up needs
 	boolean inited;
+	private NodeProperties np;
 
 	/**
 	 * Called when this node is created for the first time.
@@ -103,15 +106,7 @@ public abstract class BaseLogicNode {
 	}
 
 	protected void removePort(String name) {
-		if(netlist.getPort(node, name) == null)
-			throw new RuntimeException(String.format("Port %s does not exist on Node", name));
-
-		netlist.removePort(node, name);
-
-		// Notify both ways
-		Postmaster.Message message = new RemoveNodePortMessage(id, name);
-		supervisor.sendMessageToUI(message);
-		supervisor.sendMessageToProcessor(message);
+		supervisor.removePort(this, name);
 	}
 
 	protected void set(String key, Object value) {
@@ -119,7 +114,6 @@ public abstract class BaseLogicNode {
 		supervisor.sendMessageToProcessor(message);
 		supervisor.sendMessageToUI(message);
 
-		NodeProperties np = new NodeProperties(netlist);
 		np.parameters.set(node, key, value);
 	}
 
@@ -129,6 +123,18 @@ public abstract class BaseLogicNode {
 
 	protected void sendDataToProcessor(String key, Map<String, Object> data) {
 		sendMessageToProcessor(new NodeDataMessage(id, data));
+	}
+
+	protected boolean isConnected(String port) {
+		return !netlist.getConnections(node, port).isEmpty();
+	}
+
+	protected String[] getPorts() {
+		return netlist.getPorts(node);
+	}
+
+	protected boolean isOutput(String port) {
+		return np.isOutput(netlist.getPort(node, port));
 	}
 
 	void create(String name, Integer version, String group) {
@@ -144,10 +150,12 @@ public abstract class BaseLogicNode {
 	void setInfo(String id, Supervisor supervisor, Node node) {
 		this.id = id;
 		this.supervisor = supervisor;
-		this.logicnode_list = supervisor.logicnode_list;
-		this.netlist = ((Environment)supervisor.env).project.getNetList();
 		this.node = node;
-		this.env = supervisor.env;
+
+		env = supervisor.env;
+		logicnode_list = supervisor.logicnode_list;
+		netlist = ((Environment)supervisor.env).project.getNetList();
+		np = new NodeProperties(netlist);
 	}
 
 	void notifyConnect(String port) {

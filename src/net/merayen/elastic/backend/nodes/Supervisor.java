@@ -1,10 +1,13 @@
 package net.merayen.elastic.backend.nodes;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ListResourceBundle;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
+import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
@@ -172,9 +175,28 @@ public class Supervisor {
 		// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
 		is_processing = false;
 		Postmaster.Message m;
-		while((m = while_processing_queue.receive()) != null) {
+		while((m = while_processing_queue.receive()) != null)
 			handleMessageFromUI(m);
-		}
+	}
+
+	void removePort(BaseLogicNode logic_node, String name) {
+		NetList netlist = env.project.getNetList();
+		if(netlist.getPort(logic_node.node, name) == null)
+			throw new RuntimeException(String.format("Port %s does not exist on Node", name));
+
+		// Notify the node(s) connected on the other side that we will disconnect
+		for(Line line : netlist.getConnections(logic_node.node, name))
+			if(line.node_a.getID().equals(logic_node.getID()))
+				logicnode_list.get(line.node_b.getID()).notifyDisconnect(line.port_b);
+			else
+				logicnode_list.get(line.node_a.getID()).notifyDisconnect(line.port_a);
+
+		netlist.removePort(logic_node.node, name);
+
+		// Notify both ways
+		Postmaster.Message message = new RemoveNodePortMessage(logic_node.getID(), name);
+		sendMessageToUI(message);
+		sendMessageToProcessor(message);
 	}
 
 	private void doProcessFrame(ProcessMessage message) {
