@@ -8,20 +8,20 @@ import net.merayen.elastic.util.Postmaster;
  * 
  * You will need to send messages again to rebuild the state in UI and/or backend afterwards.
  */
-public class ResetNetListMessage extends Postmaster.Message {
+public class BeginResetNetListMessage extends Postmaster.Message {
 	public final String group_id; // Which group to reset. null if everything
 
 	/**
 	 * Reset all groups.
 	 */
-	public ResetNetListMessage() {
+	public BeginResetNetListMessage() {
 		group_id = null;
 	}
 
 	/**
 	 * Reset just one group.
 	 */
-	public ResetNetListMessage(String group_id) {
+	public BeginResetNetListMessage(String group_id) {
 		this.group_id = group_id;
 	}
 }

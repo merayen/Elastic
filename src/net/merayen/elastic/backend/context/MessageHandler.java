@@ -6,7 +6,8 @@ import java.util.List;
 import net.merayen.elastic.backend.context.action.LoadProjectAction;
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
-import net.merayen.elastic.system.intercom.ResetNetListMessage;
+import net.merayen.elastic.system.intercom.FinishResetNetListMessage;
+import net.merayen.elastic.system.intercom.BeginResetNetListMessage;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.backend.StartBackendMessage;
@@ -57,8 +58,9 @@ public class MessageHandler {
 				NetListRefreshRequestMessage m = (NetListRefreshRequestMessage)message;
 
 				List<Postmaster.Message> refresh_messages = new ArrayList<>();
-				refresh_messages.add(new ResetNetListMessage(m.group_id)); // This will clear the receiver's NetList
+				refresh_messages.add(new BeginResetNetListMessage(m.group_id)); // This will clear the receiver's NetList
 				refresh_messages.addAll(NetListMessages.disassemble(backend_context.env.project.getNetList(), m.group_id)); // All these messages will rebuild the receiver's NetList
+				refresh_messages.add(new FinishResetNetListMessage());
 
 				to_ui.send(refresh_messages); // Send all messages in a chunk so no other messages can get in-between.
 

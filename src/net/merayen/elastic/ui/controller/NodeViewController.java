@@ -68,7 +68,7 @@ public class NodeViewController extends Controller {
 			for(NodeView nv : getNodeViews())
 				nv.removeNode(m.node_id); // Exception? UI out of sync
 
-		} else if(message instanceof ResetNetListMessage) { // TODO implement support to only reset a certain group?
+		} else if(message instanceof BeginResetNetListMessage) { // TODO implement support to only reset a certain group?
 			for(NodeView nv : getNodeViews())
 				nv.reset();
 		}

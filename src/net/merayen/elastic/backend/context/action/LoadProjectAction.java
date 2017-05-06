@@ -1,9 +1,12 @@
 package net.merayen.elastic.backend.context.action;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.backend.context.Action;
+import net.merayen.elastic.system.intercom.FinishResetNetListMessage;
+import net.merayen.elastic.system.intercom.BeginResetNetListMessage;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 
@@ -20,7 +23,11 @@ public class LoadProjectAction extends Action {
 		//System.out.println(env.project.getNetList());
 
 		System.out.println("Nettlæist: " + env.project.getNetList().getNodes().size());
-		List<Postmaster.Message> messages = NetListMessages.disassemble(env.project.data.getRawNetList());
+		List<Postmaster.Message> messages = new ArrayList<>();
+
+		messages.add(new BeginResetNetListMessage());
+		messages.addAll(NetListMessages.disassemble(env.project.data.getRawNetList()));
+		messages.add(new FinishResetNetListMessage());
 
 		backend_context.message_handler.sendToBackend(messages);
 	}

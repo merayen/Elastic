@@ -38,6 +38,7 @@ public class Supervisor {
 	final LogicNodeList logicnode_list;
 	private Postmaster while_processing_queue = new Postmaster();
 	private volatile boolean is_processing; // Set to true when LogicNodes (and nodes) are processing, as we then can not take any messages
+	volatile boolean restoring; // Set to true when receiving NetListRefreshMessage, meaning that no events should be called
 
 	public Supervisor(LogicEnvironment env, Handler handler) {
 		this.env = env;
@@ -80,12 +81,15 @@ public class Supervisor {
 		} else if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
-			logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
+			if(!restoring)
+				logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
 
 			return;
+
 		} else if (message instanceof NodeDataMessage) {
 			NodeDataMessage m = (NodeDataMessage) message;
-			logicnode_list.get(m.node_id).onData(m.value);
+			if(!restoring) // Data should never be sent when restoring anyway, but adding this just in case
+				logicnode_list.get(m.node_id).onData(m.value);
 			return;
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
@@ -108,31 +112,56 @@ public class Supervisor {
 			if(!output_b && netlist.getConnections(netlist.getNode(m.node_b), m.port_b).size() > 0)
 				return; // Input ports can only have 1 line connected
 
-			logicnode_list.get(m.node_a).notifyConnect(m.port_a);
-			logicnode_list.get(m.node_b).notifyConnect(m.port_b);
+			if(!restoring) {
+				logicnode_list.get(m.node_a).notifyConnect(m.port_a);
+				logicnode_list.get(m.node_b).notifyConnect(m.port_b);
+			}
 
 			NodeConnectMessage connect_message = new NodeConnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
 			handler.sendMessageToUI(connect_message); // Acknowledge connection
-			handler.sendMessageToProcessor(connect_message);
+			handler.sendMessageToProcessor(connect_message); // Forward to backend
 
 		} else if(message instanceof NodeDisconnectMessage) { // Notifies LogicNodes about changing of connections
 			NodeDisconnectMessage m = (NodeDisconnectMessage)message;
-			logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
-			logicnode_list.get(m.node_b).notifyDisconnect(m.port_b);
+			if(!restoring) {
+				logicnode_list.get(m.node_a).notifyDisconnect(m.port_a);
+				logicnode_list.get(m.node_b).notifyDisconnect(m.port_b);
+			}
 
 			NodeDisconnectMessage disconnect_message = new NodeDisconnectMessage(m.node_a, m.port_a, m.node_b, m.port_b);
 			handler.sendMessageToUI(disconnect_message); // Acknowledge disconnection
-			handler.sendMessageToProcessor(disconnect_message); // Acknowledge disconnection
+			handler.sendMessageToProcessor(disconnect_message); // Forward to backend
+
+		} else if(message instanceof CreateNodePortMessage) {
+			if(!restoring)
+				throw new RuntimeException("Node ports can only be created for logic nodes when restoring, otherwise logic nodes must create them");
+
+			handler.sendMessageToUI(message);
+			handler.sendMessageToProcessor(message);
+
+		} else if(message instanceof RemoveNodePortMessage) {
+			throw new RuntimeException("Not allowed. Only logic nodes can do this action");
 
 		} else if(message instanceof RemoveNodeMessage) {
 			RemoveNodeMessage m = (RemoveNodeMessage)message;
-			logicnode_list.get(m.node_id).onRemove();
+			if(!restoring)
+				logicnode_list.get(m.node_id).onRemove();
+
 			logicnode_list.remove(m.node_id);
 			handler.sendMessageToUI(new RemoveNodeMessage(m.node_id));
 			handler.sendMessageToProcessor(new RemoveNodeMessage(m.node_id));
 
 		} else if(message instanceof ProcessMessage) {
+			if(restoring)
+				throw new RuntimeException("In restore mode. Forgotten to send FinishResetNetListMessage() to end restoring?");
+
 			doProcessFrame((ProcessMessage)message);
+
+		} else if(message instanceof BeginResetNetListMessage) {
+			restoring = true;
+
+		} else if(message instanceof FinishResetNetListMessage) {
+			restoring = false;
 		}
 
 		// Apply the changes to the NetList itself

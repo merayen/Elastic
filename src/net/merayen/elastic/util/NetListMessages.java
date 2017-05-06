@@ -16,7 +16,7 @@ import net.merayen.elastic.system.intercom.*;
  * 
  * TODO support restoring from just one certain owner, so that we don't generate messages for all groups etc too, if not really wanted. Hmm...
  */
-public class NetListMessages {
+public class NetListMessages { // TODO silly name, fix
 	/**
 	 * Creates messages for the whole NetList, including groups, subgroups etc.
 	 * Returned messages will need to be executed in the order returned.

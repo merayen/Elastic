@@ -9,7 +9,7 @@ import net.merayen.elastic.system.intercom.CreateNodeMessage;
 import net.merayen.elastic.system.intercom.NodeConnectMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
-import net.merayen.elastic.system.intercom.ResetNetListMessage;
+import net.merayen.elastic.system.intercom.BeginResetNetListMessage;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.ui.InitUIMessage;
@@ -39,7 +39,7 @@ public class NewProject extends Action {
 				public void receive(Postmaster.Message message) {
 					if(message instanceof CreateNodeMessage) {
 						nodes.add((CreateNodeMessage)message);
-					} else if(message instanceof ResetNetListMessage) {
+					} else if(message instanceof BeginResetNetListMessage) {
 						nodes.clear();
 					} else if(message instanceof ProcessMessage) {
 						//ProcessMessage pm = (ProcessMessage)message;

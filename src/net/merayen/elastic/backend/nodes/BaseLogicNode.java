@@ -141,7 +141,9 @@ public abstract class BaseLogicNode {
 		CreateNodeMessage m = new CreateNodeMessage(id, name, version, group);
 		supervisor.sendMessageToUI(m); // Acknowledges creation of Node to the UI
 		supervisor.sendMessageToProcessor(m); // Notify the backend too
-		onCreate();
+
+		if(!supervisor.restoring)
+			onCreate();
 	}
 
 	/**
