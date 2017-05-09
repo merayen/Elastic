@@ -19,7 +19,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onInit() {
-		updateLines(false);
+		//updateLines(false);
 	}
 
 	@Override
@@ -30,8 +30,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onConnect(String port) {
-		System.out.println("Poly got input connection on port " + port);
-		createLine(); // Always have a line ready for the user to connect
+		updateLines(false);
 	}
 
 	private Set<Integer> getAllLines() {

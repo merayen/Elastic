@@ -34,7 +34,7 @@ public class Executor extends AbstractExecutor {
 			NetListMessages.apply(getNetList(), message);
 
 		} else if(message instanceof NetListMessage) {
-			System.out.println("Executor message: " + message);
+			//System.out.println("Executor message: " + message);
 			NetListMessages.apply(branchNetList(), message);
 
 		}

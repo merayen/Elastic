@@ -12,4 +12,8 @@ public class NodeDisconnectMessage extends NetListMessage {
 		this.node_b = node_b;
 		this.port_b = port_b;
 	}
+
+	public String toString() {
+		return super.toString() + String.format(" (node_a=%s, port_a=%s, node_b=%s, port_b=%s", node_a, port_a, node_b, port_b);
+	}
 }

@@ -238,7 +238,7 @@ class Supervisor {
 		proccess_time.add(System.nanoTime() - start);
 
 		if(process_time_last < System.currentTimeMillis()) {
-			System.out.printf("Average process time: %.3fms\n", proccess_time.getAvg() / 1000000.0);
+			//System.out.printf("Average process time: %.3fms\n", proccess_time.getAvg() / 1000000.0);
 			process_time_last = System.currentTimeMillis() + 1000;
 		}
 

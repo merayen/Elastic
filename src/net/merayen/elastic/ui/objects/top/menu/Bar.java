@@ -48,7 +48,7 @@ public class Bar extends UIObject {
 	protected void onEvent(IEvent event) {
 		if(event instanceof KeyboardEvent) {
 			KeyboardEvent e = (KeyboardEvent)event;
-			System.out.println(e.action + ": " + e.character + " (" + e.code + ")");
+			//System.out.println(e.action + ": " + e.character + " (" + e.code + ")");
 		}
 	}
 }
