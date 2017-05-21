@@ -18,15 +18,17 @@ public class UIPort extends UIObject {
 	public String title = "";
 	public final String name;
 	public final boolean output;
+	public final UINode uinode;
 	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
 	public Color color = AUX_PORT;
 
 	private UIPortTemporary temp_port; // Used when dragging a line from this port
 
-	UIPort(String name, boolean output) {
+	UIPort(String name, boolean output, UINode uinode) {
 		super();
 		this.name = name;
 		this.output = output;
+		this.uinode = uinode;
 
 		UIPort self = this;
 		port_drag = new MouseHandler(this);
@@ -60,14 +62,14 @@ public class UIPort extends UIObject {
 
 			@Override
 			public void onMouseDrag(Point position, Point offset) {
-				moveTempPort(position);
+				//moveTempPort(position);
 			}
 
 			@Override
 			public void onMouseDown(Point position) { // Creates a UITemporaryPort that we drag from
 				if(!self.output) {// Input ports can only have 1 line connected
 					HashSet<UIPort> connected_ports = getUINetObject().getAllConnectedPorts(self);
-					if(connected_ports.size() > 0) {
+					if(connected_ports.size() == 0) {
 						getUINetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be up to 1 connected)
 
 						// Reconnect temporary port from the port we were already connected to
@@ -116,20 +118,21 @@ public class UIPort extends UIObject {
 	}
 
 	public UINode getNode()  {
-		/*
+		return uinode;
+		/*/*
 		 * Gets the UI-node that contains this port.
-		 */
+		 *
 		UIObject x = this;
 		while((x = x.getParent()) != null && !(x instanceof UINode));
 
 		if(!(x instanceof UINode))
 			throw new RuntimeException("Port is not attached to a node or is not attached at all");
 
-		return (UINode)x;
+		return (UINode)x;*/
 	}
 
 	protected UINet getUINetObject() {
-		return getNode().getUINet();
+		return uinode.getUINet();
 	}
 
 	/*public void setPortStats(PortStats ps) {
@@ -140,38 +143,17 @@ public class UIPort extends UIObject {
 		if(temp_port != null)
 			removeTempPort();
 
-		temp_port = new UIPortTemporary();
+		temp_port = new UIPortTemporary(uinode);
+		temp_port.translation.x = uinode.translation.x;
+		temp_port.translation.y = uinode.translation.y;
 		add(temp_port);
 		temp_port.addTempPort(p);
 		temp_port.target = this;
 	}
-
-	private void moveTempPort(Point position) { // Relative coordinates
-		temp_port.translation.x = position.x;
-		temp_port.translation.y = position.y;
-	}
-
+ 
 	private void removeTempPort() {
 		temp_port.removeTempPort();
 		remove(temp_port);
 		temp_port = null;
-	}
-
-	private void tryConnect() {
-		UIPort source_port = getUINetObject().getDraggingSourcePort();
-		UIPortTemporary temp_port = getUINetObject().getTemporaryPort();
-		UIPort target_port = temp_port.target;
-
-		if(target_port != null) {
-			if(target_port == source_port) return;
-			if(target_port.getParent() == source_port.getParent()) return;
-
-			// If we are an input port, clear any line that is already connected to us (should only be 1 line)
-			try {
-				getUINetObject().connect(source_port, target_port);
-			} catch (NetList.AlreadyConnected e) {
-				// Okido
-			}
-		}
 	}
 }

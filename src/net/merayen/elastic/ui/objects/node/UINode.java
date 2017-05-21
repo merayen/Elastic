@@ -138,7 +138,7 @@ public abstract class UINode extends UIObject {
 
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
-			UIPort port = new UIPort(m.port, m.output);
+			UIPort port = new UIPort(m.port, m.output, this);
 			ports.add(port);
 			add(port);
 			onCreatePort(port);

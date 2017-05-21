@@ -21,7 +21,7 @@ public class NetController extends Controller {
 
 	@Override
 	protected void onMessageFromBackend(Message message) {
-		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage || message instanceof RemoveNodeMessage) {
+		if(message instanceof NodeConnectMessage || message instanceof NodeDisconnectMessage || message instanceof RemoveNodeMessage || message instanceof RemoveNodePortMessage) {
 			for(NodeView nv : getNodeViews()) // Forward message regarding the net, from backend to the UINet, to all NodeViews
 				nv.getUINet().handleMessage(message);
 		}
