@@ -16,48 +16,45 @@ public class UIPortTemporary extends UIPort {
 	private UIPort source_port;
 	public UIPort target; // Set by the port which the port is hanging over
 	private MouseHandler mouse;
-	private Point original;
+	private UIPort destination_port;
 
-	public UIPortTemporary(UINode uinode) {
+	public UIPortTemporary(UINode uinode, UIPort source_port, UIPort destination_port) {
 		super("temporary_dragging_port", false, uinode);
+		this.source_port = source_port;
+		this.destination_port = destination_port;
 		draw_default_port = false;
+
+		translation.x = 0;
+		translation.y = 0;
+		source_port.add(this);
+
+		getUINetObject().addLine(source_port, this);
+		getUINetObject().setDraggingPort(source_port, this);
 
 		mouse = new MouseHandler(this, Button.LEFT);
 		mouse.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onGlobalMouseUp(Point global_position) {
+				tryConnect();
 				removeTempPort();
 			}
 
 			@Override
 			public void onGlobalMouseMove(Point position) {
-				if(original == null)
-					original = new Point(position.x, position.y);
-
-				moveTempPort(new Point(position.x, position.y));
-			}
-
-			@Override
-			public void onGlobalMouseUp(Point position) {
-				
+				moveTempPort(source_port.getRelativeFromAbsolute(position.x, position.y));
 			}
 		});
 	}
 
-	public void addTempPort(UIPort source_port) { // Must be called after you have added this class via add(...)
-		this.source_port = source_port;
-		getUINetObject().addLine(source_port, this);
-		getUINetObject().setDraggingPort(source_port, this);
-	}
-
-	public void removeTempPort() {
+	private void removeTempPort() {
 		getUINetObject().removeLine(source_port, this);
 		getUINetObject().setDraggingPort(null, null);
+		getParent().remove(this);
 	}
 
 	private void moveTempPort(Point position) { // Relative coordinates
-		translation.x = position.x - original.x;
-		translation.y = position.y - original.y;
+		translation.x = position.x;// - original.x;
+		translation.y = position.y;// - original.y;
 	}
 
 	@Override
@@ -66,8 +63,20 @@ public class UIPortTemporary extends UIPort {
 	}
 
 	@Override
-	public void onDraw() {
+	protected void onDraw() {
 		UINodeUtil.getWindow(this).debug.set("UIPortTemporary " + this, String.format("source_port=%s, target=%s", source_port == null ? null : source_port.name, target == null ? null : target.name));
+	}
+
+	@Override
+	protected void onUpdate() {
+		super.onUpdate();
+		// Sets the initial offset
+		if(destination_port != null) {
+			Point pos = getRelativePosition(destination_port);
+			translation.x = pos.x;
+			translation.y = pos.y;
+			destination_port = null;
+		}
 	}
 
 	private void tryConnect() {

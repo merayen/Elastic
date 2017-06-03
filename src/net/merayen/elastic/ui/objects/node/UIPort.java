@@ -2,7 +2,6 @@ package net.merayen.elastic.ui.objects.node;
 
 import java.util.HashSet;
 
-import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.ui.Color;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
@@ -21,8 +20,6 @@ public class UIPort extends UIObject {
 	public final UINode uinode;
 	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
 	public Color color = AUX_PORT;
-
-	private UIPortTemporary temp_port; // Used when dragging a line from this port
 
 	UIPort(String name, boolean output, UINode uinode) {
 		super();
@@ -49,39 +46,22 @@ public class UIPort extends UIObject {
 			}
 
 			@Override
-			public void onMouseUp(Point position) {
-				if(temp_port != null)
-					removeTempPort();
-			}
-
-			@Override
-			public void onMouseDrop(Point start_point, Point offset) { // Called on UIPortTemporary
-				tryConnect();
-				removeTempPort();
-			}
-
-			@Override
-			public void onMouseDrag(Point position, Point offset) {
-				//moveTempPort(position);
-			}
-
-			@Override
 			public void onMouseDown(Point position) { // Creates a UITemporaryPort that we drag from
 				if(!self.output) {// Input ports can only have 1 line connected
 					HashSet<UIPort> connected_ports = getUINetObject().getAllConnectedPorts(self);
-					if(connected_ports.size() == 0) {
+					if(connected_ports.size() == 1) {
 						getUINetObject().disconnectAll(self); // Disconnect all ports from ourself (should only be up to 1 connected)
 
 						// Reconnect temporary port from the port we were already connected to
 						for(UIPort p : connected_ports)
-							createTempPort(p);
+							createTempPort(p, self);
 					} else if(connected_ports.size() == 0) {
-						createTempPort(self);
+						createTempPort(self, null);
 					} else {
 						throw new RuntimeException("Multiple lines connected to an input port. Not allowed.");
 					}
 				} else {
-					createTempPort(self);
+					createTempPort(self, null);
 				}
 			}
 		});
@@ -103,13 +83,6 @@ public class UIPort extends UIObject {
 			draw.text(title, 10f, 5f);
 		}
 
-		/*if(port_stats != null && this.absolute_translation.scale_x < .5) {
-			draw.setFont("SansSerif", 6);
-			draw.setColor(255, 255, 255);
-			draw.text(String.format("%d kb", (int)(port_stats.bytes_transferred / 1000)), -10, 10);
-			draw.text(String.format("%d/%d", port_stats.active, port_stats.total), -10, 16);
-		}*/
-
 		super.onDraw();
 	}
 
@@ -119,41 +92,13 @@ public class UIPort extends UIObject {
 
 	public UINode getNode()  {
 		return uinode;
-		/*/*
-		 * Gets the UI-node that contains this port.
-		 *
-		UIObject x = this;
-		while((x = x.getParent()) != null && !(x instanceof UINode));
-
-		if(!(x instanceof UINode))
-			throw new RuntimeException("Port is not attached to a node or is not attached at all");
-
-		return (UINode)x;*/
 	}
 
 	protected UINet getUINetObject() {
 		return uinode.getUINet();
 	}
 
-	/*public void setPortStats(PortStats ps) {
-		port_stats = ps;
-	}*/
-
-	private void createTempPort(UIPort p) {
-		if(temp_port != null)
-			removeTempPort();
-
-		temp_port = new UIPortTemporary(uinode);
-		temp_port.translation.x = uinode.translation.x;
-		temp_port.translation.y = uinode.translation.y;
-		add(temp_port);
-		temp_port.addTempPort(p);
-		temp_port.target = this;
-	}
- 
-	private void removeTempPort() {
-		temp_port.removeTempPort();
-		remove(temp_port);
-		temp_port = null;
+	private void createTempPort(UIPort source_port, UIPort destination_port) {
+		new UIPortTemporary(uinode, source_port, destination_port);
 	}
 }

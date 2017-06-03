@@ -83,21 +83,17 @@ public class UINet extends UIObject {
 	public void addLine(UIPort a, UIPort b) {
 		removeLine(a, b);
 		connections.add(new Connection(a, b));
-		System.out.printf("UINet adding line: %s %s %s %s\n", a.getNode(), a.name, b.getNode(), b.name);
 	}
 
 	public void removeLine(UIObject a, UIObject b) {
 		for(int i = 0; i < connections.size(); i++) {
 			Connection c = connections.get(i);
-			if((c.a == a && c.b == b) || (c.a == b && c.b == a)) {
+			if((c.a == a && c.b == b) || (c.a == b && c.b == a))
 				connections.remove(i);
-				System.out.printf("UINet removing line: %s %s %s %s\n", c.a.getNode(), c.a.name, c.b.getNode(), c.b.name);
-			}
 		}
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		System.out.println("UINet sending connect message");
 		UINodeUtil.getTop(this).sendMessage(new NodeConnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
 	}
 
@@ -119,11 +115,9 @@ public class UINet extends UIObject {
 		}
 
 		connections.add(new Connection(port_a, port_b));
-		System.out.println("UINett internalConnect");
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		System.out.println("UINet sending disconnect message");
 		UINodeUtil.getTop(this).sendMessage(new NodeDisconnectMessage(a.getNode().node_id, a.name, b.getNode().node_id, b.name));
 	}
 
@@ -133,15 +127,11 @@ public class UINet extends UIObject {
 			String node_a = c.a.getNode().node_id;
 			String node_b = c.b.getNode().node_id;
 			if(node_a.equals(message.node_a) && node_b.equals(message.node_b)) {
-				if(c.a.name.equals(message.port_a) && c.b.name.equals(message.port_b)) {
-					System.out.println("UINet Removed " + connections.get(i) + ". Remaining: " + connections.size());
+				if(c.a.name.equals(message.port_a) && c.b.name.equals(message.port_b))
 					connections.remove(i);
-				}
 			} else if(node_a.equals(message.node_b) && node_b.equals(message.node_a)) {
-				if(c.a.name.equals(message.port_b) && c.b.name.equals(message.port_a)) {
-					System.out.println("UINet Removed " + connections.get(i) + ". Remaining: " + connections.size());
+				if(c.a.name.equals(message.port_b) && c.b.name.equals(message.port_a))
 					connections.remove(i);
-				}
 			}
 		}
 	}
@@ -195,11 +185,6 @@ public class UINet extends UIObject {
 
 		else if(message instanceof RemoveNodePortMessage)
 			internalRemovePort((RemoveNodePortMessage)message);
-
-		else
-			return;
-
-		System.out.println("UINet handleMessage: " + message);
 	}
 
 	/*
