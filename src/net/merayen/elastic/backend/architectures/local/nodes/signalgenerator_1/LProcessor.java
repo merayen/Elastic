@@ -134,13 +134,14 @@ public class LProcessor extends LocalProcessor {
 
 		if(!keys_down.isEmpty()) {
 			short[] active_key = keys_down.get(keys_down.size() - 1);
-			float freq = midiNoteToFreq(active_key[1]); // TODO take care of pitch wheel
+			double freq = midiNoteToFreq(active_key[1]) / sample_rate; // TODO take care of pitch wheel
 
 			for(int i = outlet.written; i < outlet.written + available; i++) {
-				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
+				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)];
 				pos += freq;
 			}
 		} else { // No key down? Silence!
+			pos = 0;
 			for(int ch = 0; ch < outlet.audio.length; ch++)
 				for(int i = 0; i < buffer_size; i++)
 					outlet.audio[ch][i] = 0;
@@ -176,9 +177,8 @@ public class LProcessor extends LocalProcessor {
 		}
 	}
 
-	private float midiNoteToFreq(short n) {
-		System.out.println((float)(440 * Math.pow(2, (n - 69) / 12.0f)));
-		return (float)(440 * Math.pow(2, (n - 69) / 12.0f));
+	private double midiNoteToFreq(short n) {
+		return 440 * Math.pow(2, (n - 69) / 12.0f);
 	}
 
 	@Override
