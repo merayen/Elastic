@@ -7,8 +7,6 @@ public class Test {
 		//net.merayen.elastic.backend.nodes.Test.test();
 		//net.merayen.elastic.backend.architectures.Test.test();
 		//net.merayen.elastic.backend.context.Test.test();
-		//net.merayen.elastic.buffer.AudioCircularBuffer.test();
-		//net.merayen.elastic.backend.storage.Test.test();
 
 		// Works
 		/*net.merayen.elastic.util.Test.test();
