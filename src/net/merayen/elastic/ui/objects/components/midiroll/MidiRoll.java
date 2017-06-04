@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.objects.UIClip;
 
 public class MidiRoll extends UIObject {
 	public interface Handler {
@@ -14,7 +13,6 @@ public class MidiRoll extends UIObject {
 
 	private Piano piano;
 	private PianoNet net;
-	private UIClip clip;
 
 	private final int OCTAVE_COUNT = 8;
 
@@ -26,11 +24,8 @@ public class MidiRoll extends UIObject {
 
 	@Override
 	protected void onInit() {
-		clip = new UIClip();
-		add(clip);
-
 		net = new PianoNet(OCTAVE_COUNT);
-		clip.add(net);
+		add(net);
 
 		piano = new Piano(OCTAVE_COUNT, new Piano.Handler() {
 			@Override
@@ -43,13 +38,11 @@ public class MidiRoll extends UIObject {
 				handler.onDown(tangent_no);
 			}
 		});
-		clip.add(piano);
+		add(piano);
 	}
 
 	@Override
 	protected void onUpdate() {
-		clip.width = width;
-		clip.height = height;
 		net.width = width;
 		net.height = height;
 	}

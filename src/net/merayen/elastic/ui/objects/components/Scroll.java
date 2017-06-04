@@ -8,7 +8,7 @@ public class Scroll extends UIObject {
 	public float height = 100;
 	public float content_width = 200;
 	public float content_height = 200;
-	public float bar_width = 5;
+	public float bar_width = 10;
 	public final UIObject container = new UIObject();
 
 	private final UIClip clip = new UIClip();

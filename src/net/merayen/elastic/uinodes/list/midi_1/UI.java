@@ -40,11 +40,11 @@ public class UI extends UINode {
 				}});
 			}
 		});
-		midi_roll.translation.x = 20;
-		midi_roll.translation.y = 20;
+		scroll.translation.x = 20;
+		scroll.translation.y = 20;
 		scroll.container.add(midi_roll);
 
-		scroll.container.add(new Resizable(this, new Resizable.Handler() {
+		add(new Resizable(this, new Resizable.Handler() {
 			@Override
 			public void onResize() {
 				if(width < 100) width = 100;
