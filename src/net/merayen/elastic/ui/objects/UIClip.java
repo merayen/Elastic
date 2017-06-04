@@ -1,17 +1,13 @@
 package net.merayen.elastic.ui.objects;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 
 /**
  * Draws children inside ourself, clipping by our size.
+ * TODO implement caching?
  */
 public class UIClip extends UIObject {
-	//private static int count_id;
 	public float width = 10f;
 	public float height = 10f;
 

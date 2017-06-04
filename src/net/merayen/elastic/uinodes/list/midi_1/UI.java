@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.ui.objects.components.Scroll;
 import net.merayen.elastic.ui.objects.components.midiroll.MidiRoll;
 import net.merayen.elastic.ui.objects.node.Resizable;
 import net.merayen.elastic.ui.objects.node.UINode;
@@ -18,6 +19,9 @@ public class UI extends UINode {
 		width = 300;
 		height = 200;
 		titlebar.title = "MIDI Roll";
+
+		Scroll scroll = new Scroll();
+		add(scroll);
 
 		midi_roll = new MidiRoll(new MidiRoll.Handler() {
 			@SuppressWarnings("serial")
@@ -38,9 +42,9 @@ public class UI extends UINode {
 		});
 		midi_roll.translation.x = 20;
 		midi_roll.translation.y = 20;
-		add(midi_roll);
+		scroll.container.add(midi_roll);
 
-		add(new Resizable(this, new Resizable.Handler() {
+		scroll.container.add(new Resizable(this, new Resizable.Handler() {
 			@Override
 			public void onResize() {
 				if(width < 100) width = 100;
