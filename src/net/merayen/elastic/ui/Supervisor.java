@@ -104,13 +104,12 @@ public class Supervisor {
 		if(!uiobject.isAttached() && uiobject != top)
 			return;
 
-		uiobject.onUpdate();
-
-		if(uiobject.isInitialized()) // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
+		if(uiobject.isInitialized()) { // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
 			for(IEvent e : events)
 				uiobject.onEvent(e);
 
 			uiobject.onUpdate();
+		}
 
 		for(UIObject o : new ArrayList<UIObject>(uiobject.onGetChildren()))
 			internalUpdate(events, o);
