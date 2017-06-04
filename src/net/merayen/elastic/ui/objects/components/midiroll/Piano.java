@@ -69,12 +69,12 @@ class Piano extends UIObject {
 				for(Tangent t : tangents)
 					t.goStandby();
 
-				handler.onDown(tangent_no + 12*6);
+				handler.onDown(tangent_no + 12*2);
 			}
 
 			@Override
 			public void onUp() {
-				handler.onUp(tangent_no + 12*6);
+				handler.onUp(tangent_no + 12*2);
 			}
 		};
 	}

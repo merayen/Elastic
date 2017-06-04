@@ -81,13 +81,11 @@ public class Supervisor {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			NetListMessages.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
 
-			if(!restoring)
-				logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
+			logicnode_list.get(m.node_id).onParameterChange(m.key, m.value);
 
 		} else if (message instanceof NodeDataMessage) {
 			NodeDataMessage m = (NodeDataMessage) message;
-			if(!restoring) // Data should never be sent when restoring anyway, but adding this just in case
-				logicnode_list.get(m.node_id).onData(m.value);
+			logicnode_list.get(m.node_id).onData(m.value);
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 			NodeConnectMessage m = (NodeConnectMessage)message;
