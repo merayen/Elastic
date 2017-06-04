@@ -83,10 +83,13 @@ public class LProcessor extends LocalProcessor {
 		outlet.setChannelCount(1);
 
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
+		//float avg = 0;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
+			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)] - 0.5f;
 			pos += step;
+			//avg += outlet.audio[0][i];
 		}
+		//System.out.println("Hopp " + avg / (float)outlet.buffer_size);
 
 		outlet.written = outlet.buffer_size;
 		outlet.push();
