@@ -47,8 +47,8 @@ public class BackendContext {
 
 			@Override
 			public void onProcessDone() {
-				env.mixer.dispatch(message.buffer_size);
 				env.synchronization.push();
+				env.mixer.dispatch(message.buffer_size);
 			}
 		});
 	}

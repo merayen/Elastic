@@ -4,7 +4,6 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
@@ -12,7 +11,6 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
-import net.merayen.elastic.backend.midi.devices.implementations.OracleJavaDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 
 /**
@@ -46,7 +44,6 @@ public class DeviceScanner extends AbstractDeviceScanner {
 
 				if(source_line instanceof SourceDataLine) {
 					SourceDataLine sdl = (SourceDataLine)source_line;
-					DataLine.Info dataline_info = (DataLine.Info)sdl.getLineInfo();
 
 					AbstractDevice device = new OracleAudioOutputDevice(m, (SourceDataLine)source_line); // We just know that it is available
 					addDevice(device);
@@ -64,7 +61,6 @@ public class DeviceScanner extends AbstractDeviceScanner {
 
 				if(target_line instanceof TargetDataLine) {
 					TargetDataLine sdl = (TargetDataLine)target_line;
-					DataLine.Info dataline_info = (DataLine.Info)sdl.getLineInfo();
 
 					AbstractDevice device = new OracleAudioInputDevice(m, (TargetDataLine)target_line); // We just know that it is available
 					addDevice(device);

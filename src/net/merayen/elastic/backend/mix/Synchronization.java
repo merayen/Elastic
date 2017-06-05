@@ -1,15 +1,25 @@
 package net.merayen.elastic.backend.mix;
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
+import net.merayen.elastic.util.AverageStat;
 
 /**
  * Helper that synchronizes and calls a callback when needing to process more data.
- * Can use input-device clock, output-device clock, or just its own, internal clock if no external clock is possible.
+ * Can use input-device clock, output-device clock, or just its own, internal clock if no external clock is available.
  * 
  * The class focuses on keeping synchronized, outputting silence and draining input buffers if you are not able to
  * process in the expected timeframe.
  */
 public class Synchronization {
+	public static class Statistics {
+		private Statistics() {}
+
+		/**
+		 * The time taken from requesting data to actually getting it (the time Elastic uses to process).
+		 */
+		public final AverageStat<Float> awaiting_data = new AverageStat<>(100);
+	}
+
 	public interface Handler {
 		/**
 		 * Called when it is time to process a new frame.
@@ -53,12 +63,14 @@ public class Synchronization {
 				if(in_available != Integer.MAX_VALUE) { // We have active input-source, we use that as a time-source
 					if(in_available >= buffer_size) {
 						processing = true;
+						start_waiting_data = System.currentTimeMillis();
 						handler.needData();
 						waitForData();
 						continue;
 					}
 				} else if(out_available != Integer.MAX_VALUE) { // Only output, using that as clock, where the output buffer blocking actually keeps us in in pace
 					processing = true;
+					start_waiting_data = System.currentTimeMillis();
 					handler.needData();
 					waitForData();
 					continue;
@@ -74,6 +86,7 @@ public class Synchronization {
 
 					if(sample_lag > 0) { // TODO calculate a bit better, perhaps
 						processing = true;
+						start_waiting_data = System.currentTimeMillis();
 						handler.needData();
 						waitForData();
 						continue;
@@ -109,6 +122,7 @@ public class Synchronization {
 	}
 
 	public final Mixer mixer;
+	public final Statistics statistics = new Statistics();
 	private volatile boolean processing; // Set to true when we have fired Handler.needData(). It will go back to false when notified by the Synchronization.push() call.
 	private final Poller poller;
 	private final int sample_rate; // Only used when using the internal timer, as we then need to know the duration of the buffer
@@ -117,6 +131,7 @@ public class Synchronization {
 	private long internal_clock_start;
 	private volatile long sample_count; // samples from start. Counts upwards
 	private boolean reported_behind;
+	private long start_waiting_data;
 
 	public Synchronization(Mixer mixer, int sample_rate, int buffer_size, Handler handler) {
 		this.mixer = mixer;
@@ -142,6 +157,7 @@ public class Synchronization {
 		if(!processing)
 			throw new RuntimeException("Calling push() when not been requested is not allowed");
 
+		statistics.awaiting_data.add((System.currentTimeMillis() - start_waiting_data) / 1000f);
 		processing = false;
 		reported_behind = false;
 

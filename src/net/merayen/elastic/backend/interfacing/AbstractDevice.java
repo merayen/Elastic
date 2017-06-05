@@ -1,12 +1,51 @@
 package net.merayen.elastic.backend.interfacing;
 
 import java.util.List;
+import java.util.Map;
+
+import net.merayen.elastic.util.AverageStat;
 
 /**
  * Represents a hardware device, like a audio interface, midi keyboard etc.
  */
 public abstract class AbstractDevice {
 	public interface Configuration {}
+
+	/**
+	 * Holy shit. Need more information on what happens under the hood.
+	 */
+	public static class Statistics {
+		/**
+		 * Time taken to write/read from the buffer.
+		 */
+		public final AverageStat<Float> buffer_time = new AverageStat<>(100);
+
+		/**
+		 * Samples available before reading/writing.
+		 */
+		public final AverageStat<Integer> available_before = new AverageStat<>(100);
+
+		/**
+		 * Samples available after reading/writing.
+		 */
+		public final AverageStat<Integer> available_after = new AverageStat<>(100);
+
+		/**
+		 * Samples processed on read/write.
+		 */
+		public final AverageStat<Integer> samples_processed = new AverageStat<>(100);
+
+		/**
+		 * Everytime the buffer is empty upon writing or reading.
+		 */
+		public int hunger;
+
+		public String describe() {
+			return String.format("buffer_time=%s, available_before=%s available_after=%s, samples_processed=%s, hunger=%d", buffer_time.info(), available_before.info(), available_after.info(), samples_processed.info(), hunger);
+		}
+	}
+
+	public final Statistics statistics = new Statistics();
 
 	public final String id; // an unique ID for a device. Should be namespaced by the DeviceScanner. This ID can be used by the nodes to identify a device between multiple sessions
 	public final String description;

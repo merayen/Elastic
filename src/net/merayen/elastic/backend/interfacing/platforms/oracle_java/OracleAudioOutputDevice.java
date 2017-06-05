@@ -13,7 +13,6 @@ import javax.sound.sampled.SourceDataLine;
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
 import net.merayen.elastic.backend.util.AudioUtil;
 
 /**
@@ -41,10 +40,20 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		line.close();
 	}
 
+	/*@Override
+	public int available() {
+		return (int)(written_frame_position - line.getLongFramePosition());
+	}*/
+
 	@Override
 	public int available() {
-		System.out.println(written_frame_position + " - " + line.getLongFramePosition());
-		return (int)(written_frame_position - line.getLongFramePosition());
+		if(line.isActive()) {
+			Configuration c = (Configuration)configuration;
+			return line.available() / c.channels / (c.depth / 8);
+		}
+		else {
+			return 0;
+		}
 	}
 
 	@Override
@@ -87,14 +96,23 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 		convertToBytes(audio, buffer, c.channels, c.depth);
 
-		//System.out.print(available());
+		int available = available();
+		if(available == 0)
+			statistics.hunger++;
+
+		statistics.available_before.add(available);
 
 		written_frame_position += audio.length / c.channels;
 
 		prepareLine(buffer.length);
 
+		long t = System.currentTimeMillis();
 		line.write(buffer, 0, buffer.length);
-		//System.out.println("\t" + available());
+		statistics.buffer_time.add((System.currentTimeMillis() - t) / 1000f);
+
+		statistics.samples_processed.add(audio.length / (c.depth / 8) / c.channels);
+
+		statistics.available_after.add(available());
 	}
 
 	@Override
@@ -129,7 +147,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		DataLine.Info omg = ((DataLine.Info)line.getLineInfo());
 		for(AudioFormat af : omg.getFormats())
 			if(af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED && af.isBigEndian()) // Only support PCM_SIGNED and big-endianness for now
-			result.add(new Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
+				result.add(new Configuration((int)af.getSampleRate(), af.getChannels(), af.getSampleSizeInBits()));
 
 		return result;
 	}

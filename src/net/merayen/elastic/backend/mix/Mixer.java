@@ -158,6 +158,16 @@ public class Mixer { // Rename to e.g "IODispatch"?
 			o.clear();
 	}
 
+	public Map<String, AbstractDevice.Statistics> getStatistics() {
+		Map<String, AbstractDevice.Statistics> result = new HashMap<>();
+
+		for(AbstractDevice ad : device_scanner.getDevices())
+			if(ad.isRunning())
+				result.put(ad.id, ad.statistics);
+
+		return result;
+	}
+
 	/*
 	 * Called by Synchronization() when needing to fill the outgoing pipes.
 	 * Current buffer is not cleared, only the backend device is being read/written to.
