@@ -87,9 +87,7 @@ public class LProcessor extends LocalProcessor {
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
 			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)] - 0.5f;
 			pos += step;
-			//avg += outlet.audio[0][i];
 		}
-		//System.out.println("Hopp " + avg / (float)outlet.buffer_size);
 
 		outlet.written = outlet.buffer_size;
 		outlet.push();
@@ -143,6 +141,7 @@ public class LProcessor extends LocalProcessor {
 				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)];
 				pos += freq;
 			}
+
 		} else { // No key down? Silence!
 			pos = 0;
 			for(int ch = 0; ch < outlet.audio.length; ch++)
@@ -162,9 +161,9 @@ public class LProcessor extends LocalProcessor {
 			for(short[][] sample : midi) {
 				if(sample != null) {
 					for(short[] midi_packet : sample) {
-						if((midi_packet[0] & MidiStatuses.KEY_DOWN) == MidiStatuses.KEY_DOWN) {
+						if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
 							keys_down.add(midi_packet);
-						} else if((midi_packet[0] & MidiStatuses.KEY_UP) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
+						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
 							Iterator<short[]> iter = keys_down.iterator();
 							while(iter.hasNext()) {
 								short[] m = iter.next();

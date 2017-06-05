@@ -43,6 +43,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public int available() {
+		System.out.println(written_frame_position + " - " + line.getLongFramePosition());
 		return (int)(written_frame_position - line.getLongFramePosition());
 	}
 
@@ -93,7 +94,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		prepareLine(buffer.length);
 
 		line.write(buffer, 0, buffer.length);
-		//System.out.println(" " + available());
+		//System.out.println("\t" + available());
 	}
 
 	@Override
