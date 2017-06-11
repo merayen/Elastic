@@ -37,7 +37,6 @@ class VU extends UIObject {
 
 			if(offset.length > i) {
 				float v = Math.min(1, Math.max(-1, offset[i] / 1000));
-				System.out.println("Offset " + v);
 				draw.setColor(255, 255, 255);
 				draw.line(meter_width / 2 + (v * meter_width / 2), bar_height * 0.9f, meter_width / 2 + (v * meter_width / 2), bar_height);
 			}

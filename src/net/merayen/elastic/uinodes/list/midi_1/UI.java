@@ -12,6 +12,7 @@ import net.merayen.elastic.ui.objects.node.UIPort;
 
 public class UI extends UINode {
 	private MidiRoll midi_roll;
+	private Scroll scroll;
 
 	@Override
 	protected void onInit() {
@@ -20,7 +21,7 @@ public class UI extends UINode {
 		height = 200;
 		titlebar.title = "MIDI Roll";
 
-		Scroll scroll = new Scroll();
+		scroll = new Scroll();
 		add(scroll);
 
 		midi_roll = new MidiRoll(new MidiRoll.Handler() {
@@ -40,7 +41,7 @@ public class UI extends UINode {
 				}});
 			}
 		});
-		scroll.translation.x = 20;
+		scroll.translation.x = 10;
 		scroll.translation.y = 20;
 		scroll.container.add(midi_roll);
 
@@ -78,8 +79,8 @@ public class UI extends UINode {
 	protected void onData(NodeDataMessage message) {}
 
 	private void updateLayout() {
-		midi_roll.width = width - 40;
-		midi_roll.height = height - 25;
+		scroll.width = width - 40;
+		scroll.height = height - 25;
 		if(getPort("out") != null)
 			getPort("out").translation.x = width;
 	}
