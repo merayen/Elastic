@@ -53,7 +53,7 @@ public class MouseHandler {
 	/**
 	 * Call this from your UIObject to handle event
 	 */
-	public void handle(IEvent event) {
+	public void handle(IEvent event) { // XXX Should we ensure UIObject is initialized before 
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
 

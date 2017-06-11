@@ -83,9 +83,8 @@ public class LProcessor extends LocalProcessor {
 		outlet.setChannelCount(1);
 
 		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
-		//float avg = 0;
 		for(int i = outlet.written; i < outlet.buffer_size; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)] - 0.5f;
+			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
 			pos += step;
 		}
 
@@ -138,7 +137,7 @@ public class LProcessor extends LocalProcessor {
 			double freq = midiNoteToFreq(active_key[1]) / sample_rate; // TODO take care of pitch wheel
 
 			for(int i = outlet.written; i < outlet.written + available; i++) {
-				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)] - 0.5f;
+				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)];
 				pos += freq;
 			}
 

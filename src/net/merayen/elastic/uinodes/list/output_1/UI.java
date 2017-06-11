@@ -50,7 +50,8 @@ public class UI extends UINode {
 	protected void onData(NodeDataMessage message) {
 		if(message.value.containsKey("vu") && vu != null) {
 			vu.updateVU((float[])message.value.get("vu"));
-		}
+		} else if(message.value.containsKey("offset") && vu != null)
+			vu.updateOffset((float[])message.value.get("offset"));
 	}
 
 }

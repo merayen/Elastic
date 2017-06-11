@@ -7,6 +7,7 @@ class VU extends UIObject {
 	float bar_height = 10;
 
 	private float[] vu = new float[0];
+	private float[] offset = new float[0];
 
 	private long last_draw = System.currentTimeMillis();
 
@@ -17,23 +18,28 @@ class VU extends UIObject {
 		float meter_width = width - 4;
 		int channels = vu.length;
 
-		if(vu != null) {
-			for(int i = 0; i < channels; i++) {
-				draw.setColor(0, 0, 0);
-				draw.fillRect(0, 1 + i * bar_height, 100, bar_height - 2);
+		for(int i = 0; i < channels; i++) {
+			draw.setColor(0, 0, 0);
+			draw.fillRect(0, 1 + i * bar_height, 100, bar_height - 2);
 
-				draw.setColor(0, 255, 0);
-				draw.fillRect(2, 2 + i * bar_height, 0 + Math.min(0.7f, vu[0]) * meter_width, bar_height - 4);
+			draw.setColor(0, 255, 0);
+			draw.fillRect(2, 2 + i * bar_height, 0 + Math.min(0.7f, vu[i]) * meter_width, bar_height - 4);
 
-				if(vu[0] > 0.7f) {
-					draw.setColor(255, 200, 0);
-					draw.fillRect(0.7f * meter_width, 2 + i * bar_height, 0 + Math.min(0.9f, vu[0]) * meter_width - meter_width * 0.7f, bar_height - 4);
-				}
+			if(vu[i] > 0.7f) {
+				draw.setColor(255, 200, 0);
+				draw.fillRect(0.7f * meter_width, 2 + i * bar_height, 0 + Math.min(0.9f, vu[i]) * meter_width - meter_width * 0.7f, bar_height - 4);
+			}
 
-				if(vu[0] > 0.9) {
-					draw.setColor(255, 0, 0);
-					draw.fillRect(0.9f * meter_width, 2 + i * bar_height, 0 + Math.min(1f, vu[0]) * meter_width - meter_width * 0.9f, bar_height - 4);
-				}
+			if(vu[i] > 0.9) {
+				draw.setColor(255, 0, 0);
+				draw.fillRect(0.9f * meter_width, 2 + i * bar_height, 0 + Math.min(1f, vu[i]) * meter_width - meter_width * 0.9f, bar_height - 4);
+			}
+
+			if(offset.length > i) {
+				float v = Math.min(1, Math.max(-1, offset[i] / 1000));
+				System.out.println("Offset " + v);
+				draw.setColor(255, 255, 255);
+				draw.line(meter_width / 2 + (v * meter_width / 2), bar_height * 0.9f, meter_width / 2 + (v * meter_width / 2), bar_height);
 			}
 		}
 
@@ -52,6 +58,15 @@ class VU extends UIObject {
 				vu[i] = Math.min(1, data[i]);
 	}
 
+	void updateOffset(float[] data) {
+		offset = data;
+		/*if(data.length != offset.length)
+			offset = new float[data.length];
+
+		for(int i = 0; i < data.length; i++)
+			offset[i] = data[i];*/
+	}
+
 	float getHeight() {
 		return vu.length * bar_height;
 	}
@@ -61,6 +76,9 @@ class VU extends UIObject {
 
 		for(int i = 0; i < vu.length; i++)
 			vu[i] = Math.max(0, vu[i] - 0.1f * delta);
+
+		//for(int i = 0; i < offset.length; i++)
+		//	offset[i] /= 1.1f * delta;
 
 		last_draw = System.currentTimeMillis();
 	}

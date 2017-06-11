@@ -3,6 +3,10 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
+
+import org.w3c.dom.stylesheets.DocumentStyle;
+
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.math.BezierCurve;
@@ -58,5 +62,18 @@ public class LNode extends LocalNode {
 		curve_wave = new float[curve_wave.length];
 		BezierCurve.Dot[] dots = BezierCurve.fromFlat(points);
 		SignalBezierCurve.getValues(dots, curve_wave);
+
+		normalize();
+	}
+
+	private void normalize() {
+		double avg = 0;
+		for(int i = 0; i < curve_wave.length; i++)
+			avg += curve_wave[i];
+
+		avg /= curve_wave.length;
+
+		for(int i = 0; i < curve_wave.length; i++)
+			curve_wave[i] -= avg;
 	}
 }
