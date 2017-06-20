@@ -35,7 +35,7 @@ public class Scroll extends UIObject {
 					start = Float.MIN_NORMAL;
 				}
 			});*/
-			UIObject self = this;
+			//UIObject self = this;
 			movable = new Movable(this, this);
 
 			if(x) movable.drag_scale_y = 0;
@@ -81,8 +81,8 @@ public class Scroll extends UIObject {
 
 	public float width = 100;
 	public float height = 100;
-	public float content_width = 300;
-	public float content_height = 200;
+	public float content_width = 0;
+	public float content_height = 0;
 	public float bar_width = 10;
 	public final UIObject container = new UIObject();
 	Scroll self = this;

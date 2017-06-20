@@ -44,7 +44,6 @@ public class MidiRoll extends UIObject {
 	@Override
 	protected void onUpdate() {
 		net.width = width;
-		net.height = height;
 	}
 
 	@Override

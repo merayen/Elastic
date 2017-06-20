@@ -1,10 +1,10 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.util.UIBoxSizeUtil;
 
-public class PianoNet extends UIObject {
+public class PianoNet extends UIObject implements UIBoxSizeUtil.Size {
 	float width = 100;
-	float height = 100;
 	float octave_width = 5 * 7;
 
 	private final boolean[] BLACK_TANGENTS = new boolean[]{false,true,false,true,false,false,true,false,true,false,true,false};

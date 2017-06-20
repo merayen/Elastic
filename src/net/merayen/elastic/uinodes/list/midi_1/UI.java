@@ -1,18 +1,13 @@
 package net.merayen.elastic.uinodes.list.midi_1;
 
-import java.util.HashMap;
-
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.ui.objects.components.Scroll;
-import net.merayen.elastic.ui.objects.components.midiroll.MidiRoll;
 import net.merayen.elastic.ui.objects.node.Resizable;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 
 public class UI extends UINode {
-	private MidiRoll midi_roll;
-	private Scroll scroll;
+	private RollView roll_view = new RollView(this);
 
 	@Override
 	protected void onInit() {
@@ -21,29 +16,7 @@ public class UI extends UINode {
 		height = 200;
 		titlebar.title = "MIDI Roll";
 
-		scroll = new Scroll();
-		add(scroll);
-
-		midi_roll = new MidiRoll(new MidiRoll.Handler() {
-			@SuppressWarnings("serial")
-			@Override
-			public void onUp(int tangent_no) {
-				sendData(new HashMap<String, Object>() {{
-					put("tangent_up", tangent_no);
-				}});
-			}
-
-			@SuppressWarnings("serial")
-			@Override
-			public void onDown(int tangent_no) {
-				sendData(new HashMap<String, Object>() {{
-					put("tangent_down", tangent_no);
-				}});
-			}
-		});
-		scroll.translation.x = 10;
-		scroll.translation.y = 20;
-		scroll.container.add(midi_roll);
+		add(roll_view);
 
 		add(new Resizable(this, new Resizable.Handler() {
 			@Override
@@ -79,8 +52,8 @@ public class UI extends UINode {
 	protected void onData(NodeDataMessage message) {}
 
 	private void updateLayout() {
-		scroll.width = width - 40;
-		scroll.height = height - 25;
+		roll_view.width = width - 40;
+		roll_view.height = height - 25;
 		if(getPort("out") != null)
 			getPort("out").translation.x = width;
 	}
