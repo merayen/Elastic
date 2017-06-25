@@ -74,7 +74,7 @@ public class AverageStat<T extends Number> implements Iterable<T> {
 
 	public String info() {
 		Stat stat = get();
-		return String.format("[min=%f, avg=%f, max=%f]", stat.min, stat.avg, stat.max);
+		return String.format("[%f / %f / %f]", stat.min, stat.avg, stat.max);
 	}
 
 	public Iterator<T> iterator() {

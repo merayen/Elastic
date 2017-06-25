@@ -39,8 +39,7 @@ public class Debug extends UIObject {
 			i++;
 
 			float fac = 1 - (float)(Math.min(b, SCALE) / SCALE);
-			if(fac < 0 || fac > 1)
-				System.out.println("Nei");
+			fac = Math.max(Math.min(fac, 1), 0);
 
 			String text = String.format("%s: %s", x, list.get(x)); 
 			draw.setFont("Arial", 1.3f);
