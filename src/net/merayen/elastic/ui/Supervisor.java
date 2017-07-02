@@ -82,6 +82,7 @@ public class Supervisor {
 
 			uiobject.updateDraw(draw);
 
+			uiobject.outline = draw.outline;
 			uiobject.outline_abs_px = draw.getAbsoluteOutline();
 
 			draw.destroy();
@@ -89,6 +90,7 @@ public class Supervisor {
 			for(UIObject o : uiobject.onGetChildren())
 				internalDraw(dc, o);
 
+			// Update outline including children too? Hmm
 		} else {
 			uiobject.outline_abs_px = new Rect();
 		}

@@ -7,7 +7,6 @@ import net.merayen.elastic.ui.util.Movable;
 
 public class Scroll extends UIObject {
 	private class Bar extends UIObject {
-		//private MouseHandler mousehandler;
 		private Movable movable;
 		private boolean x;
 
@@ -17,25 +16,6 @@ public class Scroll extends UIObject {
 
 		@Override
 		protected void onInit() {
-			/*mousehandler = new MouseHandler(this, Button.LEFT);
-			mousehandler.setHandler(new MouseHandler.Handler() {
-				private float start = Float.MIN_VALUE;
-
-				@Override
-				public void onMouseDrag(Point position, Point offset) {
-					if(start == Float.MIN_NORMAL)
-						start = ;
-
-					set(start + (x ? offset.x : offset.y));
-					System.out.println(offset.y);
-				}
-
-				@Override
-				public void onGlobalMouseUp(Point global_position) {
-					start = Float.MIN_NORMAL;
-				}
-			});*/
-			//UIObject self = this;
 			movable = new Movable(this, this);
 
 			if(x) movable.drag_scale_y = 0;
@@ -63,19 +43,7 @@ public class Scroll extends UIObject {
 
 		@Override
 		protected void onEvent(IEvent e) {
-			//mousehandler.handle(e);
 			movable.handle(e);
-		}
-
-		private float get() {
-			return x ? container.translation.x : container.translation.y;
-		}
-
-		private void set(float v) {
-			if(x)
-				container.translation.x = v;
-			else
-				container.translation.y = v;
 		}
 	}
 
@@ -127,6 +95,8 @@ public class Scroll extends UIObject {
 
 		bar_x.translation.y = height - bar_width;
 		bar_y.translation.x = width - bar_width;
+
+		updateBars();
 	}
 
 	private void updateBars() {
@@ -134,9 +104,7 @@ public class Scroll extends UIObject {
 			if(bar_x.getParent() == null)
 				add(bar_x);
 
-			float x = ((-container.translation.x) / (content_width - clip.width));
-			bar_x.translation.x = x * (width - bar_width);
-			//bar_x.translation.y = height - bar_width;
+			bar_x.translation.y = height - bar_width;
 		} else if(bar_x.getParent() != null) {
 			remove(bar_x);
 		}
@@ -145,9 +113,7 @@ public class Scroll extends UIObject {
 			if(bar_y.getParent() == null)
 				add(bar_y);
 
-			float y = ((-container.translation.y) / (content_height - clip.height));
 			bar_y.translation.x = width - bar_width;
-			//bar_y.translation.y = y * (height - bar_width);
 		} else if(bar_y.getParent() != null) {
 			remove(bar_y);
 		}

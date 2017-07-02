@@ -13,6 +13,10 @@ public class UIObject {
 	private UIObject parent;
 	final List<UIObject> children = new ArrayList<>(); 
 
+	/**
+	 * Set every time UIObject is drawn. Not including children for now. Should.
+	 */
+	public net.merayen.elastic.ui.Rect outline;
 	public net.merayen.elastic.ui.Rect outline_abs_px; // Absolute, in screen pixels
 
 	public int draw_z; // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()

@@ -1,9 +1,8 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.util.UIBoxSizeUtil;
 
-public class PianoNet extends UIObject implements UIBoxSizeUtil.Size {
+public class PianoNet extends UIObject {
 	float width = 100;
 	float octave_width = 5 * 7;
 

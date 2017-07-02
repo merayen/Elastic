@@ -21,7 +21,7 @@ public class Draw {
 	private UIObject uiobject;
 	private DrawContext draw_context;
 
-	private Rect outline = null; // Relative
+	Rect outline = null; // Relative
 
 	private String font_name = "Geneva";
 	private float font_size = 1f;
