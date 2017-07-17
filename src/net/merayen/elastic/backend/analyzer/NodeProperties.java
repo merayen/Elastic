@@ -2,10 +2,8 @@ package net.merayen.elastic.backend.analyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
@@ -20,33 +18,6 @@ public class NodeProperties {
 	 */
 	public class Analyzer {
 		private Analyzer() {}
-		/**
-		 * Which chain_id this port creates.
-		 * Calculated by the Analyzer().
-		 */
-		public void setPortChainCreateId(Port port, int chain_id) {
-			if(!isOutput(port))
-				throw new RuntimeException("Should not happen");
-
-			port.properties.put("analyzer.chain_id", chain_id);
-		}
-
-		public int getPortChainCreateId(Port port) {
-			return (int)port.properties.get("analyzer.chain_id");
-		}
-
-		/**
-		 * Contains all the chain_ids this port is included in.
-		 * Both input- and output-ports.
-		 * Modify the returned Set to make changes.
-		 */
-		@SuppressWarnings("unchecked")
-		public Set<Integer> getPortChainIds(Port port) {
-			if(port.properties.get("analyzer.chain_ids") == null)
-				port.properties.put("analyzer.chain_ids", new HashSet<Integer>());
-
-			return (Set<Integer>)port.properties.get("analyzer.chain_ids");
-		}
 
 		public void setDecidedFormat(Port port, Format format) {
 			port.properties.put("analyzer.decided_format", format.name);
@@ -94,26 +65,26 @@ public class NodeProperties {
 	}
 
 	public int getVersion(Node node) {
-		return (int)node.properties.get("version");
+		return ((Number)node.properties.get("version")).intValue();
 	}
 
 	public void setVersion(Node node, int version) {
 		node.properties.put("version", version);
 	}
 
-	/**
-	 * Set which group this node belongs to.
-	 * A group can be a group of node being a subgroup of another node, for example.
-	 * Instead of storing child nodes inside other nodes, we store the children in its
-	 * own group.
-	 * A group is just a text-string, mostly random.
-	 */
-	public void setGroup(Node node, String group) {
-		node.properties.put("group", group);
+	public void setParent(Node node, String parent) {
+		node.properties.put("parent", parent);
 	}
 
-	public String getGroup(Node node) {
-		return (String)node.properties.get("group");
+	public void setParent(Node node, Node parent) {
+		node.properties.put("parent", parent.getID());
+	}
+
+	public String getParent(Node node) {
+		if(!node.properties.containsKey("parent"))
+			return null;
+
+		return (String)node.properties.get("parent");
 	}
 
 	public void setOutput(Port port) { // Can not be changed afterwards. Drop and recreate port
@@ -140,47 +111,6 @@ public class NodeProperties {
 		return format != null ? Format.get(format) : null;
 	}
 
-	/**
-	 * Nodes can spawn different voice-sessions on different output ports.
-	 * The ident, which is just a string, is local for every node, and can be whatever-value that the
-	 * node can use to create voices.
-	 * If not set, or null, port is just a slave and can not create sessions.
-	 * There can be multiple ports sharing the same ident.
-	 */
-	public void setPortChainIdent(Port port, String ident) {
-		if(!isOutput(port))
-			throw new RuntimeException("Only output-ports can have an ident to spawn voices");
-
-		port.properties.put("chain_ident", ident);
-	}
-
-	public String getPortChainIdent(Port port) {
-		if(!isOutput(port))
-			return null;
-
-		if(port.properties.containsKey("chain_ident"))
-			return (String)port.properties.get("chain_ident");
-
-		return null;
-	}
-
-	public void setChainConsumer(Port port) {
-		if(isOutput(port))
-			throw new RuntimeException("Port must be input to consume chains");
-
-		port.properties.put("chain_consumer", true);
-	}
-
-	public boolean isChainConsumer(Port port) {
-		if(isOutput(port))
-			throw new RuntimeException("Port must be input to consume chains");
-
-		if(port.properties.get("chain_consumer") != null)
-			return (boolean)port.properties.get("chain_consumer");
-
-		return false;
-	}
-
 	public List<String> getInputPorts(Node node) {
 		List<String> result = new ArrayList<>();
 
@@ -199,19 +129,5 @@ public class NodeProperties {
 				result.add(port);
 
 		return result;
-	}
-
-	/**
-	 * Sees if the port is "passive", meaning that it doesn't spawn or consume voices.
-	 */
-	public boolean isPassivePort(Port port) {
-		boolean output = isOutput(port);
-		if(output && getPortChainIdent(port) != null)
-			return false;
-
-		if(!output && isChainConsumer(port))
-			return false;
-
-		return true;
 	}
 }

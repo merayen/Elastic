@@ -64,4 +64,8 @@ public class Search {
 
 		return result;
 	}
+
+	public List<UIObject> getChildren() {
+		return new ArrayList<>(obj.children);
+	}
 }

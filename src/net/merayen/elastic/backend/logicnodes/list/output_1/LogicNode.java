@@ -53,16 +53,12 @@ public class LogicNode extends BaseLogicNode {
 		float[][] fa = (float[][])data.get("audio");
 
 		// Count max channels
-		int channel_count = 0;
-		for(int i = 0; i < fa.length; i++)
-			if(fa[i] != null)
-				channel_count = i + 1;
+		int channel_count = fa.length;
 
 		if(channel_count == 0)
 			return; // Don't bother
 
-		// Figure out sample count by checking one of the channels (the last channel in this case)
-		int sample_count = fa[channel_count - 1].length;
+		int sample_count = this.getEnv().buffer_size;
 
 		float[/* channel no */][/* sample no */] out = new float[channel_count][];
 
@@ -70,12 +66,11 @@ public class LogicNode extends BaseLogicNode {
 		for(int channel_no = 0; channel_no < channel_count; channel_no++) {
 			float[] channel = fa[channel_no];
 
-			if(channel != null) {
-				//System.out.printf("Output onFinishFrame() got channel no %d with %d samples\n", i, channel.data.length);
+			if(channel != null)
 				out[i] = channel;
-			} else {
+			else
 				out[i] = new float[sample_count];
-			}
+
 			i++;
 		}
 

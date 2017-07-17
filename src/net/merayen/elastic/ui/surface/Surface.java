@@ -1,11 +1,12 @@
 package net.merayen.elastic.ui.surface;
 
+import java.util.List;
+
 import net.merayen.elastic.ui.event.IEvent;
 
 public abstract class Surface {
 	public interface Handler {
 		public void onDraw(java.awt.Graphics2D graphics2d);
-		public void onEvent(IEvent event);
 	}
 
 	private String id;
@@ -18,6 +19,9 @@ public abstract class Surface {
 
 	public abstract int getWidth();
 	public abstract int getHeight();
+
+	public abstract List<IEvent> pullEvents();
+
 	public abstract void end();
 
 	public String getID() {

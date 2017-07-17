@@ -16,10 +16,12 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		MidiOutlet outlet = (MidiOutlet)getOutlet("out");
-		List<short[]> midi_from_ui = ((LNode)getLocalNode()).midi_from_ui;
-		outlet.midi[0] = midi_from_ui.toArray(new short[midi_from_ui.size()][]);
-		outlet.written = buffer_size;
-		outlet.push();
+		if(outlet != null) {
+			List<short[]> midi_from_ui = ((LNode)getLocalNode()).midi_from_ui;
+			outlet.midi[0] = midi_from_ui.toArray(new short[midi_from_ui.size()][]);
+			outlet.written = buffer_size;
+			outlet.push();
+		}
 	}
 
 	@Override

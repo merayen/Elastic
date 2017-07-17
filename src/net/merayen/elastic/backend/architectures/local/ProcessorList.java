@@ -6,22 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Iterator;
 
 /**
  * Contains a list of several LocalProcessors that is active in a LocalNode.
  */
 public class ProcessorList implements Iterable<LocalProcessor> {
-
-	// chains -> sessions -> LocalProcessor()
-
-	/**
-	 * Key: chain_id
-	 * Value: [session_id, ...]
-	 */
-	private final Map<Integer, Set<Integer>> chains = new HashMap<>();
-
 	/**
 	 * Key: session_id
 	 * Value: [LocalProcessor(), ...]
@@ -30,14 +20,12 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 
 	ProcessorList() {}
 
-	public void add(LocalProcessor localprocessor) {
-		if(!sessions.containsKey(localprocessor.session_id))
-			sessions.put(localprocessor.session_id, new ArrayList<>());
+	void addSession(int session_id) {
+		if(!sessions.containsKey(session_id))
+			sessions.put(session_id, new ArrayList<>());
+	}
 
-		if(!chains.containsKey(localprocessor.chain_id))
-			chains.put(localprocessor.chain_id, new HashSet<>());
-
-		chains.get(localprocessor.chain_id).add(localprocessor.session_id);
+	void add(LocalProcessor localprocessor) {
 		sessions.get(localprocessor.session_id).add(localprocessor);
 	}
 
@@ -93,20 +81,9 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 		return result;
 	}
 
-	public Set<Integer> getChainSessions(int chain_id) {
-		Set<Integer> session_ids = chains.get(chain_id);
-		if(session_ids == null)
-			return new HashSet<>(0);
-
-		return new HashSet<>(session_ids);
-	}
-
-	public void removeSession(int session_id) {
+	void removeSession(int session_id) {
 		if(sessions.remove(session_id) == null)
 			throw new RuntimeException("Session does not exist");
-
-		for(Set<Integer> sessions : chains.values())
-			sessions.remove(session_id);
 	}
 
 	public Iterator<LocalProcessor> iterator() { // Bad performance? Check getAllProcessors()
@@ -114,7 +91,6 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 	}
 
 	void clear() {
-		chains.clear();
 		sessions.clear();
 	}
 }

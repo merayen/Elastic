@@ -7,21 +7,21 @@ import java.awt.geom.Path2D;
 import net.merayen.elastic.ui.util.DrawContext;
 import net.merayen.elastic.util.Point;
 
+/**
+ * Helper class to make drawing easy inside the UIObject()s.
+ * UIObjects uses this.
+ * Instantiated for every draw of every UIObject (Hello Java GC, Work bitch)
+ * This class mostly translates our internal floating point coordinate system to pixels,
+ * making it easier to draw stuff, and abstracting away the underlaying painting system.
+ * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
+ * TODO Abstract this, so we can present these functions to other draw systems (e.g on Android)
+ */
 public class Draw {
-	/*
-	 * Helper class to make drawing easy inside the UIObject()s.
-	 * UIObjects uses this.
-	 * Instantiated for every draw of every UIObject (Hello Java GC, Work bitch)
-	 * This class mostly translates our internal floating point coordinate system to pixels,
-	 * making it easier to draw stuff, and abstracting away the underlaying painting system.
-	 * TODO don't instantiate it on every uiobject and store the Z-index for all the drawings
-	 * TODO Abstract this, so we can present these functions to other draw systems (e.g on Android)
-	 */
 	public java.awt.Graphics2D g2d; // TODO Make private
 	private UIObject uiobject;
 	private DrawContext draw_context;
 
-	Rect outline = null; // Relative
+	Rect outline; // Relative
 
 	private String font_name = "Geneva";
 	private float font_size = 1f;
@@ -55,13 +55,13 @@ public class Draw {
 		return draw_context.height;
 	}
 
+	public String getSurfaceID() {
+		return draw_context.getSurfaceID();
+	}
+
 	public Rect getAbsoluteOutline() {
-		if(outline == null)
-			return new Rect();
-
 		TranslationData td = uiobject.absolute_translation;
-
-		Rect r = new Rect(outline);
+		Rect r = (outline == null ? new Rect() : new Rect(outline));
 
 		r.x1 = (r.x1 / td.scale_x + td.x);
 		r.y1 = (r.y1 / td.scale_y + td.y);
@@ -82,17 +82,6 @@ public class Draw {
 			outline = new Rect(x, y, x + width, y + height);
 		else
 			outline.enlarge(x, y, x + width, y + height);
-
-		// TODO Only do once, not for every drawing (put inside getOutline()-something)
-		// As outline also defines the hitbox for mouse events, the clip will be the maximum hitbox rectangle 
-		/*if(uiobject.absolute_translation.clip != null) {
-			TranslationData td = uiobject.absolute_translation;//.getFlattened();
-			Rect c = uiobject.absolute_translation.clip;
-
-			//outline.clip(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y);
-			//if(uiobject instanceof UIClip)
-				//System.out.printf("Org: %s\nNew: %s\nAbs: %s\n\n", outline, new Rect(c.x1 - td.x, c.y1 - td.y, c.x2 - td.x, c.y2 - td.y),td);
-		}*/
 	}
 
 	public void setColor(int r, int g, int b) {
@@ -174,9 +163,9 @@ public class Draw {
 
 	public void text(String text, float x, float y) {
 		Point point = uiobject.getAbsolutePosition(x, y);
-		// TODO calculate the outline box, reg(...)
 		setFont();
 		g2d.drawString(text, point.x, point.y);
+		reg(x, y - font_size, getTextWidth(text), font_size);
 	}
 
 	public float getTextWidth(String text) {

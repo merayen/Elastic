@@ -78,9 +78,9 @@ public class UIPort extends UIObject {
 			draw.setColor(color.red, color.green, color.blue);
 			draw.fillOval(-4f, -4f, 8f, 8f);
 
-			draw.setColor(0, 0, 0);
+			/*draw.setColor(0, 0, 0);
 			draw.setFont("SansSerif", 10f);
-			draw.text(title, 10f, 5f);
+			draw.text(title, 10f, 5f);*/
 		}
 
 		super.onDraw();

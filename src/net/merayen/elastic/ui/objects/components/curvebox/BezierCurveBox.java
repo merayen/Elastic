@@ -117,7 +117,7 @@ public class BezierCurveBox extends UIObject {
 
 	@Override
 	protected void onInit() {
-		add(background, true);
+		add(background, 0);
 	}
 
 	private void initPoints() {

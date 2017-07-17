@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -33,16 +32,14 @@ public class Supervisor {
 
 	private final Handler handler;
 	SurfaceHandler surfacehandler;
-	private final Top top;
-	private final Gate.UIGate ui_gate; // Only to be used by the UI-thread
-	private final Gate.BackendGate backend_gate; // Only to be used by the main-thread
-	private final Gate gate;
+	private Top top;
+	private Gate.UIGate ui_gate; // Only to be used by the UI-thread
+	private Gate.BackendGate backend_gate; // Only to be used by the main-thread
+	private Gate gate;
 
 	public Supervisor(Handler handler) {
 		this.handler = handler;
-
 		surfacehandler = new SurfaceHandler(this);
-
 		top = new Top(surfacehandler);
 
 		Supervisor self = this;
@@ -60,7 +57,7 @@ public class Supervisor {
 
 	void draw(DrawContext dc) {
 		internalDraw(dc, top);
-		internalUpdate(dc.incoming_events, top);
+		internalUpdate(dc, top);
 		internalExecuteIncomingMessages();
 		ui_gate.update();
 	}
@@ -77,23 +74,25 @@ public class Supervisor {
 		if(!uiobject.isInitialized())
 			uiobject.initialize();
 
-		if(uiobject.absolute_translation.visible) {
-			Draw draw = new Draw(uiobject, dc);
+		Draw draw = new Draw(uiobject, dc);
 
-			uiobject.updateDraw(draw);
+		uiobject.updateDraw(draw);
 
-			uiobject.outline = draw.outline;
-			uiobject.outline_abs_px = draw.getAbsoluteOutline();
+		uiobject.outline_abs_px = draw.getAbsoluteOutline();
+		uiobject.outline = draw.outline;
 
-			draw.destroy();
+		/*if(uiobject.outline != null) {
+			draw.setColor(128, 250, 50);
+			draw.setStroke(1);
+			draw.disableOutline();
+			draw.rect(uiobject.outline.x1, uiobject.outline.y1, uiobject.outline.x2 - uiobject.outline.x1, uiobject.outline.y2 - uiobject.outline.y1);
+			draw.enableOutline();
+		}*/
 
-			for(UIObject o : uiobject.onGetChildren())
-				internalDraw(dc, o);
+		draw.destroy();
 
-			// Update outline including children too? Hmm
-		} else {
-			uiobject.outline_abs_px = new Rect();
-		}
+		for(UIObject o : uiobject.onGetChildren(dc.getSurfaceID()))
+			internalDraw(dc, o);
 
 		dc.pop();
 	}
@@ -102,19 +101,19 @@ public class Supervisor {
 	 * Non-draw update of UIObjects.
 	 * Here the UIObjects can change their properties, add/remove UIObjects, etc.
 	 */
-	private void internalUpdate(List<IEvent> events, UIObject uiobject) {
+	private void internalUpdate(DrawContext dc, UIObject uiobject) {
 		if(!uiobject.isAttached() && uiobject != top)
 			return;
 
 		if(uiobject.isInitialized()) { // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
-			for(IEvent e : events)
+			for(IEvent e : dc.incoming_events)
 				uiobject.onEvent(e);
 
 			uiobject.onUpdate();
 		}
 
-		for(UIObject o : new ArrayList<UIObject>(uiobject.onGetChildren()))
-			internalUpdate(events, o);
+		for(UIObject o : new ArrayList<UIObject>(uiobject.onGetChildren(dc.getSurfaceID())))
+			internalUpdate(dc, o);
 	}
 
 	private void internalExecuteIncomingMessages() {

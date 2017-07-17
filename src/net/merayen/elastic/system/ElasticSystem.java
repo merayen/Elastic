@@ -72,7 +72,8 @@ public class ElasticSystem {
 						}
 					}
 				}
-			});
+			}
+			);
 		}
 
 		if(ui != null && message instanceof EndUIMessage) {

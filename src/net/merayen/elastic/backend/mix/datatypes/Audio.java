@@ -27,8 +27,9 @@ public class Audio extends DataType {
 		for(DataType o : audio) {
 			Audio a = (Audio)o;
 			for(int channel_no = 0; channel_no < channels; channel_no++)
-				for(int i = 0; i < samples; i++)
-					out[channel_no][i] += a.audio[channel_no][i]; // Divides by 10 to get some headroom
+				if(channel_no < a.audio.length && a.audio[channel_no] != null)
+					for(int i = 0; i < samples; i++)
+						out[channel_no][i] += a.audio[channel_no][i]; // Divides by 10 to get some headroom
 		}
 
 		return new Audio(out);

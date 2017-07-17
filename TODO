@@ -1,3 +1,0 @@
-- (Low prio) "Event" system for UI nodes (e.g to communicate with other nodes outside the connected lines)
-- Make intercom use only PackType for data transfer, so that it is serializable between devices
-

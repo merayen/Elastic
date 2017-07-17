@@ -10,39 +10,22 @@ public class UI extends UINode {
 	@Override
 	protected void onInit() {
 		super.onInit();
-		translation.x = 100;
-		translation.y = 100;
 	}
 
 	@Override
 	protected void onDraw() {
 		super.onDraw();
-
-		draw.setColor(100, 100, 200);
-		draw.fillRect(10, 10, 20, 20);
 	}
 
 	@Override
-	protected void onCreatePort(UIPort port) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onCreatePort(UIPort port) {}
 
 	@Override
-	protected void onRemovePort(UIPort port) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onRemovePort(UIPort port) {}
 
 	@Override
-	protected void onMessage(NodeParameterMessage message) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onMessage(NodeParameterMessage message) {}
 
 	@Override
-	protected void onData(NodeDataMessage message) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onData(NodeDataMessage message) {}
 }

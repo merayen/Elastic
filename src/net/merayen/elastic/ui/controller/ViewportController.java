@@ -30,9 +30,9 @@ public class ViewportController extends Controller {
 			viewport_container = ((ViewportHelloMessage)message).viewport_container;
 		}
 
-		else if(message instanceof NetListRefreshRequestMessage) {
+		/*else if(message instanceof NetListRefreshRequestMessage) {
 			sendToBackend(message);
-		}
+		}*/
 	}
 
 	@Override

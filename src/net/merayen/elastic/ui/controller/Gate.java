@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.objects.top.Top;
-import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -97,9 +96,9 @@ public class Gate {
 		ui_gate = new UIGate(this);
 		backend_gate = new BackendGate(this);
 
+		controllers.add(new NetListController(this));
 		controllers.add(new ViewportController(this));
 		controllers.add(new NodeViewController(this));
-		controllers.add(new NetController(this));
 	}
 
 	public UIGate getUIGate() {

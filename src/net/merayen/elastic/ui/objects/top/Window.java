@@ -34,7 +34,7 @@ public class Window extends UIObject {
 	public final UIObject overlay = new UIObject();
 
 	public Debug debug;
-	private ViewportContainer viewport_container;
+	private final ViewportContainer viewport_container;
 
 	public Window(Surface surface) {
 		this.surface = surface;
@@ -52,7 +52,7 @@ public class Window extends UIObject {
 		debug.translation.y = 40f;
 		debug.translation.scale_x = .1f;
 		debug.translation.scale_y = .1f;
-		add(debug);
+		//add(debug);
 		debug.set("DEBUG", "Has been enabled");
 	}
 
@@ -74,6 +74,10 @@ public class Window extends UIObject {
 
 	public float getScreenHeight() {
 		return height;
+	}
+
+	public String getSurfaceID() {
+		return surface.getID();
 	}
 
 	public ViewportContainer getViewportContainer() { // Note, need to allow multiple viewports when having several windows?

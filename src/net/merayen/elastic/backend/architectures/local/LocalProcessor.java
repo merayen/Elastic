@@ -17,20 +17,15 @@ import net.merayen.elastic.util.Postmaster;
 
 public abstract class LocalProcessor {
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
-	int chain_id;
 	int session_id;
+	LocalProcessor parent;
 	protected int buffer_size;
 	protected int sample_rate;
 
 	int voice_stop;
 
-	private boolean prepare;
-
-	private final Map<String, Outlet> outlets = new HashMap<>();
-	private final Map<String, Inlet> inlets = new HashMap<>();
-
-	private boolean active = true;
-	private boolean has_emitted;
+	final Map<String, Outlet> outlets = new HashMap<>();
+	final Map<String, Inlet> inlets = new HashMap<>();
 
 	protected abstract void onInit();
 
@@ -51,9 +46,8 @@ public abstract class LocalProcessor {
 
 	protected abstract void onDestroy();
 
-	void LocalProcessor_setInfo(LocalNode localnode, int chain_id, int session_id) {
+	void LocalProcessor_setInfo(LocalNode localnode, int session_id) {
 		this.localnode = localnode;
-		this.chain_id = chain_id;
 		this.session_id = session_id;
 		this.buffer_size = localnode.buffer_size;
 		this.sample_rate = localnode.sample_rate;
@@ -74,13 +68,7 @@ public abstract class LocalProcessor {
 
 			Port port = localnode.netlist.getPort(localnode.node, port_name);
 
-			// We only add port if it is part of the chain
-			for(int port_chain_id : properties.analyzer.getPortChainIds(port)) {
-				if(port_chain_id == chain_id) {
-					addOutlet(port_name, properties.analyzer.getDecidedFormat(port));
-					break;
-				}
-			}
+			addOutlet(port_name, properties.analyzer.getDecidedFormat(port));
 		}
 	}
 
@@ -161,33 +149,19 @@ public abstract class LocalProcessor {
 	}
 
 	void doProcess() {
-		if(prepare) {
-			prepare = false;
-
-			onPrepare();
-
-			// Reset port states
-			for(Outlet o : outlets.values())
-				o.reset();
-
-			for(Inlet i : inlets.values())
-				i.reset();
-		}
-
 		onProcess();
 	}
 
 	boolean frameFinished() {
-		boolean done = true;
-		//for(Inlet inlet : inlets.values())
-		//	if(!inlet.satisfied())
-		//		done = false;
+		for(Inlet inlet : inlets.values())
+			if(!inlet.satisfied())
+				return false;
 
 		for(Outlet outlet : outlets.values())
 			if(!outlet.satisfied())
-				done = false;
+				return false;
 
-		return done;
+		return true;
 	}
 
 	/**
@@ -206,36 +180,15 @@ public abstract class LocalProcessor {
 		return inlets.get(name);
 	}
 
-	/**
-	 * active() and inactive() function calls. Every processor must be aware of these.
-	 * If one or more processor marks itself as active, the session is kept alive.
-	 * Not until every processor in the chain has called inactive(), we will
-	 * actually end the session.
-	 * 
-	 * It is important that every processor uses/is aware of this, as we might
-	 * otherwise get stuck sessions.
-	 * 
-	 * E.g: A sine generator with MIDI input at frequency sets this to *true* whenever
-	 * a key is pressed, and sets this to false at once on key up, though some other nodes
-	 * later in the chain may still keep themselves alive.
-	 */
-	protected void inactive() {
-		active = false;
-	}
-
-	/**
-	 * @see inactive
-	 */
-	protected void active() {
-		active = true;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
 	void prepare() {
-		prepare = true; // Will prepare next time process() is called
+		onPrepare();
+
+		// Reset port states
+		for(Outlet o : outlets.values())
+			o.reset();
+
+		for(Inlet i : inlets.values())
+			i.reset();
 	}
 
 	/**
@@ -252,5 +205,34 @@ public abstract class LocalProcessor {
 			available = Math.min(available, inlet.available());
 
 		return available;
+	}
+
+	/**
+	 * Get the parent processor that "owns" us.
+	 * @return
+	 */
+	protected LocalProcessor getParent() {
+		return parent;
+	}
+
+	/**
+	 * Spawns a session for this node's children nodes.
+	 * Returns the session_id created.
+	 */
+	protected int spawnSession(int sample_offset) {
+		int new_session_id = localnode.supervisor.spawnSession(localnode.node, sample_offset);
+
+		// Apply the session_id on all the created processors, as parent
+		for(LocalProcessor lp : localnode.supervisor.processor_list.getProcessors(new_session_id))
+			lp.parent = this;
+
+		return new_session_id;
+	}
+
+	protected void removeSession(int session_id) {
+		if(session_id == this.session_id)
+			throw new RuntimeException("LocalProcessor can not kill its own session");
+
+		localnode.supervisor.removeSession(session_id);
 	}
 }

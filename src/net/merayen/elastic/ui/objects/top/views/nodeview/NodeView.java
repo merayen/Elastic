@@ -3,14 +3,12 @@ package net.merayen.elastic.ui.objects.top.views.nodeview;
 import java.util.ArrayList;
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
-import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
+import net.merayen.elastic.ui.controller.NodeViewController;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
-import net.merayen.elastic.ui.objects.NodeGroupInitiator;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.objects.node.UINode;
-import net.merayen.elastic.ui.objects.top.MenuBar;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Postmaster;
@@ -23,52 +21,43 @@ import net.merayen.elastic.util.TaskExecutor;
 /**
  * Main view. Shows all the nodes and their connections.
  */
-public class NodeView extends View implements NodeGroupInitiator {
-	private String node_group;
+public class NodeView extends View {
+	String node_id; // Node that we show the children of
+	private String new_node_id;
 	private final NodeViewContainer container = new NodeViewContainer();
 	private UINet net;
 	private Movable movable;
 	private ArrayList<UINode> nodes = new ArrayList<UINode>();
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s";
-	private final MenuBar menu = new MenuBar(); // TODO should not be here, but in MenuView. Like how Blender does it
+	private final NodeViewBar node_view_bar = new NodeViewBar();
+	public NodeViewController node_view_controller; // Automatically set by NodeViewController
 
-	private final NodeViewContextMenu context_menu;
+	private NodeViewContextMenu context_menu;
 
 	public NodeView() {
+		this(null);
+	}
+
+	public NodeView(String node_id) {
 		super();
+		this.node_id = node_id;
 		add(container);
+		add(node_view_bar);
 
 		net = new UINet();
-		container.add(net, true); // Add the net first (also, drawn behind everything), as addNode() might have already been called
+		container.add(net, 0); // Add the net first (also, drawn behind everything), as addNode() might have already been called
 
 		// Make it possible to move NodeViewContainer by dragging the background
 		movable = new Movable(container, container, MouseEvent.Button.LEFT);
-
-		// Set up context menu when right-clicking on the background
-		context_menu = new NodeViewContextMenu(container);
 	}
 
 	@Override
 	protected void onInit() {
 		super.onInit();
-		// Ask for sending a new NetList. We queue it up in the ViewportContainer domain, as several NodeViews might have been created simultaneously, we then only send 1 message
-		addTask(new TaskExecutor.Task(getClass(), 1000, () -> sendMessage(new NetListRefreshRequestMessage())));
 
-		menu.translation.x = 0;
-		menu.translation.y = 0;
-		menu.width = 200;
-		add(menu);
-
-		menu.setHandler(new MenuBar.Handler() {
-			@Override
-			public void onMakeCheckpoint() {
-				sendMessage(new CreateCheckpointMessage());
-			}
-		});
-
-		container.add(context_menu);
+		// Sends a message that will be picked up by NodeViewController, which again will register us
+		sendMessage(new NodeViewController.Hello());
 	}
-
 	@Override
 	protected void onDraw() {
 		super.onDraw();
@@ -76,14 +65,25 @@ public class NodeView extends View implements NodeGroupInitiator {
 		draw.setColor(20, 20, 50);
 		draw.fillRect(2, 2, width - 4, height - 4);
 
-		menu.width = width;
+		node_view_bar.width = width;
+	}
+
+	@Override
+	protected void onUpdate() {
+		super.onUpdate();
+		if(node_id == null && node_view_controller != null) { // Sees if NodeViewController has seen us yet. If yes, we initialize from it
+			if(new_node_id == null)
+				swapView(node_view_controller.getTopNodeID());
+			else
+				swapView(new_node_id);
+		}
 	}
 
 	/**
 	 * Add a node.
 	 * Node must already be existing in the backend.
 	 */
-	public void addNode(String node_id, String name, Integer version) {
+	public void addNode(String node_id, String name, Integer version, String parent) {
 		String path = String.format(UI_CLASS_PATH, name, version, "UI");
 
 		UINode uinode;
@@ -178,26 +178,47 @@ public class NodeView extends View implements NodeGroupInitiator {
 
 	@Override
 	public View cloneView() {
-		NodeView nv = new NodeView();
-		// TODO copy scroll position
+		NodeView nv = new NodeView(node_id);
+		nv.container.translation.x = container.translation.x;
+		nv.container.translation.y = container.translation.y;
+		nv.container.translation.scale_x = container.translation.scale_x;
+		nv.container.translation.scale_y = container.translation.scale_y;
 		return nv;
+	}
+
+	public void swapView(String new_node_id) {
+		node_id = new_node_id;
+
+		// Ask for sending a new NetList. We queue it up in the ViewportContainer domain, as several NodeViews might have been created simultaneously, we then only send 1 message
+		addTask(new TaskExecutor.Task(getClass(), 0, () -> sendMessage(new NetListRefreshRequestMessage())));
 	}
 
 	public void reset() {
 		System.out.printf("NodeView reset(): %s\n", this);
+	
 		net.reset();
 
 		for(UINode node : nodes)
 			container.remove(node);
 
-		if(container.search.getAllChildren().size() != 2) // Only UINet() and ContextMenu() should be remaining
+		// Set up context menu when right-clicking on the background
+		if(context_menu != null)
+			container.remove(context_menu);
+
+		if(container.search.getChildren().size() != 1) // Only UINet() should be remaining
 			throw new RuntimeException("Should not happen");
 
 		nodes.clear();
+
+		context_menu = new NodeViewContextMenu(container, node_id);
+		container.add(context_menu);
 	}
 
-	@Override
-	public String getGroup() {
-		return node_group;
+	/**
+	 * Retrieve the ID of the node this view displays.
+	 * @return
+	 */
+	public String getViewNodeID() {
+		return node_id;
 	}
 }

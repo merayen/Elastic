@@ -101,16 +101,17 @@ public class UINet extends UIObject {
 		NodeView nv = getNodeView();
 		UINode node_a = nv.getNode(message.node_a);
 		UINode node_b = nv.getNode(message.node_b);
-		UIPort port_a = node_a.getPort(message.port_a);
-		UIPort port_b = node_b.getPort(message.port_b);
 
 		if(node_a == null || node_b == null) {
-			System.out.println("ERROR: Could not connect nodes together as one/both does not exist in the UI. Sync issues?");
+			System.out.printf("ERROR: Could not connect nodes together as one/both does not exist in the UI. Sync issues? (node_a=%s, node_b=%s)\n", message.node_a, message.node_b);
 			return;
 		}
 
+		UIPort port_a = node_a.getPort(message.port_a);
+		UIPort port_b = node_b.getPort(message.port_b);
+
 		if(port_a == null || port_b == null) {
-			System.out.println("ERROR: Could not connect ports together as one/both ports does not exist in the UI. Sync issues?");
+			System.out.printf("ERROR: Could not connect ports together as one/both ports does not exist in the UI. Sync issues? (port_a=%s, port_b=%s)\n", port_a, port_b);
 			return;
 		}
 

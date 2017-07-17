@@ -13,11 +13,8 @@ public class UIObject {
 	private UIObject parent;
 	final List<UIObject> children = new ArrayList<>(); 
 
-	/**
-	 * Set every time UIObject is drawn. Not including children for now. Should.
-	 */
-	public net.merayen.elastic.ui.Rect outline;
-	public net.merayen.elastic.ui.Rect outline_abs_px; // Absolute, in screen pixels
+	public net.merayen.elastic.ui.Rect outline_abs_px = new Rect(); // Absolute, in screen pixels
+	Rect outline = new Rect();
 
 	public int draw_z; // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()
 
@@ -41,23 +38,20 @@ public class UIObject {
 	 * Override this method to artificially set the children of the UIObject in a onDraw(), onUpdate() and onEvent() call tree.
 	 * Should only be used in very specific cases, like by the Top() object to draw different trees for different Window()s.
 	 */
-	protected List<UIObject> onGetChildren() {
+	protected List<UIObject> onGetChildren(String surface_id) {
 		return this.children;
 	}
 
-	public void add(UIObject uiobject) {
-		add(uiobject, false);
+	public final void add(UIObject uiobject) {
+		add(uiobject, children.size());
 	}
 
-	public void add(UIObject uiobject, boolean first) {
+	public void add(UIObject uiobject, int index) {
 		if(uiobject.parent != null)
 			throw new RuntimeException("UIObject already has a parent");
 
 		uiobject.parent = this;
-		if(first)
-			children.add(0, uiobject);
-		else
-			children.add(uiobject);
+		children.add(index, uiobject);
 
 		// Mark every child as attached to the tree
 		uiobject.attached = true;
@@ -151,12 +145,57 @@ public class UIObject {
 		return (float)a * td.scale_x;
 	}
 
+	/**
+	 * Retrieves a copy of the drawn outline of this object.
+	 * This is the outline of the previous paint, so it will
+	 * not be available before the first paint.
+	 */
+	public Rect getOutline() {
+		if(outline == null)
+			return null;
+
+		return new Rect(outline);
+	}
+
+	/**
+	 * Retrieves the deep outline of the object (including the children's outline)
+	 */
+	public Rect getDeepOutline() {
+		Rect result = outline_abs_px;
+
+		for(UIObject o : search.getAllChildren()) {
+			if(o.outline_abs_px == null) continue;
+
+			if(result == null)
+				result = new Rect(o.outline_abs_px);
+			else
+				result.enlarge(o.outline_abs_px);
+		}
+
+		// TODO apply absolute clip
+
+		if(result == null)
+			return null;
+
+		result.x1 -= absolute_translation.x;
+		result.y1 -= absolute_translation.y;
+		result.x2 -= absolute_translation.x;
+		result.y2 -= absolute_translation.y;
+
+		result.x1 *= (absolute_translation.scale_x);
+		result.y1 *= (absolute_translation.scale_y);
+		result.x2 *= (absolute_translation.scale_x);
+		result.y2 *= (absolute_translation.scale_y);
+
+		return result;
+	}
+
 	protected void sendMessage(Postmaster.Message message) {
 		Top top = UINodeUtil.getTop(this);
 		if(top != null)
 			top.sendMessage(message);
 		else
-			System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", this.getClass().getName());
+			System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", getClass().getName());
 	}
 
 	/**

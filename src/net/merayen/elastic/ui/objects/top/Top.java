@@ -9,6 +9,7 @@ import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.controller.Gate.UIGate;
 import net.merayen.elastic.ui.surface.Surface;
 import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.util.UniqueID;
 
 /**
  * The very topmost object.
@@ -21,17 +22,11 @@ public class Top extends UIObject {
 
 	public Top(SurfaceHandler surfacehandler) {
 		this.surfacehandler = surfacehandler;
-
-		// Create a default window
-		Window w = new Window(createSurface("default"));
-		windows.add(w);
-		add(w);
+		createWindow();
 	}
 
 	@Override
-	protected void onInit() {
-		
-	}
+	protected void onInit() {}
 
 	/**
 	 * We override this method to return the correct UIObject for the window being drawn.
@@ -39,10 +34,13 @@ public class Top extends UIObject {
 	 */
 	@SuppressWarnings("serial")
 	@Override
-	protected List<UIObject> onGetChildren() {
-		return new ArrayList<UIObject>(){{
-			add(windows.get(0));
-		}}; // Supports only 1 window for now
+	protected List<UIObject> onGetChildren(String surface_id) {
+		for(Window w : windows)
+			if(w.getSurfaceID().equals(surface_id))
+				return new ArrayList<UIObject>(){{add(w);}};
+
+		System.out.println("Window ID not found");
+		return new ArrayList<>();
 	}
 
 	public void setUIGate(UIGate ui_gate) {
@@ -53,8 +51,14 @@ public class Top extends UIObject {
 		return Collections.unmodifiableList(windows);
 	}
 
-	public Surface createSurface(String id) {
+	private Surface createSurface(String id) {
 		return surfacehandler.createSurface(id);
+	}
+
+	public void createWindow() {
+		Window w = new Window(createSurface(UniqueID.create()));
+		windows.add(w);
+		add(w);
 	}
 
 	public void sendMessage(Postmaster.Message message) {

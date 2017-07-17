@@ -8,23 +8,25 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem;
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem;
 import net.merayen.elastic.ui.objects.top.views.nodeview.addnode.AddNodePopup;
-import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.uinodes.BaseInfo;
 import net.merayen.elastic.util.NodeUtil;
 import net.merayen.elastic.util.Point;
 
 class NodeViewContextMenu extends UIObject {
 	private final ContextMenu menu;
+	private final String node_id;
 
 	private final TextContextMenuItem add_node_item = new TextContextMenuItem("Add node");
 
-	NodeViewContextMenu(UIObject background) {
+	NodeViewContextMenu(UIObject background, String node_id) {
+		if(node_id == null)
+			throw new RuntimeException("node_id can not be null, we must be based on being inside a node");
+
+		this.node_id = node_id;
 		UIObject self = this;
 		menu = new ContextMenu(background, 8, new ContextMenu.Handler() {
 			@Override
 			public void onSelect(ContextMenuItem item, Point position) { // TODO move stuff below out to a separate class
-				System.out.println(((TextContextMenuItem)item).text);
-
 				if(item == add_node_item) {
 					new AddNodePopup(self, new AddNodePopup.Handler() {
 						@Override
@@ -47,7 +49,7 @@ class NodeViewContextMenu extends UIObject {
 		String name = path[path.length - 2];
 
 		String node_id = NodeUtil.createID();
-		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), UINodeUtil.getGroup(this))); // TODO group shall not be null, but 
+		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), this.node_id)); // TODO group shall not be null, but 
 		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.x", position.x));
 		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.y", position.y));
 		// TODO also send parameter for X and Y translation?

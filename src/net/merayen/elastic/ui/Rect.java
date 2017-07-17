@@ -56,4 +56,12 @@ public class Rect {
 	public Rect copy() {
 		return new Rect(x1, y1, x2, y2);
 	}
+
+	public float getWidth() {
+		return x2 - x1;
+	}
+
+	public float getHeight() {
+		return y2 - y1;
+	}
 }

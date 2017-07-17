@@ -24,7 +24,6 @@ class LogicNodeList {
 		NodeProperties np = new NodeProperties(netlist);
 		String name = np.getName(node);
 		Integer version = np.getVersion(node);
-		String group = np.getGroup(node);
 
 		Class<? extends BaseLogicNode> cls = getLogicNodeClass(
 			name,
@@ -42,7 +41,7 @@ class LogicNodeList {
 
 		nodes.put(node.getID(), logicnode);
 
-		logicnode.create(name, version, group);
+		logicnode.create(name, version, np.getParent(node));
 	}
 
 	void remove(String node_id) {

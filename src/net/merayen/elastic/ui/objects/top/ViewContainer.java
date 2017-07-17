@@ -19,7 +19,6 @@ class ViewContainer extends UIObject {
 	@Override
 	protected void onInit() {
 		super.onInit();
-		translation.visible = false; // We are never drawn
 	}
 
 	public void addView(View view) {

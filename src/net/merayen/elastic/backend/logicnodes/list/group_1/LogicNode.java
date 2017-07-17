@@ -4,59 +4,37 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 
+/**
+ * Doesn't do anything, other than having children.
+ * @author merayen
+ *
+ */
 public class LogicNode extends BaseLogicNode {
+	@Override
+	protected void onCreate() {}
 
 	@Override
-	protected void onCreate() {
-		
-	}
+	protected void onInit() {}
 
 	@Override
-	protected void onInit() {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onParameterChange(String key, Object value) {}
 
 	@Override
-	protected void onParameterChange(String key, Object value) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onConnect(String port) {}
 
 	@Override
-	protected void onConnect(String port) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onDisconnect(String port) {}
 
 	@Override
-	protected void onDisconnect(String port) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onRemove() {}
 
 	@Override
-	protected void onRemove() {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onPrepareFrame(Map<String, Object> data) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onFinishFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onFinishFrame(Map<String, Object> data) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void onData(Map<String, Object> data) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onData(Map<String, Object> data) {}
 
 }

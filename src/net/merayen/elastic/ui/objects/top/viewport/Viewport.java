@@ -101,7 +101,7 @@ public class Viewport extends UIObject {
 				clip.remove(current_view);
 
 			if(view != null) {
-				clip.add(view, true);
+				clip.add(view, 0);
 				current_view = view;
 			}
 		}

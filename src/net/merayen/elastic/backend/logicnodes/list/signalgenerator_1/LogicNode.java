@@ -45,8 +45,5 @@ public class LogicNode extends BaseLogicNode {
 	protected void onRemove() {}
 
 	@Override
-	protected void onData(Map<String, Object> data) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onData(Map<String, Object> data) {}
 }

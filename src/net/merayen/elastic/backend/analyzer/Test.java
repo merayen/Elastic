@@ -38,101 +38,6 @@ public class Test {
 		NodeProperties properties = new NodeProperties(netlist);
 		Analyzer.analyze(netlist);
 
-		Node node;
-
-		Set<Integer> main_session = new HashSet<Integer>(){{add(0);}};
-		Set<Integer> first_session = new HashSet<Integer>(){{add(2);}};
-		Set<Integer> second_session = new HashSet<Integer>(){{add(1);}};
-		Set<Integer> third_session = new HashSet<Integer>(){{add(3);}};
-		Set<Integer> first_second_session = new HashSet<Integer>(){{add(2); add(1);}};
-		Set<Integer> first_second_third_session = new HashSet<Integer>(){{add(2); add(1); add(3);}};
-
-
-		// === midi ===
-		node = netlist.getNode("midi_in");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(main_session))
-			no();
-
-
-		// === poly ===
-		node = netlist.getNode("poly");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(main_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_session))
-			no();
-
-
-		// === adsr ===
-		node = netlist.getNode("adsr");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "attack")).equals(first_second_third_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "decay")).equals(first_second_third_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_second_third_session))
-			no();
-
-
-		// === adsr_tail ===
-		node = netlist.getNode("adsr_tail");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_second_third_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(first_second_third_session))
-			no();
-
-
-		// === adsr_tail2 ===
-		node = netlist.getNode("adsr_tail2");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(second_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(main_session))
-			no();
-
-
-		// === adsr_tail2 ===
-		node = netlist.getNode("adsr_tail3");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(main_session))
-			no();
-
-
-		// === poly_feedback ===
-		node = netlist.getNode("poly_feedback");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(first_second_third_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(third_session))
-			no();
-
-
-		// === sgen ===
-		node = netlist.getNode("sgen");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "frequency")).equals(first_second_third_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "amplitude")).isEmpty()) // Not even connected, no chain_ids
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(first_second_third_session))
-			no();
-
-		// === depoly ===
-		node = netlist.getNode("depoly");
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(first_second_third_session))
-			no();
-
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "output")).equals(main_session))
-			no();
-
-		// === output ===
-		node = netlist.getNode("output");
-		System.out.println(properties.analyzer.getPortChainIds(netlist.getPort(node, "input")));
-		if(!properties.analyzer.getPortChainIds(netlist.getPort(node, "input")).equals(main_session))
-			no();
-
 		System.out.println(Serializer.dump(netlist));
 	}
 
@@ -309,13 +214,6 @@ public class Test {
 			np.setOutput(p);
 			np.setFormat(p, Format.AUDIO);
 		}
-
-		if(chain_ident == null)
-			; // Normal port
-		else if(chain_ident.equals("chain_consumer"))
-			np.setChainConsumer(p);
-		else
-			np.setPortChainIdent(p, chain_ident);
 
 		return p;
 	}

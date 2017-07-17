@@ -24,7 +24,7 @@ public class LProcessor extends LocalProcessor {
 	protected void onProcess() {
 		MidiOutlet outlet = (MidiOutlet)getOutlet("output");
 
-		if(!outlet.satisfied()) {
+		if(outlet != null && !outlet.satisfied()) {
 			List<short[]>buffer = ((LNode)getLocalNode()).buffer;
 
 			outlet.midi[0] = buffer.toArray(new short[buffer.size()][]);

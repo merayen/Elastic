@@ -26,11 +26,11 @@ class Env {
 			@Override
 			public void needData() {
 				system.sendMessageToBackend(new ProcessMessage());
-				if(i++ % 20 == 0) {
+				/*if(i++ % 20 == 0) {
 					for(Map.Entry<String, AbstractDevice.Statistics> s : mixer.getStatistics().entrySet())
 						System.out.println("Mixer diag: [" + s.getKey() + "] " + s.getValue().describe());
 					System.out.println("Awaiting data avg: " + hack.sync.statistics.awaiting_data.info());
-				}
+				}*/
 			}
 
 			@Override

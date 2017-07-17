@@ -13,11 +13,11 @@ public class TranslationDataStack {
 		stack.remove(stack.size() - 1);
 	}
 
+	/**
+	 * Calculates current translation data.
+	 * The returned results are the absolute translations.
+	 */
 	public TranslationData getAbsolute() {
-		/*
-		 * Calculates current translation data.
-		 * The returned results are the absolute translations.
-		 */
 		TranslationData r = new TranslationData();
 
 		for(TranslationData td : stack)

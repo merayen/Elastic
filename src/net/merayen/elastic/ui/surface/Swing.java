@@ -1,13 +1,18 @@
 package net.merayen.elastic.ui.surface;
 
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.event.KeyboardEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
+import net.merayen.elastic.ui.objects.top.viewport.ViewportDrag;
 
 /**
  * Java Swing Surface.
@@ -68,7 +73,7 @@ public class Swing extends Surface {
 		public void paintComponent(java.awt.Graphics g) {
 			//RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
-			super.paintComponent(g);
+			//super.paintComponent(g);
 
 			handler.onDraw((java.awt.Graphics2D)g);
 		}
@@ -94,7 +99,7 @@ public class Swing extends Surface {
 		}
 
 		public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
-			handler.onEvent(new MouseWheelEvent(e));
+			queueEvent(new MouseWheelEvent(e.getComponent().getName(), e));
 		}
 
 		@Override
@@ -104,7 +109,7 @@ public class Swing extends Surface {
 		public void keyPressed(KeyEvent e) {
 			if(!active_key_codes.contains(e.getKeyCode())) {
 				active_key_codes.add(e.getKeyCode());
-				handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.DOWN));
+				queueEvent(new KeyboardEvent(e.getComponent().getName(), e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.DOWN));
 			}
 		}
 
@@ -112,13 +117,14 @@ public class Swing extends Surface {
 		public void keyReleased(KeyEvent e) {
 			if(active_key_codes.contains(e.getKeyCode())) {
 				active_key_codes.remove(e.getKeyCode());
-				handler.onEvent(new KeyboardEvent(e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.UP));
+				queueEvent(new KeyboardEvent(e.getComponent().getName(), e.getKeyChar(), e.getKeyCode(), KeyboardEvent.Action.UP));
 			}
 		}
 	}
 
 	private LolPanel panel;
 	private LolFrame frame;
+	private List<IEvent> events_queue = new ArrayList<IEvent>();
 
 	public Swing(String id, Handler handler) {
 		super(id, handler);
@@ -132,6 +138,7 @@ public class Swing extends Surface {
 					}
 				});
 				panel = new LolPanel();
+				panel.setName(id);
 				frame.add(panel);
 			}
 		});
@@ -156,8 +163,14 @@ public class Swing extends Surface {
 			button = MouseEvent.Button.MIDDLE;
 		else if(b == java.awt.event.MouseEvent.BUTTON3)
 			button = MouseEvent.Button.RIGHT;
-			
-		handler.onEvent(new MouseEvent(e.getX(), e.getY(), action, button));
+
+		queueEvent(new MouseEvent(e.getComponent().getName(), e.getX(), e.getY(), action, button));
+	}
+
+	private void queueEvent(IEvent event) {
+		synchronized (events_queue) {
+			events_queue.add(event);
+		}
 	}
 
 	@Override
@@ -168,5 +181,15 @@ public class Swing extends Surface {
 		
 		frame = null;
 		panel = null;
+	}
+
+	@Override
+	public List<IEvent> pullEvents() {
+		List<IEvent> result;
+		synchronized (events_queue) {
+			result = new ArrayList<>(events_queue);
+			events_queue.clear();
+		}
+		return result;
 	}
 }

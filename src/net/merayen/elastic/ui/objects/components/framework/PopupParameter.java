@@ -68,8 +68,6 @@ public class PopupParameter extends UIObject {
 
 	@Override
 	protected void onEvent(IEvent event) {
-		if(event instanceof MouseEvent && ((MouseEvent)event).action == MouseEvent.Action.DOWN)
-			System.console();
 		movable.handle(event);
 	}
 

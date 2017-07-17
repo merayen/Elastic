@@ -1,23 +1,48 @@
 package net.merayen.elastic.uinodes.list.poly_1;
 
-import java.util.List;
-
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.ui.objects.components.Button;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
+import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 
 public class UI extends UINode {
+	private Button button;
+
 	@Override
 	protected void onInit() {
 		super.onInit();
 		width = 100;
-		height = 200;
+		height = 100;
+
+		button = new Button();
+		button.label = "Open";
+		button.translation.x = 10;
+		button.translation.y = 20;
+		add(button);
+		UI self = this;
+		button.setHandler(new Button.IHandler() {
+			@Override
+			public void onClick() {
+				self.search.parentByType(NodeView.class).swapView(node_id);
+			}
+		});
+	}
+
+	@Override
+	protected void onDraw() {
+		super.onDraw();
+
+		draw.setStroke(1);
+		draw.setColor(0, 0, 0);
+		draw.rect(15, 20, 50, 50);
+		draw.rect(35, 40, 50, 50);
 	}
 
 	@Override
 	protected void onCreatePort(UIPort port) {
-		if(port.name.startsWith("input_")) {
+		/*if(port.name.startsWith("input_")) {
 			if(port.output)
 				throw new RuntimeException("Port should have been an input");
 		}
@@ -29,10 +54,14 @@ public class UI extends UINode {
 
 		rearrangePorts();
 
-		System.out.println("UI Poly, creating port: " + port.name);
+		System.out.println("UI Poly, creating port: " + port.name);*/
+
+		if(port.name.equals("input")) {
+			port.translation.y = 20;
+		}
 	}
 
-	private void rearrangePorts() {
+	/*private void rearrangePorts() {
 		List<UIPort> ports = getPorts();
 		ports.sort((a,b) -> a.name.compareTo(b.name));
 
@@ -56,12 +85,12 @@ public class UI extends UINode {
 			port.translation.x = 100;
 			port.translation.y = i+= 20;
 		}
-	}
+	}*/
 
 	@Override
 	protected void onRemovePort(UIPort port) {
-		System.out.println("UI poly, deleting port: " + port.name + ". Got " + this.getPorts().size() + " ports");
-		rearrangePorts();
+		/*System.out.println("UI poly, deleting port: " + port.name + ". Got " + this.getPorts().size() + " ports");
+		rearrangePorts();*/
 	}
 
 	@Override

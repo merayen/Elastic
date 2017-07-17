@@ -1,15 +1,13 @@
 package net.merayen.elastic.backend.architectures.local;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.netlist.Port;
 
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
@@ -27,11 +25,14 @@ public abstract class LocalNode {
 	public int buffer_size;
 	private final Class<? extends LocalProcessor> processor_cls;
 	private final NodeProperties properties = new NodeProperties(netlist);
-	private final Set<Integer> chain_ids = new HashSet<>(); // chain_ids this node is member of. Calculated from the ports
 
 	public Map<String, Object> ingoing = new HashMap<>(); // Data sent to this node from LogicNodes
 	public final Map<String, Object> outgoing = new HashMap<>(); // Data that is the result from the processing (read from the outside)
 
+	/**
+	 * Initialize here.
+	 * Do not attempt to do any creation of sessions, they must be done in onProcess().
+	 */
 	protected abstract void onInit();
 
 	/**
@@ -69,44 +70,12 @@ public abstract class LocalNode {
 		this.node = node;
 		this.sample_rate = sample_rate;
 		this.buffer_size = buffer_size;
-
-		// Figure out all the chain ids this node belongs to
-		for(String port_name : netlist.getPorts(node))
-			for(int port_chain_id : properties.analyzer.getPortChainIds(netlist.getPort(node, port_name)))
-				chain_ids.add(port_chain_id);
-	}
-
-	/**
-	 * Start a session from an output-port.
-	 * @return	The session_id of the new voice
-	 */
-	protected synchronized int spawnVoice(String port_name, int sample_offset) {
-		Port port = netlist.getPort(node, port_name);
-
-		if(!properties.isOutput(port))
-			throw new RuntimeException("Can not spawn voice on input ports");
-
-		String ident = properties.getPortChainIdent(port);
-
-		if(ident == null)
-			throw new RuntimeException("Port does not have a chain ident, and thus, a voice can not be spawned");
-
-		int chain_id = properties.analyzer.getPortChainCreateId(port);
-
-		return supervisor.spawnSession(chain_id, sample_offset);
-	}
-
-	/**
-	 * Gets all the chain_ids this LocalNode is able to create.
-	 */
-	Set<Integer> getChainIds() {
-		return chain_ids;
 	}
 
 	/**
 	 * Returns LocalProcessor for this LocalNode
 	 */
-	LocalProcessor spawnProcessor(int chain_id, int session_id) {
+	LocalProcessor spawnProcessor(int session_id) {
 		// Create the processor
 		LocalProcessor lp;
 		try {
@@ -116,9 +85,32 @@ public abstract class LocalNode {
 		}
 
 		// Set information
-		lp.LocalProcessor_setInfo(this, chain_id, session_id);
+		lp.LocalProcessor_setInfo(this, session_id);
 
 		return lp;
+	}
+
+	protected List<Integer> getSessions() {
+		return supervisor.processor_list.getSessions(this);
+	}
+
+	/**
+	 * Retrieve the child nodes of this LocalNode.
+	 */
+	protected List<LocalNode> getChildrenNodes() {
+		List<LocalNode> result = new ArrayList<>();
+		for(Node ln : supervisor.netlist_util.getChildren(node))
+			result.add(supervisor.local_properties.getLocalNode(ln));
+
+		return result;
+	}
+
+	protected LocalNode getParent() {
+		Node parent = supervisor.netlist_util.getParent(node);
+		if(parent == null)
+			return null;
+
+		return supervisor.local_properties.getLocalNode(parent);
 	}
 
 	void init() {

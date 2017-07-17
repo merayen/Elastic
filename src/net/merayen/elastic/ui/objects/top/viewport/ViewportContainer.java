@@ -11,9 +11,8 @@ import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
-import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.View;
-import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.ui.objects.top.views.splashview.SplashView;
 import net.merayen.elastic.ui.util.HitTester;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
@@ -31,8 +30,13 @@ public class ViewportContainer extends UIObject {
 	private TaskExecutor task_executor = new TaskExecutor();
 	private MouseHandler mouse_handler;
 
-	public void addViewport(Viewport viewport) {
-		viewports.add(viewport);
+	public void addViewport(View view) {
+		if(view.getParent() != null)
+			throw new RuntimeException("View is already in use");
+
+		Viewport viewport = createViewport(view);
+		layout.splitHorizontal(viewports.get(0), viewport);
+		layout.resizeHeight(viewports.get(0), 0.2f); // Lol, no. Wrong.
 	}
 
 	/**
@@ -42,12 +46,24 @@ public class ViewportContainer extends UIObject {
 		task_executor.add(task);
 	}
 
+	/**
+	 * Swaps a view with another one.
+	 */
+	public void swapView(View old, View view) {
+		Viewport viewport = viewports.stream().filter((x) -> x.view == old).findFirst().get();
+
+		if(viewport == null)
+			throw new RuntimeException("Old view does not exist");
+
+		viewport.view = view;
+	}
+
 	public List<Viewport> getViewports() {
 		return new ArrayList<>(viewports);
 	}
 
 	private void defaultView() { // Testing purposes probably
-		Viewport a = createViewport(new NodeView());
+		Viewport a = createViewport(new SplashView());
 		layout = new Layout(a);
 
 		sendMessage(new ViewportHelloMessage(this));
@@ -97,7 +113,7 @@ public class ViewportContainer extends UIObject {
 				if(vertical) {
 					layout.resizeWidth(moving, (position.x - moving.translation.x) / width);
 				} else {
-					layout.resizeHeight(moving, (position.y - moving.translation.y)/ height);
+					layout.resizeHeight(moving, (position.y - moving.translation.y) / height);
 				}
 			}
 
@@ -230,9 +246,5 @@ public class ViewportContainer extends UIObject {
 		viewports.add(v);
 		m.put("viewport", v);
 		return v;
-	}
-
-	private void moveViewportBorder() {
-		
 	}
 }

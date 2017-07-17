@@ -49,6 +49,7 @@ class VU extends UIObject {
 	}
 
 	void updateVU(float[] data) {
+		//System.out.println(data.length);
 		if(data.length != vu.length)
 			vu = new float[data.length];
 
@@ -59,11 +60,6 @@ class VU extends UIObject {
 
 	void updateOffset(float[] data) {
 		offset = data;
-		/*if(data.length != offset.length)
-			offset = new float[data.length];
-
-		for(int i = 0; i < data.length; i++)
-			offset[i] = data[i];*/
 	}
 
 	float getHeight() {

@@ -29,7 +29,7 @@ public class NetListMessages { // TODO silly name, fix
 		for(Node node : netlist.getNodes()) {
 
 			// Restore the Node() itself
-			result.add(new CreateNodeMessage(node.getID(), (String)node.properties.get("name"), ((Number)node.properties.get("version")).intValue(), np.getGroup(node)));
+			result.add(new CreateNodeMessage(node.getID(), np.getName(node), np.getVersion(node), np.getParent(node)));
 
 			// Restore the Node()'s ports
 			for(String port : netlist.getPorts(node)) {
@@ -38,8 +38,7 @@ public class NetListMessages { // TODO silly name, fix
 					node.getID(),
 					port,
 					np.isOutput(p),
-					np.getFormat(p),
-					np.getPortChainIdent(p) // TODO rename to chain_ident
+					np.getFormat(p)
 				));
 			}
 		}
@@ -59,15 +58,14 @@ public class NetListMessages { // TODO silly name, fix
 
 	/**
 	 * Restore from NetList, but filter by a certain group.
+	 * Delete?
 	 */
-	public static List<Postmaster.Message> disassemble(NetList netlist, String group_id) {
-		if(group_id == null)
-			return disassemble(netlist);
-
+	public static List<Postmaster.Message> disassemble(NetList netlist, String parent_node_id) {
 		NetList filtered = netlist.copy();
+		NodeProperties np = new NodeProperties(filtered);
 
 		for(Node node : netlist.getNodes()) // Remove nodes that are not in the group group_id
-			if(!((String)node.properties.get("group")).equals(group_id))
+			if(np.getParent(node) != parent_node_id)
 				filtered.remove(node);
 
 		return disassemble(filtered);
@@ -85,13 +83,11 @@ public class NetListMessages { // TODO silly name, fix
 			Node node = netlist.createNode(m.node_id);
 			np.setName(node, m.name);
 			np.setVersion(node, m.version);
-			np.setGroup(node, m.group);
+			np.setParent(node, m.parent);
 
 		} else if(message instanceof CreateNodePortMessage) {
 			CreateNodePortMessage m = (CreateNodePortMessage)message;
 			Port port = netlist.createPort(m.node_id, m.port);
-			if(m.chain_ident != null)
-				np.setPortChainIdent(port, m.chain_ident);
 
 			if(m.output) {
 				np.setOutput(port);
@@ -118,6 +114,7 @@ public class NetListMessages { // TODO silly name, fix
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			np.parameters.set(netlist.getNode(m.node_id), m.key, m.value);
 
-		}
+		} else if(message instanceof BeginResetNetListMessage)
+			netlist.clear();
 	}
 }

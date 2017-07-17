@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.merayen.elastic.backend.analyzer.NetListUtil;
+import net.merayen.elastic.backend.analyzer.NetListValidator;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -23,13 +25,14 @@ class Supervisor {
 	private final int buffer_size;
 
 	private final NodeProperties node_properties;
-	private final LocalNodeProperties local_properties = new LocalNodeProperties();
+	public final NetListUtil netlist_util;
+	final LocalNodeProperties local_properties = new LocalNodeProperties();
 	final ProcessorList processor_list = new ProcessorList();
 	private int session_id_counter;
 
 	private boolean dead;
 
-	private List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution
+	private List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution in current frame
 
 	// Statistics
 	private AverageStat<Long> proccess_time = new AverageStat<>(1000);
@@ -40,7 +43,10 @@ class Supervisor {
 		this.sample_rate = sample_rate;
 		this.buffer_size = buffer_size;
 
+		new NetListValidator(netlist); // Make sure the netlist is sane before we proceed
+		
 		node_properties = new NodeProperties(netlist);
+		netlist_util = new NetListUtil(netlist);
 		load();
 	}
 
@@ -82,7 +88,7 @@ class Supervisor {
 	void clear() {
 		dead = true;
 
-		for(int session_id : processor_list.getSessions())
+		for(int session_id : new ArrayList<>(processor_list.getSessions()))
 			removeSession(session_id);
 
 		processor_list.clear();
@@ -118,29 +124,29 @@ class Supervisor {
 			lp.init(sample_offset);
 	}
 
-	int spawnSession(int chain_id, int sample_offset) {
-		spawnSession(chain_id, ++session_id_counter, sample_offset);
+	int spawnSession(Node node, int sample_offset) {
+		spawnSession(node, ++session_id_counter, sample_offset);
 		return session_id_counter;
 	}
 
 	/**
-	 * Spawns a new session from a chain.
+	 * Spawns a new session.
 	 * sample_offset is the offset into the process frame which the session gets spawned.
+	 * If node is null, the topmost node's session gets started.
 	 */
-	synchronized private void spawnSession(int chain_id, int session_id, int sample_offset) {
-		if(processor_list.getChainSessions(chain_id).size() >= 128)
+	synchronized private void spawnSession(Node node, int session_id, int sample_offset) {
+		if(node != null && processor_list.getSessions(local_properties.getLocalNode(node)).size() >= 128)
 			throw new RuntimeException("Voice limit reached, can not spawn any more processors");
 
+		processor_list.addSession(session_id);
+
 		List<LocalProcessor> to_wire_up = new ArrayList<>();
-		for(Node node : netlist.getNodes()) {
-			LocalNode local_node = local_properties.getLocalNode(node);
-			for(int c : local_node.getChainIds()) {
-				if(c == chain_id) {
-					LocalProcessor local_processor = local_node.spawnProcessor(chain_id, session_id);
-					processor_list.add(local_processor);
-					to_wire_up.add(local_processor);
-					break;
-				}
+		for(Node n : netlist.getNodes()) {
+			if((node == null && node_properties.getParent(n) == null) || (node != null && node.equals(netlist_util.getParent(n)))) {
+				LocalProcessor lp = local_properties.getLocalNode(n).spawnProcessor(session_id);
+				to_wire_up.add(lp);
+				processor_list.add(lp);
+				schedule(lp);
 			}
 		}
 
@@ -149,19 +155,11 @@ class Supervisor {
 	}
 
 	/**
-	 * Spawns the main session, which always has the session_id 0.
+	 * Spawns the main session, which is the topmost node, which again is responsible to spawn its children.
 	 */
-	void spawnMainSession() {
-		spawnSession(0, 0, 0);
+	private void spawnMainSession() {
+		spawnSession(null, 0);
 	}
-
-	/*
-	 * Lazily removes a session.
-	 * None of the LocalProcessors are actually deleted now, but rather collected later on.
-	 */
-	/*void removeSession(int session_id) {
-		List<LocalProcessor> processors = processor_list.getSessionProcessors(session_id);
-	}*/
 
 	/**
 	 * Called by a LocalProcessor to schedule it for processing.
@@ -207,9 +205,16 @@ class Supervisor {
 		}
 
 		// Make sure every processor has completely read and written to their buffers
-		for(LocalProcessor lp : processor_list.getAllProcessors())
-			if(!lp.frameFinished())
-				System.out.printf("Node failed to process: %s. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.localnode.getClass().getName());
+		boolean failed = false;
+		for(LocalProcessor lp : processor_list.getAllProcessors()) {
+			if(!lp.frameFinished()) {
+				failed = true;
+				System.out.printf("Node failed to process: %s, session_id=%d. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.getClass().getSimpleName(), lp.session_id);
+			}
+		}
+
+		if(failed)
+			System.out.println(Debug.debug(this));
 
 		ProcessMessage response = new ProcessMessage();
 
@@ -220,19 +225,6 @@ class Supervisor {
 			ln.onFinishFrame();
 
 			response.data.put(node.getID(), ln.outgoing);
-		}
-
-		// Clean up dead sessions
-		for(int session_id : new ArrayList<>(processor_list.getSessions())) {
-			List<LocalProcessor> processors = processor_list.getProcessors(session_id);
-
-			boolean active = false;
-
-			for(LocalProcessor lp : processors)
-				active |= lp.isActive();
-
-			if(!active)
-				removeSession(session_id);
 		}
 
 		proccess_time.add(System.nanoTime() - start);
@@ -262,7 +254,7 @@ class Supervisor {
 		return result;
 	}
 
-	private void removeSession(int session_id) {
+	void removeSession(int session_id) {
 		System.out.println("Supervisor: Removing session " + session_id);
 		for(LocalProcessor lp : processor_list.getProcessors(session_id))
 			lp.onDestroy();

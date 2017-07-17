@@ -75,11 +75,6 @@ public abstract class UINode extends UIObject {
 		super.onDraw();
 	}
 
-	@Override
-	public void add(UIObject obj) {
-		super.add(obj);
-	}
-
 	public ArrayList<UIPort> getPorts() {
 		return new ArrayList<UIPort>(ports);
 	}

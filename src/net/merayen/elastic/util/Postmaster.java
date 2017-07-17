@@ -30,8 +30,8 @@ public class Postmaster {
 		//	clean();
 
 		synchronized (queue) {
-			if(queue.size() >= 1000)
-				System.out.println("Postmaster is scarily flooded");
+			//if(queue.size() >= 1000)
+			//	System.out.println("Postmaster is scarily flooded");
 
 			queue.add(message);
 		}

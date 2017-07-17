@@ -22,8 +22,14 @@ public class Executor extends AbstractExecutor {
 	protected void onMessage(Postmaster.Message message) {
 		if(message instanceof ProcessMessage) {
 			applyNetList();
+
 			if(Config.processor.debug.verbose)
 				System.out.printf("Executor: Processing with a NetList of %d nodes, %d connections\n", netlist.getNodes().size(), netlist.getLines().size());
+
+			if(supervisor == null) { // Got nothing to respond with, we are completely empty
+				sendFromProcessing(new ProcessMessage());
+				return;
+			}
 
 			ProcessMessage pm = supervisor.process((ProcessMessage)message);
 			sendFromProcessing(pm);
@@ -34,7 +40,6 @@ public class Executor extends AbstractExecutor {
 			NetListMessages.apply(getNetList(), message);
 
 		} else if(message instanceof NetListMessage) {
-			//System.out.println("Executor message: " + message);
 			NetListMessages.apply(branchNetList(), message);
 
 		}
@@ -56,7 +61,6 @@ public class Executor extends AbstractExecutor {
 			if(supervisor != null)
 				supervisor.clear();
 
-			System.out.println(sample_rate);
 			supervisor = new Supervisor(netlist, sample_rate, sample_buffer_size);
 			supervisor.begin();
 

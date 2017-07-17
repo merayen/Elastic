@@ -1,5 +1,10 @@
 package net.merayen.elastic.ui.surface;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.merayen.elastic.ui.event.IEvent;
+
 public class Fake extends Surface {
 	public Fake(String id, Handler handler) {
 		super(id, handler);
@@ -18,5 +23,10 @@ public class Fake extends Surface {
 
 	public void end() {
 		// Nothing to close...
+	}
+
+	@Override
+	public List<IEvent> pullEvents() {
+		return new ArrayList<>();
 	}
 }

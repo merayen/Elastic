@@ -1,12 +1,10 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.List;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
-import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
@@ -21,7 +19,6 @@ public abstract class BaseLogicNode {
 		public String name; // Name of the port
 		public boolean output; // If port is output or not
 		public Format format; // Format the port uses. Only for output-ports
-		public String chain_ident; // TODO rename to chain_ident
 	}
 
 	private LogicEnvironment env;
@@ -96,7 +93,7 @@ public abstract class BaseLogicNode {
 			throw new RuntimeException("Input-ports can not have a format set, as it will depend on the output-port it is connected to");
 
 		// Everything OK
-		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format, def.chain_ident); // TODO rename to chain_ident
+		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format); // TODO rename to chain_ident
 
 		NetListMessages.apply(netlist, message); // Apply the port to the NetList
 
@@ -137,8 +134,8 @@ public abstract class BaseLogicNode {
 		return np.isOutput(netlist.getPort(node, port));
 	}
 
-	void create(String name, Integer version, String group) {
-		CreateNodeMessage m = new CreateNodeMessage(id, name, version, group);
+	void create(String name, Integer version, String parent) {
+		CreateNodeMessage m = new CreateNodeMessage(id, name, version, parent);
 		supervisor.sendMessageToUI(m); // Acknowledges creation of Node to the UI
 		supervisor.sendMessageToProcessor(m); // Notify the backend too
 

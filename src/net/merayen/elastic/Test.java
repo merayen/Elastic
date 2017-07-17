@@ -3,12 +3,12 @@ package net.merayen.elastic;
 public class Test {
 	public static void main(String[] args) {
 		// Doesn't work. Fix!
-		//net.merayen.elastic.backend.architectures.local.Test.test();
 		//net.merayen.elastic.backend.nodes.Test.test();
 		//net.merayen.elastic.backend.architectures.Test.test();
 		//net.merayen.elastic.backend.context.Test.test();
 
 		// Works
+		net.merayen.elastic.backend.architectures.local.Test.test();
 		/*net.merayen.elastic.util.Test.test();
 		net.merayen.elastic.backend.buffer.FloatCircularBuffer.test();
 

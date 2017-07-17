@@ -8,6 +8,9 @@ import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 
+/**
+ * TODO handle multiple surfaces (window) better. It does not work as of now.
+ */
 public class MouseEvent implements IEvent {
 	public enum Action {
 		DOWN,
@@ -23,6 +26,7 @@ public class MouseEvent implements IEvent {
 		RIGHT
 	}
 
+	private final String surface_id;
 	public final Action action;
 	public final Button button;
 
@@ -30,7 +34,8 @@ public class MouseEvent implements IEvent {
 
 	public List<UIObject> objects_hit;
 
-	public MouseEvent(int x, int y, Action action, Button button) {
+	public MouseEvent(String surface_id, int x, int y, Action action, Button button) {
+		this.surface_id = surface_id;
 		this.x = x;
 		this.y = y;
 		this.action = action;
@@ -38,7 +43,7 @@ public class MouseEvent implements IEvent {
 	}
 
 	// XXX Move hit testing out in a "hit test"-like class? 
-	private List<UIObject> calcHit(UIObject uiobject) {
+	private List<UIObject> calcHit(Window uiobject) {
 		List<UIObject> hits = new ArrayList<UIObject>();
 
 		List<UIObject> objs = uiobject.search.getAllChildren();
@@ -47,7 +52,6 @@ public class MouseEvent implements IEvent {
 		for(UIObject o : objs)
 			if(
 				o.isInitialized() &&
-				o.absolute_translation.visible &&
 				o.outline_abs_px != null &&
 				x >= o.outline_abs_px.x1 &&
 				y >= o.outline_abs_px.y1 &&
@@ -58,24 +62,16 @@ public class MouseEvent implements IEvent {
 
 		hits.sort( (a,b) -> b.draw_z - a.draw_z );
 
-		Window window;
-		if(uiobject instanceof Window)
-			window = (Window)uiobject;
-		else
-			window = UINodeUtil.getWindow(uiobject);
-
 		if(hits.size() > 0) {
 			String m = "Object hit: ";
 			for(UIObject o : hits)
 				m += o.getClass().getSimpleName() + ", ";
 
-			
-
-			if(window != null)
-				window.debug.set("MouseEvent.calcHit", m);
+			if(uiobject != null)
+				uiobject.debug.set("MouseEvent.calcHit", m);
 		} else {
-			if(window != null)
-				window.debug.unset("MouseEvent.calcHit");
+			if(uiobject != null)
+				uiobject.debug.unset("MouseEvent.calcHit");
 		}
 
 		return hits;
@@ -109,5 +105,10 @@ public class MouseEvent implements IEvent {
 	 */
 	public Point getOffset(UIObject uiobject) {
 		return uiobject.getRelativeFromAbsolute(x, y);
+	}
+
+	@Override
+	public String getSurfaceID() {
+		return surface_id;
 	}
 }

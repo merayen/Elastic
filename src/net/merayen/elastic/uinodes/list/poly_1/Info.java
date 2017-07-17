@@ -7,7 +7,7 @@ public class Info implements BaseInfo {
 	public String getName() {return "Poly";}
 
 	@Override
-	public String getDescription() {return "Makes multiple instances on right side";}
+	public String getDescription() {return "Polyphonic group";}
 
 	@Override
 	public String[] getCategories() {return new String[]{"Tool"};}

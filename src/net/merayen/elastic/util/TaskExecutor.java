@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reduces the amount a task is executed by delaying and queuing. By adding your
+ * Reduces the amount a task executed by delaying and queuing. By adding your
  * task with add() you will queue it to be executed, though your task is not
  * guaranteed to run at all; it might be overwritten by a task with the same
  * *key*.

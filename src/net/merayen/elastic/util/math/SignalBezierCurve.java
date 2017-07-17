@@ -129,9 +129,6 @@ public class SignalBezierCurve {
 			pos_index = Math.max(0, Math.min(result.length - 1, pos));
 			result[pos_index] = y;
 
-			if(y > 1 || y < 0)
-				System.console();
-
 			if(i == 0) {
 				last = pos;
 				last_value = y;

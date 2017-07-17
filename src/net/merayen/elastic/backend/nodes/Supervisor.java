@@ -1,8 +1,6 @@
 package net.merayen.elastic.backend.nodes;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.ListResourceBundle;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
@@ -39,15 +37,17 @@ public class Supervisor {
 	private Postmaster while_processing_queue = new Postmaster();
 	private volatile boolean is_processing; // Set to true when LogicNodes (and nodes) are processing, as we then can not take any messages
 	volatile boolean restoring; // Set to true when receiving NetListRefreshMessage, meaning that no events should be called
+	final NodeProperties node_properties;
 
 	public Supervisor(LogicEnvironment env, Handler handler) {
 		this.env = env;
 		this.handler = handler;
 
+		node_properties = new NodeProperties(((Environment)env).project.getNetList());
 		logicnode_list = new LogicNodeList(this);
 	}
 
-	private void createNode(String node_id, String name, Integer version) {
+	private void createNode(String node_id, String name, Integer version, String parent) {
 		logicnode_list.getLogicNodeClass(name, version); // Will throw exception if node is not found
 
 		Node node;
@@ -56,8 +56,9 @@ public class Supervisor {
 		else
 			node = ((Environment)env).project.getNetList().createNode(node_id);
 
-		node.properties.put("name", name);
-		node.properties.put("version", version);
+		node_properties.setName(node, name);
+		node_properties.setVersion(node, version);
+		node_properties.setParent(node, parent);
 
 		logicnode_list.createLogicNode(node);
 	}
@@ -75,7 +76,7 @@ public class Supervisor {
 
 		if(message instanceof CreateNodeMessage) {
 			CreateNodeMessage m = (CreateNodeMessage)message;
-			createNode(m.node_id, m.name, m.version);
+			createNode(m.node_id, m.name, m.version, m.parent);
 
 		} else if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
@@ -238,9 +239,6 @@ public class Supervisor {
 			BaseLogicNode bln = logicnode_list.get(n.getID());
 
 			Map<String, Object> p = new HashMap<>();
-
-			if(bln == null)
-				System.console();
 
 			if(!bln.inited) {
 				bln.inited = true;

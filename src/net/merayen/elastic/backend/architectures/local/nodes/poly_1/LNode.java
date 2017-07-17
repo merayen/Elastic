@@ -6,6 +6,7 @@ import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 
 public class LNode extends LocalNode {
+
 	public LNode() {
 		super(LProcessor.class);
 	}

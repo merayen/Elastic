@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.architectures.local.lets;
 import net.merayen.elastic.backend.logicnodes.Format;
 
 public class AudioOutlet extends Outlet {
-	public float[/* channel no */][/* sample index */] audio = new float[0][];
+	public float[/* channel no */][/* sample index */] audio;
 
 	public AudioOutlet(int buffer_size) {
 		super(buffer_size);
