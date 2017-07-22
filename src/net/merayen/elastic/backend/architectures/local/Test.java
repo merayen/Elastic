@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.logicnodes.Format;
@@ -174,8 +175,12 @@ class TopProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		if(session_id == -1)
-			session_id = spawnSession(0);
+		try {
+			if(session_id == -1)
+				session_id = spawnSession(0);
+		} catch (SpawnLimitException e) {
+			Test.no();
+		}
 	}
 
 	@Override
@@ -291,8 +296,13 @@ class MiddleProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		if(session_id_a == -1) {
-			session_id_a = spawnSession(0);
-			session_id_b = spawnSession(5);
+			try {
+				session_id_a = spawnSession(0);
+				session_id_b = spawnSession(5);
+			} catch (SpawnLimitException e) {
+				Test.no();
+			}
+			
 		}
 
 		int avail = input.available();

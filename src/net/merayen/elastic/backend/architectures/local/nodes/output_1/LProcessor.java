@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
+import java.util.List;
+
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
@@ -25,12 +27,13 @@ public class LProcessor extends LocalProcessor {
 			int start = ai.read;
 			int stop = ai.outlet.written;
 
-			int channel_count = ((AudioOutlet)ai.outlet).audio.length;
+			int channel_count = ((AudioOutlet)ai.outlet).getChannelCount();
 
 			if(lnode.output[voice_id] == null || lnode.output[voice_id].length != channel_count) // See if the channel count has changed. If yes, we clear our output and recreate the channel buffers
-				lnode.output[voice_id] = new float[channel_count][buffer_size];
+				lnode.output[voice_id] = new float[channel_count][];
 
-			lnode.output[voice_id] = ai.outlet.audio; // Note: does not copy
+			for(int i = 0; i < channel_count; i++)
+				lnode.output[voice_id][i] = ai.outlet.audio[i]; // Note: does not copy
 
 			//System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
 

@@ -11,17 +11,12 @@ import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.util.Postmaster.Message;
 
-/*
- * Makes beeping sounds.
- * TODO We need to rethink about data streams. We need a handler class that can help Processors to know
- * how much they should produce, like remember the amount requested, as incoming data might be much more than
- * we have requested due to ports being split.
- */
-public class LProcessor extends LocalProcessor {
+public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private enum Mode {
 		NOTHING,
 		RAW,
@@ -38,7 +33,11 @@ public class LProcessor extends LocalProcessor {
 
 	List<short[]> keys_down = new ArrayList<>();
 
-	private double pos = 0;
+	private boolean sustain;
+	private short[] active_tangent;
+	private float pitch;
+
+	private double pos;
 
 	@Override
 	protected void onInit() {
@@ -64,8 +63,12 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	public void onProcess() {
-		if(getOutlet("output") == null)
+		if(getOutlet("output") == null) {
+			Inlet frequency = getInlet("frequency");
+			if(frequency != null)
+				frequency.read = frequency.outlet.written;
 			return;
+		}
 
 		if(mode == Mode.RAW)
 			generateRaw();
@@ -132,9 +135,8 @@ public class LProcessor extends LocalProcessor {
 
 		outlet.setChannelCount(1);
 
-		if(!keys_down.isEmpty()) {
-			short[] active_key = keys_down.get(keys_down.size() - 1);
-			double freq = midiNoteToFreq(active_key[1]) / sample_rate; // TODO take care of pitch wheel
+		if(active_tangent != null) {
+			double freq = midiNoteToFreq(active_tangent[1] + pitch) / sample_rate; // TODO take care of pitch wheel
 
 			for(int i = outlet.written; i < outlet.written + available; i++) {
 				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)];
@@ -143,9 +145,8 @@ public class LProcessor extends LocalProcessor {
 
 		} else { // No key down? Silence!
 			pos = 0;
-			for(int ch = 0; ch < outlet.audio.length; ch++)
-				for(int i = 0; i < buffer_size; i++)
-					outlet.audio[ch][i] = 0;
+			for(int i = 0; i < buffer_size; i++)
+				outlet.audio[0][i] = 0;
 		}
 
 		outlet.written += available;
@@ -161,7 +162,10 @@ public class LProcessor extends LocalProcessor {
 				if(sample != null) {
 					for(short[] midi_packet : sample) {
 						if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
-							keys_down.add(midi_packet);
+							if(!sustain)
+								keys_down.add(midi_packet);
+
+							active_tangent = midi_packet;
 						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
 							Iterator<short[]> iter = keys_down.iterator();
 							while(iter.hasNext()) {
@@ -169,6 +173,19 @@ public class LProcessor extends LocalProcessor {
 								if(m[1] == midi_packet[1])
 									iter.remove();
 							}
+							if(!sustain)
+								active_tangent = keys_down.isEmpty() ? null : keys_down.get(keys_down.size() - 1);
+						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midi_packet[1] == MidiStatuses.SUSTAIN) {
+							if(sustain && midi_packet[2] == 0) {
+								if(keys_down.isEmpty())
+									active_tangent = null;
+								else
+									active_tangent = keys_down.get(keys_down.size() - 1);
+							}
+							//keys_down.clear();
+							sustain = midi_packet[2] != 0;
+						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
+							pitch = midi_packet[2] / 32f - 2f;
 						}
 					}
 				}
@@ -178,7 +195,7 @@ public class LProcessor extends LocalProcessor {
 		}
 	}
 
-	private double midiNoteToFreq(short n) {
+	private double midiNoteToFreq(float n) {
 		return 440 * Math.pow(2, (n - 69) / 12.0f);
 	}
 
@@ -190,4 +207,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onDestroy() {}
+
+	@Override
+	public boolean isKeepingSessionAlive() {
+		return sustain;
+	}
 }

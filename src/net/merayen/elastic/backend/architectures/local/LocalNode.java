@@ -97,7 +97,7 @@ public abstract class LocalNode {
 	/**
 	 * Retrieve the child nodes of this LocalNode.
 	 */
-	protected List<LocalNode> getChildrenNodes() {
+	public List<LocalNode> getChildrenNodes() {
 		List<LocalNode> result = new ArrayList<>();
 		for(Node ln : supervisor.netlist_util.getChildren(node))
 			result.add(supervisor.local_properties.getLocalNode(ln));
@@ -117,11 +117,11 @@ public abstract class LocalNode {
 		onInit();
 	}
 
-	protected LocalProcessor getProcessor(int session_id) {
+	public LocalProcessor getProcessor(int session_id) {
 		return supervisor.getProcessor(this, session_id);
 	}
 
-	protected List<LocalProcessor> getProcessors() {
+	public List<LocalProcessor> getProcessors() {
 		return supervisor.getProcessors(this);
 	}
 

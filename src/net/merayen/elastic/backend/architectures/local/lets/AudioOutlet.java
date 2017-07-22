@@ -1,9 +1,12 @@
 package net.merayen.elastic.backend.architectures.local.lets;
 
+import java.util.List;
+
 import net.merayen.elastic.backend.logicnodes.Format;
 
 public class AudioOutlet extends Outlet {
-	public float[/* channel no */][/* sample index */] audio;
+	public final float[/* channel no */][/* sample index */] audio = new float[256][];
+	private int channel_count;
 
 	public AudioOutlet(int buffer_size) {
 		super(buffer_size);
@@ -19,7 +22,19 @@ public class AudioOutlet extends Outlet {
 	}
 
 	public void setChannelCount(int channel_count) {
-		if(audio == null || audio.length != channel_count)
-			audio = new float[channel_count][buffer_size];
+		if(channel_count == this.channel_count)
+			return;
+
+		for(int i = 0; i < 256; i++)
+			if(i < channel_count)
+				audio[i] = new float[buffer_size];
+			else
+				audio[i] = null;
+
+		this.channel_count = channel_count;
+	}
+
+	public int getChannelCount() {
+		return channel_count;
 	}
 }

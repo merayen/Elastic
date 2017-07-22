@@ -10,7 +10,7 @@ public class Debug {
 		String r = "";
 		r += "Frame state:\n";
 		for(LocalProcessor lp : supervisor.processor_list.getAllProcessors()) {
-			r += String.format("\t%s/%d (%s):\n", lp.getClass().getSimpleName(), lp.session_id, lp.hashCode());
+			r += String.format("\t%s/%d (%s):\n", lp.getClass(), lp.session_id, lp.hashCode());
 
 			for(Map.Entry<String, Inlet> inlet : lp.inlets.entrySet())
 				r += String.format("\t\tInlet\t%s: read=%d\n", inlet.getKey(), inlet.getValue().read);

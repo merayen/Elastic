@@ -6,7 +6,7 @@ import java.util.List;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.logicnodes.Format;
 
-public abstract class Outlet {
+public abstract class Outlet extends Portlet {
 	public int written; // Number of samples written yet. Readers must respect this
 	public final List<LocalProcessor> connected_processors = new ArrayList<>();
 	public final int buffer_size;
@@ -15,8 +15,9 @@ public abstract class Outlet {
 		this.buffer_size = buffer_size;
 	}
 
-	public void reset() {
-		written = 0;
+	@Override
+	public void reset(int sample_offset) {
+		written = sample_offset;
 	}
 
 	/**

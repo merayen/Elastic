@@ -1,14 +1,18 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
 import net.merayen.elastic.backend.architectures.local.lets.FormatMaps;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+import net.merayen.elastic.backend.architectures.local.lets.Portlet;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.Node;
@@ -26,6 +30,11 @@ public abstract class LocalProcessor {
 
 	final Map<String, Outlet> outlets = new HashMap<>();
 	final Map<String, Inlet> inlets = new HashMap<>();
+
+	/**
+	 * List of sessions created from this processor. Only for reference usage
+	 */
+	final List<Integer> children_sessions = new ArrayList<>();
 
 	protected abstract void onInit();
 
@@ -133,14 +142,7 @@ public abstract class LocalProcessor {
 	/**
 	 * @param sample_offset is the sample count offset in the current processing frame when this processors spawned. Processor should only process from there. 
 	 */
-	void init(int sample_offset) {
-		// Jump the buffers to the offset when the voice was created
-		for(Inlet inlet : inlets.values())
-			inlet.read = sample_offset;
-
-		for(Outlet outlet : outlets.values())
-			outlet.written = sample_offset;
-
+	void init() {
 		onInit();
 	}
 
@@ -172,23 +174,23 @@ public abstract class LocalProcessor {
 		localnode.supervisor.schedule(this);
 	}
 
-	protected Outlet getOutlet(String name) {
+	public Outlet getOutlet(String name) {
 		return outlets.get(name);
 	}
 
-	protected Inlet getInlet(String name) {
+	public Inlet getInlet(String name) {
 		return inlets.get(name);
 	}
 
-	void prepare() {
+	void prepare(int sample_offset) {
+		// Jump the buffers to the offset when the voice was created
+		for(Inlet inlet : inlets.values())
+			inlet.reset(sample_offset);
+
+		for(Outlet outlet : outlets.values())
+			outlet.reset(sample_offset);
+
 		onPrepare();
-
-		// Reset port states
-		for(Outlet o : outlets.values())
-			o.reset();
-
-		for(Inlet i : inlets.values())
-			i.reset();
 	}
 
 	/**
@@ -219,12 +221,13 @@ public abstract class LocalProcessor {
 	 * Spawns a session for this node's children nodes.
 	 * Returns the session_id created.
 	 */
-	protected int spawnSession(int sample_offset) {
+	protected int spawnSession(int sample_offset) throws SpawnLimitException {
 		int new_session_id = localnode.supervisor.spawnSession(localnode.node, sample_offset);
 
-		// Apply the session_id on all the created processors, as parent
-		for(LocalProcessor lp : localnode.supervisor.processor_list.getProcessors(new_session_id))
+		for(LocalProcessor lp : localnode.supervisor.processor_list.getProcessors(new_session_id)) {
 			lp.parent = this;
+			lp.prepare(sample_offset);
+		}
 
 		return new_session_id;
 	}
@@ -234,5 +237,13 @@ public abstract class LocalProcessor {
 			throw new RuntimeException("LocalProcessor can not kill its own session");
 
 		localnode.supervisor.removeSession(session_id);
+	}
+
+	public int getSessionID() {
+		return session_id;
+	}
+
+	public List<Integer> getChildrenSessionIDs() {
+		return Collections.unmodifiableList(children_sessions);
 	}
 }

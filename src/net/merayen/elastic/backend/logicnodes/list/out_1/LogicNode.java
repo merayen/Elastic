@@ -1,21 +1,27 @@
-package net.merayen.elastic.backend.logicnodes.list.group_1;
+package net.merayen.elastic.backend.logicnodes.list.out_1;
 
 import java.util.Map;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 
-/**
- * Doesn't do anything, other than having children.
- */
 public class LogicNode extends BaseLogicNode {
 	@Override
-	protected void onCreate() {}
+	protected void onCreate() {
+		createPort(new PortDefinition() {{
+			name = "input";
+		}});
+	}
 
 	@Override
 	protected void onInit() {}
 
 	@Override
-	protected void onParameterChange(String key, Object value) {}
+	protected void onParameterChange(String key, Object value) {
+		set(key, value);
+	}
+
+	@Override
+	protected void onData(Map<String, Object> data) {}
 
 	@Override
 	protected void onConnect(String port) {}
@@ -31,8 +37,4 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onFinishFrame(Map<String, Object> data) {}
-
-	@Override
-	protected void onData(Map<String, Object> data) {}
-
 }

@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.architectures.local.lets;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.logicnodes.Format;
 
-public abstract class Inlet {
+public abstract class Inlet extends Portlet {
 	public final Outlet outlet; // Outlet this Inlet is connected to 
 	public int read; // Samples read so far. Use this to track where you are
 
@@ -11,8 +11,9 @@ public abstract class Inlet {
 		this.outlet = outlet;
 	}
 
-	public void reset() {
-		read = 0;
+	@Override
+	public void reset(int sample_offset) {
+		read = sample_offset;
 	}
 
 	public int available() {

@@ -46,10 +46,7 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onFinishFrame() {
 		int channel_count = countChannels();
-		float[][] channels = new float[channel_count][];
-
-		for(int i = 0; i < channel_count; i++) // Creating new outgoing buffers to separate the processor and external receivers of this data
-			channels[i] = new float[buffer_size];
+		float[][] channels = new float[channel_count][buffer_size]; // Creating new outgoing buffers to separate the processor and external receivers of this data
 
 		float[] amplitude = new float[channel_count];
 

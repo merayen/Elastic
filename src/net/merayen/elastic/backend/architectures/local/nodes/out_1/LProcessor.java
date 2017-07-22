@@ -1,11 +1,10 @@
-package net.merayen.elastic.backend.architectures.local.nodes.group_1;
+package net.merayen.elastic.backend.architectures.local.nodes.out_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
+import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor {
-	int session_id = -1;
 
 	@Override
 	protected void onInit() {}
@@ -15,13 +14,10 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		
-			try {
-				if(session_id == -1)
-					session_id = spawnSession(0);
-			} catch (SpawnLimitException e) {
-				throw new RuntimeException("Should not happen");
-			}
+		Inlet input = getInlet("input");
+		if(input != null) {
+			input.read = input.outlet.written;
+		}
 	}
 
 	@Override
@@ -29,5 +25,4 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onDestroy() {}
-
 }

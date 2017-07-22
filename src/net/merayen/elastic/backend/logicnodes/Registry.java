@@ -12,5 +12,7 @@ public class Registry {
 		nodes.add("output_1");
 		nodes.add("poly_1");
 		nodes.add("signalgenerator_1");
+		nodes.add("in_1");
+		nodes.add("out_1");
 	}
 }

@@ -28,7 +28,7 @@ public class LProcessor extends LocalProcessor {
 			float[][] a_buffer = ((AudioOutlet)a.outlet).audio;
 			float[][] b_buffer = ((AudioOutlet)b.outlet).audio;
 
-			int channel_count = Math.max(a_buffer.length, b_buffer.length);
+			int channel_count = Math.max(((AudioOutlet)a.outlet).getChannelCount(), ((AudioOutlet)b.outlet).getChannelCount());
 
 			((AudioOutlet)out).setChannelCount(channel_count);
 
@@ -50,6 +50,8 @@ public class LProcessor extends LocalProcessor {
 						out_buffer[channel_no][i] = (af * volume_a) + (bf * volume_b);
 					}
 				}
+
+				fac.read = stop;
 
 			} else {
 				for(int channel_no = 0; channel_no < channel_count; channel_no++) {

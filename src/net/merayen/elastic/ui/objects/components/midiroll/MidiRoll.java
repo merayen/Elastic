@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
-import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 
 public class MidiRoll extends UIObject {
@@ -51,9 +50,5 @@ public class MidiRoll extends UIObject {
 	protected void onDraw() {
 		draw.setColor(50, 50, 100);
 		draw.fillRect(0, 0, width, height);
-	}
-
-	public Rect getOutline() {
-		return net.outline;
 	}
 }
