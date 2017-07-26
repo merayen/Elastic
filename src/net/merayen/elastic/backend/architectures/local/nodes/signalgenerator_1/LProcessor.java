@@ -13,6 +13,7 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
+import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -36,6 +37,8 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private boolean sustain;
 	private short[] active_tangent;
 	private float pitch;
+	private float volume = 1;
+	private float new_volume = 1;
 
 	private double pos;
 
@@ -137,10 +140,13 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		if(active_tangent != null) {
 			double freq = midiNoteToFreq(active_tangent[1] + pitch) / sample_rate; // TODO take care of pitch wheel
+			float volume_div = sample_rate / 1000;
 
+			//volume = new_volume;
 			for(int i = outlet.written; i < outlet.written + available; i++) {
-				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)];
+				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)] * volume;
 				pos += freq;
+				volume += (new_volume - volume) / volume_div;
 			}
 
 		} else { // No key down? Silence!
@@ -158,6 +164,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		if(inlet.available() > 0) {
 			short[][][] midi = ((MidiOutlet)inlet.outlet).midi;
 
+			int packet_sample_offset = 0;
 			for(short[][] sample : midi) {
 				if(sample != null) {
 					for(short[] midi_packet : sample) {
@@ -175,7 +182,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 							}
 							if(!sustain)
 								active_tangent = keys_down.isEmpty() ? null : keys_down.get(keys_down.size() - 1);
-						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midi_packet[1] == MidiStatuses.SUSTAIN) {
+						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midi_packet[1] == MidiControllers.SUSTAIN) {
 							if(sustain && midi_packet[2] == 0) {
 								if(keys_down.isEmpty())
 									active_tangent = null;
@@ -184,11 +191,16 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 							}
 							//keys_down.clear();
 							sustain = midi_packet[2] != 0;
+						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midi_packet[1] == MidiControllers.VOLUME) {
+							new_volume = midi_packet[2] / 127f; // TODO interpolate! plz
+							if(packet_sample_offset == 0) // We forcefully set our volume, with no interpolation, if this is the first sample. ADSR outputs the volume in the same sample as the KEY_DOWN
+								volume = new_volume;
 						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
 							pitch = midi_packet[2] / 32f - 2f;
 						}
 					}
 				}
+				packet_sample_offset++;
 			}
 
 			inlet.read += inlet.available();
@@ -210,6 +222,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 	@Override
 	public boolean isKeepingSessionAlive() {
-		return sustain;
+		return active_tangent != null;
 	}
 }

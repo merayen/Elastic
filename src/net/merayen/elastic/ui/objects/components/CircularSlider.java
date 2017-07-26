@@ -6,8 +6,12 @@ import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
 
 public class CircularSlider extends UIObject {
+	public interface Handler {
+		public void onChange(float value);
+	}
+
 	public float size = 30f;
-	public float drag_scale = 1f;
+	public float drag_scale = 0.25f;
 	public float pointer_length = 1f;
 
 	// In radian, min and max position
@@ -19,12 +23,16 @@ public class CircularSlider extends UIObject {
 	private MouseHandler mousehandler;
 	private float drag_value;
 
+	private Handler handler;
+
 	protected void onInit() {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
 				setValue(drag_value - offset.y / (size / drag_scale));
+				if(handler != null)
+					handler.onChange(value);
 			}
 
 			@Override
@@ -70,5 +78,9 @@ public class CircularSlider extends UIObject {
 
 	public float getValue() {
 		return value;
+	}
+
+	public void setHandler(Handler handler) {
+		this.handler = handler;
 	}
 }

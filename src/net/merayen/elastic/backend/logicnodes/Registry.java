@@ -14,5 +14,6 @@ public class Registry {
 		nodes.add("signalgenerator_1");
 		nodes.add("in_1");
 		nodes.add("out_1");
+		nodes.add("adsr_1");
 	}
 }

@@ -47,7 +47,7 @@ public class Swing extends Surface {
 			});
 
 			setTitle("Elastic");
-			setSize(1000, 1000);
+			setSize(500, 500);
 			setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 			setVisible(true);
 		}

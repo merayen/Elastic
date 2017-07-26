@@ -11,6 +11,7 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.PolySessions.Session;
+import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.util.Postmaster.Message;
 
@@ -28,7 +29,7 @@ public class LProcessor extends LocalProcessor {
 
 	// MIDI states
 	short[] current_pitch = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
-	short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiStatuses.SUSTAIN, 0};
+	short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
 
 	@Override
 	protected void onInit() {
@@ -64,7 +65,7 @@ public class LProcessor extends LocalProcessor {
 								push_tangent(n[1], n[2], position);
 							} else if((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
 								release_tangent(n[1], position);
-							} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiStatuses.SUSTAIN) { 
+							} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) { 
 								current_sustain = n;
 								sendMidi(n, position);
 							} else if((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
@@ -80,10 +81,9 @@ public class LProcessor extends LocalProcessor {
 				spool("trigger", stop); // Ensure ports are spooled to the same position
 				input.read = input.outlet.written;
 			}
+			if(input.read == buffer_size)
+				removeInactiveSessions();
 		}
-
-		if(input.read == buffer_size)
-			removeInactiveSessions();
 	}
 
 	private void push_tangent(short tangent, short velocity, int position) { // TODO support unison, and forwarding of channel number
@@ -201,6 +201,7 @@ public class LProcessor extends LocalProcessor {
 			if(!active) {
 				sessions.removeSession(session);
 				removeSession(session.session_id);
+				System.out.println("Poly is killing session " + session.session_id);
 			}
 		}
 	}
