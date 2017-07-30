@@ -35,8 +35,6 @@ public class LProcessor extends LocalProcessor {
 			for(int i = 0; i < channel_count; i++)
 				lnode.output[voice_id][i] = ai.outlet.audio[i]; // Note: does not copy
 
-			//System.out.printf("Output LProcessor %s processing. First: %f, written: %d, inlet: %s\n", this, ai.outlet.audio[0], inlet.available(), ai);
-
 			inlet.read += stop - start;
 			written += stop - start;
 		}

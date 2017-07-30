@@ -19,26 +19,28 @@ class VU extends UIObject {
 		int channels = vu.length;
 
 		for(int i = 0; i < channels; i++) {
+			float v = (float)Math.pow(vu[i], 0.5);
+
 			draw.setColor(0, 0, 0);
 			draw.fillRect(0, 1 + i * bar_height, 100, bar_height - 2);
 
 			draw.setColor(0, 255, 0);
-			draw.fillRect(2, 2 + i * bar_height, 0 + Math.min(0.7f, vu[i]) * meter_width, bar_height - 4);
+			draw.fillRect(2, 2 + i * bar_height, 0 + Math.min(0.7f, v) * meter_width, bar_height - 4);
 
-			if(vu[i] > 0.7f) {
+			if(v > 0.7f) {
 				draw.setColor(255, 200, 0);
-				draw.fillRect(0.7f * meter_width, 2 + i * bar_height, 0 + Math.min(0.9f, vu[i]) * meter_width - meter_width * 0.7f, bar_height - 4);
+				draw.fillRect(0.7f * meter_width, 2 + i * bar_height, 0 + Math.min(0.9f, v) * meter_width - meter_width * 0.7f, bar_height - 4);
 			}
 
-			if(vu[i] > 0.9) {
+			if(v > 0.9) {
 				draw.setColor(255, 0, 0);
-				draw.fillRect(0.9f * meter_width, 2 + i * bar_height, 0 + Math.min(1f, vu[i]) * meter_width - meter_width * 0.9f, bar_height - 4);
+				draw.fillRect(0.9f * meter_width, 2 + i * bar_height, 0 + Math.min(1f, v) * meter_width - meter_width * 0.9f, bar_height - 4);
 			}
 
 			if(offset.length > i) {
-				float v = Math.min(1, Math.max(-1, offset[i] / 1000));
+				float w = Math.min(1, Math.max(-1, offset[i] / 1000));
 				draw.setColor(255, 255, 255);
-				draw.line(meter_width / 2 + (v * meter_width / 2), bar_height * 0.9f, meter_width / 2 + (v * meter_width / 2), bar_height);
+				draw.line(meter_width / 2 + (w * meter_width / 2), bar_height * 0.9f, meter_width / 2 + (w * meter_width / 2), bar_height);
 			}
 		}
 
@@ -49,7 +51,6 @@ class VU extends UIObject {
 	}
 
 	void updateVU(float[] data) {
-		//System.out.println(data.length);
 		if(data.length != vu.length)
 			vu = new float[data.length];
 
