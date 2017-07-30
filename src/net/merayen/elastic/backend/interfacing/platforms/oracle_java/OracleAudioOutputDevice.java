@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,25 +67,27 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	}
 
 	private void convertToBytes(float[] audio, byte[] out, int channels, int depth) {
-		int frame_size = channels * depth / 8;
 		int bytes_depth = depth / 8;
 		int sample_count = audio.length / channels;
 
 		if(out.length / bytes_depth != audio.length)
 			throw new RuntimeException("Invalid length of output byte-buffer. Got " + out.length + " but expected " + audio.length * bytes_depth);
 
+		ByteBuffer buffer = ByteBuffer.allocate(channels * bytes_depth * sample_count);
 		for(byte channel = 0; channel < channels; channel++) {
 			for(int i = 0; i < sample_count; i++) {
-				float u = audio[i * channels + channel] * 0.4f;
-				if(u > 0.5f) u = 0.5f;
-				else if(u < -0.5f) u = -0.5f;
-				//long v = (long)(audio[i * channels + channel] * Math.pow(2, depth));
-				long v = (long)(u * Math.pow(2, depth));
+				float u = audio[i * channels + channel] * 1f;
 
-				for(int j = 0; j < bytes_depth; j++)
-					out[channel * bytes_depth + i * frame_size + j] = (byte)((v >> (bytes_depth - j - 1) * 8)); // Flawed. Problems with signs?
+				// Clipping
+				if(u > 1f) u = 1f;
+				else if(u < -1f) u = -1f;
+
+				buffer.putShort((short)(u * 65535 / 2)); // Too costly?
 			}
 		}
+
+		buffer.rewind();
+		buffer.get(out, 0, channels * bytes_depth * sample_count);
 	}
 
 	@Override
