@@ -24,7 +24,7 @@ public class LogicNode extends BaseLogicNode {
 	protected void onInit() {
 		for(AbstractDevice ad : getEnv().mixer.getAvailableDevices())
 			if(ad instanceof MidiInputDevice)
-				if(ad.id.startsWith("KEYBOARD") || ad.id.contains("microKEY2 Air") || ad.id.contains("microKEY2-37")) // TODO send all devices to UI Node and let hte user decide
+				if(ad.id.startsWith("KEYBOARD") || ad.id.contains("microKEY2 Air") || ad.id.contains("microKEY2-37") || ad.id.contains("Code 61 USB MIDI")) // TODO send all devices to UI Node and let hte user decide
 					device = (MidiInputDevice)ad;
 				else
 					System.out.println("Skipped MIDI device " + ad.id);
