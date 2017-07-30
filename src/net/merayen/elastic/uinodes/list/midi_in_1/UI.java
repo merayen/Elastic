@@ -65,20 +65,14 @@ public class UI extends UINode {
 	}
 
 	@Override
-	protected void onRemovePort(UIPort port) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onRemovePort(UIPort port) {}
 
 	@Override
-	protected void onMessage(NodeParameterMessage message) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onMessage(NodeParameterMessage message) {}
 
 	@Override
-	protected void onData(NodeDataMessage message) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void onData(NodeDataMessage message) {}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }

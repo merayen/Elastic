@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 
 class PolySessions {
@@ -25,7 +24,6 @@ class PolySessions {
 
 	void push(int session_id, short tangent, Outlet outlet) {
 		sessions.add(new Session(session_id, tangent, outlet));
-		System.out.println(sessions.size());
 	}
 
 	/**

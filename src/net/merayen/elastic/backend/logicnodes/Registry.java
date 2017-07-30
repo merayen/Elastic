@@ -15,5 +15,6 @@ public class Registry {
 		nodes.add("in_1");
 		nodes.add("out_1");
 		nodes.add("adsr_1");
+		nodes.add("midi_spread_1");
 	}
 }

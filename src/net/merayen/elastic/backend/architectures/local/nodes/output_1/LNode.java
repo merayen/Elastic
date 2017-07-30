@@ -59,17 +59,20 @@ public class LNode extends LocalNode {
 	
 					float[] in = output[voice_no][channel_no];
 					float[] out = channels[channel_no];
+					float voice_amplitude = 0;
 
 					for(int i = 0; i < buffer_size; i++)
 						out[i] += in[i];
 	
 					// Measure max amplitude
 					for(float v : output[voice_no][channel_no]) {
-						if(Math.abs(amplitude[channel_no]) < v)
-							amplitude[channel_no] = Math.abs(v);
+						if(Math.abs(voice_amplitude) < v)
+							voice_amplitude = Math.abs(v);
 
 						offset[channel_no] += v;
 					}
+
+					amplitude[channel_no] += voice_amplitude;
 				}
 			}
 		}

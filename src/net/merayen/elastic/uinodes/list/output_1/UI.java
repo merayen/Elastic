@@ -54,4 +54,6 @@ public class UI extends UINode {
 			vu.updateOffset((float[])message.value.get("offset"));
 	}
 
+	@Override
+	protected void onParameter(String key, Object value) {}
 }

@@ -87,27 +87,27 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void push_tangent(short tangent, short velocity, int position) { // TODO support unison, and forwarding of channel number
-		//if(sessions.isTangentDown(tangent))
-		//	return;
-
-		int spawned_session_id;
-		try {
-			spawned_session_id = spawnSession(0); // TODO sample_offset should not be always 0, but rather respect the offset from the midi packet
-		} catch (SpawnLimitException e) {
-			return; // No more voices can be spawned. XXX Should probably kill the oldest one and replace them
+		int unison = ((LNode)getLocalNode()).unison;
+		for(int i = 0; i < unison; i++) {
+			int spawned_session_id;
+			try {
+				spawned_session_id = spawnSession(0); // TODO sample_offset should not be always 0, but rather respect the offset from the midi packet
+			} catch (SpawnLimitException e) {
+				return; // No more voices can be spawned. XXX Should probably kill the oldest one and replace them
+			}
+	
+			MidiOutlet outlet = new MidiOutlet(buffer_size);
+	
+			for(InterfaceNode in : interfaces) // Add the children node as being connected, push() will then automatically schedule the processor
+				if(in instanceof InputInterfaceNode)
+					((InputInterfaceNode)in).setForwardOutlet(spawned_session_id, outlet);
+	
+			sessions.push(spawned_session_id, tangent, outlet);
+	
+			outlet.midi[position] = new short[][] {{MidiStatuses.KEY_DOWN, tangent, velocity}, current_pitch, current_sustain};
+			outlet.written = position;
+			outlet.push();
 		}
-
-		MidiOutlet outlet = new MidiOutlet(buffer_size);
-
-		for(InterfaceNode in : interfaces) // Add the children node as being connected, push() will then automatically schedule the processor
-			if(in instanceof InputInterfaceNode)
-				((InputInterfaceNode)in).setForwardOutlet(spawned_session_id, outlet);
-
-		sessions.push(spawned_session_id, tangent, outlet); // TODO support unison
-
-		outlet.midi[position] = new short[][] {{MidiStatuses.KEY_DOWN, tangent, velocity}, current_pitch, current_sustain};
-		outlet.written = position;
-		outlet.push();
 	}
 
 	private void release_tangent(short tangent, int position) {
@@ -201,7 +201,7 @@ public class LProcessor extends LocalProcessor {
 			if(!active) {
 				sessions.removeSession(session);
 				removeSession(session.session_id);
-				System.out.println("Poly is killing session " + session.session_id);
+				//System.out.println("Poly is killing session " + session.session_id);
 			}
 		}
 	}

@@ -27,4 +27,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onData(NodeDataMessage message) {}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }

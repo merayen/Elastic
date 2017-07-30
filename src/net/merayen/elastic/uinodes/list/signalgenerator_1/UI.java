@@ -118,4 +118,7 @@ public class UI extends UINode {
 	private void updateFrequencyText() {
 		((PopupParameter1D)frequency_port_parameter.not_connected).label.text = String.format("Frequency: %.3f", getFrequency());
 	}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }

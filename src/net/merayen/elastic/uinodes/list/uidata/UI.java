@@ -49,4 +49,7 @@ public class UI extends UINode {
 		// TODO
 		return false;
 	}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }

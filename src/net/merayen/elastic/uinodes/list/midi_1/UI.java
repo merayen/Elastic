@@ -57,4 +57,7 @@ public class UI extends UINode {
 		if(getPort("out") != null)
 			getPort("out").translation.x = width;
 	}
+
+	@Override
+	protected void onParameter(String key, Object value) {}
 }

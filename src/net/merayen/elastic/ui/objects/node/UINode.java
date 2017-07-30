@@ -41,6 +41,7 @@ public abstract class UINode extends UIObject {
 	protected abstract void onRemovePort(UIPort port); // Node can clean up any resources belonging to the UIPort
 	protected abstract void onMessage(NodeParameterMessage message);
 	protected abstract void onData(NodeDataMessage message);
+	protected abstract void onParameter(String key, Object value);
 
 	public UINode() {
 		titlebar = new Titlebar();
@@ -127,6 +128,7 @@ public abstract class UINode extends UIObject {
 				translation.y = ((Number)m.value).floatValue();
 
 			onMessage(m);
+			onParameter(m.key, m.value);
 
 		} else if(message instanceof NodeDataMessage) {
 			onData((NodeDataMessage)message);
