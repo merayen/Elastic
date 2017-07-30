@@ -56,12 +56,12 @@ public class LProcessor extends LocalProcessor {
 				for(short[] midi_packet : input.outlet.midi[i]) {
 					if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
 						outgoing.add(midi_packet);
-						outgoing.add(new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 64 + midi_pitch)});
+						outgoing.add(new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 32 + midi_pitch)});
 						tangent_down = midi_packet;
 						((LNode)getLocalNode()).updateVoices(); // Re-assign pitches on all
 					} else if((midi_packet[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
 						midi_pitch = midi_packet[2];
-						outgoing.add(new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 64 + midi_pitch)});
+						outgoing.add(new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 32 + midi_pitch)});
 					} else {
 						outgoing.add(midi_packet);
 					}
@@ -70,8 +70,7 @@ public class LProcessor extends LocalProcessor {
 
 			if(current_pitch != pitch) { // Pitch offset has been updated. We need to send a new pitch now.
 				current_pitch = pitch;
-				outgoing.add(new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 64 + midi_pitch)});
-				//System.out.printf("Pitch set %d to %f\n", getSessionID(), pitch);
+				outgoing.add(new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 32 + midi_pitch)});
 			}
 
 			if(!outgoing.isEmpty()) {

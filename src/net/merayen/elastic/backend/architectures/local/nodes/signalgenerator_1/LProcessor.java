@@ -143,10 +143,13 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 			float volume_div = sample_rate / 1000;
 
 			//volume = new_volume;
+			float[] curve = lnode.curve_wave;
+			int length = curve.length;
 			for(int i = outlet.written; i < outlet.written + available; i++) {
-				outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos * lnode.curve_wave.length), lnode.curve_wave.length)] * volume;
+				outlet.audio[0][i] = curve[(int)(pos * length) % length] * volume;
 				pos += freq;
-				volume += (new_volume - volume) / volume_div;
+				if(volume != new_volume)
+					volume += (new_volume - volume) / volume_div;
 			}
 
 		} else { // No key down? Silence!
