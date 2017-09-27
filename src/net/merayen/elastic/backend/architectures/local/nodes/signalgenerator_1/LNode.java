@@ -3,10 +3,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
-
-import org.w3c.dom.stylesheets.DocumentStyle;
-
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.math.BezierCurve;
@@ -28,7 +24,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onInit() {
-		curve_wave = new float[/*sample_rate / 10*/1000];
+		curve_wave = new float[/*sample_rate / 10*/200];
 		for(int i = 0; i < curve_wave.length; i++)
 			curve_wave[i] = (float)Math.sin(i / (double)curve_wave.length * Math.PI * 2) * 0.2f;
 	}

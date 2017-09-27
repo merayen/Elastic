@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.architectures.local.lets;
 
-import java.util.List;
-
 import net.merayen.elastic.backend.logicnodes.Format;
 
 public class AudioOutlet extends Outlet {
