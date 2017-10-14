@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 
 public class UI extends UINode {
-	//private RollView roll_view = new RollView(this);
+	private RollView roll_view = new RollView(this);
 
 	@Override
 	protected void onInit() {
@@ -16,7 +16,7 @@ public class UI extends UINode {
 		height = 200;
 		titlebar.title = "MIDI Roll";
 
-		//add(roll_view);
+		add(roll_view);
 
 		add(new Resizable(this, new Resizable.Handler() {
 			@Override
@@ -52,8 +52,8 @@ public class UI extends UINode {
 	protected void onData(NodeDataMessage message) {}
 
 	private void updateLayout() {
-		//roll_view.width = width - 40;
-		//roll_view.height = height - 25;
+		roll_view.width = width - 40;
+		roll_view.height = height - 25;
 		if(getPort("out") != null)
 			getPort("out").translation.x = width;
 	}

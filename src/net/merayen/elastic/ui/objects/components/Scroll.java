@@ -49,19 +49,23 @@ public class Scroll extends UIObject {
 
 	public float width = 100;
 	public float height = 100;
-	public float content_width = 0;
-	public float content_height = 0;
 	public float bar_width = 10;
-	public final UIObject container = new UIObject();
+	private final UIObject object;
 	Scroll self = this;
 
 	private final UIClip clip = new UIClip();
 	private final Bar bar_x = new Bar(true);
 	private final Bar bar_y = new Bar(false);
 
+	private float content_width, content_height;
+
+	public Scroll(UIObject object) {
+		this.object = object;
+	}
+
 	@Override
 	protected void onInit() {
-		clip.add(container);
+		clip.add(object);
 		add(clip);
 		updateBars();
 	}
@@ -78,20 +82,25 @@ public class Scroll extends UIObject {
 
 	@Override
 	protected void onUpdate() {
+		content_width = object.getWidth();
+		content_height = object.getHeight();
+
+		System.out.println(content_width + " " + content_height);
+
 		clip.width = width - bar_width;
 		clip.height = height - bar_width;
 
-		if(container.translation.x > 0)
-			container.translation.x = 0;
+		if(object.translation.x > 0)
+			object.translation.x = 0;
 
-		if(container.translation.y > 0)
-			container.translation.y = 0;
+		if(object.translation.y > 0)
+			object.translation.y = 0;
 
-		if(container.translation.x < -(content_width - width) && content_width > width)
-			container.translation.x = -(content_width - width);
+		if(object.translation.x < -(content_width - width) && content_width > width)
+			object.translation.x = -(content_width - width);
 
-		if(container.translation.y < -(content_height - height) && content_height > height)
-			container.translation.y = -(content_height - height);
+		if(object.translation.y < -(content_height - height) && content_height > height)
+			object.translation.y = -(content_height - height);
 
 		bar_x.translation.y = height - bar_width;
 		bar_y.translation.x = width - bar_width;
@@ -123,7 +132,7 @@ public class Scroll extends UIObject {
 		bar_x.translation.x = Math.max(0, Math.min(width - bar_width, bar_x.translation.x));
 		bar_y.translation.y = Math.max(0, Math.min(height - bar_width, bar_y.translation.y));
 
-		container.translation.x = ((bar_x.translation.x / (width - bar_width)) * -(content_width - width));
-		container.translation.y = ((bar_y.translation.y / (height - bar_width)) * -(content_height - height));
+		object.translation.x = ((bar_x.translation.x / (width - bar_width)) * -(content_width - width));
+		object.translation.y = ((bar_y.translation.y / (height - bar_width)) * -(content_height - height));
 	}
 }

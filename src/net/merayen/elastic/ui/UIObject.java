@@ -199,6 +199,22 @@ public class UIObject {
 	}
 
 	/**
+	 * Retrieves the width of the object.
+	 * Feel free to override to return a custom value.
+	 */
+	public float getWidth() {
+		return outline.x2 - outline.x1;
+	}
+
+	/**
+	 * Retrieves the width of the object.
+	 * Feel free to override to return a custom value.
+	 */
+	public float getHeight() {
+		return outline.y2 - outline.y1;
+	}
+
+	/**
 	 * Evaluates to true if this object has been drawn once or more, so that translation
 	 * and other initializing has been done.
 	 * You need to check this before calling functions like getPixelDimension etc, as they are

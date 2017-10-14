@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.components.midiroll;
 import net.merayen.elastic.ui.UIObject;
 
 public class PianoNet extends UIObject {
-	float width = 100;
+	private float width = 100, height = 100; // TODO to be dynamic when notes are written
 	float octave_width = 5 * 7;
 
 	private final boolean[] BLACK_TANGENTS = new boolean[]{false,true,false,true,false,false,true,false,true,false,true,false};
@@ -35,5 +35,17 @@ public class PianoNet extends UIObject {
 			pos++;
 			pos %= 12;
 		}
+
+		height = y;
+	}
+
+	@Override
+	public float getWidth() {
+		return width;
+	}
+
+	@Override
+	public float getHeight() {
+		return height;
 	}
 }

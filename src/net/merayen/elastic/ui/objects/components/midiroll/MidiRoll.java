@@ -43,12 +43,22 @@ public class MidiRoll extends UIObject {
 
 	@Override
 	protected void onUpdate() {
-		net.width = width;
+		//net.width = width;
 	}
 
 	@Override
 	protected void onDraw() {
 		draw.setColor(50, 50, 100);
 		draw.fillRect(0, 0, width, height);
+	}
+
+	@Override
+	public float getWidth() {
+		return net.getWidth();
+	}
+	
+	@Override
+	public float getHeight() {
+		return net.getHeight();
 	}
 }
