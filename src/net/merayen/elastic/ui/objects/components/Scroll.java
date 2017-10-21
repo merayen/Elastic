@@ -85,8 +85,6 @@ public class Scroll extends UIObject {
 		content_width = object.getWidth();
 		content_height = object.getHeight();
 
-		System.out.println(content_width + " " + content_height);
-
 		clip.width = width - bar_width;
 		clip.height = height - bar_width;
 
