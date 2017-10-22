@@ -1,7 +1,6 @@
 package net.merayen.elastic.backend.interfacing;
 
 import java.util.List;
-import java.util.Map;
 
 import net.merayen.elastic.util.AverageStat;
 
@@ -19,6 +18,11 @@ public abstract class AbstractDevice {
 		 * Time taken to write/read from the buffer.
 		 */
 		public final AverageStat<Float> buffer_time = new AverageStat<>(100);
+
+		/**
+		 * Time outside writing to the buffer.
+		 */
+		public final AverageStat<Float> outside_buffer_time = new AverageStat<>(100);
 
 		/**
 		 * Samples available before reading/writing.
@@ -41,7 +45,7 @@ public abstract class AbstractDevice {
 		public int hunger;
 
 		public String describe() {
-			return String.format("buffer_time=%s, available_before=%s available_after=%s, samples_processed=%s, hunger=%d", buffer_time.info(), available_before.info(), available_after.info(), samples_processed.info(), hunger);
+			return String.format("buffer_time=%s, outside_buffer_time=%s, available_before=%s available_after=%s, samples_processed=%s, hunger=%d", buffer_time.info(), outside_buffer_time.info(), available_before.info(), available_after.info(), samples_processed.info(), hunger);
 		}
 	}
 

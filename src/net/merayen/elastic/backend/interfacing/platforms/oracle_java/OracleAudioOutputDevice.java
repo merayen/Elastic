@@ -50,7 +50,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	public int available() {
 		if(line.isActive()) {
 			Configuration c = (Configuration)configuration;
-			return line.available() / c.channels / (c.depth / 8);
+			return (line.getBufferSize() - line.available()) / c.channels / (c.depth / 8);
 		}
 		else {
 			return 0;
@@ -90,6 +90,8 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		buffer.get(out, 0, channels * bytes_depth * sample_count);
 	}
 
+	private long last_write = System.currentTimeMillis();
+
 	@Override
 	public void onWrite(float[] audio) {
 		Configuration c = (Configuration)configuration;
@@ -109,8 +111,10 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 		prepareLine(buffer.length);
 
+		statistics.outside_buffer_time.add((System.currentTimeMillis() - last_write) / 1000f);
 		long t = System.currentTimeMillis();
 		line.write(buffer, 0, buffer.length);
+		last_write = System.currentTimeMillis();
 		statistics.buffer_time.add((System.currentTimeMillis() - t) / 1000f);
 
 		statistics.samples_processed.add(audio.length / (c.depth / 8) / c.channels);
@@ -158,10 +162,10 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	private void prepareLine(int buffer_size) {
 		Configuration c = (Configuration)configuration;
 
-		if(!line.isOpen() || line.getBufferSize() != buffer_size) {
+		if(!line.isOpen() || line.getBufferSize() != buffer_size * 16) {
 			try {
-				System.out.printf("Reconfiggen %s, buffer_size=%d\n", c.getDescription(), buffer_size);
-				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), buffer.length);
+				System.out.printf("Reconfiggen %s, buffer_size=%d\n", c.getDescription(), buffer_size * 16);
+				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), buffer.length * 16);
 			} catch (LineUnavailableException e) {
 				throw new RuntimeException("Can not open audio output line with current configuration");
 			}

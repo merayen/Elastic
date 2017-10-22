@@ -56,8 +56,8 @@ public class Test {
 		while(true) {
 			roflmao.t = System.currentTimeMillis() + 1000 * 10;
 			waitFor(() -> System.currentTimeMillis() > roflmao.t);
-			System.out.println("Saving checkpoint");
-			system.sendMessageToBackend(new CreateCheckpointMessage());
+			//System.out.println("Saving checkpoint");
+			//system.sendMessageToBackend(new CreateCheckpointMessage());
 		}
 	}
 
