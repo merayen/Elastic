@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.merayen.elastic.ui.event.IEvent;

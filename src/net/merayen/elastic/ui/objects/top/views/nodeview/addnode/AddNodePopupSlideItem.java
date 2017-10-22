@@ -1,8 +1,9 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview.addnode;
 
+import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.IEvent;
-import net.merayen.elastic.ui.objects.components.list.UIList;
-import net.merayen.elastic.ui.objects.components.list.UIListItem;
+import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
+import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 import net.merayen.elastic.ui.objects.popupslide.PopupSlideItem;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.uinodes.UINodeInformation;
@@ -18,7 +19,7 @@ class AddNodePopupSlideItem extends PopupSlideItem {
 			public void onSelect(String text);
 		}
 
-		final UIList list = new UIList();
+		private final AutoLayout list = new AutoLayout(LayoutMethods.horizontalBox(10, 390));
 		Handler handler;
 
 		private void setHandler(Handler handler) {
@@ -32,24 +33,16 @@ class AddNodePopupSlideItem extends PopupSlideItem {
 			for(String category : UINodeInformation.getCategories())
 				addCategory(category);
 
-			list.reflowVertically(3);
-
 			add(list);
-
-			list.width = 400;
-			list.height = 450;
 		}
 
 		private void addCategory(String text) {
-			list.addItem(0, new UIListItem() {
+			list.add(new UIObject() {
 				MouseHandler mouse = new MouseHandler(this);
 				boolean over;
 
 				@Override
 				protected void onInit() {
-					width = 100;
-					height = 100;
-
 					mouse.setHandler(new MouseHandler.Handler() {
 						@Override
 						public void onMouseOver() {
@@ -70,6 +63,9 @@ class AddNodePopupSlideItem extends PopupSlideItem {
 
 				@Override
 				protected void onDraw() {
+					float width = 100;
+					float height = 100;
+
 					if(over)
 						draw.setColor(150, 200, 150);
 					else

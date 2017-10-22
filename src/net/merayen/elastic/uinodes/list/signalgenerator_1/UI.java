@@ -7,13 +7,14 @@ import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.components.InputSignalParameters;
 import net.merayen.elastic.ui.objects.components.PopupParameter1D;
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox;
+import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame;
 import net.merayen.elastic.ui.objects.components.framework.PortParameter;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 
 public class UI extends UINode {
 	private PortParameter frequency_port_parameter;
-	private SignalBezierCurveBox curve;
+	private SignalBezierCurveBoxControlFrame curve;
 
 	public UI() {
 		super();
@@ -40,7 +41,7 @@ public class UI extends UINode {
 			updateFrequencyText();
 		}
 		else if(message.key.equals("data.curve")) {
-			curve.setPoints((List<Number>)message.value);
+			curve.bezier.setPoints((List<Number>)message.value);
 		} else if(message.key.equals("data.InputSignalParameters:frequency")) {
 			((InputSignalParameters)frequency_port_parameter.connected).handleMessage(message);
 		}
@@ -77,7 +78,7 @@ public class UI extends UINode {
 	}
 
 	private void createBezierWave() {
-		SignalBezierCurveBox bwb = new SignalBezierCurveBox();
+		SignalBezierCurveBoxControlFrame bwb = new SignalBezierCurveBoxControlFrame();
 		bwb.translation.x = 20;
 		bwb.translation.y = 40;
 		bwb.width = 160;
@@ -85,17 +86,17 @@ public class UI extends UINode {
 		add(bwb);
 		curve = bwb;
 
-		bwb.setHandler(new SignalBezierCurveBox.Handler() {
+		bwb.bezier.setHandler(new SignalBezierCurveBox.Handler() {
 			int i;
 			@Override
 			public void onChange() {
-				sendParameter("data.curve", bwb.getFloats());
+				sendParameter("data.curve", bwb.bezier.getFloats());
 			}
 
 			@Override
 			public void onMove() {
 				if(i++ % 10 == 0)
-					sendParameter("data.curve", bwb.getFloats());
+					sendParameter("data.curve", bwb.bezier.getFloats());
 			}
 		});
 

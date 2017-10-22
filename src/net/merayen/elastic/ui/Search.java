@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Search {
@@ -66,6 +67,6 @@ public class Search {
 	}
 
 	public List<UIObject> getChildren() {
-		return new ArrayList<>(obj.children);
+		return Collections.unmodifiableList(obj.children);
 	}
 }

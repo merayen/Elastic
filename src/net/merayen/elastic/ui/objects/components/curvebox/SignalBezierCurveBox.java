@@ -12,7 +12,7 @@ import net.merayen.elastic.util.math.SignalBezierCurve;
  * Bezier curve for shaping signals.
  * It limits how the curve can be managed.
  */
-public class SignalBezierCurveBox extends UIObject { // Move out from test_100
+public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInterface { // Move out from test_100
 	public interface Handler {
 		/**
 		 * Called when user has changed the curve.
@@ -72,9 +72,6 @@ public class SignalBezierCurveBox extends UIObject { // Move out from test_100
 		});
 
 		add(curve);
-
-		//insertPoint(1);
-		//insertPoint(1);
 
 		curve.background.add(new Overlay());
 

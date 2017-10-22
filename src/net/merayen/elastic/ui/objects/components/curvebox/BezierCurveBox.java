@@ -12,7 +12,7 @@ import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
 
-public class BezierCurveBox extends UIObject {
+public class BezierCurveBox extends UIObject implements BezierCurveBoxInterface {
 	public interface Handler {
 		/**
 		 * Called every time a dot moves a pixel.
