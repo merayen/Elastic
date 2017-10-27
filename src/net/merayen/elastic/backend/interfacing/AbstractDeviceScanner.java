@@ -29,8 +29,11 @@ public abstract class AbstractDeviceScanner {
 	}
 
 	protected void addDevice(AbstractDevice device) {
-		if(getDevice(device.id) != null)
-			throw new RuntimeException("Device already registered: Buggy platform scanner?");
+		if(getDevice(device.id) != null) {
+			//throw new RuntimeException("Device already registered: Buggy platform scanner?");
+			System.out.println(String.format("Device already registered: Buggy platform scanner? (%s)", device.id));
+			return;
+		}
 
 		devices.add(device);
 
