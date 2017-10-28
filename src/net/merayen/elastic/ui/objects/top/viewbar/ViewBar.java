@@ -1,9 +1,15 @@
 package net.merayen.elastic.ui.objects.top.viewbar;
 
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
+import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 import net.merayen.elastic.ui.objects.top.megamenu.MegaMenu;
 
-public class ViewBar extends UIObject {
+public class ViewBar extends AutoLayout {
+	public ViewBar() {
+		super(new LayoutMethods.HorizontalBox(2, 100000));
+	}
+
 	public float width;
 	private final float height = 20;
 	private final MegaMenu menu = new MegaMenu();
@@ -11,10 +17,8 @@ public class ViewBar extends UIObject {
 
 	@Override
 	protected void onInit() {
-		menu.translation.x = 2;
-		menu.translation.y = 2;
-		add(content);
 		add(menu);
+		add(content);
 	}
 
 	@Override

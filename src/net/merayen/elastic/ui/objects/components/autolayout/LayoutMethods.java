@@ -5,6 +5,8 @@ import java.util.List;
 import net.merayen.elastic.ui.UIObject;
 
 public class LayoutMethods {
+	private LayoutMethods() {}
+
 	public static class HorizontalBox implements AutoLayout.Placement {
 		public float margin;
 		public float max_width = 100;
