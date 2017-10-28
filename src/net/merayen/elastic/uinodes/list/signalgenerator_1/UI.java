@@ -98,11 +98,12 @@ public class UI extends UINode {
 				if(i++ % 10 == 0)
 					sendParameter("data.curve", bwb.bezier.getFloats());
 			}
-		});
 
-		//bwb.insertPoint(1);
-		//bwb.insertPoint(2);
-		//bwb.insertPoint(1);
+			@Override
+			public void onDotClick() {
+				
+			}
+		});
 	}
 
 	@Override

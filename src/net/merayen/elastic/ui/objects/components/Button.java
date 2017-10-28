@@ -14,6 +14,8 @@ public class Button extends UIObject {
 
 	public float width = 50f;
 	public float height = 15f;
+	public boolean auto_dimension = true;
+	public float font_size = 10;
 
 	private IHandler handler; 
 	private MouseHandler mousehandler;
@@ -55,6 +57,14 @@ public class Button extends UIObject {
 	}
 
 	protected void onDraw() {
+		draw.setFont("Geneva", font_size);
+
+		float text_width = draw.getTextWidth(label);
+		if(auto_dimension) {
+			width = text_width + 10;
+			height = font_size * 1.5f;
+		}
+
 		draw.setColor(50, 50, 50);
 		draw.fillRect(0, 0, width, height);
 
@@ -65,9 +75,7 @@ public class Button extends UIObject {
 		draw.fillRect(1f, 1f, width - 2f, height - 2f);
 
 		draw.setColor(200, 200, 200);
-		draw.setFont("Geneva", 10f);
-		float text_width = draw.getTextWidth(label);
-		draw.text(label, (float)(width/2 - text_width/2), 10f);
+		draw.text(label, (float)(width/2 - text_width/2), font_size);
 
 		super.onDraw();
 	}

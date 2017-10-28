@@ -23,6 +23,11 @@ public class BezierCurveBox extends UIObject implements BezierCurveBoxInterface 
 		 * Called after user has let go of a dot.
 		 */
 		public void onChange();
+
+		/**
+		 * When user clicks
+		 */
+		public void onSelect(BezierDotDragable dot);
 	}
 
 	public class BezierDot extends UIObject {
@@ -63,9 +68,10 @@ public class BezierCurveBox extends UIObject implements BezierCurveBoxInterface 
 
 		@Override
 		protected void onInit() {
+			BezierDotDragable self = this;
+
 			movable = new Movable(this, this);
 			movable.setHandler(new Movable.IMoveable() {
-				
 				@Override
 				public void onMove() {
 					translation.x = Math.max(0, Math.min(1, translation.x));
@@ -73,10 +79,12 @@ public class BezierCurveBox extends UIObject implements BezierCurveBoxInterface 
 					if(handler != null)
 						handler.onMove(point);
 				}
-				
+
 				@Override
-				public void onGrab() {}
-				
+				public void onGrab() {
+					handler.onSelect(self);
+				}
+
 				@Override
 				public void onDrop() {
 					handler.onChange();

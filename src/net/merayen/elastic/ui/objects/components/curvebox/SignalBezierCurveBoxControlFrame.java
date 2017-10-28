@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.components.curvebox;
 
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.objects.components.Button;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 
@@ -13,13 +14,22 @@ public class SignalBezierCurveBoxControlFrame extends UIObject {
 
 	@Override
 	protected void onInit() {
-		bezier.translation.y = 20;
+		bezier.translation.y = 15;
 		add(bezier);
+		add(buttons);
+
+		buttons.add(new Button(){{
+			label = "+";
+			font_size = 8;
+			setHandler(() -> {
+				bezier.insertPoint(1);
+			});
+		}});
 	}
 
 	@Override
 	protected void onUpdate() {
 		bezier.width = width;
-		bezier.height = Math.max(0, height - 20);
+		bezier.height = Math.max(0, height - 15);
 	}
 }

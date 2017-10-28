@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDot;
+import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDotDragable;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
@@ -23,6 +24,11 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 		 * Called very often when user is changing something.
 		 */
 		public void onMove();
+
+		/**
+		 * When user clicks down on a dot.
+		 */
+		public void onDotClick();
 	}
 
 	private class Overlay extends UIObject {
@@ -68,6 +74,11 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 				moving = false;
 				if(handler != null)
 					handler.onChange();
+			}
+
+			@Override
+			public void onSelect(BezierDotDragable dot) {
+				dot.color.red = 40;
 			}
 		});
 
