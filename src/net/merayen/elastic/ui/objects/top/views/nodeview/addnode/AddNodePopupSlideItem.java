@@ -19,7 +19,7 @@ class AddNodePopupSlideItem extends PopupSlideItem {
 			public void onSelect(String text);
 		}
 
-		private final AutoLayout list = new AutoLayout(LayoutMethods.horizontalBox(10, 390));
+		private final AutoLayout list = new AutoLayout(new LayoutMethods.HorizontalBox(10, 390));
 		Handler handler;
 
 		private void setHandler(Handler handler) {

@@ -10,7 +10,7 @@ public class SignalBezierCurveBoxControlFrame extends UIObject {
 	public float height = 100;
 
 	public final SignalBezierCurveBox bezier = new SignalBezierCurveBox();
-	private final AutoLayout buttons = new AutoLayout(LayoutMethods.horizontal(2));
+	private final AutoLayout buttons = new AutoLayout(new LayoutMethods.HorizontalBox(2, 0));
 
 	@Override
 	protected void onInit() {

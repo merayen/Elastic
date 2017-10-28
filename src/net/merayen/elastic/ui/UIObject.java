@@ -204,7 +204,12 @@ public class UIObject {
 	 * Feel free to override to return a custom value.
 	 */
 	public float getWidth() {
-		return outline.x2 - outline.x1;
+		/*if(outline == null)
+			return 0;
+
+		return outline.x2 - outline.x1;*/
+		Rect deep = getDeepOutline();
+		return deep.x2 - deep.x1;
 	}
 
 	/**
@@ -212,7 +217,13 @@ public class UIObject {
 	 * Feel free to override to return a custom value.
 	 */
 	public float getHeight() {
-		return outline.y2 - outline.y1;
+		/*if(outline == null)
+			return 0;
+
+		return outline.y2 - outline.y1;*/
+
+		Rect deep = getDeepOutline();
+		return deep.y2 - deep.y1;
 	}
 
 	/**

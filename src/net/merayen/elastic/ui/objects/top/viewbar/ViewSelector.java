@@ -27,7 +27,7 @@ public class ViewSelector extends UIObject {
 	private final Tabs.TextButton TEST_VIEW = new SelectorButton("Splash", SplashView.class);
 
 	public ViewSelector(Handler handler) {
-		tabs = new Tabs(LayoutMethods.horizontal(2), new Tabs.Handler() {
+		tabs = new Tabs(new LayoutMethods.HorizontalBox(2, 100000), new Tabs.Handler() {
 			@Override
 			public void onSelect(Tab tab) {
 				handler.onSelect(((SelectorButton)tab).view);

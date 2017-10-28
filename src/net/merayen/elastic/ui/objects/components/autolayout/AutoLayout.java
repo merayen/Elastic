@@ -7,9 +7,11 @@ import net.merayen.elastic.ui.UIObject;
 public class AutoLayout extends UIObject {
 	public interface Placement {
 		public void place(List<UIObject> current);
+		public float getWidth();
+		public float getHeight();
 	}
 
-	private final Placement placement;
+	public final Placement placement;
 
 	public AutoLayout(Placement placement) {
 		this.placement = placement;
@@ -23,5 +25,15 @@ public class AutoLayout extends UIObject {
 	@Override
 	protected void onUpdate() {
 		placement.place(search.getChildren());
+	}
+
+	@Override
+	public float getWidth() {
+		return placement.getWidth();
+	}
+
+	@Override
+	public float getHeight() {
+		return placement.getHeight();
 	}
 }

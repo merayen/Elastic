@@ -4,36 +4,30 @@ import java.util.List;
 
 import net.merayen.elastic.ui.UIObject;
 
-public class LayoutMethods { // XXX Factory methods are perhaps not that good in this case, especially if parameters are changing very quickly (GC stress)
-	public static AutoLayout.Placement horizontal(float margin) {
-		return (List<UIObject> objects) -> {
-			float x = margin;
-			for(UIObject obj : objects) {
-				obj.translation.x = x;
-				obj.translation.y = 0;
+public class LayoutMethods {
+	public static class HorizontalBox implements AutoLayout.Placement {
+		public float margin;
+		public float max_width = 100;
+		private float width, height;
 
-				x += obj.getWidth() + margin;
-			}
-		};
-	}
+		public HorizontalBox() {}
 
-	public static AutoLayout.Placement vertical(float margin) {
-		return (List<UIObject> objects) -> {
-			float y = margin;
-			for(UIObject obj : objects) {
-				obj.translation.x = 0;
-				obj.translation.y = y;
+		public HorizontalBox(float margin, float max_width) {
+			this.margin = margin;
+			this.max_width = max_width;
+		}
 
-				y += obj.getHeight() + margin;
-			}
-		};
-	}
+		public HorizontalBox(float margin) {
+			this.margin = margin;
+		}
 
-	public static AutoLayout.Placement horizontalBox(float margin, float max_width) {
-		return (List<UIObject> objects) -> {
+		@Override
+		public void place(List<UIObject> objects) {
 			float x = margin;
 			float y = margin;
-			float height = 0;
+			float row_height = 0;
+			height = 0;
+			width = 0;
 
 			for(UIObject obj : objects) {
 				float obj_width = obj.getWidth();
@@ -41,17 +35,29 @@ public class LayoutMethods { // XXX Factory methods are perhaps not that good in
 
 				if(x + obj_width + margin > max_width) {
 					x = margin;
-					y += height + margin;
-					height = 0;
+					y += row_height + margin;
+					row_height = 0;
 				}
 
 				obj.translation.x = x;
 				obj.translation.y = y;
-				
+
 				x += obj_width + margin;
 
-				height = Math.max(height, obj_height);
+				row_height = Math.max(row_height, obj_height);
+				height = Math.max(height, y + obj_height);
+				width = Math.max(width, x + obj_width);
 			}
+		}
+
+		@Override
+		public float getWidth() {
+			return width;
+		}
+
+		@Override
+		public float getHeight() {
+			return height;
 		};
 	}
 }

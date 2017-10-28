@@ -17,7 +17,7 @@ import net.merayen.elastic.util.Point;
  * TODO Abstract this, so we can present these functions to other draw systems (e.g on Android)
  */
 public class Draw {
-	public java.awt.Graphics2D g2d; // TODO Make private
+	private java.awt.Graphics2D g2d; // TODO Make private
 	private UIObject uiobject;
 	private DrawContext draw_context;
 
@@ -26,7 +26,7 @@ public class Draw {
 	private String font_name = "Geneva";
 	private float font_size = 1f;
 
-	boolean skip_outline = false;
+	private boolean skip_outline = false;
 
 	FontMetrics font_metrics;
 

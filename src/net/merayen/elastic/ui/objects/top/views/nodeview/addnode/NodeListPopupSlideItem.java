@@ -22,7 +22,7 @@ class NodeListPopupSlideItem extends PopupSlideItem {
 
 		Handler handler;
 
-		private final AutoLayout list = new AutoLayout(LayoutMethods.horizontalBox(10, 400));
+		private final AutoLayout list = new AutoLayout(new LayoutMethods.HorizontalBox(10, 400));
 		final String category;
 
 		Content(String category) {
