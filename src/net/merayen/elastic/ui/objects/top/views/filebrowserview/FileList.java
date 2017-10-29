@@ -71,8 +71,8 @@ class FileList extends UIObject {
 
 	@Override
 	protected void onUpdate() {
-		scroll.height = height;
-		scroll.width = width;
+		scroll.setLayoutHeight(height);
+		scroll.setLayoutWidth(width);
 	}
 
 	void browse(String path) {

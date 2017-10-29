@@ -22,7 +22,7 @@ public class UI extends UINode {
 
 			@Override
 			public void onChange(double value, boolean programatic) {
-				self.sendParameter("width", (float)value);
+				self.sendParameter("layoutWidth", (float)value);
 			}
 
 			@Override
@@ -64,7 +64,7 @@ public class UI extends UINode {
 
 	@Override
 	protected void onParameter(String key, Object value) {
-		if(key.equals("width"))
+		if(key.equals("layoutWidth"))
 			spread_width.setValue(((Number)value).floatValue());
 	}
 }

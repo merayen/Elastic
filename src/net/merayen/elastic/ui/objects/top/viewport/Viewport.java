@@ -11,17 +11,17 @@ import net.merayen.elastic.ui.util.UINodeUtil;
 /**
  * A viewport. Yes. Yup, it is.
  * We can have multiple viewports for a single window.
- * 
+ *
  * Holds one object that it only sets as a child when drawing, and removes it afterwards.
  */
 public class Viewport extends UIObject {
 	interface Handler {
 		public void onNewViewport(boolean vertical);
-		public void onNewViewportResize(float width, boolean is_width); // Resizing of the left/over Viewport to increase size of the newly created Viewport. Negative value. One of the parameters is always 0 
+		public void onNewViewportResize(float width, boolean is_width); // Resizing of the left/over Viewport to increase size of the newly created Viewport. Negative value. One of the parameters is always 0
 	}
 
 	float width, height;
-	float ratio; // Value from 0 to 1, telling how much of the width or height this viewport takes from the view
+	float ratio; // Value from 0 to 1, telling how much of the layoutWidth or layoutHeight this viewport takes from the view
 	public View view; // The view to draw. Set this and we will change to it on next onUpdate()
 
 	//private final ViewportContainer viewport_container;
@@ -78,7 +78,7 @@ public class Viewport extends UIObject {
 	protected void onDraw() {
 		//draw.setColor(100, 100, 100);
 		//draw.setStroke(BORDER_WIDTH * 4);
-		//draw.rect(0, 0, width, height);
+		//draw.rect(0, 0, layoutWidth, layoutHeight);
 
 		draw.setColor(150, 150, 150);
 		draw.setStroke(BORDER_WIDTH);
@@ -88,10 +88,10 @@ public class Viewport extends UIObject {
 		draw.setStroke(BORDER_WIDTH / 2f);
 		draw.rect(BORDER_WIDTH, BORDER_WIDTH, width - BORDER_WIDTH * 2, height - BORDER_WIDTH * 2);
 
-		/*draw.line(0, 0, 0, height);
-		draw.line(width, 0, width, height);
-		draw.line(0, 0, width, 0);
-		draw.line(0, height, width, height);*/
+		/*draw.line(0, 0, 0, layoutHeight);
+		draw.line(layoutWidth, 0, layoutWidth, layoutHeight);
+		draw.line(0, 0, layoutWidth, 0);
+		draw.line(0, layoutHeight, layoutWidth, layoutHeight);*/
 	}
 
 	@Override

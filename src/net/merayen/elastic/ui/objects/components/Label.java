@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.components;
 import net.merayen.elastic.ui.UIObject;
 
 public class Label extends UIObject {
-	public static enum Align {
+	public enum Align {
 		LEFT, CENTER, RIGHT
 	}
 
@@ -19,13 +19,13 @@ public class Label extends UIObject {
 
 		float x_offset = 0;
 		if(align == Align.CENTER)
-			x_offset = -label_width / 2f;			
+			x_offset = -label_width / 2f;
 		else if(align == Align.RIGHT)
 			x_offset = -label_width;
 
-		draw.setColor(50, 50, 50);		
+		draw.setColor(50, 50, 50);
 		draw.text(label, x_offset - font_size / 10f, font_size - font_size / 10f);
-		draw.setColor(200, 200, 200);		
+		draw.setColor(200, 200, 200);
 		draw.text(label, x_offset, font_size);
 
 		super.onDraw();

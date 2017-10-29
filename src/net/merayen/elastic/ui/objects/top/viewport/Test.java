@@ -71,7 +71,7 @@ public class Test {
 		validate(layout, 2, 0.35f, 0, 0.65f, 1, c);
 		validate(layout, 3, 0.25f, 0.75f, 0.10f, 0.25f, d);
 
-		// Now try to resize "d"'s width, which should resize its whole parent ruler, as it is a vertical ruler
+		// Now try to resize "d"'s layoutWidth, which should resize its whole parent ruler, as it is a vertical ruler
 		l.resizeWidth(d, 0.01f);
 
 		layout = l.getLayout();
@@ -85,16 +85,16 @@ public class Test {
 		l.resizeWidth(a, 1);
 		layout = l.getLayout();
 
-		validate(layout, 0, 0.00f, 0, 0.26f, 1, a); // Should only have taken 0.01f more width due do right item (vertical ruler containing *b* and *d*) has a width of only 0.01f
+		validate(layout, 0, 0.00f, 0, 0.26f, 1, a); // Should only have taken 0.01f more layoutWidth due do right item (vertical ruler containing *b* and *d*) has a layoutWidth of only 0.01f
 		validate(layout, 1, 0.26f, 0, 0f, 0.75f, b); // Should now have zero with, as *a* has span itself over
 		validate(layout, 2, 0.26f, 0, 0.74f, 1, c); // Should not have changed
 		validate(layout, 3, 0.26f, 0.75f, 0f, 0.25f, d); // Should now have zero with, as *a* has span itself over
 
-		// Now resize *a* to 0 width. *b* should take over the whole width
+		// Now resize *a* to 0 layoutWidth. *b* should take over the whole layoutWidth
 		l.resizeWidth(a, 0);
 		layout = l.getLayout();
 
-		validate(layout, 0, 0.00f, 0.00f, 0.00f, 1.00f, a); // Should only have taken 0.01f more width due do right item (vertical ruler containing *b* and *d*) has a width of only 0.01f
+		validate(layout, 0, 0.00f, 0.00f, 0.00f, 1.00f, a); // Should only have taken 0.01f more layoutWidth due do right item (vertical ruler containing *b* and *d*) has a layoutWidth of only 0.01f
 		validate(layout, 1, 0.00f, 0.00f, 0.26f, 0.75f, b); // Should now have zero with, as *a* has span itself over
 		validate(layout, 2, 0.26f, 0.00f, 0.74f, 1.00f, c); // Should not have changed
 		validate(layout, 3, 0.00f, 0.75f, 0.26f, 0.25f, d); // Should now have zero with, as *a* has span itself over

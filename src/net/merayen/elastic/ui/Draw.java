@@ -179,7 +179,7 @@ public class Draw {
 		 * outside the drawn area.
 		 */
 		//Point point = uiobject.getAbsolutePixelPoint(x, y);
-		//java.awt.Dimension dimension = uiobject.getPixelDimension(width, height);
+		//java.awt.Dimension dimension = uiobject.getPixelDimension(layoutWidth, layoutHeight);
 		reg(x, y, width, height);
 	}
 
@@ -189,10 +189,10 @@ public class Draw {
 	 */
 	private void clip(Rect rect) {
 		/*java.awt.Rectangle r = new java.awt.Rectangle(
-			(int)(rect.x1 * draw_context.width),
-			(int)(rect.y1 * draw_context.height),
-			(int)((rect.x2 - rect.x1) * draw_context.width),
-			(int)((rect.y2 - rect.y1) * draw_context.height)
+			(int)(rect.x1 * draw_context.layoutWidth),
+			(int)(rect.y1 * draw_context.layoutHeight),
+			(int)((rect.x2 - rect.x1) * draw_context.layoutWidth),
+			(int)((rect.y2 - rect.y1) * draw_context.layoutHeight)
 		);*/
 
 		java.awt.Rectangle r = new java.awt.Rectangle(

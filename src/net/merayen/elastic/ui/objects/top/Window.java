@@ -12,7 +12,7 @@ public class Window extends UIObject {
 
 	/**
 	 * The Node-group we represent. We get all our properties (like dimensions of our windows) from this group.
-	 * The group must have a UIData-node that actually contains all these properties. 
+	 * The group must have a UIData-node that actually contains all these properties.
 	 */
 	private String group;
 
@@ -24,7 +24,7 @@ public class Window extends UIObject {
 	// Scrolling, when dragging the background
 	float start_scroll_x, start_scroll_y;
 
-	// Cached screen width and height. Updates on every draw. Children UIObjects can use this to get screen size in pixels
+	// Cached screen layoutWidth and layoutHeight. Updates on every draw. Children UIObjects can use this to get screen size in pixels
 	public float width, height;
 
 	/**

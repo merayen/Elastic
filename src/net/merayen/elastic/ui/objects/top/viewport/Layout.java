@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Layout {
 	private abstract class Item {
-		float size; // width or height, depending on if this object is in a Horizontal() or Vertical(). Value can be 0 to 1
+		float size; // layoutWidth or layoutHeight, depending on if this object is in a Horizontal() or Vertical(). Value can be 0 to 1
 		float abs_x, abs_y, abs_width, abs_height; // Calculated values
 	}
 
@@ -155,7 +155,7 @@ public class Layout {
 		Ruler ruler = getRuler(item); // The ruler that contains the item we are about to resize
 		float size = abs_size / (float)Math.max(ruler.vertical ? ruler.abs_height : ruler.abs_width, 0.001);
 
-		
+
 		if(size != abs_size)
 			System.out.println("Diffidiff " + abs_size + ", " + size);
 

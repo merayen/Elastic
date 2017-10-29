@@ -120,8 +120,8 @@ public class UI extends UINode {
 		}
 
 		/*if(port.name.equals("fac")) {
-			port.translation.x = width;
-			port.translation.y = height - 20;
+			port.translation.x = layoutWidth;
+			port.translation.y = layoutHeight - 20;
 			port.color = UIPort.AUX_PORT;
 		}*/
 	}

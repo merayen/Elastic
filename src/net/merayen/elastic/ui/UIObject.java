@@ -12,7 +12,7 @@ import net.merayen.elastic.util.Postmaster;
 
 public class UIObject {
 	private UIObject parent;
-	final List<UIObject> children = new ArrayList<>(); 
+	final List<UIObject> children = new ArrayList<>();
 
 	public net.merayen.elastic.ui.Rect outline_abs_px = new Rect(); // Absolute, in screen pixels
 	Rect outline = new Rect();
@@ -30,7 +30,7 @@ public class UIObject {
 
 	public final Search search = new Search(this);
 
-	protected void onInit() {} 
+	protected void onInit() {}
 	protected void onDraw() {}
 	protected void onUpdate() {}
 	protected void onEvent(IEvent e) {}
@@ -200,7 +200,7 @@ public class UIObject {
 	}
 
 	/**
-	 * Retrieves the width of the object.
+	 * Retrieves the layoutWidth of the object.
 	 * Feel free to override to return a custom value.
 	 */
 	public float getWidth() {
@@ -213,7 +213,7 @@ public class UIObject {
 	}
 
 	/**
-	 * Retrieves the width of the object.
+	 * Retrieves the layoutWidth of the object.
 	 * Feel free to override to return a custom value.
 	 */
 	public float getHeight() {

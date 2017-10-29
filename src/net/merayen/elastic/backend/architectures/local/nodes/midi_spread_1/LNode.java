@@ -52,7 +52,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onParameter(String key, Object value) {
-		if(key.equals("width")) {
+		if(key.equals("layoutWidth")) {
 			width = ((Number)value).floatValue();
 			updateVoices();
 		}
