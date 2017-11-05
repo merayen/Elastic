@@ -21,7 +21,7 @@ public class UI extends UINode {
 		width = 200f;
 		height = 150f;
 
-		titlebar.title = "Signalgenerator";
+		titlebar.title = "Signal generator";
 
 		createBezierWave();
 	}
@@ -101,7 +101,7 @@ public class UI extends UINode {
 
 			@Override
 			public void onDotClick() {
-				
+
 			}
 		});
 	}

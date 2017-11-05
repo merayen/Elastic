@@ -1,12 +1,13 @@
-package net.merayen.elastic.backend.architectures.local.nodes.mix_1;
-
-import java.util.Map;
+package net.merayen.elastic.backend.architectures.local.nodes.delay_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 
+import java.util.Map;
+
 public class LNode extends LocalNode {
-	float mix;
+	double mix;
+
 	public LNode() {
 		super(LProcessor.class);
 	}
@@ -21,10 +22,7 @@ public class LNode extends LocalNode {
 	protected void onProcess(Map<String, Object> data) {}
 
 	@Override
-	protected void onParameter(String key, Object value) {
-		if(key.equals("mix"))
-			mix = ((Number)value).floatValue();
-	}
+	protected void onParameter(String key, Object value) {}
 
 	@Override
 	protected void onFinishFrame() {}

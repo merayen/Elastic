@@ -39,6 +39,7 @@ public class UI extends UINode {
 		super.onInit();
 		width = 100;
 		height = 50;
+		titlebar.title = "Midi Spread";
 	}
 
 	@Override

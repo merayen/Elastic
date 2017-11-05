@@ -54,11 +54,12 @@ public class LProcessor extends LocalProcessor {
 				fac.read = stop;
 
 			} else {
+				float mix = ((LNode)getLocalNode()).mix;
 				for(int channel_no = 0; channel_no < channel_count; channel_no++) {
 					for(int i = out.written; i < stop; i++) {
 						float af = (a_buffer.length > channel_no ? a_buffer[channel_no][i] : 0);
 						float bf = (b_buffer.length > channel_no ? b_buffer[channel_no][i] : 0);
-						out_buffer[channel_no][i] = af + bf;
+						out_buffer[channel_no][i] = af * mix + bf * (1 - mix);
 					}
 				}
 			}
