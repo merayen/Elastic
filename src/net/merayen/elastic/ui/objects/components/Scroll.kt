@@ -6,7 +6,6 @@ import net.merayen.elastic.ui.objects.UIClip
 import net.merayen.elastic.ui.util.Movable
 
 class Scroll(private val uiobject: UIObject) : UIObject() {
-
     var layoutWidth = 100f
     var layoutHeight = 100f
     var barWidth = 10f
@@ -17,6 +16,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
     private var contentWidth = 0f
     private var contentHeight = 0f
+    private var moving = false
 
     private inner class Bar constructor(private val x: Boolean) : UIObject() {
         private val movable = Movable(this, this)
@@ -32,8 +32,12 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
                     updateFromBars()
                 }
 
-                override fun onGrab() {}
-                override fun onDrop() {}
+                override fun onGrab() {
+                    moving = true
+                }
+                override fun onDrop() {
+                    moving = false
+                }
             })
         }
 
@@ -54,12 +58,10 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
     }
 
     override fun onDraw() {
-        draw.setColor(0, 0, 0)
+        draw.setColor(100, 100, 100)
         draw.setStroke(barWidth)
         draw.fillRect(0f, layoutHeight - barWidth, layoutWidth, barWidth)
         draw.fillRect(layoutWidth - barWidth, 0f, barWidth, layoutHeight)
-
-        draw.setColor(255, 0, 255)
     }
 
     override fun onUpdate() {
@@ -84,7 +86,8 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
         barX.translation.y = layoutHeight - barWidth
         barY.translation.x = layoutWidth - barWidth
 
-        updateBars()
+        if(!moving)
+            updateBars()
     }
 
     private fun updateBars() {
@@ -105,12 +108,12 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
         } else if (barY.parent != null) {
             remove(barY)
         }
+
+        barX.translation.x = Math.max(0f, Math.min(layoutWidth - barWidth, barX.translation.x))
+        barY.translation.y = Math.max(0f, Math.min(layoutHeight - barWidth, barY.translation.y))
     }
 
     private fun updateFromBars() {
-        barX.translation.x = Math.max(0f, Math.min(layoutWidth - barWidth, barX.translation.x))
-        barY.translation.y = Math.max(0f, Math.min(layoutHeight - barWidth, barY.translation.y))
-
         uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth)
         uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight)
     }
