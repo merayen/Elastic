@@ -70,6 +70,6 @@ public class LNode extends LocalNode {
 		avg /= curve_wave.length;
 
 		for(int i = 0; i < curve_wave.length; i++)
-			curve_wave[i] -= avg;
+			curve_wave[i] = (float)((curve_wave[i] - avg) * 2);
 	}
 }
