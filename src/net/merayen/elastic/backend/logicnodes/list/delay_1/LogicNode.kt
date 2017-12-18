@@ -8,7 +8,6 @@ class LogicNode : BaseLogicNode() {
         createPort(object : BaseLogicNode.PortDefinition() {
             init {
                 name = "input"
-                format = Format.AUDIO
             }
         })
 
@@ -23,7 +22,9 @@ class LogicNode : BaseLogicNode() {
 
     override fun onInit() {}
 
-    override fun onParameterChange(key: String, value: Any) {}
+    override fun onParameterChange(key: String, value: Any) {
+        set(key, value);
+    }
 
     override fun onData(data: Map<String, Any>) {}
 
