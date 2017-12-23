@@ -33,8 +33,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onParameterChange(String key, Object value) {
-		// TODO Auto-generated method stub
-
+		set(key, value);
 	}
 
 	@Override

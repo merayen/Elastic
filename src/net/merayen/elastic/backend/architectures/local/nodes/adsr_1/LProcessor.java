@@ -1,7 +1,6 @@
 package net.merayen.elastic.backend.architectures.local.nodes.adsr_1;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
@@ -24,6 +23,7 @@ public class LProcessor extends LocalProcessor {
 	private long release_stop = Long.MAX_VALUE;
 	private short release_start_volume;
 	private long sample_ticks;
+	private List<Short> keys_down = new ArrayList<>();
 
 	private short input_volume = 127;
 	private short current_volume;
@@ -66,11 +66,21 @@ public class LProcessor extends LocalProcessor {
 							current_tangent_down = midi_packet;
 							outgoing.add(midi_packet);
 							outgoing.add(new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.VOLUME, 0}); // Only if attack is more than 0?
+							keys_down.add(midi_packet[1]);
 						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
-							release_start = sample_ticks;
-							release_stop = sample_ticks + (long)((double)lnode.release * sample_rate);
-							release_start_volume = current_volume;
-							current_tangent_up = midi_packet;
+							Iterator<Short> iter = keys_down.iterator();
+							while(iter.hasNext())
+								if(iter.next() == midi_packet[1])
+									iter.remove();
+
+							if(keys_down.isEmpty()) {
+								release_start = sample_ticks;
+								release_stop = sample_ticks + (long) ((double) lnode.release * sample_rate);
+								release_start_volume = current_volume;
+								current_tangent_up = midi_packet;
+							} else {
+								outgoing.add(new short[]{MidiStatuses.KEY_UP, midi_packet[1], 0});
+							}
 						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midi_packet[1] == MidiControllers.VOLUME) {
 							input_volume = (short)Math.min(127, Math.max(0, midi_packet[2]));
 						} else { // Forward everything else
@@ -88,7 +98,7 @@ public class LProcessor extends LocalProcessor {
 						current_tangent_up = null;
 					}
 				} else if(release_start <= sample_ticks) { // TODO move
-					new_volume = ((release_start_volume / 127f)) - ((sample_ticks - release_start) / (float)(release_stop - release_start)) * ((release_start_volume / 127f));
+					new_volume = (release_start_volume / 127f) - (float)Math.pow((sample_ticks - release_start) / (float)(release_stop - release_start), 2) * ((release_start_volume / 127f));
 				} else if(decay_stop <= sample_ticks) {
 					new_volume = sustain;
 				} else if(decay_start <= sample_ticks) {
