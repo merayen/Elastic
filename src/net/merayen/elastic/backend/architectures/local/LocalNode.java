@@ -24,7 +24,7 @@ public abstract class LocalNode {
 	public int sample_rate;
 	public int buffer_size;
 	private final Class<? extends LocalProcessor> processor_cls;
-	private final NodeProperties properties = new NodeProperties(netlist);
+	private NodeProperties properties;
 
 	public Map<String, Object> ingoing = new HashMap<>(); // Data sent to this node from LogicNodes
 	public final Map<String, Object> outgoing = new HashMap<>(); // Data that is the result from the processing (read from the outside)
@@ -70,16 +70,16 @@ public abstract class LocalNode {
 		this.node = node;
 		this.sample_rate = sample_rate;
 		this.buffer_size = buffer_size;
+		this.properties = new NodeProperties(netlist);
 	}
 
 	/**
 	 * Returns LocalProcessor for this LocalNode
 	 */
 	LocalProcessor spawnProcessor(int session_id) {
-		// Create the processor
 		LocalProcessor lp;
 		try {
-			lp = (LocalProcessor)processor_cls.newInstance();
+			lp = processor_cls.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
@@ -127,5 +127,26 @@ public abstract class LocalNode {
 
 	public Object getParameter(String key) {
 		return properties.parameters.get(node, key);
+	}
+
+	double getStatisticsAvg() {
+		double result = 0;
+		for(LocalProcessor lp : getProcessors())
+			result += lp.process_times.getAvg();
+		return result;
+	}
+
+	double getStatisticsMax() {
+		double result = 0;
+		for(LocalProcessor lp : getProcessors())
+			result += lp.process_times.getMax();
+		return result;
+	}
+
+	int getStatisticsProcessCount() {
+		int result = 0;
+		for(LocalProcessor lp : getProcessors())
+			result += lp.process_count;
+		return result;
 	}
 }

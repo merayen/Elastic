@@ -10,7 +10,7 @@ public class MegaMenu extends UIObject {
 	@Override
 	protected void onInit() {
 		button.label = "Menu";
-		button.setHandler(() -> {
+		button.setHandler( () -> {
 			if(menu.getParent() == null)
 				add(menu);
 			else

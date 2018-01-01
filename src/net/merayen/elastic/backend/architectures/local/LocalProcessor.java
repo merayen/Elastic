@@ -17,6 +17,7 @@ import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.util.AverageStat;
 import net.merayen.elastic.util.Postmaster;
 
 public abstract class LocalProcessor {
@@ -25,6 +26,9 @@ public abstract class LocalProcessor {
 	LocalProcessor parent;
 	protected int buffer_size;
 	protected int sample_rate;
+	long process_time;
+	int process_count;
+	AverageStat<Long> process_times = new AverageStat<>(1000); // Used by Supervisor for statistics
 
 	int voice_stop;
 
@@ -34,7 +38,7 @@ public abstract class LocalProcessor {
 	/**
 	 * List of sessions created from this processor. Only for reference usage
 	 */
-	final List<Integer> children_sessions = new ArrayList<>();
+	private final List<Integer> children_sessions = new ArrayList<>();
 
 	protected abstract void onInit();
 
@@ -139,9 +143,6 @@ public abstract class LocalProcessor {
 		return inlet;
 	}
 
-	/**
-	 * @param sample_offset is the sample count offset in the current processing frame when this processors spawned. Processor should only process from there. 
-	 */
 	void init() {
 		onInit();
 	}
@@ -151,7 +152,10 @@ public abstract class LocalProcessor {
 	}
 
 	void doProcess() {
+		process_count++;
+		long t = System.nanoTime();
 		onProcess();
+		process_time += System.nanoTime() - t;
 	}
 
 	boolean frameFinished() {
@@ -183,6 +187,7 @@ public abstract class LocalProcessor {
 	}
 
 	void prepare(int sample_offset) {
+		process_count = 0;
 		// Jump the buffers to the offset when the voice was created
 		for(Inlet inlet : inlets.values())
 			inlet.reset(sample_offset);
@@ -211,7 +216,6 @@ public abstract class LocalProcessor {
 
 	/**
 	 * Get the parent processor that "owns" us.
-	 * @return
 	 */
 	protected LocalProcessor getParent() {
 		return parent;

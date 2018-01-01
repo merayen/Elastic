@@ -23,13 +23,13 @@ import net.merayen.elastic.util.Postmaster.Message;
  * TODO support multiple input and output ports
  */
 public class LProcessor extends LocalProcessor {
-	MidiInlet input;
-	final PolySessions sessions = new PolySessions();
-	final List<InterfaceNode> interfaces = new ArrayList<>();
+	private MidiInlet input;
+	private final PolySessions sessions = new PolySessions();
+	private final List<InterfaceNode> interfaces = new ArrayList<>();
 
 	// MIDI states
-	short[] current_pitch = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
-	short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
+	private short[] current_pitch = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
+	private short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
 
 	@Override
 	protected void onInit() {
@@ -201,7 +201,7 @@ public class LProcessor extends LocalProcessor {
 			if(!active) {
 				sessions.removeSession(session);
 				removeSession(session.session_id);
-				System.out.println("Poly is killing session " + session.session_id);
+				//System.out.println("Poly is killing session " + session.session_id);
 			}
 		}
 	}

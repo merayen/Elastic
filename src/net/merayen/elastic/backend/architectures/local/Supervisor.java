@@ -1,10 +1,6 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NetListValidator;
@@ -39,8 +35,10 @@ class Supervisor {
 	private Set<Integer> dead_sessions = new HashSet<>(); // Sessions that will be killed after current process frame
 
 	// Statistics
-	private AverageStat<Long> proccess_time = new AverageStat<>(1000);
+	private AverageStat<Long> process_time = new AverageStat<>(1000);
 	private long process_time_last;
+	private long not_processing_time_last;
+	private AverageStat<Long> not_processing_time = new AverageStat<>(1000);
 
 	public Supervisor(NetList netlist, int sample_rate, int buffer_size) {
 		this.netlist = netlist; // Our own, compiled NetList
@@ -193,25 +191,32 @@ class Supervisor {
 	 * Returns a new ProcessMessage() with the output data.
 	 */
 	public synchronized ProcessMessage process(ProcessMessage message) {
-		if(dead)
+		if (dead)
 			throw new RuntimeException("Should not be called after clear()");
 
 		long start = System.nanoTime();
 
+		if(not_processing_time_last != 0)
+			not_processing_time.add(start - not_processing_time_last);
+
 		killSessions();
 
 		// Reset all frame-state in the processors
-		processor_list.forEach((x) -> x.prepare(0));
+		for(LocalProcessor x : processor_list)
+			x.prepare(0);
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
-		for(Node node : netlist.getNodes()) {
+		for (Node node : netlist.getNodes()) {
 			LocalNode ln = local_properties.getLocalNode(node);
 			ln.onProcess(message.data.get(node.getID()));
 		}
 
-		for(LocalProcessor lp : processor_list)
+		for (LocalProcessor lp : processor_list) {
 			scheduled.add(lp);
+			lp.process_time = 0;
+		}
 
+		long t_process = System.nanoTime();
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors
 			List<LocalProcessor> to_process = scheduled;
 			scheduled = new ArrayList<>();
@@ -220,6 +225,10 @@ class Supervisor {
 			for(LocalProcessor lp : to_process)
 				lp.doProcess();
 		}
+
+		long processors_time = 0;
+		for(LocalProcessor lp : processor_list)
+			lp.process_times.add(lp.process_time);
 
 		// Make sure every processor has completely read and written to their buffers
 		boolean failed = false;
@@ -246,12 +255,24 @@ class Supervisor {
 
 		killSessions();
 
-		proccess_time.add(System.nanoTime() - start);
+		process_time.add(System.nanoTime() - start);
 
 		if(process_time_last < System.currentTimeMillis()) {
-			//System.out.printf("Average process time: %.3fms\n", proccess_time.getAvg() / 1000000.0);
+			System.out.printf("Average process time: min=%.3fms, avg=%.3fms, max=%.3fms\n", process_time.getMin() / 1E6, process_time.getAvg() / 1E6, process_time.getMax() / 1E6);
+			System.out.printf("Outside processing: min=%.3fms, avg=%.3fms, max=%.3fms\n", not_processing_time.getMin() / 1E6, not_processing_time.getAvg() / 1E6, not_processing_time.getMax() / 1E6);
+			System.out.printf("Samples processed: avg=%.0fms\n", not_processing_time.getAvg());
+			List<LocalNode> list = getLocalNodes();
+
+			list.sort((a,b) -> (int)(b.getStatisticsMax() - a.getStatisticsMax()));
+			for(int i = 0; i < 10 && i < list.size(); i++) {
+				LocalNode ln = list.get(i);
+				System.out.printf("%d: sessions=%d, count=%d, avg=%.3fms, max=%.3fms: %s\n", i, ln.getProcessors().size(), ln.getStatisticsProcessCount(), ln.getStatisticsAvg() / 1E6, ln.getStatisticsMax() / 1E6, ln.getClass().getPackage().getName());
+			}
+
 			process_time_last = System.currentTimeMillis() + 1000;
 		}
+
+		not_processing_time_last = System.nanoTime();
 
 		return response;
 	}
@@ -288,5 +309,12 @@ class Supervisor {
 		}
 
 		dead_sessions.clear();
+	}
+
+	private List<LocalNode> getLocalNodes() {
+		List<LocalNode> result = new ArrayList<>();
+		for(Node node : netlist.getNodes())
+			result.add(local_properties.getLocalNode(node));
+		return result;
 	}
 }

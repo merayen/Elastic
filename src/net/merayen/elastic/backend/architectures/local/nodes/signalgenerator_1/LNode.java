@@ -15,7 +15,6 @@ public class LNode extends LocalNode {
 	float frequency = 1000f; // Only used in STANDALONE mode. This parameter is set in the UI
 	float amplitude = 1f;  // Only used in STANDALONE mode. This parameter is set in the UI
 	float offset;
-	//float[] curve;
 	float[] curve_wave;
 
 	public LNode() {
@@ -40,9 +39,8 @@ public class LNode extends LocalNode {
 		if(key.equals("data.frequency"))
 			frequency = ((Number)value).floatValue();
 
-		if(key.equals("data.curve")) {
+		if(key.equals("data.curve"))
 			setCurveWave((List<Number>)value);
-		}
 	}
 
 	@Override
@@ -64,8 +62,8 @@ public class LNode extends LocalNode {
 
 	private void normalize() {
 		double avg = 0;
-		for(int i = 0; i < curve_wave.length; i++)
-			avg += curve_wave[i];
+		for(float x : curve_wave)
+			avg += x;
 
 		avg /= curve_wave.length;
 

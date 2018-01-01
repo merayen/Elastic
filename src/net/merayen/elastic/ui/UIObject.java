@@ -25,7 +25,6 @@ public class UIObject {
 	protected Draw draw; // Helper class to draw stuff
 
 	private boolean inited = false;
-	private boolean alive = true; // TODO Set this to false if this UIObject has been "disposed off". This is to stop any pending async operations
 	private boolean attached; // Attached to the tree (reachable from Top) or not
 
 	public final Search search = new Search(this);
@@ -234,10 +233,6 @@ public class UIObject {
 	 */
 	public boolean isInitialized() {
 		return inited;
-	}
-
-	public boolean isAlive() {
-		return alive;
 	}
 
 	public boolean isAttached() {

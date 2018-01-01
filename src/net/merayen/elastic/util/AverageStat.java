@@ -7,11 +7,11 @@ public class AverageStat<T extends Number> implements Iterable<T> {
 	public static class Stat {
 		public final double min, avg, max;
 
-		public Stat() {
+		private Stat() {
 			min = avg = max = 0;
 		}
 
-		public Stat(double min, double avg, double max) {
+		private Stat(double min, double avg, double max) {
 			this.min = min;
 			this.avg = avg;
 			this.max = max;
@@ -24,7 +24,7 @@ public class AverageStat<T extends Number> implements Iterable<T> {
 
 	public AverageStat(int length) {
 		this.length = length;
-		array = new ArrayList<T>(length);
+		array = new ArrayList<>(length);
 		for(int i = 0; i < length; i++)
 			array.add(null);
 	}
@@ -49,6 +49,24 @@ public class AverageStat<T extends Number> implements Iterable<T> {
 			return r / i;
 		else
 			return 0;
+	}
+
+	public double getMax() {
+		double max = Double.MIN_VALUE;
+		for(Number x : array)
+			if(x != null && x.doubleValue() > max)
+				max = x.doubleValue();
+
+		return max;
+	}
+
+	public double getMin() {
+		double min = Double.MAX_VALUE;
+		for(Number x : array)
+			if(x != null && x.doubleValue() < min)
+				min = x.doubleValue();
+
+		return min;
 	}
 
 	public Stat get() {
@@ -77,6 +95,7 @@ public class AverageStat<T extends Number> implements Iterable<T> {
 		return String.format("[%f / %f / %f]", stat.min, stat.avg, stat.max);
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return array.iterator();
 	}
