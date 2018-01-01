@@ -46,7 +46,7 @@ class Supervisor {
 		this.buffer_size = buffer_size;
 
 		new NetListValidator(netlist); // Make sure the netlist is sane before we proceed
-		
+
 		node_properties = new NodeProperties(netlist);
 		netlist_util = new NetListUtil(netlist);
 		load();
@@ -220,10 +220,15 @@ class Supervisor {
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors
 			List<LocalProcessor> to_process = scheduled;
 			scheduled = new ArrayList<>();
-	
+
 			// Then let all the processors process
-			for(LocalProcessor lp : to_process)
-				lp.doProcess();
+			for(LocalProcessor lp : to_process) {
+				try {
+					lp.doProcess();
+				} catch (RuntimeException e) {
+					throw e;
+				}
+			}
 		}
 
 		long processors_time = 0;
@@ -294,7 +299,7 @@ class Supervisor {
 		return result;
 	}
 
-	void removeSession(int session_id) { // TODO 
+	void removeSession(int session_id) { // TODO
 		dead_sessions.add(session_id);
 	}
 

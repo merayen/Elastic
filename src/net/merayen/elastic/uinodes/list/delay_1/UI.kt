@@ -20,7 +20,7 @@ class UI : UINode() {
             }
 
             override fun onChange(value: Double, programatic: Boolean) {
-                self.sendParameter("layoutWidth", value.toFloat())
+                self.sendParameter("delay_time", value.toFloat())
             }
 
             override fun onButton(offset: Int) {
