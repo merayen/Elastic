@@ -50,7 +50,6 @@ public abstract class UINode extends UIObject {
 
 	@Override
 	protected void onInit() {
-		super.onInit();
 		inited = true;
 	}
 

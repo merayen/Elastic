@@ -4,26 +4,29 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 
 class PolySessions {
 	static class Session {
 		final int session_id;
 		final short tangent;
-		final Outlet outlet;
+		final Outlet input;
+		final OutputInterfaceNode[] outnodes;
 		boolean active = true;
 
-		private Session(int session_id, short tangent, Outlet outlet) {
+		private Session(int session_id, short tangent, Outlet input, OutputInterfaceNode[] outnodes) {
 			this.session_id = session_id;
 			this.tangent = tangent;
-			this.outlet = outlet;
+			this.input = input;
+			this.outnodes = outnodes;
 		}
 	}
 
 	private final List<Session> sessions = new ArrayList<>();
 
-	void push(int session_id, short tangent, Outlet outlet) {
-		sessions.add(new Session(session_id, tangent, outlet));
+	void push(int session_id, short tangent, Outlet input, OutputInterfaceNode[] outnodes) {
+		sessions.add(new Session(session_id, tangent, input, outnodes));
 	}
 
 	/**
@@ -76,12 +79,16 @@ class PolySessions {
 		List<Outlet> result = new ArrayList<>();
 
 		for(Session session : sessions)
-			result.add(session.outlet);
+			result.add(session.input);
 
 		return result;
 	}
 
 	List<Session> getSessions() {
 		return java.util.Collections.unmodifiableList(sessions);
-	}	
+	}
+
+	boolean isEmpty() {
+		return sessions.isEmpty();
+	}
 }

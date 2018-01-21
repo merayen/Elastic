@@ -12,7 +12,6 @@ import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitExce
 import net.merayen.elastic.backend.architectures.local.lets.FormatMaps;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-import net.merayen.elastic.backend.architectures.local.lets.Portlet;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.Node;
@@ -20,6 +19,12 @@ import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.util.AverageStat;
 import net.merayen.elastic.util.Postmaster;
 
+/**
+ * Base class for all processors.
+ * A processor is created when a session is created.
+ * A processor can also create child sessions below himself and manage those.
+ * It is a processing unit (like a compressor, delay, eq etc).
+ */
 public abstract class LocalProcessor {
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
 	int session_id;
@@ -223,7 +228,7 @@ public abstract class LocalProcessor {
 
 	/**
 	 * Spawns a session for this node's children nodes.
-	 * Returns the session_id created.
+	 * Returns the child session_id created.
 	 */
 	protected int spawnSession(int sample_offset) throws SpawnLimitException {
 		int new_session_id = localnode.supervisor.spawnSession(localnode.node, sample_offset);
@@ -247,6 +252,9 @@ public abstract class LocalProcessor {
 		return session_id;
 	}
 
+	/**
+	 * Return all session ids that have been created on this processor.
+	 */
 	public List<Integer> getChildrenSessionIDs() {
 		return Collections.unmodifiableList(children_sessions);
 	}

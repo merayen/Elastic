@@ -1,3 +1,3 @@
 package net.merayen.elastic.backend.architectures;
 
-public class ProcessingCrash extends Exception {}
+public class ProcessingCrash extends Exception { }

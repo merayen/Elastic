@@ -54,6 +54,9 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 		throw new RuntimeException("LocalNode does not have a LocalProcessor for this session");
 	}
 
+	/**
+	 * Retrieves all processors living in a session.
+	 */
 	public List<LocalProcessor> getProcessors(int session_id) {
 		List<LocalProcessor> result = sessions.get(session_id);
 		if(result == null)

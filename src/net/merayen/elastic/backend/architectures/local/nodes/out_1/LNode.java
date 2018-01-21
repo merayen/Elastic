@@ -4,10 +4,22 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.OutputInterfaceNode;
 
 public class LNode extends LocalNode implements OutputInterfaceNode {
+	/**
+	 * Samples sent in this frame.
+	 */
+	private int samples_sent;
+
+	/**
+	 * Output audio buffer. Format: float[channel][sample index]
+	 */
+	private float[][] output = new float[0][];
+	private AudioOutlet outlet;
+
 	public LNode() {
 		super(LProcessor.class);
 	}
@@ -36,7 +48,7 @@ public class LNode extends LocalNode implements OutputInterfaceNode {
 	}
 
 	@Override
-	public Inlet getForwardInlet(int session_id) {
-		return getProcessor(session_id).getInlet("input");
+	public Inlet getOutputInlet(int session_id) {
+		return ((LProcessor)getProcessor(session_id)).inlet;
 	}
 }

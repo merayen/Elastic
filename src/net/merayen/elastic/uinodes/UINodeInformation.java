@@ -15,7 +15,7 @@ public class UINodeInformation {
 	public static List<BaseInfo> getNodeInfos() {
 		List<BaseInfo> result = new ArrayList<>();
 
-		for(String p : Registry.nodes) {
+		for(String p : Registry.INSTANCE.getNodes()) {
 			try {
 				result.add( (BaseInfo)Class.forName(UI_CLASS_PATH + p + ".Info").newInstance() );
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {

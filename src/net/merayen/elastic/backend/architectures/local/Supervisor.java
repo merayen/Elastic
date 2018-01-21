@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.local;
 
 import java.util.*;
 
+import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NetListValidator;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
@@ -231,7 +232,6 @@ class Supervisor {
 			}
 		}
 
-		long processors_time = 0;
 		for(LocalProcessor lp : processor_list)
 			lp.process_times.add(lp.process_time);
 
@@ -262,7 +262,7 @@ class Supervisor {
 
 		process_time.add(System.nanoTime() - start);
 
-		if(process_time_last < System.currentTimeMillis()) {
+		if(Config.processor.debug.performance && process_time_last < System.currentTimeMillis()) {
 			System.out.printf("Average process time: min=%.3fms, avg=%.3fms, max=%.3fms\n", process_time.getMin() / 1E6, process_time.getAvg() / 1E6, process_time.getMax() / 1E6);
 			System.out.printf("Outside processing: min=%.3fms, avg=%.3fms, max=%.3fms\n", not_processing_time.getMin() / 1E6, not_processing_time.getAvg() / 1E6, not_processing_time.getMax() / 1E6);
 			System.out.printf("Samples processed: avg=%.0fms\n", not_processing_time.getAvg());
