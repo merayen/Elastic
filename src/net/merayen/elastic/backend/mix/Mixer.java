@@ -20,8 +20,8 @@ import net.merayen.elastic.backend.mix.datatypes.DataType;
  */
 public class Mixer { // Rename to e.g "IODispatch"?
 	public interface Handler {
-		public void onDeviceRemoved(String id);
-		public void onDeviceAdded(String id);
+		void onDeviceRemoved(String id);
+		void onDeviceAdded(String id);
 	}
 
 	// Default mixer settings. These will be applied on all input and output devices, if possible

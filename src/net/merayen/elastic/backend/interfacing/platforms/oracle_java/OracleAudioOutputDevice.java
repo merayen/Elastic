@@ -23,7 +23,6 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	public final SourceDataLine line;
 
 	private byte[] buffer = new byte[0];
-	private long written_frame_position;
 
 	public OracleAudioOutputDevice(Mixer mixer, SourceDataLine line) {
 		super("oracle_java:" + /*mixer.getMixerInfo().getVendor() + "/" + */mixer.getMixerInfo().getName(), "Lalala", mixer.getMixerInfo().getVendor());
@@ -41,18 +40,12 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		line.close();
 	}
 
-	/*@Override
-	public int available() {
-		return (int)(written_frame_position - line.getLongFramePosition());
-	}*/
-
 	@Override
 	public int available() {
 		if(line.isActive()) {
 			Configuration c = (Configuration)configuration;
 			return (line.getBufferSize() - line.available()) / c.channels / (c.depth / 8);
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}
@@ -63,7 +56,6 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 		Configuration c = (Configuration)configuration;
 		int to_write = samples * (c.depth / 8) * c.channels;
 		line.write(new byte[to_write], 0, to_write);
-		written_frame_position += samples;
 	}
 
 	private void convertToBytes(float[] audio, byte[] out, int channels, int depth) {
@@ -74,9 +66,10 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 			throw new RuntimeException("Invalid length of output byte-buffer. Got " + out.length + " but expected " + audio.length * bytes_depth);
 
 		ByteBuffer buffer = ByteBuffer.allocate(channels * bytes_depth * sample_count);
-		for(byte channel = 0; channel < channels; channel++) {
-			for(int i = 0; i < sample_count; i++) {
-				float u = audio[i * channels + channel] * 1f;
+
+		for(int i = 0; i < sample_count; i++) {
+			for(byte channel = 0; channel < channels; channel++) {
+				float u = audio[i * channels + channel];
 
 				// Clipping
 				if(u > 1f) u = 1f;
@@ -106,8 +99,6 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 			statistics.hunger++;
 
 		statistics.available_before.add(available);
-
-		written_frame_position += audio.length / c.channels;
 
 		prepareLine(buffer.length);
 
@@ -162,9 +153,13 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	private void prepareLine(int buffer_size) {
 		Configuration c = (Configuration)configuration;
 
-		if(!line.isOpen() || line.getBufferSize() != buffer_size * 16) {
+		if(!line.isOpen()/* || line.getBufferSize() * 16 != buffer_size * 16*/) {
 			try {
-				System.out.printf("Reconfiggen %s, buffer_size=%d\n", c.getDescription(), buffer_size * 16);
+				System.out.printf("Reconfiguring Oracle audio output device %s, buffer_size=%d (current buffer size: %d)\n", c.getDescription(), buffer_size * 16, line.getBufferSize());
+
+				if(line.isOpen())
+					line.close();
+
 				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), buffer.length * 16);
 			} catch (LineUnavailableException e) {
 				throw new RuntimeException("Can not open audio output line with current configuration");

@@ -17,16 +17,27 @@ public class Test {
 
 		mixer.reconfigure(44100, 2, 16);
 
-		mixer.send(output_device, new Audio(new float[][]{
-			SoundTest.makeSound(44100, 2f, new float[]{1000}, 1f),
-			SoundTest.makeSound(44100, 2f, new float[]{1005}, 1f),
-			SoundTest.makeSound(44100, 2f, new float[]{5008}, 1f),
-			SoundTest.makeSound(44100, 2f, new float[]{2010}, 1f)
-		}));
-		mixer.dispatch(44100 * 2);
+		for(int i = 0; i < 10; i++) {
+			if(i % 2 == 0) {
+				mixer.send(output_device, new Audio(new float[][]{
+						SoundTest.makeSound(44100, 1f, new float[]{1000}, 1f),
+						SoundTest.makeSound(44100, 1f, new float[]{2000}, 1f)//,
+						//SoundTest.makeSound(44100, 2f, new float[]{5008}, 1f),
+						//SoundTest.makeSound(44100, 2f, new float[]{2010}, 1f)
+				}));
+			} else {
+				mixer.send(output_device, new Audio(new float[][]{
+						SoundTest.makeSound(44100, 1f, new float[]{1000}, 1f),
+						//SoundTest.makeSound(44100, 1f, new float[]{2000}, 1f)//,
+						//SoundTest.makeSound(44100, 2f, new float[]{5008}, 1f),
+						//SoundTest.makeSound(44100, 2f, new float[]{2010}, 1f)
+				}));
+			}
+			mixer.dispatch(44100);
+		}
 		mixer.end();
 
-		testSynchronization();
+		//testSynchronization();
 	}
 
 	private Synchronization sync;

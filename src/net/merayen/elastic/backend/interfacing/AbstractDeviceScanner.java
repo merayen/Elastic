@@ -13,12 +13,12 @@ public abstract class AbstractDeviceScanner {
 		/**
 		 * Called when we have detected that a device has been removed
 		 */
-		public void onDeviceAdded(AbstractDevice device);
+		void onDeviceAdded(AbstractDevice device);
 
 		/**
 		 * Called when we have detected that a device has been removed
 		 */
-		public void onDeviceRemoved(AbstractDevice device);
+		void onDeviceRemoved(AbstractDevice device);
 	}
 
 	private final List<AbstractDevice> devices = new ArrayList<>();
@@ -30,7 +30,6 @@ public abstract class AbstractDeviceScanner {
 
 	protected void addDevice(AbstractDevice device) {
 		if(getDevice(device.id) != null) {
-			//throw new RuntimeException("Device already registered: Buggy platform scanner?");
 			System.out.println(String.format("Device already registered: Buggy platform scanner? (%s)", device.id));
 			return;
 		}

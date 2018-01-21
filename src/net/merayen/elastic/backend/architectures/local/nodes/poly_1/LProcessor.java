@@ -46,7 +46,7 @@ public class LProcessor extends LocalProcessor {
 		Outlet output = getOutlet("output");
 		if(output != null) { // We made "output". It is guaranteed an AudioOutlet
 			this.output = (AudioOutlet) output;
-			this.output.setChannelCount(1); // TODO support more than 1 channel
+			this.output.setChannelCount(2); // TODO support more than 1 channel
 		}
 
 		retrieveInterfaces();
@@ -57,8 +57,9 @@ public class LProcessor extends LocalProcessor {
 		resetOutlets();
 		samples_processed = 0;
 		if(output != null && !sessions.isEmpty()) {
-			for (int i = 0; i < buffer_size; i++)
-				output.audio[0][i] = 0;
+			for(int channel = 0; channel < output.getChannelCount(); channel++)
+				for (int i = 0; i < buffer_size; i++)
+					output.audio[channel][i] = 0;
 		}
 	}
 
@@ -214,7 +215,8 @@ public class LProcessor extends LocalProcessor {
 			return; // There is not new data on all inlet voices, can not process. Come back later.
 
 		if(output != null) { // TODO mix to channels
-			float[] out = output.audio[0];
+			int channel = 0;
+			float[][] out = output.audio;
 
 			for(AudioInlet ai : audioInlets) {
 				if(ai.outlet.getChannelCount() != 1) // TODO support multiple channels inside poly-node
@@ -223,7 +225,10 @@ public class LProcessor extends LocalProcessor {
 				float[] in = ai.outlet.audio[0];
 
 				for(int i = samples_processed; i < sample_position; i++)
-					out[i] += in[i];
+					out[channel][i] += in[i];
+
+				channel++;
+				channel %= output.getChannelCount();
 			}
 
 			output.written = sample_position;
@@ -289,9 +294,11 @@ public class LProcessor extends LocalProcessor {
 		// When there are no running sessions, clear out output-buffer so that the receiver plays silence
 		// (as we won't write to it anymore, until a tangent is pressed)
 		if(output != null && sessions.isEmpty()) {
-			float[] out = output.audio[0]; // TODO support more than 1 channel
-			for(int i = 0; i < buffer_size; i++)
-				out[i] = 0;
+			for(int channel = 0; channel < output.getChannelCount(); channel++) {
+				float[] out = output.audio[channel]; // TODO support more than 1 channel
+				for (int i = 0; i < buffer_size; i++)
+					out[i] = 0;
+			}
 		}
 	}
 }
