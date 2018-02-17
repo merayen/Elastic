@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView;
@@ -173,7 +173,7 @@ public class ViewportContainer extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		mouse_handler.handle(event);
 	}
 

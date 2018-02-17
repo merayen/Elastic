@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
@@ -86,7 +86,7 @@ public class ViewportDrag extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		mousehandler.handle(event);
 	}
 }

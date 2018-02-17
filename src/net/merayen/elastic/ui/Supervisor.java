@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.controller.Gate;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.util.DrawContext;
 import net.merayen.elastic.util.Postmaster;
@@ -106,7 +106,7 @@ public class Supervisor {
 			return;
 
 		if(uiobject.isInitialized()) { // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
-			for(IEvent e : dc.incoming_events)
+			for(UIEvent e : dc.incoming_events)
 				uiobject.onEvent(e);
 
 			uiobject.onUpdate();

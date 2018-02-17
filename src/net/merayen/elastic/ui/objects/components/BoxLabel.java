@@ -27,7 +27,7 @@ public class BoxLabel extends UIObject {
 		return calculated_width;
 	}
 
-	public float getHeight() {
+	public float getLayoutHeight() {
 		return 10;
 	}
 }

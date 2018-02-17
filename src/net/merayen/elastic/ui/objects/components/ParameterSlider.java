@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
@@ -99,7 +99,7 @@ public class ParameterSlider extends UIObject {
 		super.onDraw();
 	}
 
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		mousehandler.handle(event);
 	}
 

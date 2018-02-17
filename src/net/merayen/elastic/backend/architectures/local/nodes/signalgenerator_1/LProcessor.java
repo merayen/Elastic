@@ -1,9 +1,11 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.laszlosystems.libresample4j.Resampler;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
@@ -27,6 +29,8 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	private LNode lnode;
+	private Resampling resampling;
+	private FloatBuffer samplerIn, samplerOut;
 
 	private Mode mode;
 
@@ -48,6 +52,9 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		Inlet frequency = getInlet("frequency");
 		Outlet output = getOutlet("output");
+
+		if(output != null)
+			((AudioOutlet)output).setChannelCount(1);
 
 		if(output == null)
 			mode = Mode.NOTHING;
@@ -86,38 +93,31 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private void generateRaw() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 
-		outlet.setChannelCount(1);
-
-		double step = (lnode.frequency * Math.PI * 2) / (double)sample_rate;
-		for(int i = outlet.written; i < outlet.buffer_size; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[(int)((pos / (Math.PI * 2) * lnode.curve_wave.length) % lnode.curve_wave.length)];
-			pos += step;
-		}
+		if(resampling != null && outlet.written == 0)
+			resampling.update(lnode.frequency);
 
 		outlet.written = outlet.buffer_size;
 		outlet.push();
 	}
 
 	private void generateWithFrequency() {
-		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
-		AudioInlet frequency = (AudioInlet)getInlet("frequency");
-
-		outlet.setChannelCount(1);
+		AudioOutlet outlet = (AudioOutlet) getOutlet("output");
+		AudioInlet frequency = (AudioInlet) getInlet("frequency");
 
 		int available = available();
 
-		if(available == 0)
+		if (available == 0)
 			return;
 
 		// Transform input according to the UI's InputSignalProcessor() parameters
-		if(input_frequency_buffer == null)
+		if (input_frequency_buffer == null)
 			input_frequency_buffer = new float[1][buffer_size];
 
 		InputSignalParametersProcessor.process(lnode, "frequency", new float[][]{frequency.outlet.audio[0]}, input_frequency_buffer, outlet.written, available);
 
 		int i;
-		for(i = outlet.written; i < outlet.written + available; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int)(pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
+		for (i = outlet.written; i < outlet.written + available; i++) {
+			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int) (pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
 			pos += input_frequency_buffer[0][i];
 		}
 
@@ -136,20 +136,20 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		updateKeysDown();
 
-		outlet.setChannelCount(1);
-
-		if(active_tangent != null) {
-			double freq = midiNoteToFreq(active_tangent[1] + pitch) / sample_rate; // TODO take care of pitch wheel
+		if(active_tangent != null && resampling != null) {
+			double freq = midiNoteToFreq(active_tangent[1] + pitch); // TODO take care of pitch wheel
 			float volume_div = sample_rate / 1000;
+			float[] audio = outlet.audio[0];
 
-			//volume = new_volume;
-			float[] curve = lnode.curve_wave;
-			int length = curve.length;
-			for(int i = outlet.written; i < outlet.written + available; i++) {
-				outlet.audio[0][i] = curve[(int)(pos * length) % length] * volume;
-				pos += freq;
-				if(volume != new_volume)
+			resampling.update((float)freq, available);
+
+			if (volume != new_volume) {
+				int start = outlet.written;
+				int stop = start + available;
+				for (int i = start; i < stop; i++) {
 					volume += (new_volume - volume) / volume_div;
+					audio[i] *= volume;
+				}
 			}
 
 		} else { // No key down? Silence!
@@ -192,7 +192,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 								else
 									active_tangent = keys_down.get(keys_down.size() - 1);
 							}
-							//keys_down.clear();
+
 							sustain = midi_packet[2] != 0;
 						} else if((midi_packet[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midi_packet[1] == MidiControllers.VOLUME) {
 							new_volume = midi_packet[2] / 127f; // TODO interpolate! plz
@@ -215,7 +215,15 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	@Override
-	protected void onPrepare() {}
+	protected void onPrepare() {
+		if(resampling == null && lnode.resamplingFactory != null && getOutlet("output") != null) {
+			AudioOutlet outlet = (AudioOutlet)getOutlet("output");
+			resampling = lnode.resamplingFactory.create(outlet.audio[0]);
+		}
+
+		if(resampling != null)
+			resampling.rewind();
+	}
 
 	@Override
 	protected void onMessage(Message message) {}

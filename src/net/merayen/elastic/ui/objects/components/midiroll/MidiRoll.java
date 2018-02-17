@@ -4,12 +4,12 @@ import net.merayen.elastic.ui.UIObject;
 
 public class MidiRoll extends UIObject {
 	public interface Handler {
-		public void onDown(int tangent_no);
-		public void onUp(int tangent_no);
+		void onDown(int tangent_no);
+		void onUp(int tangent_no);
 	}
 
-	public float width = 100;
-	public float height = 100;
+	public float layoutWidth = 100;
+	public float layoutHeight = 100;
 
 	private Piano piano;
 	PianoNet net;
@@ -43,7 +43,7 @@ public class MidiRoll extends UIObject {
 
 	@Override
 	protected void onUpdate() {
-		net.width = width;
+		net.width = layoutWidth;
 	}
 
 	@Override

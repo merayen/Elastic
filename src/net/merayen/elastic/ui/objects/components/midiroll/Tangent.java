@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
 
@@ -73,7 +73,7 @@ class Tangent extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent e) {
+	protected void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

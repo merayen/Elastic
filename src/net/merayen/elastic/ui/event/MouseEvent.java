@@ -11,13 +11,18 @@ import net.merayen.elastic.util.Point;
 /**
  * TODO handle multiple surfaces (window) better. It does not work as of now.
  */
-public class MouseEvent implements IEvent {
+public class MouseEvent extends UIEvent {
 	public enum Action {
 		DOWN,
 		UP,
 		OVER,
 		OUT,
-		MOVE
+		MOVE,
+
+		/**
+		 * When dragging something and lets it go
+		 */
+		DROP
 	}
 
 	public enum Button {
@@ -26,7 +31,6 @@ public class MouseEvent implements IEvent {
 		RIGHT
 	}
 
-	private final String surface_id;
 	public final Action action;
 	public final Button button;
 
@@ -35,14 +39,14 @@ public class MouseEvent implements IEvent {
 	public List<UIObject> objects_hit;
 
 	public MouseEvent(String surface_id, int x, int y, Action action, Button button) {
-		this.surface_id = surface_id;
+		super(surface_id);
 		this.x = x;
 		this.y = y;
 		this.action = action;
 		this.button = button;
 	}
 
-	// XXX Move hit testing out in a "hit test"-like class? 
+	// XXX Move hit testing out in a "hit test"-like class?
 	private List<UIObject> calcHit(Window uiobject) {
 		List<UIObject> hits = new ArrayList<UIObject>();
 
@@ -105,10 +109,5 @@ public class MouseEvent implements IEvent {
 	 */
 	public Point getOffset(UIObject uiobject) {
 		return uiobject.getRelativeFromAbsolute(x, y);
-	}
-
-	@Override
-	public String getSurfaceID() {
-		return surface_id;
 	}
 }

@@ -1,10 +1,9 @@
 package net.merayen.elastic.ui;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
@@ -32,7 +31,7 @@ public class UIObject {
 	protected void onInit() {}
 	protected void onDraw() {}
 	protected void onUpdate() {}
-	protected void onEvent(IEvent e) {}
+	protected void onEvent(UIEvent e) {}
 
 	/**
 	 * Override this method to artificially set the children of the UIObject in a onDraw(), onUpdate() and onEvent() call tree.
@@ -199,7 +198,7 @@ public class UIObject {
 	}
 
 	/**
-	 * Retrieves the layoutWidth of the object.
+	 * Retrieves the width of the object.
 	 * Feel free to override to return a custom value.
 	 */
 	public float getWidth() {
@@ -212,7 +211,7 @@ public class UIObject {
 	}
 
 	/**
-	 * Retrieves the layoutWidth of the object.
+	 * Retrieves the height of the object.
 	 * Feel free to override to return a custom value.
 	 */
 	public float getHeight() {

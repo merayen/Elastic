@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.components
 
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.event.IEvent
+import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UIClip
 import net.merayen.elastic.ui.util.Movable
 
@@ -46,7 +46,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
             draw.fillRect(0f, 0f, barWidth, barWidth)
         }
 
-        override fun onEvent(e: IEvent) {
+        override fun onEvent(e: UIEvent) {
             movable.handle(e)
         }
     }
@@ -66,7 +66,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
     override fun onUpdate() {
         contentWidth = uiobject.width
-        contentHeight = uiobject.height
+        contentHeight = uiobject.width
 
         clip.width = layoutWidth - barWidth
         clip.height = layoutHeight - barWidth

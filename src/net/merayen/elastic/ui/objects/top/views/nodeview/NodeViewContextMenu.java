@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem;
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem;
@@ -56,7 +56,7 @@ class NodeViewContextMenu extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		menu.handle(event);
 	}
 }

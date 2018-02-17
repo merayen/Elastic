@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
 import net.merayen.elastic.netlist.NetList;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
@@ -58,7 +58,7 @@ public class UIPortTemporary extends UIPort {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		mouse.handle(event);
 	}
 

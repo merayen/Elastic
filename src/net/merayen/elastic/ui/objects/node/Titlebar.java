@@ -51,7 +51,7 @@ public class Titlebar extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(net.merayen.elastic.ui.event.IEvent event) {
+	protected void onEvent(net.merayen.elastic.ui.event.UIEvent event) {
 		moveable.handle(event);
 	}
 

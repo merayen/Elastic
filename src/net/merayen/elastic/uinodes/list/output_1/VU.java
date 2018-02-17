@@ -63,7 +63,7 @@ class VU extends UIObject {
 		offset = data;
 	}
 
-	public float getHeight() {
+	public float getLayoutHeight() {
 		return vu.length * bar_height;
 	}
 

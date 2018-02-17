@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.surface;
 
 import java.util.List;
 
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 
 public abstract class Surface {
 	public interface Handler {
@@ -20,7 +20,7 @@ public abstract class Surface {
 	public abstract int getWidth();
 	public abstract int getHeight();
 
-	public abstract List<IEvent> pullEvents();
+	public abstract List<UIEvent> pullEvents();
 
 	public abstract void end();
 

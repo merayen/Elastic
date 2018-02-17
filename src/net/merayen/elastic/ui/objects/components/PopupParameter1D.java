@@ -71,7 +71,7 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 	@Override
 	protected void onUpdate() {
 		box.popup_height = popup_height;
-		window.translation.y = label.getHeight() / 2;
+		window.translation.y = label.getLayoutHeight() / 2;
 		box.drag_scale_y = drag_scale;
 	}
 

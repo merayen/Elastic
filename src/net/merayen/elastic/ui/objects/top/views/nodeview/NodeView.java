@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
 import net.merayen.elastic.ui.controller.NodeViewController;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.event.MouseWheelEvent;
 import net.merayen.elastic.ui.objects.UINet;
@@ -147,7 +147,7 @@ public class NodeView extends View {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		super.onEvent(event);
 
 		movable.handle(event);

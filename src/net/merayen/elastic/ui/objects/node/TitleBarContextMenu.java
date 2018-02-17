@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu;
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem;
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem;
@@ -32,7 +32,7 @@ class TitleBarContextMenu extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		menu.handle(event);
 	}
 }

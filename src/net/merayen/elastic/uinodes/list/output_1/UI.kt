@@ -27,7 +27,7 @@ class UI : UINode() {
 	override fun onUpdate() {
 		super.onUpdate()
 
-		height = 40 + vu!!.height
+		height = 40 + vu!!.layoutHeight
 	}
 
 	override fun onCreatePort(port: UIPort) {

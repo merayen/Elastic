@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.merayen.elastic.ui.Dimension;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
@@ -38,7 +38,7 @@ public class PopupSlide extends UIObject {
 		}
 
 		@Override
-		protected void onEvent(IEvent event) {
+		protected void onEvent(UIEvent event) {
 			mouse.handle(event);
 		}
 	}

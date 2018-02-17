@@ -86,7 +86,7 @@ public class UIPort extends UIObject {
 		super.onDraw();
 	}
 
-	protected void onEvent(net.merayen.elastic.ui.event.IEvent event) {
+	protected void onEvent(net.merayen.elastic.ui.event.UIEvent event) {
 		port_drag.handle(event);
 	}
 

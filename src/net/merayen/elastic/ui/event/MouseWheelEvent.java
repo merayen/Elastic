@@ -1,11 +1,10 @@
 package net.merayen.elastic.ui.event;
 
-public class MouseWheelEvent implements IEvent {
-	private final String surface_id;
+public class MouseWheelEvent extends UIEvent {
 	private java.awt.event.MouseWheelEvent mousewheel_event;
 	
 	public MouseWheelEvent(String surface_id, java.awt.event.MouseWheelEvent event) {
-		this.surface_id = surface_id;
+		super(surface_id);
 		this.mousewheel_event = event;
 	}
 	
@@ -15,10 +14,5 @@ public class MouseWheelEvent implements IEvent {
 	
 	public int getOffsetY() {
 		return this.mousewheel_event.getWheelRotation();
-	}
-
-	@Override
-	public String getSurfaceID() {
-		return surface_id;
 	}
 }

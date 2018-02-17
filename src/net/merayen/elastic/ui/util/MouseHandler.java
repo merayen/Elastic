@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.util;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 
 /**
@@ -53,7 +53,7 @@ public class MouseHandler {
 	/**
 	 * Call this from your UIObject to handle event
 	 */
-	public void handle(IEvent event) { // XXX Should we ensure UIObject is initialized before 
+	public void handle(UIEvent event) { // XXX Should we ensure UIObject is initialized before
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
 

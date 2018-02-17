@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview.addnode;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 import net.merayen.elastic.ui.objects.popupslide.PopupSlideItem;
@@ -82,7 +82,7 @@ class AddNodePopupSlideItem extends PopupSlideItem {
 				}
 
 				@Override
-				protected void onEvent(IEvent event) {
+				protected void onEvent(UIEvent event) {
 					mouse.handle(event);
 				}
 			});

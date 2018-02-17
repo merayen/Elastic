@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.components;
 import java.util.List;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -38,7 +38,7 @@ public class Tabs extends AutoLayout {
 		}
 
 		@Override
-		protected void onEvent(IEvent e) {
+		protected void onEvent(UIEvent e) {
 			mouse_handler.handle(e);
 		}
 	}

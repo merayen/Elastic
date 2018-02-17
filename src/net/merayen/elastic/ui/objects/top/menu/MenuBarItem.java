@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.top.menu;
 
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
@@ -79,7 +79,7 @@ public class MenuBarItem extends UIObject {
 		}
 	}
 
-	protected void onEvent(IEvent e) {
+	protected void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

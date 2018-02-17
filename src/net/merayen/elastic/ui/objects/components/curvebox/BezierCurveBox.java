@@ -6,7 +6,7 @@ import java.util.List;
 import net.merayen.elastic.ui.Color;
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.Movable;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.math.BezierCurve;
@@ -101,7 +101,7 @@ public class BezierCurveBox extends UIObject implements BezierCurveBoxInterface 
 		}
 
 		@Override
-		protected void onEvent(IEvent event) {
+		protected void onEvent(UIEvent event) {
 			if(visible)
 				movable.handle(event);
 		}

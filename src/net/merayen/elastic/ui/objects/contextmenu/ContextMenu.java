@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.contextmenu;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
@@ -61,7 +61,7 @@ public class ContextMenu {
 		});
 	}
 
-	public void handle(IEvent event) {
+	public void handle(UIEvent event) {
 		mouse.handle(event);
 	}
 

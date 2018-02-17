@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.top.menu;
 
 import java.util.ArrayList;
 
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
@@ -49,7 +49,7 @@ public class MenuList extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent e) {
+	protected void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

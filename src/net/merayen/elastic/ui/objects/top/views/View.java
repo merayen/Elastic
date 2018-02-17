@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
 import net.merayen.elastic.ui.objects.top.menu.Bar;
 import net.merayen.elastic.ui.objects.top.viewport.Viewport;
@@ -34,7 +34,7 @@ public abstract class View extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(IEvent event) {
+	protected void onEvent(UIEvent event) {
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
 			focused = (e.hitDepth(this) > -1);

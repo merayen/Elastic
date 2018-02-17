@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.merayen.elastic.ui.TranslationDataStack;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.event.IEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.surface.Surface;
 
 /**
@@ -23,7 +23,7 @@ public class DrawContext {
 
 	private int z_counter = 0;
 
-	public final List<IEvent> incoming_events; 
+	public final List<UIEvent> incoming_events;
 
 	public final TranslationDataStack translation_stack = new TranslationDataStack();
 
@@ -35,7 +35,7 @@ public class DrawContext {
 	 */
 	private final LinkedList<UIObject> draw_stack = new LinkedList<>();
 
-	public DrawContext(java.awt.Graphics2D graphics2d, Surface surface, List<IEvent> events) { // TODO abstract away Graphics2D
+	public DrawContext(java.awt.Graphics2D graphics2d, Surface surface, List<UIEvent> events) { // TODO abstract away Graphics2D
 		this.graphics2d = graphics2d;
 		this.width = surface.getWidth();
 		this.height = surface.getHeight();
