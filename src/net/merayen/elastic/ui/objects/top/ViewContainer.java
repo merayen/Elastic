@@ -17,7 +17,7 @@ class ViewContainer extends UIObject {
 	private List<View> views = new ArrayList<>();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		super.onInit();
 	}
 

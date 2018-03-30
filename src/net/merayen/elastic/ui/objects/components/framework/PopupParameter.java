@@ -32,14 +32,14 @@ public class PopupParameter extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		movable = new Movable(popup, minified);
 		movable.setHandler(new Movable.IMoveable() {
 			@Override
 			public void onMove() {
 				// Constrain
-				popup.translation.x = Math.max(-popup_width, Math.min(0, popup.translation.x));
-				popup.translation.y = Math.max(-popup_height, Math.min(0, popup.translation.y));
+				popup.getTranslation().x = Math.max(-popup_width, Math.min(0, popup.getTranslation().x));
+				popup.getTranslation().y = Math.max(-popup_height, Math.min(0, popup.getTranslation().y));
 
 				if(handler != null)
 					handler.onMove();
@@ -66,12 +66,12 @@ public class PopupParameter extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		movable.handle(event);
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		movable.drag_scale_x = drag_scale_x;
 		movable.drag_scale_y = drag_scale_y;
 	}
@@ -81,18 +81,18 @@ public class PopupParameter extends UIObject {
 	}
 
 	public float getX() {
-		return -popup.translation.x / popup_width;
+		return -popup.getTranslation().x / popup_width;
 	}
 
 	public void setX(float value) {
-		popup.translation.x = -value * popup_width;
+		popup.getTranslation().x = -value * popup_width;
 	}
 
 	public float getY() {
-		return -popup.translation.y  / popup_height;
+		return -popup.getTranslation().y  / popup_height;
 	}
 
 	public void setY(float value) {
-		popup.translation.y = -value * popup_height;
+		popup.getTranslation().y = -value * popup_height;
 	}
 }

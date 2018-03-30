@@ -7,11 +7,11 @@ public class TransportView extends View {
 	private TransportViewButtons buttons = new TransportViewButtons();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		super.onInit();
 		add(bar);
 		this.add(buttons);
-		buttons.translation.y = 20;
+		buttons.getTranslation().y = 20;
 	}
 
 	@Override

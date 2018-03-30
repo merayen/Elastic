@@ -10,8 +10,8 @@ class UI : UINode() {
 	private val vu = VU()
 
 	init {
-		width = 120f
-		height = 100f
+		layoutWidth = 120f
+		layoutHeight = 100f
 
 		titlebar.title = "Speaker"
 	}
@@ -27,7 +27,7 @@ class UI : UINode() {
 	override fun onUpdate() {
 		super.onUpdate()
 
-		height = 40 + vu!!.layoutHeight
+		layoutHeight = 40 + vu.layoutHeight
 	}
 
 	override fun onCreatePort(port: UIPort) {

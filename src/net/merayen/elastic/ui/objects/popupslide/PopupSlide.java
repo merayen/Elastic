@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.merayen.elastic.ui.Dimension;
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.top.Window;
@@ -19,7 +20,7 @@ public class PopupSlide extends UIObject {
 		private MouseHandler mouse;
 
 		@Override
-		protected void onInit() {
+		public void onInit() {
 			mouse = new MouseHandler(this);
 			mouse.setHandler(new MouseHandler.Handler() {
 				@Override
@@ -30,7 +31,7 @@ public class PopupSlide extends UIObject {
 		}
 
 		@Override
-		protected void onDraw() {
+		public void onDraw(Draw draw) {
 			Window window = UINodeUtil.getWindow(this);
 
 			// Closes ourself if clicked outside
@@ -38,18 +39,18 @@ public class PopupSlide extends UIObject {
 		}
 
 		@Override
-		protected void onEvent(UIEvent event) {
+		public void onEvent(UIEvent event) {
 			mouse.handle(event);
 		}
 	}
 
 	private class Menu extends UIObject {
 		@Override
-		protected void onUpdate() {
+		public void onUpdate() {
 			Window window = UINodeUtil.getWindow(this);
 			Dimension dimension = getItemMaxDimension();
-			translation.x = window.width / 2- dimension.width / 2;
-			translation.y = window.height / 2 - dimension.height / 2;
+			getTranslation().x = window.width / 2- dimension.getWidth() / 2;
+			getTranslation().y = window.height / 2 - dimension.getHeight() / 2;
 
 			placeItems();
 		}
@@ -61,7 +62,7 @@ public class PopupSlide extends UIObject {
 	private final Background background = new Background();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		add(background);
 		add(menu);
 	}
@@ -75,8 +76,8 @@ public class PopupSlide extends UIObject {
 		float width = 0, height = 0;
 
 		for(PopupSlideItem x : stack) {
-			width = Math.max(width, x.width);
-			height = Math.max(height, x.height);
+			width = Math.max(width, x.getWidth());
+			height = Math.max(height, x.getHeight());
 		}
 
 		return new Dimension(width, height);
@@ -85,7 +86,7 @@ public class PopupSlide extends UIObject {
 	private void placeItems() {
 		float offset = 0;
 		for(PopupSlideItem x : stack) {
-			x.translation.y = offset;
+			x.getTranslation().y = offset;
 			offset += 25;
 			x.makeActive(false);
 		}

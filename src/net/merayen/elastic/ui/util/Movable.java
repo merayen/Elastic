@@ -52,9 +52,9 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 			@Override
 			public void onGlobalMouseMove(Point global_position) {
 				if(start_absolute_position != null && movable.isInitialized()) {
-					TranslationData td = movable.absolute_translation;
-					movable.translation.x = start_relative_position.x + (global_position.x - start_absolute_position.x) * td.scale_x / movable.translation.scale_x * drag_scale_x;
-					movable.translation.y = start_relative_position.y + (global_position.y - start_absolute_position.y) * td.scale_y / movable.translation.scale_y * drag_scale_y;
+					TranslationData td = movable.getAbsolute_translation();
+					movable.getTranslation().x = start_relative_position.x + (global_position.x - start_absolute_position.x) * td.scale_x / movable.getTranslation().scale_x * drag_scale_x;
+					movable.getTranslation().y = start_relative_position.y + (global_position.y - start_absolute_position.y) * td.scale_y / movable.getTranslation().scale_y * drag_scale_y;
 
 					if(handler != null)
 						handler.onMove();
@@ -64,7 +64,7 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 			@Override
 			public void onMouseDown(Point position) {
 				start_absolute_position = trigger.getAbsolutePosition(position.x, position.y);
-				start_relative_position = new Point(movable.translation.x, movable.translation.y);
+				start_relative_position = new Point(movable.getTranslation().x, movable.getTranslation().y);
 
 				if(handler != null)
 					handler.onGrab();

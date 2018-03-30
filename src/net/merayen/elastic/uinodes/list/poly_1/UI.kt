@@ -12,8 +12,8 @@ class UI : UINode() {
 	private val unison: ParameterSlider
 
 	init {
-		width = 100f
-		height = 100f
+		layoutWidth = 100f
+		layoutHeight = 100f
 
 		val button = Button()
 		button.label = "Open"
@@ -51,9 +51,8 @@ class UI : UINode() {
 	override fun onRemovePort(port: UIPort) {}
 
 	override fun onMessage(message: NodeParameterMessage) {
-		if (message is NodeParameterMessage)
-			if (message.key == "unison")
-				unison.value = ((message.value as Number).toInt() - 1) / 31.0
+		if (message.key == "unison")
+			unison.value = ((message.value as Number).toInt() - 1) / 31.0
 	}
 
 	override fun onData(message: NodeDataMessage) {}

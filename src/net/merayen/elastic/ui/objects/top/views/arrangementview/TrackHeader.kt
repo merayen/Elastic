@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
+import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Button
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
@@ -29,7 +30,7 @@ internal class TrackHeader : UIObject() {
         add(buttons)
     }
 
-    override fun onDraw() {
+    override fun onDraw(draw: Draw) {
         draw.setColor(50, 0, 50)
         draw.fillRect(2f, 2f, layoutWidth - 4, layoutHeight - 4)
     }

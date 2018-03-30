@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer;
 import net.merayen.elastic.ui.surface.Surface;
@@ -49,21 +50,21 @@ public class Window extends UIObject {
 
 	private void initDebug() {
 		debug = new Debug();
-		debug.translation.y = 40f;
-		debug.translation.scale_x = .1f;
-		debug.translation.scale_y = .1f;
+		debug.getTranslation().y = 40f;
+		debug.getTranslation().scale_x = .1f;
+		debug.getTranslation().scale_y = .1f;
 		//add(debug);
 		debug.set("DEBUG", "Has been enabled");
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		width = draw.getScreenWidth();
 		height = draw.getScreenHeight();
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		viewport_container.width = width;
 		viewport_container.height = height - 10;
 	}

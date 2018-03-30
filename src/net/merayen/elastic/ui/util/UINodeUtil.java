@@ -11,11 +11,11 @@ public class UINodeUtil {
 	 * Retrieves the Top() UIObject the UIObject is a child of. 
 	 */
 	public static Window getWindow(UIObject uiobject) {
-		return (Window)uiobject.search.parentByType(Window.class);
+		return (Window) uiobject.getSearch().parentByType(Window.class);
 	}
 
 	public static Top getTop(UIObject uiobject) {
-		UIObject result = uiobject.search.getTop();
+		UIObject result = uiobject.getSearch().getTop();
 		if(result instanceof Top)
 			return (Top)result;
 		else

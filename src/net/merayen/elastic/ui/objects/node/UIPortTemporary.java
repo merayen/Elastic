@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.node;
 
 import net.merayen.elastic.netlist.NetList;
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -24,8 +25,8 @@ public class UIPortTemporary extends UIPort {
 		this.destination_port = destination_port;
 		draw_default_port = false;
 
-		translation.x = 0;
-		translation.y = 0;
+		getTranslation().x = 0;
+		getTranslation().y = 0;
 		source_port.add(this);
 
 		getUINetObject().addLine(source_port, this);
@@ -53,28 +54,28 @@ public class UIPortTemporary extends UIPort {
 	}
 
 	private void moveTempPort(Point position) { // Relative coordinates
-		translation.x = position.x;// - original.x;
-		translation.y = position.y;// - original.y;
+		getTranslation().x = position.x;// - original.x;
+		getTranslation().y = position.y;// - original.y;
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		mouse.handle(event);
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		UINodeUtil.getWindow(this).debug.set("UIPortTemporary " + this, String.format("source_port=%s, target=%s", source_port == null ? null : source_port.name, target == null ? null : target.name));
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		super.onUpdate();
 		// Sets the initial offset
 		if(destination_port != null) {
 			Point pos = getRelativePosition(destination_port);
-			translation.x = pos.x;
-			translation.y = pos.y;
+			getTranslation().x = pos.x;
+			getTranslation().y = pos.y;
 			destination_port = null;
 		}
 	}

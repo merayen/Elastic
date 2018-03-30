@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 public class PianoNet extends UIObject {
@@ -16,7 +17,7 @@ public class PianoNet extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		float y = 0;
 
 		draw.setStroke(0.5f);
@@ -26,7 +27,7 @@ public class PianoNet extends UIObject {
 			int b = BLACK_TANGENTS[pos] ? 1 : 0;
 
 			draw.setColor(50 - b * 20, 50 - b * 20, 50 - b * 20);
-			
+
 			draw.fillRect(0, y, width, octave_width / 12);
 
 			draw.setColor(0, 0, 0);

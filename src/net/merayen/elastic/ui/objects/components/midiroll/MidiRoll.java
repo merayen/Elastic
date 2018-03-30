@@ -23,7 +23,7 @@ public class MidiRoll extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		net = new PianoNet(OCTAVE_COUNT);
 		add(net);
 
@@ -42,7 +42,7 @@ public class MidiRoll extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		net.width = layoutWidth;
 	}
 

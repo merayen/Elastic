@@ -10,7 +10,7 @@ class Search(private val obj: UIObject) {
 		get() {
 			var top = obj
 			while (top.parent != null)
-				top = top.parent
+				top = top.parent!!
 
 			return top
 		}
@@ -55,7 +55,7 @@ class Search(private val obj: UIObject) {
 		while (x != null && !cls.isAssignableFrom(x.javaClass))
 			x = x.parent
 
-		return x as T
+		return if (x == null) null else x as T
 	}
 
 	fun <T> parentByInterface(cls: Class<T>): T? {

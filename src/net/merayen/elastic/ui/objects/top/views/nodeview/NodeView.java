@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview;
 import java.util.ArrayList;
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage;
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.controller.NodeViewController;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
@@ -52,15 +53,15 @@ public class NodeView extends View {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		super.onInit();
 
 		// Sends a message that will be picked up by NodeViewController, which again will register us
 		sendMessage(new NodeViewController.Hello());
 	}
 	@Override
-	protected void onDraw() {
-		super.onDraw();
+	public void onDraw(Draw draw) {
+		super.onDraw(draw);
 
 		draw.setColor(20, 20, 50);
 		draw.fillRect(2, 2, width - 4, height - 4);
@@ -69,7 +70,7 @@ public class NodeView extends View {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		super.onUpdate();
 		if(node_id == null && node_view_controller != null) { // Sees if NodeViewController has seen us yet. If yes, we initialize from it
 			if(new_node_id == null)
@@ -93,7 +94,7 @@ public class NodeView extends View {
 			throw new RuntimeException(e);
 		}
 
-		uinode.node_id = node_id;
+		uinode.setNode_id(node_id);
 
 		nodes.add(uinode);
 		container.add(uinode);
@@ -111,7 +112,7 @@ public class NodeView extends View {
 
 	public UINode getNode(String id) {
 		for(UINode x : nodes)
-			if(x.node_id.equals(id))
+			if(x.getNode_id().equals(id))
 				return x;
 
 		return null;
@@ -133,21 +134,21 @@ public class NodeView extends View {
 	}
 
 	private void zoom(float new_scale_x, float new_scale_y) {
-		float previous_scale_x = container.translation.scale_x;
-		float previous_scale_y = container.translation.scale_y;
+		float previous_scale_x = container.getTranslation().scale_x;
+		float previous_scale_y = container.getTranslation().scale_y;
 		float scale_diff_x = new_scale_x - previous_scale_x;
 		float scale_diff_y = new_scale_y - previous_scale_y;
-		float current_offset_x = (container.translation.x - width  / 2);
-		float current_offset_y = (container.translation.y - height / 2);
+		float current_offset_x = (container.getTranslation().x - width  / 2);
+		float current_offset_y = (container.getTranslation().y - height / 2);
 
-		container.translation.scale_x = new_scale_x;
-		container.translation.scale_y = new_scale_y;
-		container.translation.x = width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
-		container.translation.y = height / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
+		container.getTranslation().scale_x = new_scale_x;
+		container.getTranslation().scale_y = new_scale_y;
+		container.getTranslation().x = width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
+		container.getTranslation().y = height / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		super.onEvent(event);
 
 		movable.handle(event);
@@ -156,8 +157,8 @@ public class NodeView extends View {
 			MouseWheelEvent e = (MouseWheelEvent)event;
 
 			if(isFocused()) {
-				float s_x = container.translation.scale_x;
-				float s_y = container.translation.scale_y;
+				float s_x = container.getTranslation().scale_x;
+				float s_y = container.getTranslation().scale_y;
 
 				if(e.getOffsetY() < 0) {
 					s_x /= 1.1f;
@@ -179,10 +180,10 @@ public class NodeView extends View {
 	@Override
 	public View cloneView() {
 		NodeView nv = new NodeView(node_id);
-		nv.container.translation.x = container.translation.x;
-		nv.container.translation.y = container.translation.y;
-		nv.container.translation.scale_x = container.translation.scale_x;
-		nv.container.translation.scale_y = container.translation.scale_y;
+		nv.container.getTranslation().x = container.getTranslation().x;
+		nv.container.getTranslation().y = container.getTranslation().y;
+		nv.container.getTranslation().scale_x = container.getTranslation().scale_x;
+		nv.container.getTranslation().scale_y = container.getTranslation().scale_y;
 		return nv;
 	}
 
@@ -205,7 +206,7 @@ public class NodeView extends View {
 		if(context_menu != null)
 			container.remove(context_menu);
 
-		if(container.search.getChildren().size() != 1) // Only UINet() should be remaining
+		if(container.getSearch().getChildren().size() != 1) // Only UINet() should be remaining
 			throw new RuntimeException("Should not happen");
 
 		nodes.clear();

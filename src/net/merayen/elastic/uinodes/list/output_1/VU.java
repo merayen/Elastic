@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.output_1;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 class VU extends UIObject {
@@ -12,8 +13,8 @@ class VU extends UIObject {
 	private long last_draw = System.currentTimeMillis();
 
 	@Override
-	protected void onDraw() {
-		super.onDraw();
+	public void onDraw(Draw draw) {
+		super.onDraw(draw);
 
 		float meter_width = width - 4;
 		int channels = vu.length;

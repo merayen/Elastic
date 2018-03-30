@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -25,7 +26,7 @@ public class CircularSlider extends UIObject {
 
 	private Handler handler;
 
-	protected void onInit() {
+	public void onInit() {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
@@ -43,26 +44,26 @@ public class CircularSlider extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setStroke(size / 20);
 		draw.setColor(30, 30, 30);
 		draw.oval(0, 0, size, size);
 
 		draw.setColor(30, 30, 30);
-		drawLine(0, 0.8f);
-		drawLine(1, 0.8f);
+		drawLine(draw, 0, 0.8f);
+		drawLine(draw, 1, 0.8f);
 
 		draw.setColor(200, 200, 200);
 		//draw.setStroke(size / 10);
-		drawLine(value, 0.6f);
+		drawLine(draw, value, 0.6f);
 	}
 
 	@Override
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mousehandler.handle(e);
 	}
 
-	private void drawLine(float value, float length) {
+	private void drawLine(Draw draw, float value, float length) {
 		//value = Math.max(Math.min(value, 1f), 0f);
 		draw.line(
 			size/2 + (float)Math.sin(min + value * (max-min)) * (size * length) / 2.1f,

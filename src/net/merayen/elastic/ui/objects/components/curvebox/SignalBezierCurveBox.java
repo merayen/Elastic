@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.components.curvebox;
 
 import java.util.List;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDot;
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDotDragable;
@@ -33,7 +34,7 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 
 	private class Overlay extends UIObject {
 		@Override
-		protected void onDraw() {
+		public void onDraw(Draw draw) {
 			draw.setColor(100, 100, 100);
 			draw.setStroke(0.01f);
 			draw.line(0, offset, 1, offset);
@@ -56,7 +57,7 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		curve.setHandler(new BezierCurveBox.Handler() {
 			@Override
 			public void onMove(BezierDot point) {
@@ -78,7 +79,7 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 
 			@Override
 			public void onSelect(BezierDotDragable dot) {
-				dot.color.red = 40;
+				dot.color.setRed(40);
 			}
 		});
 
@@ -100,14 +101,14 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 		BezierDot bpa = curve.insertPoint(1);
 
 		// Come up with a position for the new point XXX fix, this sucks
-		bpa.position.translation.x = (before.position.translation.x + after.position.translation.x) / 2;
-		bpa.position.translation.y = (before.position.translation.y + after.position.translation.y) / 2;
+		bpa.position.getTranslation().x = (before.position.getTranslation().x + after.position.getTranslation().x) / 2;
+		bpa.position.getTranslation().y = (before.position.getTranslation().y + after.position.getTranslation().y) / 2;
 
-		bpa.right_dot.translation.x = bpa.position.translation.x + 0.04f;
-		bpa.right_dot.translation.y = bpa.position.translation.y + 0.04f;
+		bpa.right_dot.getTranslation().x = bpa.position.getTranslation().x + 0.04f;
+		bpa.right_dot.getTranslation().y = bpa.position.getTranslation().y + 0.04f;
 
-		bpa.left_dot.translation.x = bpa.position.translation.x - 0.04f;
-		bpa.left_dot.translation.y = bpa.position.translation.y - 0.04f;
+		bpa.left_dot.getTranslation().x = bpa.position.getTranslation().x - 0.04f;
+		bpa.left_dot.getTranslation().y = bpa.position.getTranslation().y - 0.04f;
 
 		constrainAllPoints();
 
@@ -129,38 +130,38 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 		// Constrain X-axis for both handles on the point, to the points around
 		if(index > 0) {
 			BezierDot before = curve.getBezierPoint(index - 1);
-			if(point.left_dot.translation.x < before.position.translation.x)
-				point.left_dot.translation.x = before.position.translation.x;
+			if(point.left_dot.getTranslation().x < before.position.getTranslation().x)
+				point.left_dot.getTranslation().x = before.position.getTranslation().x;
 
-			if(point.position.translation.x < before.position.translation.x)
-				point.position.translation.x = before.position.translation.x;
+			if(point.position.getTranslation().x < before.position.getTranslation().x)
+				point.position.getTranslation().x = before.position.getTranslation().x;
 
-			if(point.position.translation.x < before.right_dot.translation.x)
-				point.position.translation.x = before.right_dot.translation.x;
+			if(point.position.getTranslation().x < before.right_dot.getTranslation().x)
+				point.position.getTranslation().x = before.right_dot.getTranslation().x;
 		}
 
 		if(index < curve.getPointCount() - 1) {
 			BezierDot after = curve.getBezierPoint(index + 1);
 
-			if(point.right_dot.translation.x > after.position.translation.x)
-				point.right_dot.translation.x = after.position.translation.x;
+			if(point.right_dot.getTranslation().x > after.position.getTranslation().x)
+				point.right_dot.getTranslation().x = after.position.getTranslation().x;
 
-			if(point.position.translation.x > after.position.translation.x)
-				point.position.translation.x = after.position.translation.x;
+			if(point.position.getTranslation().x > after.position.getTranslation().x)
+				point.position.getTranslation().x = after.position.getTranslation().x;
 
-			if(point.position.translation.x > after.left_dot.translation.x)
-				point.position.translation.x = after.left_dot.translation.x;
+			if(point.position.getTranslation().x > after.left_dot.getTranslation().x)
+				point.position.getTranslation().x = after.left_dot.getTranslation().x;
 		}
 
-		if(point.right_dot.translation.x < point.position.translation.x)
-			point.right_dot.translation.x = point.position.translation.x;
+		if(point.right_dot.getTranslation().x < point.position.getTranslation().x)
+			point.right_dot.getTranslation().x = point.position.getTranslation().x;
 
-		if(point.left_dot.translation.x > point.position.translation.x)
-			point.left_dot.translation.x = point.position.translation.x;
+		if(point.left_dot.getTranslation().x > point.position.getTranslation().x)
+			point.left_dot.getTranslation().x = point.position.getTranslation().x;
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		curve.width = width;
 		curve.height = height;
 	}
@@ -187,14 +188,14 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 		BezierCurveBox.BezierDot start = curve.getBezierPoint(0);
 		start.left_dot.visible = false;
 		start.position.visible = false;
-		start.position.translation.x = 0;
-		start.position.translation.y = 0.5f;
+		start.position.getTranslation().x = 0;
+		start.position.getTranslation().y = 0.5f;
 
 		BezierCurveBox.BezierDot stop = curve.getBezierPoint(curve.getPointCount() - 1);
 		stop.position.visible = false;
 		stop.right_dot.visible = false;
-		stop.position.translation.x = 1;
-		stop.position.translation.y = 0.5f;
+		stop.position.getTranslation().x = 1;
+		stop.position.getTranslation().y = 0.5f;
 	}
 
 	public BezierCurve.Dot[] getDots() {
@@ -204,9 +205,9 @@ public class SignalBezierCurveBox extends UIObject implements BezierCurveBoxInte
 		for(int i = 0; i < points.length; i++) {
 			BezierCurveBox.BezierDot bp = points[i];
 			result[i] = new BezierCurve.Dot(
-				new Point(bp.position.translation.x, bp.position.translation.y),
-				new Point(bp.left_dot.translation.x, bp.left_dot.translation.y),
-				new Point(bp.right_dot.translation.x, bp.right_dot.translation.y)
+				new Point(bp.position.getTranslation().x, bp.position.getTranslation().y),
+				new Point(bp.left_dot.getTranslation().x, bp.left_dot.getTranslation().y),
+				new Point(bp.right_dot.getTranslation().x, bp.right_dot.getTranslation().y)
 			);
 		}
 

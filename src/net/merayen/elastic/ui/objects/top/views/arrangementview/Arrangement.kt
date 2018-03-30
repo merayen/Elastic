@@ -7,8 +7,8 @@ import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 
 internal class Arrangement : UIObject() {
-    var layoutWidth: Float = 0.toFloat()
-    var layoutHeight: Float = 0.toFloat()
+    var layoutWidth: Float = 0f
+    var layoutHeight: Float = 0f
     private val trackList = TrackList()
     private val arrangementListScroll = Scroll(trackList)
     private val buttonBar = AutoLayout(LayoutMethods.HorizontalBox(5f, 100000f))

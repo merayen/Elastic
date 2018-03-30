@@ -30,15 +30,15 @@ public class InputSignalParameters extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
-		amplitude.translation.x = 0;
-		amplitude.translation.y = 0;
-		amplitude.label.text = "Amplitude";
+	public void onInit() {
+		amplitude.getTranslation().x = 0;
+		amplitude.getTranslation().y = 0;
+		amplitude.label.setText("Amplitude");
 		amplitude.drag_scale = 1f;
 		add(amplitude);
 
-		offset.translation.y = 0;
-		offset.label.text = "Offset";
+		offset.getTranslation().y = 0;
+		offset.label.setText("Offset");
 		offset.drag_scale = 1f;
 		add(offset);
 
@@ -70,8 +70,8 @@ public class InputSignalParameters extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
-		offset.translation.x = amplitude.label.getWidth() + 10;
+	public void onUpdate() {
+		offset.getTranslation().x = amplitude.label.getWidth() + 10;
 	}
 
 	public float getAmplitude() {
@@ -104,8 +104,8 @@ public class InputSignalParameters extends UIObject {
 	}
 
 	private void updateTexts() {
-		amplitude.label.text = String.format("Amplitude: %.3f", getAmplitude());
-		offset.label.text = String.format("Offset: %.3f", getOffset());
+		amplitude.label.setText(String.format("Amplitude: %.3f", getAmplitude()));
+		offset.label.setText(String.format("Offset: %.3f", getOffset()));
 	}
 
 	@SuppressWarnings("serial")

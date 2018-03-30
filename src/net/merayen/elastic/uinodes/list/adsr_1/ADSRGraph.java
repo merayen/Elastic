@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.adsr_1;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 public class ADSRGraph extends UIObject {
@@ -12,19 +13,19 @@ public class ADSRGraph extends UIObject {
 	public float release_time = 1;
 
 	@Override
-	protected void onInit() {}
+	public void onInit() {}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setColor(20, 20, 50);
 		draw.fillRect(0, 0, width, height);
 
-		drawSectorLines();
+		drawSectorLines(draw);
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
-	private void drawSectorLines() {
+	private void drawSectorLines(Draw draw) {
 		float[] widths = getSectorWidths();
 
 		draw.setColor(50, 50, 100);

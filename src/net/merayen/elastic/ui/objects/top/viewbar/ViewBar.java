@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.viewbar;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
@@ -16,13 +17,13 @@ public class ViewBar extends AutoLayout {
 	protected final UIObject content = new UIObject();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		add(menu);
 		add(content);
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
 		draw.setColor(0, 0, 0);

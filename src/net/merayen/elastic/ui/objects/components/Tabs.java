@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.components;
 
 import java.util.List;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
@@ -26,7 +27,7 @@ public class Tabs extends AutoLayout {
 		float width;
 
 		@Override
-		protected void onInit() {
+		public void onInit() {
 			super.onInit();
 			mouse_handler = new MouseHandler(this, Button.LEFT);
 			mouse_handler.setHandler(new MouseHandler.Handler() {
@@ -38,7 +39,7 @@ public class Tabs extends AutoLayout {
 		}
 
 		@Override
-		protected void onEvent(UIEvent e) {
+		public void onEvent(UIEvent e) {
 			mouse_handler.handle(e);
 		}
 	}
@@ -50,8 +51,8 @@ public class Tabs extends AutoLayout {
 		private boolean dirty;
 
 		@Override
-		protected void onDraw() {
-			super.onDraw();
+		public void onDraw(Draw draw) {
+			super.onDraw(draw);
 			if(text != null) {
 				if(active) {
 					draw.setColor(200, 200, 200);
@@ -103,7 +104,7 @@ public class Tabs extends AutoLayout {
 			return;
 
 		int i = 0;
-		List<UIObject> tabs = search.getChildren();
+		List<UIObject> tabs = getSearch().getChildren();
 
 		for(UIObject o : tabs)
 			((Tab)o).active = (i++ == index);

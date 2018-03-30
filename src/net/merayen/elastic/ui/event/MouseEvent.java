@@ -50,21 +50,21 @@ public class MouseEvent extends UIEvent {
 	private List<UIObject> calcHit(Window uiobject) {
 		List<UIObject> hits = new ArrayList<UIObject>();
 
-		List<UIObject> objs = uiobject.search.getAllChildren();
+		List<UIObject> objs = uiobject.getSearch().getAllChildren();
 		objs.add(uiobject);
 
 		for(UIObject o : objs)
 			if(
 				o.isInitialized() &&
-				o.outline_abs_px != null &&
-				x >= o.outline_abs_px.x1 &&
-				y >= o.outline_abs_px.y1 &&
-				x < o.outline_abs_px.x2 &&
-				y < o.outline_abs_px.y2
+				o.getOutline_abs_px() != null &&
+				x >= o.getOutline_abs_px().x1 &&
+				y >= o.getOutline_abs_px().y1 &&
+				x < o.getOutline_abs_px().x2 &&
+				y < o.getOutline_abs_px().y2
 			)
 				hits.add(o);
 
-		hits.sort( (a,b) -> b.draw_z - a.draw_z );
+		hits.sort( (a,b) -> b.getDraw_z() - a.getDraw_z());
 
 		if(hits.size() > 0) {
 			String m = "Object hit: ";

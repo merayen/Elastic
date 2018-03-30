@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.Movable;
@@ -12,7 +13,7 @@ public class TestView extends View {
 		Movable movable;
 
 		@Override
-		protected void onInit() {
+		public void onInit() {
 			movable = new Movable(this, this);
 			movable.setHandler(new Movable.IMoveable() {
 
@@ -34,7 +35,7 @@ public class TestView extends View {
 		}
 
 		@Override
-		protected void onDraw() {
+		public void onDraw(Draw draw) {
 			draw.setColor(0, 0, 200);
 			draw.fillRect(0, 0, 50, 50);
 
@@ -43,22 +44,22 @@ public class TestView extends View {
 		}
 
 		@Override
-		protected void onEvent(UIEvent e) {
+		public void onEvent(UIEvent e) {
 			movable.handle(e);
 		}
 	}
 
-	public MovableBox movable_box;
+	private MovableBox movable_box;
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		movable_box = new MovableBox();
 		add(movable_box);
 		count = count_id++;
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setColor(20, 20, 50);
 		draw.fillRect(0, 0, width, height);
 		/*((Top)search.getTop()).debug.set(String.format("TestView.Absolute %d", count), this.absolute_translation);

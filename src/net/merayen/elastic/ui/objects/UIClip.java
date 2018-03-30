@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 
@@ -12,8 +13,8 @@ public class UIClip extends UIObject {
 	public float height = 10f;
 
 	@Override
-	protected void onDraw() {
-		translation.clip = new Rect(0, 0, width, height);
+	public void onDraw(Draw draw) {
+		getTranslation().clip = new Rect(0, 0, width, height);
 		/*draw.setColor(255,127,0);
 		draw.setStroke(2f);
 		draw.rect(0.1f, 0.1f, layoutWidth - 0.2f, layoutHeight - 0.2f);*/

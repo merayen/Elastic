@@ -23,8 +23,8 @@ public class AutoLayout extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
-		placement.place(search.getChildren());
+	public void onUpdate() {
+		placement.place(getSearch().getChildren());
 	}
 
 	@Override

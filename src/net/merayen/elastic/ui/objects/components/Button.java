@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -22,7 +23,7 @@ public class Button extends UIObject {
 	private boolean mouse_down;
 	private boolean mouse_over;
 
-	protected void onInit() {
+	public void onInit() {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 
@@ -56,7 +57,7 @@ public class Button extends UIObject {
 		});
 	}
 
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setFont("Geneva", font_size);
 
 		float text_width = draw.getTextWidth(label);
@@ -77,10 +78,10 @@ public class Button extends UIObject {
 		draw.setColor(200, 200, 200);
 		draw.text(label, (float)(width/2 - text_width/2), font_size);
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		mousehandler.handle(event);
 	}
 

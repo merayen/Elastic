@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 public class InputSignalKnob extends UIObject { // TODO delete
@@ -9,7 +10,7 @@ public class InputSignalKnob extends UIObject { // TODO delete
 	private CircularSlider offset;
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		amplitude = new CircularSlider();
 		amplitude.setValue(0.5f);
 		amplitude.size = size;
@@ -17,8 +18,8 @@ public class InputSignalKnob extends UIObject { // TODO delete
 		add(amplitude);
 
 		offset = new CircularSlider();
-		offset.translation.x = size / 4;
-		offset.translation.y = size / 4;
+		offset.getTranslation().x = size / 4;
+		offset.getTranslation().y = size / 4;
 		offset.size = size / 2;
 		offset.drag_scale = 0.05f;
 		offset.setValue(0.5f);
@@ -26,8 +27,8 @@ public class InputSignalKnob extends UIObject { // TODO delete
 	}
 
 	@Override
-	protected void onDraw() {
-		super.onDraw();
+	public void onDraw(Draw draw) {
+		super.onDraw(draw);
 		draw.setColor(0, 0, 0);
 
 		String amplitude_text = getFormatted(getAmplitude(), 2);

@@ -24,11 +24,11 @@ class FileList extends UIObject {
 		}
 
 		@Override
-		protected void onUpdate() {
+		public void onUpdate() {
 			((LayoutMethods.HorizontalBox)placement).max_width = width;
 
 			if(files != current_files) {
-				for(UIObject obj : new ArrayList<>(search.getChildren()))
+				for(UIObject obj : new ArrayList<>(getSearch().getChildren()))
 					remove(obj);
 
 				add(new FileListItem() {{
@@ -65,12 +65,12 @@ class FileList extends UIObject {
 	private Handler handler;
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		add(scroll);
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		scroll.setLayoutHeight(height);
 		scroll.setLayoutWidth(width);
 	}

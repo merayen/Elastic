@@ -9,12 +9,12 @@ public class FileBrowserView extends View {
 	private FileList file_list = new FileList();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		super.onInit();
 		add(file_list);
 		file_list.browse("/");
-		file_list.translation.x = 0;
-		file_list.translation.y = 20;
+		file_list.getTranslation().x = 0;
+		file_list.getTranslation().y = 20;
 		file_list.setHandler(new FileList.Handler() {
 			
 			@Override
@@ -30,7 +30,7 @@ public class FileBrowserView extends View {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		file_list.width = width - 20;
 		file_list.height = height;
 	}

@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.node;
 import java.util.HashSet;
 
 import net.merayen.elastic.ui.Color;
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -67,7 +68,8 @@ public class UIPort extends UIObject {
 		});
 	}
 
-	protected void onDraw() {
+	@Override
+	public void onDraw(Draw draw) {
 		if(draw_default_port) {
 			draw.setColor(50, 60, 50);
 			draw.fillOval(-5.5f, -5.5f, 11f, 11f);
@@ -75,7 +77,7 @@ public class UIPort extends UIObject {
 			draw.setColor(100, 100, 100);
 			draw.fillOval(-5f, -5f, 10f, 10f);
 
-			draw.setColor(color.red, color.green, color.blue);
+			draw.setColor(color.getRed(), color.getGreen(), color.getBlue());
 			draw.fillOval(-4f, -4f, 8f, 8f);
 
 			/*draw.setColor(0, 0, 0);
@@ -83,10 +85,10 @@ public class UIPort extends UIObject {
 			draw.text(title, 10f, 5f);*/
 		}
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
-	protected void onEvent(net.merayen.elastic.ui.event.UIEvent event) {
+	public void onEvent(net.merayen.elastic.ui.event.UIEvent event) {
 		port_drag.handle(event);
 	}
 

@@ -33,8 +33,8 @@ class UI : UINode() {
 
     override fun onInit() {
         super.onInit()
-        width = 100f
-        height = 50f
+        layoutWidth = 100f
+        layoutHeight = 50f
         titlebar.title = "Delay"
     }
 

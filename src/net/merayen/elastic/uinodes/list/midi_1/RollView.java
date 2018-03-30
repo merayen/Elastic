@@ -19,7 +19,7 @@ class RollView extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		midi_roll = new MidiRoll(new MidiRoll.Handler() {
 			@SuppressWarnings("serial")
 			@Override
@@ -39,13 +39,13 @@ class RollView extends UIObject {
 		});
 
 		scroll = new Scroll(midi_roll);
-		scroll.translation.x = 10;
-		scroll.translation.y = 20;
+		scroll.getTranslation().x = 10;
+		scroll.getTranslation().y = 20;
 		add(scroll);
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		scroll.setLayoutWidth(width);
 		scroll.setLayoutHeight(height);
 		midi_roll.layoutWidth = width;

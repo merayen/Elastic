@@ -140,8 +140,6 @@ public class LProcessor extends LocalProcessor {
 			session.input.push();
 			session.active = false;
 		}
-
-		//System.out.printf("Removed tangent %d with session_id %d\n", tangent, session.session_id);
 	}
 
 	/**
@@ -285,6 +283,7 @@ public class LProcessor extends LocalProcessor {
 			}
 
 			if(!active) {
+
 				sessions.removeSession(session);
 				removeSession(session.session_id);
 				//System.out.println("Poly is killing session " + session.session_id);

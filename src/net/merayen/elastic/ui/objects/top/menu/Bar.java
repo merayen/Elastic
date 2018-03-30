@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.menu;
 
 import java.util.ArrayList;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 public class Bar extends UIObject {
@@ -9,10 +10,10 @@ public class Bar extends UIObject {
 	public float width = 500f;
 	private final float height = 20f;
 
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		float w = 1f;
 		for(MenuBarItem x : items) {
-			x.translation.x = w;
+			x.getTranslation().x = w;
 			w += x.getLabelWidth() + 20f;
 		}
 
@@ -21,7 +22,7 @@ public class Bar extends UIObject {
 		draw.setColor(130, 130, 130);
 		draw.fillRect(0, height - 0.1f, width, 2f);
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
 	public void addMenuBarItem(MenuBarItem x) {

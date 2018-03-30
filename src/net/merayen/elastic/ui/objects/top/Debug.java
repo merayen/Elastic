@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 public class Debug extends UIObject {
@@ -16,8 +17,8 @@ public class Debug extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
-		super.onDraw();
+	public void onDraw(Draw draw) {
+		super.onDraw(draw);
 
 		Object[] m = list.keySet().toArray();
 		Arrays.sort(m);

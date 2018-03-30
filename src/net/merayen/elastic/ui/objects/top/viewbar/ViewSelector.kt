@@ -6,6 +6,7 @@ import net.merayen.elastic.ui.objects.components.Tabs.Tab
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementView
+import net.merayen.elastic.ui.objects.top.views.editview.EditView
 import net.merayen.elastic.ui.objects.top.views.midiview.MidiView
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
@@ -14,6 +15,7 @@ import net.merayen.elastic.ui.objects.top.views.transportview.TransportView
 class ViewSelector(handler: Handler) : UIObject() {
 	private val tabs: Tabs
 	private val NODE_VIEW = SelectorButton("Nodes", NodeView::class.java)
+	private val EDIT_VIEW = SelectorButton("Editor", EditView::class.java)
 	private val MIDI_VIEW = SelectorButton("Midi", MidiView::class.java)
 	private val TRANSPORT_VIEW = SelectorButton("Transport", TransportView::class.java)
 	private val ARRANGEMENT_VIEW = SelectorButton("Arrangement", ArrangementView::class.java)
@@ -39,6 +41,7 @@ class ViewSelector(handler: Handler) : UIObject() {
 		add(tabs)
 
 		tabs.add(NODE_VIEW)
+		tabs.add(EDIT_VIEW)
 		tabs.add(MIDI_VIEW)
 		tabs.add(TRANSPORT_VIEW)
 		tabs.add(ARRANGEMENT_VIEW)

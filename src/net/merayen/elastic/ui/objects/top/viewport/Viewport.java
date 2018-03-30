@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
+import net.merayen.elastic.ui.Draw;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.UIObject;
@@ -38,13 +39,13 @@ public class Viewport extends UIObject {
 
 	public Viewport(Handler handler) {
 		this.handler = handler;
-		clip.translation.x = BORDER_WIDTH;
-		clip.translation.y = BORDER_WIDTH;
+		clip.getTranslation().x = BORDER_WIDTH;
+		clip.getTranslation().y = BORDER_WIDTH;
 		add(clip);
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		Viewport self = this;
 
 		drag = new ViewportDrag(new ViewportDrag.Handler(){
@@ -75,7 +76,7 @@ public class Viewport extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		//draw.setColor(100, 100, 100);
 		//draw.setStroke(BORDER_WIDTH * 4);
 		//draw.rect(0, 0, layoutWidth, layoutHeight);
@@ -95,7 +96,7 @@ public class Viewport extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		if(current_view != view) {
 			if(current_view != null)
 				clip.remove(current_view);
@@ -118,7 +119,7 @@ public class Viewport extends UIObject {
 		drag.height = height - BORDER_WIDTH * 2;
 
 		Window window = UINodeUtil.getWindow(this);
-		window.debugPrint("Viewport " + lol, translation + "   [" + width + ", " + height + "]");
+		window.debugPrint("Viewport " + lol, getTranslation() + "   [" + width + ", " + height + "]");
 	}
 
 	JSONObject dump() {

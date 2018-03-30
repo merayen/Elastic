@@ -20,13 +20,13 @@ public class MenuBar extends UIObject {
 	public final float height = 20;
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		add(bar);
 		fillMenuBar();
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		bar.width = width;
 	}
 

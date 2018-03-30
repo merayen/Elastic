@@ -18,7 +18,7 @@ class TitleBarContextMenu extends UIObject {
 			@Override
 			public void onSelect(ContextMenuItem item, Point position) {
 				if(item == delete_node) {
-					UINode node = (UINode)search.parentByType(UINode.class);
+					UINode node = (UINode) getSearch().parentByType(UINode.class);
 					node.delete();
 				}
 			}
@@ -32,7 +32,7 @@ class TitleBarContextMenu extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		menu.handle(event);
 	}
 }

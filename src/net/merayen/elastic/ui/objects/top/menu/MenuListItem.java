@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.menu;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -18,7 +19,7 @@ public class MenuListItem extends UIObject {
 	private boolean over;
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
@@ -39,7 +40,7 @@ public class MenuListItem extends UIObject {
 		});
 	}
 
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setFont("Geneva", 12f);
 		label_width = draw.getTextWidth(label);
 
@@ -55,10 +56,10 @@ public class MenuListItem extends UIObject {
 		draw.setColor(200, 200, 200);
 		draw.text(label, 10.5f, 14.5f);
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

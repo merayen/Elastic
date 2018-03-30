@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.megamenu;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.objects.components.Button;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
@@ -16,12 +17,12 @@ class Menu extends AutoLayout {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		Menu self = this;
 
 		super.onInit();
 		views = new ViewSelector((cls) -> {
-			View old_view = self.search.parentByType(View.class);
+			View old_view = self.getSearch().parentByType(View.class);
 			View new_view;
 
 			try {
@@ -30,7 +31,7 @@ class Menu extends AutoLayout {
 				throw new RuntimeException(e);
 			}
 
-			self.search.parentByType(ViewportContainer.class).swapView(old_view, new_view);
+			self.getSearch().parentByType(ViewportContainer.class).swapView(old_view, new_view);
 		});
 		add(views);
 
@@ -44,7 +45,7 @@ class Menu extends AutoLayout {
 		add(new Button() {{
 			label = "Open Project";
 			setHandler(() -> {
-				View old_view = self.search.parentByType(View.class);
+				View old_view = self.getSearch().parentByType(View.class);
 				View new_view;
 
 				try {
@@ -53,7 +54,7 @@ class Menu extends AutoLayout {
 					throw new RuntimeException(e);
 				}
 
-				self.search.parentByType(ViewportContainer.class).swapView(old_view, new_view);
+				self.getSearch().parentByType(ViewportContainer.class).swapView(old_view, new_view);
 			});
 		}});
 
@@ -64,8 +65,8 @@ class Menu extends AutoLayout {
 	}
 
 	@Override
-	protected void onDraw() {
-		super.onDraw();
+	public void onDraw(Draw draw) {
+		super.onDraw(draw);
 
 		draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, 200, 400);

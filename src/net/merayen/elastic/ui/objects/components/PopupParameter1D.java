@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.framework.PopupParameter;
 
@@ -14,7 +15,7 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 
 	private class Window extends UIObject {
 		@Override
-		protected void onDraw() {
+		public void onDraw(Draw draw) {
 			draw.setColor(150, 150, 150);
 			draw.fillRect(-20, 0, 20, popup_height);
 
@@ -44,7 +45,7 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 
 			@Override
 			public void onMove() {
-				box.popup.translation.x = 0; // Constrain X-axis
+				box.popup.getTranslation().x = 0; // Constrain X-axis
 				if(handler != null)
 					//handler.onMove(box.popup.translation.y / popup_height);
 					handler.onMove(box.getY());
@@ -56,7 +57,7 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 			@Override
 			public void onDrop() {
 				if(handler != null)
-					handler.onChange(box.popup.translation.y / popup_height);
+					handler.onChange(box.popup.getTranslation().y / popup_height);
 			}
 		});
 
@@ -64,14 +65,14 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		add(box);
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		box.popup_height = popup_height;
-		window.translation.y = label.getLayoutHeight() / 2;
+		window.getTranslation().y = label.getHeight() / 2;
 		box.drag_scale_y = drag_scale;
 	}
 

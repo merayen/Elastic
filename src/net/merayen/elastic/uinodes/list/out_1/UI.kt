@@ -8,8 +8,8 @@ import net.merayen.elastic.ui.objects.node.UIPort
 class UI : UINode() {
 	override fun onInit() {
 		super.onInit()
-		width = 100f
-		height = 40f
+		layoutWidth = 100f
+		layoutHeight = 40f
 		titlebar.title = "Out"
 	}
 

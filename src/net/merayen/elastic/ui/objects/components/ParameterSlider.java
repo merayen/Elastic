@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -22,7 +23,7 @@ public class ParameterSlider extends UIObject {
 		public String onLabelUpdate(double value);
 	}
 
-	protected void onInit() {
+	public void onInit() {
 		left_button = new Button();
 		left_button.label = "-";
 		left_button.width = 11f;
@@ -40,8 +41,8 @@ public class ParameterSlider extends UIObject {
 		});
 
 		right_button = new Button();
-		right_button.translation.x = width - 11f;
-		right_button.translation.y = 0f;
+		right_button.getTranslation().x = width - 11f;
+		right_button.getTranslation().y = 0f;
 		right_button.label = "+";
 		right_button.width = 11f;
 		add(right_button);
@@ -75,7 +76,8 @@ public class ParameterSlider extends UIObject {
 		});
 	}
 
-	protected void onDraw() {
+	@Override
+	public void onDraw(Draw draw) {
 		draw.setColor(50, 50, 50);
 		draw.fillRect(10, 0, width - 20f, 15f);
 
@@ -96,10 +98,10 @@ public class ParameterSlider extends UIObject {
 			draw.text(label, width/2 - text_width/2, 10f);
 		}
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		mousehandler.handle(event);
 	}
 

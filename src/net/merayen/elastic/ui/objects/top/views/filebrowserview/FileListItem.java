@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.filebrowserview;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -21,7 +22,7 @@ class FileListItem extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseOver() {
@@ -42,7 +43,7 @@ class FileListItem extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		if(label == null)
 			return;
 
@@ -54,7 +55,6 @@ class FileListItem extends UIObject {
 			draw.setColor(150, 150, 150);
 		else 
 			draw.setColor(50, 50, 50);
-
 		draw.fillRect(-5, -5, width + 10, 15 + 10);
 
 		draw.setColor(255, 255, 255);
@@ -72,7 +72,7 @@ class FileListItem extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 }

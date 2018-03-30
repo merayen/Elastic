@@ -10,7 +10,7 @@ public class TransportViewButtons extends AutoLayout {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		super.onInit();
 
 		add(new Button() {{

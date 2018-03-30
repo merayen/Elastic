@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
+import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 
 internal class Track : UIObject() {
@@ -25,7 +26,7 @@ internal class Track : UIObject() {
         }
     }
 
-    override fun onDraw() {
+    override fun onDraw(draw: Draw) {
         draw.setColor(0, 255, 0)
         draw.setStroke(1f)
         draw.rect(0f, 0f, layoutWidth, layoutHeight)

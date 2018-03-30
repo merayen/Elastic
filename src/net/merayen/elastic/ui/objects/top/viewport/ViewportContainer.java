@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.merayen.elastic.ui.Draw;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.Rect;
@@ -71,7 +72,7 @@ public class ViewportContainer extends UIObject {
 
 	boolean me;
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		ViewportContainer self = this;
 
 		mouse_handler = new MouseHandler(this);
@@ -83,20 +84,20 @@ public class ViewportContainer extends UIObject {
 			public void onMouseDown(Point position) {
 				for(Viewport v : viewports)
 					if(HitTester.inside(position, new Rect(
-						v.translation.x + v.width - 4,
-						v.translation.y,
-						v.translation.x + v.width + 4,
-						v.translation.y + v.height)
+						v.getTranslation().x + v.width - 4,
+						v.getTranslation().y,
+						v.getTranslation().x + v.width + 4,
+						v.getTranslation().y + v.height)
 					)) {
 						moving = v;
 						vertical = true;
 					}
 
 					else if(HitTester.inside(position, new Rect(
-						v.translation.x,
-						v.translation.y + v.height - 4,
-						v.translation.x + v.width,
-						v.translation.y + v.height + 4)
+						v.getTranslation().x,
+						v.getTranslation().y + v.height - 4,
+						v.getTranslation().x + v.width,
+						v.getTranslation().y + v.height + 4)
 					)) {
 						moving = v;
 						vertical = false;
@@ -111,9 +112,9 @@ public class ViewportContainer extends UIObject {
 					return;
 
 				if(vertical) {
-					layout.resizeWidth(moving, (position.x - moving.translation.x) / width);
+					layout.resizeWidth(moving, (position.x - moving.getTranslation().x) / width);
 				} else {
-					layout.resizeHeight(moving, (position.y - moving.translation.y) / height);
+					layout.resizeHeight(moving, (position.y - moving.getTranslation().y) / height);
 				}
 			}
 
@@ -145,7 +146,7 @@ public class ViewportContainer extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		if(me)
 			draw.setColor(255,  0,  255);
 		else
@@ -153,16 +154,15 @@ public class ViewportContainer extends UIObject {
 		draw.fillRect(0, 0, width, height);
 	}
 
-	static int asdf;
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		// TODO Remove. Requires defaultView to have been called
 		int i = 0;
 		for(Viewport v : viewports) {
-			v.translation.x = (width / viewports.size()) * i;
+			v.getTranslation().x = (width / viewports.size()) * i;
 			v.width = width - (width / viewports.size()) * i;
 
-			v.translation.y = (height / viewports.size()) * i; 
+			v.getTranslation().y = (height / viewports.size()) * i;
 			v.height = height / viewports.size();
 			i++;
 		}
@@ -173,7 +173,7 @@ public class ViewportContainer extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		mouse_handler.handle(event);
 	}
 
@@ -199,8 +199,8 @@ public class ViewportContainer extends UIObject {
 	private void updateLayout() {
 		for(Layout.CalculatedPosition p : layout.getLayout()) {
 			Viewport v = ((Viewport)p.obj);
-			v.translation.x = p.x * width;
-			v.translation.y = p.y * height;
+			v.getTranslation().x = p.x * width;
+			v.getTranslation().y = p.y * height;
 			v.width = p.width * width;
 			v.height = p.height * height;
 		}

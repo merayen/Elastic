@@ -13,8 +13,8 @@ public class SignalBezierCurveBoxControlFrame extends UIObject {
 	private final AutoLayout buttons = new AutoLayout(new LayoutMethods.HorizontalBox(2, 0));
 
 	@Override
-	protected void onInit() {
-		bezier.translation.y = 15;
+	public void onInit() {
+		bezier.getTranslation().y = 15;
 		add(bezier);
 		add(buttons);
 
@@ -28,7 +28,7 @@ public class SignalBezierCurveBoxControlFrame extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		bezier.width = width;
 		bezier.height = Math.max(0, height - 15);
 	}

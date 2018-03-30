@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components
 
+import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UIClip
@@ -41,7 +42,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
             })
         }
 
-        override fun onDraw() {
+        override fun onDraw(draw: Draw) {
             draw.setColor(255, 0, 255)
             draw.fillRect(0f, 0f, barWidth, barWidth)
         }
@@ -57,7 +58,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
         updateBars()
     }
 
-    override fun onDraw() {
+    override fun onDraw(draw: Draw) {
         draw.setColor(100, 100, 100)
         draw.setStroke(barWidth)
         draw.fillRect(0f, layoutHeight - barWidth, layoutWidth, barWidth)
@@ -65,8 +66,8 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
     }
 
     override fun onUpdate() {
-        contentWidth = uiobject.width
-        contentHeight = uiobject.width
+        contentWidth = uiobject.getWidth()
+        contentHeight = uiobject.getHeight()
 
         clip.width = layoutWidth - barWidth
         clip.height = layoutHeight - barWidth

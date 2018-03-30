@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent;
@@ -16,25 +17,25 @@ public abstract class View extends UIObject {
 	public abstract View cloneView();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		super.onInit();
 		add(bar);
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		if(focused) {
 			draw.setColor(200, 200, 200);
 			draw.setStroke(4);
 			draw.rect(1, 1, width - 2, height - 2);
 		}
 
-		bar.translation.y = height - 20;
+		bar.getTranslation().y = height - 20;
 		bar.width = width;
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
 			focused = (e.hitDepth(this) > -1);

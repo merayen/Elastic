@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.top.Window;
@@ -26,7 +27,7 @@ public class ViewportDrag extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
@@ -72,7 +73,7 @@ public class ViewportDrag extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setColor(150, 150, 150); // Move out to separate UIObject, make interactable
 		draw.setStroke(1);
 		for(int i = 0; i < 5; i++)
@@ -80,13 +81,13 @@ public class ViewportDrag extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		Window window = UINodeUtil.getWindow(this);
-		window.debugPrint("ViewportDrag outline() " + lol, this.outline_abs_px);
+		window.debugPrint("ViewportDrag outline() " + lol, this.getOutline_abs_px());
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		mousehandler.handle(event);
 	}
 }

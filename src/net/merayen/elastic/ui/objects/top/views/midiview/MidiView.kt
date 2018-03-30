@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.midiview
 
+import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.top.views.View
 
 class MidiView : View() {
@@ -18,8 +19,8 @@ class MidiView : View() {
 		midi.translation.y = 20f
 	}
 
-	override fun onDraw() {
-		super.onDraw()
+	override fun onDraw(draw: Draw) {
+		super.onDraw(draw)
 		draw.setColor(50,50,100)
 		draw.fillRect(30f,30f,50f,50f)
 	}

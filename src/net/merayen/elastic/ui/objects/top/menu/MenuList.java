@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.menu;
 
 import java.util.ArrayList;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -17,7 +18,7 @@ public class MenuList extends UIObject {
 	private Handler handler;
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
@@ -31,10 +32,10 @@ public class MenuList extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		int i = 0;
 		for(MenuListItem x : items) {
-			x.translation.y = i; 
+			x.getTranslation().y = i;
 			i += x.getMenuItemHeight();
 			x.width = getMenuWidth() - 2f;
 		}
@@ -45,11 +46,11 @@ public class MenuList extends UIObject {
 		draw.setColor(80, 80, 80);
 		draw.fillRect(1f, 1f, getMenuWidth() - 2f, getMenuHeight() - 2f);
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
 	@Override
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

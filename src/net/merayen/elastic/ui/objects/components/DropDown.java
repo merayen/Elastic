@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
@@ -15,7 +16,7 @@ public class DropDown extends UIObject {
 	public MenuList menu_list = new MenuList();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		menu_list.setHandler(new MenuList.Handler() {
 			@Override
 			public void onOutsideClick() {
@@ -39,7 +40,7 @@ public class DropDown extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setColor(0, 0, 0);
 		draw.setStroke(1);
 		draw.rect(0, 0, width, height);
@@ -48,12 +49,12 @@ public class DropDown extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
-		menu_list.translation.y = height;
+	public void onUpdate() {
+		menu_list.getTranslation().y = height;
 	}
 
 	@Override
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

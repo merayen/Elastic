@@ -56,7 +56,7 @@ class NodeViewContextMenu extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(UIEvent event) {
+	public void onEvent(UIEvent event) {
 		menu.handle(event);
 	}
 }

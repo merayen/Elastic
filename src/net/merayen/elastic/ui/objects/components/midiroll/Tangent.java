@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components.midiroll;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -24,7 +25,7 @@ class Tangent extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
@@ -61,7 +62,7 @@ class Tangent extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		if(active)
 			draw.setColor(100, 100, 100);
 		else if(black)
@@ -73,7 +74,7 @@ class Tangent extends UIObject {
 	}
 
 	@Override
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

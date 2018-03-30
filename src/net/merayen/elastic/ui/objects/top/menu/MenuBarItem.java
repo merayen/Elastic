@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.menu;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
@@ -24,8 +25,8 @@ public class MenuBarItem extends UIObject {
 	private long allow_closing;
 	private boolean close_menu;
 
-	protected void onInit() {
-		menu_list.translation.y = 20f;
+	public void onInit() {
+		menu_list.getTranslation().y = 20f;
 		menu_list.setHandler(new MenuList.Handler() {
 			@Override
 			public void onOutsideClick() { 
@@ -53,7 +54,7 @@ public class MenuBarItem extends UIObject {
 	}
 
 	@Override
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setFont("Geneva", 12f);
 		label_width = draw.getTextWidth(label);
 
@@ -72,14 +73,14 @@ public class MenuBarItem extends UIObject {
 	}
 
 	@Override
-	protected void onUpdate() {
+	public void onUpdate() {
 		if(close_menu) {
 			hideMenu();
 			close_menu = false;
 		}
 	}
 
-	protected void onEvent(UIEvent e) {
+	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
 	}
 

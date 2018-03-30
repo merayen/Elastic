@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components.window;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
 public class Window extends UIObject {
@@ -16,13 +17,13 @@ public class Window extends UIObject {
 	public String title = "";
 	private Content content = new Content();
 
-	protected void onInit() {
-		content.translation.x = 1f;
-		content.translation.y = 11f;
+	public void onInit() {
+		content.getTranslation().x = 1f;
+		content.getTranslation().y = 11f;
 		add(content);
 	}
 
-	protected void onDraw() {
+	public void onDraw(Draw draw) {
 		draw.setColor(80, 80, 80);
 		draw.fillRect(0, 0, width, height);
 
@@ -36,7 +37,7 @@ public class Window extends UIObject {
 		content.width = width - 2f;
 		content.height = height - 12f;
 
-		super.onDraw();
+		super.onDraw(draw);
 	}
 
 	public UIObject getContentPane() {
@@ -44,7 +45,7 @@ public class Window extends UIObject {
 	}
 
 	public void center(float parent_width, float parent_height) {
-		translation.x = parent_width / 2 - width / 2;
-		translation.y = parent_height / 2 - height / 2;
+		getTranslation().x = parent_width / 2 - width / 2;
+		getTranslation().y = parent_height / 2 - height / 2;
 	}
 }

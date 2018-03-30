@@ -8,7 +8,7 @@ public class MegaMenu extends UIObject {
 	private final Menu menu = new Menu();
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		button.label = "Menu";
 		button.setHandler( () -> {
 			if(menu.getParent() == null)
@@ -17,6 +17,6 @@ public class MegaMenu extends UIObject {
 				remove(menu);
 		});
 		add(button);
-		menu.translation.y = 20;
+		menu.getTranslation().y = 20;
 	}
 }

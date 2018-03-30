@@ -28,13 +28,13 @@ class Piano extends UIObject {
 	}
 
 	@Override
-	protected void onInit() {
+	public void onInit() {
 		float y = 0;
 
 		for(int i = 0; i < octave_count * 7; i++) {
 			Tangent t = new Tangent(false, getTangentHandler(WHITE_POSITIONS[i % 7] + 12 * (i / 7)));
-			t.translation.x = spacing;
-			t.translation.y = (octave_width * octave_count) - (y + spacing + octave_width / 7);
+			t.getTranslation().x = spacing;
+			t.getTranslation().y = (octave_width * octave_count) - (y + spacing + octave_width / 7);
 			t.width = width - spacing * 2;
 			t.height = octave_width / 7 - spacing * 2;
 			tangents.add(t);
@@ -48,8 +48,8 @@ class Piano extends UIObject {
 		for(int i = 0; i < octave_count * 7; i++) {
 			if(pos != 2 && pos != 6) {
 				Tangent t = new Tangent(true, getTangentHandler((WHITE_POSITIONS[i % 7] + 1) + 12 * (i / 7)));
-				t.translation.x = spacing;
-				t.translation.y = (octave_width * octave_count) - (y + spacing + octave_width / 7) - octave_width / (7*3);
+				t.getTranslation().x = spacing;
+				t.getTranslation().y = (octave_width * octave_count) - (y + spacing + octave_width / 7) - octave_width / (7*3);
 				t.width = width / 2;
 				t.height = (octave_width / 7) / 1.5f - spacing * 2;
 				tangents.add(t);

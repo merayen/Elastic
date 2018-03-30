@@ -41,8 +41,8 @@ public class LayoutMethods {
 					row_height = 0;
 				}
 
-				obj.translation.x = x;
-				obj.translation.y = y;
+				obj.getTranslation().x = x;
+				obj.getTranslation().y = y;
 
 				x += obj_width + margin;
 

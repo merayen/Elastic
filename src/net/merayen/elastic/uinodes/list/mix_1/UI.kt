@@ -30,8 +30,8 @@ class UI : UINode() {
 
     override fun onInit() {
         super.onInit()
-        width = 100f
-        height = 100f
+        layoutWidth = 100f
+        layoutHeight = 100f
     }
 
     override fun onCreatePort(port: UIPort) {

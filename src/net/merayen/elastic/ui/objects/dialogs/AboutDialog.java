@@ -1,12 +1,13 @@
 package net.merayen.elastic.ui.objects.dialogs;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.Button;
 import net.merayen.elastic.ui.objects.components.window.Window;
 
 public class AboutDialog extends UIObject {
 	private static class AboutDialogContent extends UIObject {
-		protected void onDraw() {
+		public void onDraw(Draw draw) {
 			draw.setColor(200, 200, 200);
 			draw.setFont("Geneva", 20f);
 			draw.text("Elastic v0.0.1", 100f, 50f);
@@ -15,7 +16,7 @@ public class AboutDialog extends UIObject {
 
 	private Window window;
 
-	protected void onInit() {
+	public void onInit() {
 		AboutDialog self = this;
 		window = new Window();
 		window.width = 600f;
@@ -27,8 +28,8 @@ public class AboutDialog extends UIObject {
 
 		Button button = new Button();
 		button.label = "Close";
-		button.translation.x = 500f;
-		button.translation.y = 550f;
+		button.getTranslation().x = 500f;
+		button.getTranslation().y = 550f;
 		button.setHandler(new Button.IHandler() {
 			@Override
 			public void onClick() {
