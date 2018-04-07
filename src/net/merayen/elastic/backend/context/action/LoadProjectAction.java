@@ -22,7 +22,7 @@ public class LoadProjectAction extends Action {
 		List<Postmaster.Message> messages = new ArrayList<>();
 
 		messages.add(new BeginResetNetListMessage());
-		messages.addAll(NetListMessages.disassemble(env.project.data.getRawNetList()));
+		messages.addAll(NetListMessages.INSTANCE.disassemble(env.project.data.getRawNetList()));
 		messages.add(new FinishResetNetListMessage());
 
 		backend_context.message_handler.sendToBackend(messages);

@@ -95,7 +95,7 @@ public abstract class BaseLogicNode {
 		// Everything OK
 		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format); // TODO rename to chain_ident
 
-		NetListMessages.apply(netlist, message); // Apply the port to the NetList
+		NetListMessages.INSTANCE.apply(netlist, message); // Apply the port to the NetList
 
 		supervisor.sendMessageToUI(message);
 		supervisor.sendMessageToProcessor(message);

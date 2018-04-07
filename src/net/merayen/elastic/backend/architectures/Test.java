@@ -25,7 +25,7 @@ public class Test {
 
 		dispatch.launch(new InitBackendMessage(44100, 16, 1024, ""));
 
-		for(Postmaster.Message m : NetListMessages.disassemble(netlist))
+		for(Postmaster.Message m : NetListMessages.INSTANCE.disassemble(netlist))
 			dispatch.executeMessage(m);
 
 		long t = System.currentTimeMillis() + 3000;

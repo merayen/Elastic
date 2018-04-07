@@ -79,7 +79,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 			})
 
 			title = "Elastic"
-			setSize(500, 500)
+			setSize(800, 800)
 			defaultCloseOperation = javax.swing.JFrame.EXIT_ON_CLOSE
 			isVisible = true
 		}

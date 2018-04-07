@@ -31,8 +31,8 @@ public class FileBrowserView extends View {
 
 	@Override
 	public void onUpdate() {
-		file_list.width = width - 20;
-		file_list.height = height;
+		file_list.width = getWidth() - 20;
+		file_list.height = getHeight();
 	}
 
 	@Override

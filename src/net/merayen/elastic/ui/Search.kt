@@ -55,6 +55,7 @@ class Search(private val obj: UIObject) {
 		while (x != null && !cls.isAssignableFrom(x.javaClass))
 			x = x.parent
 
+		@Suppress("UNCHECKED_CAST")
 		return if (x == null) null else x as T
 	}
 
@@ -63,6 +64,7 @@ class Search(private val obj: UIObject) {
 		while (x != null && !cls.isAssignableFrom(x.javaClass))
 			x = x.parent
 
-		return x as T
+		@Suppress("UNCHECKED_CAST")
+		return if (x == null) null else x as T
 	}
 }

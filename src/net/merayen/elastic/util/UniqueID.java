@@ -6,7 +6,7 @@ public class UniqueID {
 	private final static byte[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".getBytes();
 
 	public static String create() {
-		byte[] bytes = new byte[16];
+		byte[] bytes = new byte[24];
 
 		new Random().nextBytes(bytes);
 

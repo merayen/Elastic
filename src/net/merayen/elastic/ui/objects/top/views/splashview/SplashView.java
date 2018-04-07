@@ -30,6 +30,6 @@ public class SplashView extends View {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		bar.width = width;
+		bar.width = getWidth();
 	}
 }

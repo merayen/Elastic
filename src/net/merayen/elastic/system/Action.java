@@ -15,4 +15,19 @@ public abstract class Action {
 	protected Environment getEnvironment() {
 		return system.backend.getEnvironment();
 	}
+
+	protected void waitFor(Func func) {
+		try {
+			while(!func.run()) {
+				system.update();
+				Thread.sleep(1);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public interface Func {
+		boolean run();
+	}
 }

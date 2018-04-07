@@ -1,11 +1,9 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import net.merayen.elastic.ui.Draw;
+import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.Rect;
@@ -60,11 +58,11 @@ public class ViewportContainer extends UIObject {
 	}
 
 	public List<Viewport> getViewports() {
-		return new ArrayList<>(viewports);
+		return Collections.unmodifiableList(viewports);
 	}
 
 	private void defaultView() { // Testing purposes probably
-		Viewport a = createViewport(new SplashView());
+		Viewport a = createViewport(new NodeView());
 		layout = new Layout(a);
 
 		sendMessage(new ViewportHelloMessage(this));
@@ -175,25 +173,6 @@ public class ViewportContainer extends UIObject {
 	@Override
 	public void onEvent(UIEvent event) {
 		mouse_handler.handle(event);
-	}
-
-	/**
-	 * Called by the ViewportController when serializing.
-	 */
-	@SuppressWarnings("unchecked")
-	public JSONObject dump() {
-		JSONObject result = new JSONObject();
-
-		result.put("hi", "mom"); // TODO dump layout and type of view, and then dump all the views
-
-		//for(Viewport v : viewports)
-		//	v.dump();
-
-		return result;
-	}
-
-	public void restore(JSONObject obj) {
-		System.out.printf("ViewportContainer received restore: %s\n", obj);
 	}
 
 	private void updateLayout() {

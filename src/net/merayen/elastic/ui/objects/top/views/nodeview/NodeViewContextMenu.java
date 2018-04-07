@@ -20,7 +20,7 @@ class NodeViewContextMenu extends UIObject {
 
 	NodeViewContextMenu(UIObject background, String node_id) {
 		if(node_id == null)
-			throw new RuntimeException("node_id can not be null, we must be based on being inside a node");
+			throw new RuntimeException("nodeId can not be null, we must be based on being inside a node");
 
 		this.node_id = node_id;
 		UIObject self = this;

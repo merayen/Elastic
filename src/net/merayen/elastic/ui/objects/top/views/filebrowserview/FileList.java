@@ -25,7 +25,7 @@ class FileList extends UIObject {
 
 		@Override
 		public void onUpdate() {
-			((LayoutMethods.HorizontalBox)placement).max_width = width;
+			((LayoutMethods.HorizontalBox) placement).setMaxWidth(width);
 
 			if(files != current_files) {
 				for(UIObject obj : new ArrayList<>(getSearch().getChildren()))

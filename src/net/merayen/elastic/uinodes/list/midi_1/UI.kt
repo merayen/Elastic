@@ -48,8 +48,7 @@ class UI : UINode() {
 	private fun updateLayout() {
 		roll_view.width = getWidth() - 40
 		roll_view.height = getHeight() - 25
-		if (getPort("out") != null)
-			getPort("out").translation.x = getWidth()
+		getPort("out")?.translation?.x = getWidth()
 	}
 
 	override fun onParameter(key: String, value: Any) {}

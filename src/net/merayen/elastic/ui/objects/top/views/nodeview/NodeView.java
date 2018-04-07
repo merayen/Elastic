@@ -64,9 +64,9 @@ public class NodeView extends View {
 		super.onDraw(draw);
 
 		draw.setColor(20, 20, 50);
-		draw.fillRect(2, 2, width - 4, height - 4);
+		draw.fillRect(2, 2, getWidth() - 4, getHeight() - 4);
 
-		node_view_bar.width = width;
+		node_view_bar.width = getWidth();
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class NodeView extends View {
 			throw new RuntimeException(e);
 		}
 
-		uinode.setNode_id(node_id);
+		uinode.setNodeId(node_id);
 
 		nodes.add(uinode);
 		container.add(uinode);
@@ -112,7 +112,7 @@ public class NodeView extends View {
 
 	public UINode getNode(String id) {
 		for(UINode x : nodes)
-			if(x.getNode_id().equals(id))
+			if(x.getNodeId().equals(id))
 				return x;
 
 		return null;
@@ -138,13 +138,13 @@ public class NodeView extends View {
 		float previous_scale_y = container.getTranslation().scale_y;
 		float scale_diff_x = new_scale_x - previous_scale_x;
 		float scale_diff_y = new_scale_y - previous_scale_y;
-		float current_offset_x = (container.getTranslation().x - width  / 2);
-		float current_offset_y = (container.getTranslation().y - height / 2);
+		float current_offset_x = (container.getTranslation().x - getWidth() / 2);
+		float current_offset_y = (container.getTranslation().y - getHeight() / 2);
 
 		container.getTranslation().scale_x = new_scale_x;
 		container.getTranslation().scale_y = new_scale_y;
-		container.getTranslation().x = width  / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
-		container.getTranslation().y = height / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
+		container.getTranslation().x = getWidth() / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x);
+		container.getTranslation().y = getHeight() / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y);
 	}
 
 	@Override

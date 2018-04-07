@@ -2,24 +2,20 @@ package net.merayen.elastic.ui.objects.components.autolayout;
 
 import java.util.List;
 
+import net.merayen.elastic.ui.FlexibleDimension;
 import net.merayen.elastic.ui.UIObject;
 
-public class AutoLayout extends UIObject {
+public class AutoLayout<T extends AutoLayout.Placement> extends UIObject {
 	public interface Placement {
-		public void place(List<UIObject> current);
-		public float getWidth();
-		public float getHeight();
+		void place(List<UIObject> objects);
+		float getWidth();
+		float getHeight();
 	}
 
-	public final Placement placement;
+	public final T placement;
 
-	public AutoLayout(Placement placement) {
+	public AutoLayout(T placement) {
 		this.placement = placement;
-	}
-
-	@Override
-	public void add(UIObject element, int index) {
-		super.add(element, index);
 	}
 
 	@Override

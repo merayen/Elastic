@@ -95,7 +95,7 @@ public class UINet extends UIObject {
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		UINodeUtil.getTop(this).sendMessage(new NodeConnectMessage(a.getNode().getNode_id(), a.name, b.getNode().getNode_id(), b.name));
+		UINodeUtil.getTop(this).sendMessage(new NodeConnectMessage(a.getNode().getNodeId(), a.name, b.getNode().getNodeId(), b.name));
 	}
 
 	private void internalConnect(NodeConnectMessage message) {
@@ -120,14 +120,14 @@ public class UINet extends UIObject {
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		UINodeUtil.getTop(this).sendMessage(new NodeDisconnectMessage(a.getNode().getNode_id(), a.name, b.getNode().getNode_id(), b.name));
+		UINodeUtil.getTop(this).sendMessage(new NodeDisconnectMessage(a.getNode().getNodeId(), a.name, b.getNode().getNodeId(), b.name));
 	}
 
 	private void internalDisconnect(NodeDisconnectMessage message) {
 		for(int i = connections.size() - 1; i > -1; i--) {
 			Connection c = connections.get(i);
-			String node_a = c.a.getNode().getNode_id();
-			String node_b = c.b.getNode().getNode_id();
+			String node_a = c.a.getNode().getNodeId();
+			String node_b = c.b.getNode().getNodeId();
 			if(node_a.equals(message.node_a) && node_b.equals(message.node_b)) {
 				if(c.a.name.equals(message.port_a) && c.b.name.equals(message.port_b))
 					connections.remove(i);
@@ -143,9 +143,9 @@ public class UINet extends UIObject {
 		for(int i = connections.size() - 1; i > -1; i--) {
 			Connection c = connections.get(i);
 			UIPort port = null;
-			if(c.a.getNode().getNode_id().equals(node_id))
+			if(c.a.getNode().getNodeId().equals(node_id))
 				port = c.a;
-			else if(c.b.getNode().getNode_id().equals(node_id))
+			else if(c.b.getNode().getNodeId().equals(node_id))
 				port = c.b;
 
 			if(port != null)
@@ -158,9 +158,9 @@ public class UINet extends UIObject {
 		while(iterator.hasNext()) {
 			Connection c = iterator.next();
 
-			if(c.a.getNode().getNode_id().equals(message.node_id) && c.a.name.equals(message.port))
+			if(c.a.getNode().getNodeId().equals(message.node_id) && c.a.name.equals(message.port))
 				iterator.remove();
-			else if(c.b.getNode().getNode_id().equals(message.node_id) && c.b.name.equals(message.port))
+			else if(c.b.getNode().getNodeId().equals(message.node_id) && c.b.name.equals(message.port))
 				iterator.remove();
 		}
 	}
@@ -172,7 +172,7 @@ public class UINet extends UIObject {
 		Top top = UINodeUtil.getTop(this);
 		for(Connection c : connections)
 			if(p == c.a || p == c.b)
-				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().getNode_id(), c.a.name, c.b.getNode().getNode_id(), c.b.name));
+				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().getNodeId(), c.a.name, c.b.getNode().getNodeId(), c.b.name));
 	}
 
 	public void handleMessage(Postmaster.Message message) {

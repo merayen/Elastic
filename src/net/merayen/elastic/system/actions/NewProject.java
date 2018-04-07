@@ -62,7 +62,7 @@ public class NewProject extends Action {
 
 		waitFor(() -> nodes.size() == 1);
 
-		//system.sendMessageToUI(new CreateDefaultView(nodes.get(0).node_id));
+		//system.sendMessageToUI(new CreateDefaultView(nodes.get(0).nodeId));
 
 		system.sendMessageToBackend(new CreateNodeMessage("test", 100, nodes.get(0).node_id));
 		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, nodes.get(0).node_id));
@@ -82,7 +82,7 @@ public class NewProject extends Action {
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(4).node_id, "input"));
-		//system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(1).node_id, "frequency"));
+		//system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).nodeId, "output", nodes.get(1).nodeId, "frequency"));
 
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(3).node_id, "data.frequency", 1f));
 
@@ -94,20 +94,5 @@ public class NewProject extends Action {
 		}}));
 
 		system.sendMessageToBackend(new CreateCheckpointMessage());
-	}
-
-	interface Func {
-		public boolean noe();
-	}
-
-	private void waitFor(Func func) {
-		try {
-			while(!func.noe()) {
-				system.update();
-				Thread.sleep(1);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 }

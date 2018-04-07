@@ -21,7 +21,7 @@ public class LockNodeMessage extends CoopMessage {
 		Map<String, Object> result = new HashMap<>();
 
 		result.put("user_id", user_id);
-		result.put("node_id", node_id);
+		result.put("nodeId", node_id);
 
 		return result;
 	}

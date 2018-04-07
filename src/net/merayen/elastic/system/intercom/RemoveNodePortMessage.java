@@ -1,6 +1,6 @@
 package net.merayen.elastic.system.intercom;
 
-public class RemoveNodePortMessage extends NetListMessage {
+public class RemoveNodePortMessage extends NetListMessage implements NodeMessage {
 	public final String node_id;
 	public final String port;
 
@@ -10,6 +10,11 @@ public class RemoveNodePortMessage extends NetListMessage {
 	}
 
 	public String toString() {
-		return super.toString() + String.format(" (node_id=%s, port=%s)", node_id, port);
+		return super.toString() + String.format(" (nodeId=%s, port=%s)", node_id, port);
+	}
+
+	@Override
+	public String getNodeId() {
+		return node_id;
 	}
 }

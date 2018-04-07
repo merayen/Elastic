@@ -16,8 +16,8 @@ class ArrangementView : View() {
 
     override fun onUpdate() {
         super.onUpdate()
-        arrangement.layoutWidth = width
-        arrangement.layoutHeight = height - 20
+        arrangement.layoutWidth = layoutWidth
+        arrangement.layoutHeight = layoutHeight - 20
     }
 
     override fun cloneView(): View {

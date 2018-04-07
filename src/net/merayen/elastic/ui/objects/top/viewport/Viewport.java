@@ -111,8 +111,8 @@ public class Viewport extends UIObject {
 		clip.height = height - BORDER_WIDTH * 2;
 
 		if(current_view != null) {
-			current_view.width = width - BORDER_WIDTH * 2;
-			current_view.height = height - BORDER_WIDTH * 2;
+			current_view.setLayoutWidth(width - BORDER_WIDTH * 2);
+			current_view.setLayoutHeight(height - BORDER_WIDTH * 2);
 		}
 
 		drag.width = width - BORDER_WIDTH * 2;
@@ -120,10 +120,6 @@ public class Viewport extends UIObject {
 
 		Window window = UINodeUtil.getWindow(this);
 		window.debugPrint("Viewport " + lol, getTranslation() + "   [" + width + ", " + height + "]");
-	}
-
-	JSONObject dump() {
-		return null;
 	}
 
 	public String toString() {

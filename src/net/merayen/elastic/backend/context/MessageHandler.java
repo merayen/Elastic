@@ -58,8 +58,8 @@ public class MessageHandler {
 				NetListRefreshRequestMessage m = (NetListRefreshRequestMessage)message;
 
 				List<Postmaster.Message> refresh_messages = new ArrayList<>();
-				refresh_messages.add(new BeginResetNetListMessage(m.group_id)); // This will clear the receiver's NetList
-				refresh_messages.addAll(NetListMessages.disassemble(backend_context.env.project.getNetList(), m.group_id)); // All these messages will rebuild the receiver's NetList
+				refresh_messages.add(new BeginResetNetListMessage(m.getGroup_id())); // This will clear the receiver's NetList
+				refresh_messages.addAll(NetListMessages.INSTANCE.disassemble(backend_context.env.project.getNetList(), m.getGroup_id())); // All these messages will rebuild the receiver's NetList
 				refresh_messages.add(new FinishResetNetListMessage());
 
 				to_ui.send(refresh_messages); // Send all messages in a chunk so no other messages can get in-between.

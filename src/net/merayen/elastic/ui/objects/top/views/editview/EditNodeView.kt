@@ -1,0 +1,86 @@
+package net.merayen.elastic.ui.objects.top.views.editview
+
+import net.merayen.elastic.system.intercom.NodeMessage
+import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.controller.EditNodeController
+import net.merayen.elastic.ui.objects.node.INodeEditable
+import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
+import net.merayen.elastic.ui.objects.top.views.View
+
+class EditNodeView : View() {
+	var editNodeController: EditNodeController? = null
+	private var nodeEditor: NodeEditor? = null
+
+	var pinned = false
+	var nodeId: String? = null
+		private set
+
+	private val bar = EditNodeViewBar()
+	private val content = UIObject()
+
+	override fun cloneView(): View {
+		val editNodeView = EditNodeView()
+		editNodeView.nodeId = nodeId
+		editNodeView.pinned = pinned
+		return editNodeView
+	}
+
+	override fun onInit() {
+		super.onInit()
+		sendMessage(EditNodeController.Hello(this))
+		add(bar)
+		add(content)
+
+		content.translation.y = 20f
+	}
+
+	override fun onDraw(draw: Draw) {
+		super.onDraw(draw)
+		val nodeId = nodeId
+		if(nodeId == null) {
+			draw.setColor(50,50,50)
+			draw.setFont("", 32f)
+			val text = "(Nothing to edit currently)"
+			draw.text(text, getWidth() / 2f - draw.getTextWidth(text) / 2f, getHeight() / 2f)
+		}
+	}
+
+	override fun onUpdate() {
+		super.onUpdate()
+		nodeEditor?.layoutWidth = getWidth()
+		nodeEditor?.layoutHeight = getHeight() - content.translation.y
+	}
+
+	fun init(editNodeController: EditNodeController) {
+		this.editNodeController = editNodeController
+		if(nodeId != null)
+			tryLoad()
+	}
+
+	fun receiveMessage(message: NodeMessage) {
+		nodeEditor?.onMessage(message)
+	}
+
+	fun editNode(node: INodeEditable) {
+		val nodeEditor = node.getNodeEditor()
+		this.nodeEditor = nodeEditor
+		nodeId = nodeEditor.nodeId
+
+		println("EditNodeView now editing $nodeId")
+
+		content.removeAll()
+		content.add(nodeEditor)
+
+		tryLoad()
+	}
+
+	private fun tryLoad() {
+		val nodeId = this.nodeId
+		if (nodeId != null) {
+			editNodeController?.getMessages(nodeId)?.forEach {
+				receiveMessage(it as NodeMessage)
+			}
+		}
+	}
+}

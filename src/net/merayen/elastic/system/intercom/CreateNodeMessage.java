@@ -3,7 +3,7 @@ package net.merayen.elastic.system.intercom;
 /**
  * Sent to backend to request creation of this node
  */
-public class CreateNodeMessage extends NetListMessage {
+public class CreateNodeMessage extends NetListMessage implements NodeMessage {
 
 	public final String node_id;
 	public final String name;
@@ -31,6 +31,11 @@ public class CreateNodeMessage extends NetListMessage {
 	}
 
 	public String toString() {
-		return super.toString() + String.format(" (node_id=%s, name=%s, version=%d, parent=%s)", node_id, name, version, parent);
+		return super.toString() + String.format(" (nodeId=%s, name=%s, version=%d, parent=%s)", node_id, name, version, parent);
+	}
+
+	@Override
+	public String getNodeId() {
+		return node_id;
 	}
 }

@@ -15,105 +15,105 @@ import net.merayen.elastic.util.Postmaster
  * (Remote UI might be an option later on)
  */
 class Supervisor(private val handler: Handler) {
-    internal var surfacehandler: SurfaceHandler
-    private val top: Top
-    private val ui_gate: Gate.UIGate // Only to be used by the UI-thread
-    private val backend_gate: Gate.BackendGate // Only to be used by the main-thread
-    private val gate: Gate
+	internal var surfacehandler: SurfaceHandler
+	private val top: Top
+	private val ui_gate: Gate.UIGate // Only to be used by the UI-thread
+	private val backend_gate: Gate.BackendGate // Only to be used by the main-thread
+	private val gate: Gate
 
-    interface Handler {
-        /**
-         * Called by the UI thread. DO NOT DO ANY TIME-CONSUMING STUFF IN THIS CALL.
-         * It will hang the UI.
-         * Rather, queue the message and notify() whatever needs to react on the message.
-         */
-        fun onMessageToBackend(message: Postmaster.Message)
+	interface Handler {
+		/**
+		 * Called by the UI thread. DO NOT DO ANY TIME-CONSUMING STUFF IN THIS CALL.
+		 * It will hang the UI.
+		 * Rather, queue the message and notify() whatever needs to react on the message.
+		 */
+		fun onMessageToBackend(message: Postmaster.Message)
 
-        /**
-         * Called by the UI-thread when ready to receive message.
-         * Call Supervisor().sendMessageToUI(...) in a loop until you have no messages.
-         */
-        fun onReadyForMessages()
-    }
+		/**
+		 * Called by the UI-thread when ready to receive message.
+		 * Call Supervisor().sendMessageToUI(...) in a loop until you have no messages.
+		 */
+		fun onReadyForMessages()
+	}
 
-    init {
-        surfacehandler = SurfaceHandler(this)
-        top = Top(surfacehandler)
+	init {
+		surfacehandler = SurfaceHandler(this)
+		top = Top(surfacehandler)
 
-        val self = this
-        gate = Gate(top, Gate.Handler { message -> self.handler.onMessageToBackend(message) })
+		val self = this
+		gate = Gate(top, object: Gate.Handler {
+			override fun onMessageToBackend(message: Postmaster.Message) {
+				self.handler.onMessageToBackend(message)
+			}
+		})
 
-        ui_gate = gate.uiGate
-        top.setUIGate(ui_gate)
-        backend_gate = gate.backendGate
-    }
+		ui_gate = gate.uiGate
+		top.setUIGate(ui_gate)
+		backend_gate = gate.backendGate
+	}
 
-    fun draw(dc: DrawContext) {
-        internalDraw(dc, top)
-        internalUpdate(dc, top)
-        internalExecuteIncomingMessages()
-        ui_gate.update()
-    }
+	fun draw(dc: DrawContext) {
+		internalDraw(dc, top)
+		internalUpdate(dc, top)
+		internalExecuteIncomingMessages()
+		ui_gate.update()
+	}
 
-    /**
-     * Drawing of UIObjects. Only allowed to draw, not adding/removing UIObjects etc.
-     */
-    private fun internalDraw(dc: DrawContext, uiobject: UIObject) {
-        dc.push(uiobject)
+	/**
+	 * Drawing of UIObjects. Only allowed to draw, not adding/removing UIObjects etc.
+	 */
+	private fun internalDraw(dc: DrawContext, uiobject: UIObject) {
+		dc.push(uiobject)
 
-        uiobject.draw_z = dc.pushZIndex()
-        uiobject.absolute_translation = dc.translation_stack.absolute
+		uiobject.draw_z = dc.pushZIndex()
+		uiobject.absolute_translation = dc.translation_stack.absolute
 
-        if (!uiobject.isInitialized)
-            uiobject.initialize()
+		if (!uiobject.isInitialized)
+			uiobject.initialize()
 
-        val draw = Draw(uiobject, dc)
+		val draw = Draw(uiobject, dc)
 
-        uiobject.updateDraw(draw)
+		uiobject.updateDraw(draw)
 
-        uiobject.outline_abs_px = draw.absoluteOutline
-        uiobject.outline = draw.outline
+		uiobject.outline_abs_px = draw.absoluteOutline
+		uiobject.outline = draw.outline
 
-        draw.destroy()
+		draw.destroy()
 
-        for (o in uiobject.onGetChildren(dc.surfaceID))
-            internalDraw(dc, o)
+		for (o in uiobject.onGetChildren(dc.surfaceID))
+			internalDraw(dc, o)
 
-        dc.pop()
-    }
+		dc.pop()
+	}
 
-    /**
-     * Non-draw update of UIObjects.
-     * Here the UIObjects can change their properties, add/remove UIObjects, etc.
-     */
-    private fun internalUpdate(dc: DrawContext, uiobject: UIObject) {
-        if (!uiobject.isAttached && uiobject !== top)
-            return
+	/**
+	 * Non-draw update of UIObjects.
+	 * Here the UIObjects can change their properties, add/remove UIObjects, etc.
+	 */
+	private fun internalUpdate(dc: DrawContext, uiobject: UIObject) {
+		if (!uiobject.isAttached && uiobject !== top)
+			return
 
-        if (uiobject.isInitialized) { // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
-            for (e in dc.incoming_events)
-                uiobject.onEvent(e)
+		if (uiobject.isInitialized) { // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips
+			for (e in dc.incoming_events)
+				uiobject.onEvent(e)
 
-            uiobject.onUpdate()
-        }
+			uiobject.onUpdate()
+		}
 
-        for (o in ArrayList(uiobject.onGetChildren(dc.surfaceID)))
-            internalUpdate(dc, o)
-    }
+		for (o in ArrayList(uiobject.onGetChildren(dc.surfaceID)))
+			internalUpdate(dc, o)
+	}
 
-    private fun internalExecuteIncomingMessages() {
-        handler.onReadyForMessages()
-    }
+	private fun internalExecuteIncomingMessages() {
+		handler.onReadyForMessages()
+	}
 
-    fun sendMessageToUI(message: Postmaster.Message) {
-        backend_gate.send(message)
-    }
+	fun sendMessageToUI(message: Postmaster.Message) {
+		backend_gate.send(message)
+	}
 
-    fun end() {
-        surfacehandler.end()
-    }
-
-    fun dump(): JSONObject {
-        return gate.dump()
-    }
+	fun end() {
+		surfacehandler.end()
+	}
 }

@@ -37,10 +37,10 @@ public class Executor extends AbstractExecutor {
 		} else if(message instanceof NodeParameterMessage || message instanceof NodeDataMessage) {
 			applyNetList();
 			supervisor.handleMessage(message);
-			NetListMessages.apply(getNetList(), message);
+			NetListMessages.INSTANCE.apply(getNetList(), message);
 
 		} else if(message instanceof NetListMessage) {
-			NetListMessages.apply(branchNetList(), message);
+			NetListMessages.INSTANCE.apply(branchNetList(), message);
 
 		}
 

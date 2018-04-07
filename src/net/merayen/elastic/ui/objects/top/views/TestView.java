@@ -61,7 +61,7 @@ public class TestView extends View {
 	@Override
 	public void onDraw(Draw draw) {
 		draw.setColor(20, 20, 50);
-		draw.fillRect(0, 0, width, height);
+		draw.fillRect(0, 0, getWidth(), getHeight());
 		/*((Top)search.getTop()).debug.set(String.format("TestView.Absolute %d", count), this.absolute_translation);
 		((Top)search.getTop()).debug.set(String.format("TestView.OutlineAbsolute %d", count), this.outline_abs_px);*/
 	}

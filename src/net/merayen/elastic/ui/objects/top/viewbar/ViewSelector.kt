@@ -2,11 +2,10 @@ package net.merayen.elastic.ui.objects.top.viewbar
 
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Tabs
-import net.merayen.elastic.ui.objects.components.Tabs.Tab
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementView
-import net.merayen.elastic.ui.objects.top.views.editview.EditView
+import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView
 import net.merayen.elastic.ui.objects.top.views.midiview.MidiView
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
@@ -15,7 +14,7 @@ import net.merayen.elastic.ui.objects.top.views.transportview.TransportView
 class ViewSelector(handler: Handler) : UIObject() {
 	private val tabs: Tabs
 	private val NODE_VIEW = SelectorButton("Nodes", NodeView::class.java)
-	private val EDIT_VIEW = SelectorButton("Editor", EditView::class.java)
+	private val EDIT_VIEW = SelectorButton("Editor", EditNodeView::class.java)
 	private val MIDI_VIEW = SelectorButton("Midi", MidiView::class.java)
 	private val TRANSPORT_VIEW = SelectorButton("Transport", TransportView::class.java)
 	private val ARRANGEMENT_VIEW = SelectorButton("Arrangement", ArrangementView::class.java)
@@ -32,7 +31,7 @@ class ViewSelector(handler: Handler) : UIObject() {
 	}
 
 	init {
-		tabs = Tabs(LayoutMethods.HorizontalBox(2f, 100000f), Tabs.Handler { tab -> handler.onSelect((tab as SelectorButton).view) })
+		tabs = Tabs(LayoutMethods.HorizontalBox(2f), Tabs.Handler { tab -> handler.onSelect((tab as SelectorButton).view) })
 	}
 
 	override fun onInit() {

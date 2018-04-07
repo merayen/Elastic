@@ -8,15 +8,15 @@ import net.merayen.elastic.ui.objects.components.PopupParameter1D
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.components.framework.PortParameter
+import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 
-class UI : UINode() {
+class UI : UINode(), INodeEditable {
 	private var frequency_port_parameter: PortParameter? = null
-	private var curve: SignalBezierCurveBoxControlFrame? = null
+	private lateinit var curve: SignalBezierCurveBoxControlFrame
 
-	private//return (float)Math.pow(((PopupParameter1D)frequency_port_parameter.not_connected).getValue() * 2, 14);
-	val frequency: Float
+	private val frequency: Float
 		get() = Math.pow(((frequency_port_parameter!!.not_connected as PopupParameter1D).value * 10).toDouble(), 4.301029995663981).toFloat()
 
 	init {
@@ -31,24 +31,25 @@ class UI : UINode() {
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
 
-		if (getPort("output") != null)
-			getPort("output")!!.translation.x = layoutWidth
+		getPort("output")!!.translation.x = layoutWidth
 	}
 
 	override fun onMessage(message: NodeParameterMessage) {
-		if (message.key == "data.frequency") {
-			(frequency_port_parameter!!.not_connected as PopupParameter1D).value = (Math.pow((message.value as Number).toFloat().toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
-			updateFrequencyText()
-		} else if (message.key == "data.curve") {
-			curve!!.bezier.setPoints(message.value as List<Number>)
-		} else if (message.key == "data.InputSignalParameters:frequency") {
-			(frequency_port_parameter!!.connected as InputSignalParameters).handleMessage(message)
+		when {
+			message.key == "data.frequency" -> {
+				(frequency_port_parameter!!.not_connected as PopupParameter1D).value = (Math.pow((message.value as Number).toFloat().toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
+				updateFrequencyText()
+			}
+			message.key == "data.curve" ->
+				curve.bezier.setPoints(message.value as List<Number>)
+			message.key == "data.InputSignalParameters:frequency" ->
+				(frequency_port_parameter!!.connected as InputSignalParameters).handleMessage(message)
 		}
 	}
 
 	public override fun onCreatePort(port: UIPort) {
 		if (port.name == "frequency") {
-			frequency_port_parameter = PortParameter(this, getPort("frequency"), PopupParameter1D(), InputSignalParameters(this, "frequency"))
+			frequency_port_parameter = PortParameter(this, getPort("frequency")!!, PopupParameter1D(), InputSignalParameters(this, "frequency"))
 			frequency_port_parameter!!.translation.x = 20f
 			frequency_port_parameter!!.translation.y = 20f
 			add(frequency_port_parameter!!)
@@ -77,8 +78,8 @@ class UI : UINode() {
 		val bwb = SignalBezierCurveBoxControlFrame()
 		bwb.translation.x = 20f
 		bwb.translation.y = 40f
-		bwb.width = 160f
-		bwb.height = 100f
+		bwb.layoutWidth = 160f
+		bwb.layoutHeight = 100f
 		add(bwb)
 		curve = bwb
 
@@ -89,13 +90,11 @@ class UI : UINode() {
 			}
 
 			override fun onMove() {
-				if (i++ % 10 == 0)
+				if (i++ % 10 == 0) // FIXME Should really be based on time
 					sendParameter("data.curve", bwb.bezier.floats)
 			}
 
-			override fun onDotClick() {
-
-			}
+			override fun onDotClick() {}
 		})
 	}
 
@@ -108,4 +107,6 @@ class UI : UINode() {
 	}
 
 	override fun onParameter(key: String, value: Any) {}
+
+	override fun getNodeEditor() = Editor(nodeId)
 }

@@ -27,7 +27,7 @@ class MidiView : View() {
 
 	override fun onUpdate() {
 		super.onUpdate()
-		midi.layoutWidth = width
-		midi.layoutHeight = height - 30
+		midi.layoutWidth = layoutWidth
+		midi.layoutHeight = layoutHeight - 30
 	}
 }

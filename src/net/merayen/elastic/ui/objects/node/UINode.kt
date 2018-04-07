@@ -3,7 +3,6 @@ package net.merayen.elastic.ui.objects.node
 import java.util.ArrayList
 
 import net.merayen.elastic.ui.Draw
-import org.json.simple.JSONObject
 
 import net.merayen.elastic.system.intercom.CreateNodePortMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
@@ -15,7 +14,7 @@ import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 
 abstract class UINode : UIObject() {
-	var node_id: String? = null // Same ID as in the backend-system, netlist etc
+	lateinit var nodeId: String // Same ID as in the backend-system, netlist etc
 	var layoutWidth = 500f
 	var layoutHeight = 500f
 
@@ -28,11 +27,6 @@ abstract class UINode : UIObject() {
 		get() = ArrayList<UIPort>(nodePorts)
 
 	private var inited: Boolean = false
-
-	// Dumping and restoring of simple things like position and scaling. All other dumping should be done by GlueNode (and maybe netnode too)
-	protected open fun onDump(state: JSONObject) {}
-
-	protected open fun onRestore(state: JSONObject) {}
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
@@ -73,22 +67,20 @@ abstract class UINode : UIObject() {
 		super.onDraw(draw)
 	}
 
-	fun getPort(name: String): UIPort {
+	fun getPort(name: String): UIPort? {
 		for (x in nodePorts)
 			if (x.name == name)
 				return x
 
-		throw RuntimeException("Port doesn't exist");
+		return null
 	}
 
-	fun hasPort(name: String) = nodePorts.stream().anyMatch {it.name == name}
-
 	fun sendParameter(key: String, value: Any) {
-		sendMessage(NodeParameterMessage(node_id, key, value))
+		sendMessage(NodeParameterMessage(nodeId, key, value))
 	}
 
 	fun sendData(value: Map<String, Any>) {
-		sendMessage(NodeDataMessage(node_id, value))
+		sendMessage(NodeDataMessage(nodeId, value))
 	}
 
 	fun executeMessage(message: Postmaster.Message) {
@@ -117,12 +109,5 @@ abstract class UINode : UIObject() {
 			nodePorts.remove(port)
 			onRemovePort(port)
 		}
-	}
-
-	/**
-	 * Request to delete ourself. Only a message will be sent to backend, which will delete us.
-	 */
-	fun delete() {
-		sendMessage(RemoveNodeMessage(node_id))
 	}
 }
