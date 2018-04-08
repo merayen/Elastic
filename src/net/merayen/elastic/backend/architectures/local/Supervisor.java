@@ -22,7 +22,12 @@ class Supervisor {
 
 	final NetList netlist;
 	private final int sample_rate;
-	private final int buffer_size;
+	final int buffer_size;
+
+	/**
+	 * Global samplePosition
+	 */
+	long samplePosition;
 
 	private final NodeProperties node_properties;
 	public final NetListUtil netlist_util;
@@ -32,7 +37,7 @@ class Supervisor {
 
 	private boolean dead;
 
-	private List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution in current frame
+	private volatile List<LocalProcessor> scheduled = new ArrayList<>(); // LocalProcessors scheduled for execution in current frame
 	private Set<Integer> dead_sessions = new HashSet<>(); // Sessions that will be killed after current process frame
 
 	// Statistics
@@ -223,13 +228,8 @@ class Supervisor {
 			scheduled = new ArrayList<>();
 
 			// Then let all the processors process
-			for(LocalProcessor lp : to_process) {
-				try {
-					lp.doProcess();
-				} catch (RuntimeException e) {
-					throw e;
-				}
-			}
+			for(LocalProcessor lp : to_process)
+				lp.doProcess();
 		}
 
 		for(LocalProcessor lp : processor_list)
@@ -278,6 +278,8 @@ class Supervisor {
 		}
 
 		not_processing_time_last = System.nanoTime();
+
+		samplePosition += buffer_size;
 
 		return response;
 	}

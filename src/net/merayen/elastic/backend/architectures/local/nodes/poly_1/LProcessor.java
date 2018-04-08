@@ -27,7 +27,7 @@ public class LProcessor extends LocalProcessor {
 	private final List<InterfaceNode> interfaces = new ArrayList<>();
 
 	// MIDI states
-	private short[] current_pitch = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
+	private short[] current_pitch;// = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
 	private short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
 
 	/**
@@ -70,24 +70,22 @@ public class LProcessor extends LocalProcessor {
 			int stop = input.outlet.written;
 			if(avail > 0) {
 				int position = stop - avail;
-				for(short[][] m : input.outlet.midi) {
-					if(m != null) {
-						for(short[] n : m) {
-							if((n[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
-								push_tangent(n[1], n[2], position);
-							} else if((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
-								release_tangent(n[1], position);
-							} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) { 
-								current_sustain = n;
-								sendMidi(n, position);
-							} else if((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
-								current_pitch = n;
-								sendMidi(n, position);
-							} else {
-								sendMidi(n, position); // TODO support multiple midi packets on the same sample
-							}
+				MidiOutlet.MidiFrame midiFrame;
+				while((midiFrame = input.getNextMidiFrame(stop)) != null) {
+					for(short[] n : midiFrame) {
+						if((n[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
+							push_tangent(n[1], n[2], midiFrame.framePosition);
+						} else if((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
+							release_tangent(n[1], position);
+						} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) {
+							current_sustain = n;
+							sendMidi(n, position);
+						} else if((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
+							current_pitch = n;
+							sendMidi(n, position);
+						} else {
+							sendMidi(n, position); // TODO support multiple midi packets on the same sample (???)
 						}
-						position++;
 					}
 				}
 				spool("trigger", stop); // Ensure ports are spooled to the same position
@@ -97,8 +95,9 @@ public class LProcessor extends LocalProcessor {
 
 		forwardOutputData();
 
-		if(input != null && input.read == buffer_size)
+		if(input != null && input.read == buffer_size) {
 			removeInactiveSessions();
+		}
 	}
 
 	private void push_tangent(short tangent, short velocity, int position) { // TODO support unison, and forwarding of channel number
@@ -125,7 +124,12 @@ public class LProcessor extends LocalProcessor {
 
 			sessions.push(spawned_session_id, tangent, midi_outlet, outnodes.toArray(new OutputInterfaceNode[outnodes.size()]));
 	
-			midi_outlet.midi[position] = new short[][] {{MidiStatuses.KEY_DOWN, tangent, velocity}, current_pitch, current_sustain};
+			midi_outlet.putMidi(position, new short[] {MidiStatuses.KEY_DOWN, tangent, velocity});
+			if(current_pitch != null)
+				midi_outlet.putMidi(position, current_pitch);
+
+			midi_outlet.putMidi(position, current_sustain);
+
 			midi_outlet.written = position;
 			midi_outlet.push();
 		}
@@ -136,7 +140,8 @@ public class LProcessor extends LocalProcessor {
 			return;
 
 		for(PolySessions.Session session : sessions.getTangentSessions(tangent)) {
-			((MidiOutlet)session.input).midi[position] = new short[][] {{MidiStatuses.KEY_UP, tangent, 0}}; // Send KEY UP to all the sessions
+			((MidiOutlet)session.input).putMidi(position, new short[]{MidiStatuses.KEY_UP, tangent, 0});
+
 			session.input.push();
 			session.active = false;
 		}
@@ -147,15 +152,8 @@ public class LProcessor extends LocalProcessor {
 	 */
 	private void sendMidi(short[] midi, int position) {
 		for(Outlet outlet : sessions.getOutlets()) {
-			short[][][] out_midi = ((MidiOutlet)outlet).midi;
-			if(out_midi[position] == null) {
-				out_midi[position] = new short[][] {midi};
-			} else { // This is lol, but will probably not happen that much, so... w/e
-				short[][] new_midis = new short[out_midi[position].length + 1][];
-				System.arraycopy(out_midi[position], 0, new_midis, 0, out_midi[position].length);
-				new_midis[new_midis.length - 1] = midi;
-				out_midi[position] = new_midis;
-			}
+			((MidiOutlet)outlet).putMidi(position, midi);
+
 			outlet.push();
 		}
 	}
@@ -189,9 +187,9 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void forwardOutputData() {
-		List<AudioInlet> audioInlets = getAudioInlets();
+		List<OutputInterfaceNode> outputNodes = getOutputNodes();
 
-		if(audioInlets.isEmpty()) {
+		if(outputNodes.isEmpty()) {
 			Outlet output_outlet = getOutlet("output");
 			if(output_outlet != null) {
 				output_outlet.written = buffer_size;
@@ -202,64 +200,64 @@ public class LProcessor extends LocalProcessor {
 		}
 
 		int sample_position = Integer.MAX_VALUE;
-		for(AudioInlet ai : audioInlets) {
-			if (ai.outlet.written < sample_position)
-				sample_position = ai.outlet.written;
 
-			ai.read = ai.outlet.written; // We do spool the inlet always, as we keep track of position ourselves with samples_processed.
+		for(Session session : sessions.getSessions()) {
+			for (OutputInterfaceNode oin : outputNodes) {
+				Inlet inlet = oin.getOutputInlet(session.session_id);
+				if(inlet instanceof AudioInlet) {
+					AudioInlet audioInlet = (AudioInlet)inlet;
+					if (audioInlet.outlet.written < sample_position)
+						sample_position = audioInlet.outlet.written;
+
+					audioInlet.read = audioInlet.outlet.written; // We do spool the inlet always, as we keep track of position ourselves with samples_processed.
+				}
+			}
 		}
 
 		if(sample_position <= samples_processed)
 			return; // There is not new data on all inlet voices, can not process. Come back later.
 
-		if(output != null) { // TODO mix to channels
-			int channel = 0;
+		if(output != null) {
 			float[][] out = output.audio;
 
-			for(AudioInlet ai : audioInlets) {
-				if(ai.outlet.getChannelCount() != 1) // TODO support multiple channels inside poly-node
-					throw new RuntimeException("Poly node does not support multiple channels inside. TODO");
+			for (Session session : sessions.getSessions()) {
+				for(OutputInterfaceNode oui : session.outnodes) {
+					float[] channelDistribution = oui.getChannelDistribution(session.session_id);
+					Outlet outlet = oui.getOutputInlet(session.session_id).outlet;
+					if(outlet instanceof AudioOutlet) {
+						float[] in = ((AudioOutlet)outlet).audio[0];
 
-				float[] in = ai.outlet.audio[0];
+						for (int channel = 0; channel < channelDistribution.length; channel++)
+							if(channelDistribution[channel] != 0)
+								for (int i = samples_processed; i < sample_position; i++)
+									out[channel][i] += in[i] * channelDistribution[channel];
+					}
+				}
 
-				for(int i = samples_processed; i < sample_position; i++)
-					out[channel][i] += in[i];
-
-				channel++;
-				channel %= output.getChannelCount();
+				output.written = sample_position;
+				output.push();
 			}
-
-			output.written = sample_position;
-			output.push();
 		}
 
 		samples_processed = sample_position;
 	}
 
-	private List<AudioInlet> getAudioInlets() { // TODO implement caching
-		List<AudioInlet> audioInlets = new ArrayList<>();
+	private List<OutputInterfaceNode> getOutputNodes() { // TODO implement caching
+		List<OutputInterfaceNode> outnodes = new ArrayList<>();
 
 		for(Session s : sessions.getSessions()) {
-			AudioInlet audioInlet = null;
 			for(OutputInterfaceNode outnode : s.outnodes) {
-				Inlet inlet = outnode.getOutputInlet(s.session_id);
-				if(inlet instanceof AudioInlet)
-					audioInlets.add((AudioInlet) inlet);
+				if(outnode.getOutputInlet(s.session_id) instanceof AudioInlet)
+					outnodes.add(outnode);
 			}
 		}
 
-		//System.out.println(audioInlets.size() + " " + sessions.getSessions().size());
-
-		return audioInlets;
+		return outnodes;
 	}
 
 	private void resetOutlets() {
-		for(Outlet outlet : sessions.getOutlets()) {
-			short[][][] midi = ((MidiOutlet)outlet).midi;
-			for(int i = 0; i < buffer_size; i++)
-				midi[i] = null;
+		for(Outlet outlet : sessions.getOutlets())
 			outlet.reset(0);
-		}
 	}
 
 	private void removeInactiveSessions() {

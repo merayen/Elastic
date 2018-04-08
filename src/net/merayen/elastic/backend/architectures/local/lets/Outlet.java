@@ -24,18 +24,20 @@ public abstract class Outlet extends Portlet {
 	 * Notifies receiving ports about new data.
 	 */
 	public void push() {
+		if(written > buffer_size)
+			throw new RuntimeException("LocalProcessor has written too much into the Outlet");
+
 		for(LocalProcessor lp : connected_processors)
 			lp.schedule();
 	}
 
 	public boolean satisfied() {
-		if(written > buffer_size)
-			throw new RuntimeException("LocalProcessor has written too much into the Outlet");
-
 		return written == buffer_size;
 	}
 
 	public abstract Format getFormat();
 
 	public abstract Class<? extends Inlet> getInletClass();
+
+	public abstract void forwardFromOutlet(Outlet source);
 }

@@ -8,4 +8,6 @@ public interface OutputInterfaceNode extends InterfaceNode {
 	 * Retrieve out-inlet.
 	 */
 	Inlet getOutputInlet(int session_id);
+
+	float[] getChannelDistribution(int session_id);
 }

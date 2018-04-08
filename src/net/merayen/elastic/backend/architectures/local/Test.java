@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
+import net.merayen.elastic.backend.architectures.local.nodes.adsr_1.ADSR;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -75,7 +76,7 @@ public class Test {
 		// Consumer, subgroup in middle-node
 		Node dispatch_out = netlist.createNode();
 		properties.setParent(dispatch_out, middle_node);
-		port = netlist.createPort(dispatch_out, "input");
+		netlist.createPort(dispatch_out, "input");
 		local_properties.setLocalNode(dispatch_out, new DispatchNode());
 
 		// Consumer
@@ -136,12 +137,14 @@ public class Test {
 		supervisor.begin();
 
 		check(supervisor);
+
+		ADSR.test();
 	}
 }
 
 class TopNode extends LocalNode { // The topmost group that spawns children
 
-	public TopNode() {
+	TopNode() {
 		super(TopProcessor.class);
 	}
 
@@ -165,7 +168,7 @@ class TopNode extends LocalNode { // The topmost group that spawns children
 }
 
 class TopProcessor extends LocalProcessor {
-	int session_id = -1;
+	private int session_id = -1;
 
 	@Override
 	protected void onInit() {}
@@ -191,10 +194,7 @@ class TopProcessor extends LocalProcessor {
 }
 
 class GeneratorNode extends LocalNode {
-	int tick;
-	boolean communicated_with_processor;
-
-	protected GeneratorNode() {
+	GeneratorNode() {
 		super(GeneratorProcessor.class);
 	}
 

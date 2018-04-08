@@ -18,7 +18,7 @@ public class LProcessor extends LocalProcessor {
 		MidiOutlet outlet = (MidiOutlet)getOutlet("out");
 		if(outlet != null) {
 			List<short[]> midi_from_ui = ((LNode)getLocalNode()).midi_from_ui;
-			outlet.midi[0] = midi_from_ui.toArray(new short[midi_from_ui.size()][]);
+			outlet.putMidi(0, midi_from_ui.toArray(new short[midi_from_ui.size()][])); // TODO shouldn't quantize
 			outlet.written = buffer_size;
 			outlet.push();
 		}

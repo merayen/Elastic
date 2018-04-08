@@ -9,16 +9,7 @@ import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.OutputInterfaceNode;
 
 public class LNode extends LocalNode implements OutputInterfaceNode {
-	/**
-	 * Samples sent in this frame.
-	 */
-	private int samples_sent;
-
-	/**
-	 * Output audio buffer. Format: float[channel][sample index]
-	 */
-	private float[][] output = new float[0][];
-	private AudioOutlet outlet;
+	private int channelCount;
 
 	public LNode() {
 		super(LProcessor.class);
@@ -28,7 +19,9 @@ public class LNode extends LocalNode implements OutputInterfaceNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onSpawnProcessor(LocalProcessor lp) {}
+	protected void onSpawnProcessor(LocalProcessor lp) {
+		((LProcessor)lp).channelDistribution = channelCount++ % 2 == 0 ? new float[]{1,0} : new float[]{0,1};
+	}
 
 	@Override
 	protected void onProcess(Map<String, Object> data) {}
@@ -50,5 +43,10 @@ public class LNode extends LocalNode implements OutputInterfaceNode {
 	@Override
 	public Inlet getOutputInlet(int session_id) {
 		return ((LProcessor)getProcessor(session_id)).inlet;
+	}
+
+	@Override
+	public float[] getChannelDistribution(int session_id) {
+		return ((LProcessor)getProcessor(session_id)).channelDistribution;
 	}
 }

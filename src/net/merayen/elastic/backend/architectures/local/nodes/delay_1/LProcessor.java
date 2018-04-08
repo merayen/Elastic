@@ -6,11 +6,7 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.util.Postmaster;
 
 public class LProcessor extends LocalProcessor {
-	private float audio[][];
-	private long read_position, write_position;
-
-	/** Samples delayed. This number will be the same as LNode.delaySamples, but will vary when processing */
-	private int delay;
+	private Delay[] delays;
 
 	@Override
 	protected void onInit() {}
@@ -23,62 +19,57 @@ public class LProcessor extends LocalProcessor {
 		AudioInlet input = (AudioInlet)getInlet("input");
 		AudioOutlet output = (AudioOutlet)getOutlet("output");
 
-		ensureBuffer(input);
-
 		if(output != null) {
 			if(input != null) {
-				int available = input.available();
+				int start = input.read;
+				int stop = input.outlet.written;
+				if(stop - start > 0) {
 
-				LNode lnode = (LNode)getLocalNode();
+					int channelCount = input.outlet.getChannelCount();
 
-				// Write into buffer
-				for(int i = input.read; i < input.outlet.written; i++) {
-					for (int channel = 0; i < channel; i++)
-						audio[channel][(int)(write_position % lnode.delaySamples)] = input.outlet.audio[channel][i];
+					ensureDelayBuffers(channelCount);
 
-					write_position++;
-				}
+					output.setChannelCount(channelCount);
 
-				// Write to output-port
-				int offset = 0;
-				for(long i = read_position; i < write_position; i++) {
-					if(output.written >= buffer_size)
-						break;
-
-					for(int channel = 0; i < channel; i++) {
-						//output.audio[channel][output.written + offset] = ;
+					for (int channel = 0; channel < channelCount; channel++) {
+						int position = delays[channel].process(input.outlet.audio[channel], start, stop);
+						for (int i = start; i < stop; i++)
+							output.audio[channel][i] = delays[channel].buffer[position++ % delays[channel].buffer.length];
 					}
-					offset++;
+
+					output.written = stop;
+					input.read = stop;
+					output.push();
 				}
-				output.written = input.outlet.written;
-				input.read = output.written;
 			} else {
 				output.written = buffer_size;
+				output.push();
+			}
+		} else if(input != null) {
+			input.read = input.outlet.written;
+		}
+	}
+
+	@Override
+	protected void onMessage(Postmaster.Message message) {}
+
+	@Override
+	protected void onDestroy() {}
+
+	private void ensureDelayBuffers(int channelCount) {
+		if(delays == null || delays.length != channelCount) {
+			delays = new Delay[channelCount];
+			for(int i = 0; i < channelCount; i++) {
+				delays[i] = new Delay(sample_rate * 2); // Allows 1 second of delay
+
+				// DEBUG. Take these parameters from the UI instead
+				final int TAPS = 100;
+				for(int lol = 0; lol < TAPS; lol++)
+					delays[i].addTap(new Delay.Tap((int)(Math.floor(Math.random() * sample_rate)), 0.1f, 0f / TAPS));
+
+				delays[i].addTap(new Delay.Tap(sample_rate / 4, 0.0f, .2f));
+				delays[i].addTap(new Delay.Tap(sample_rate / 2, 0.0f, .3f));
 			}
 		}
-	}
-
-	private void ensureBuffer(AudioInlet input) {
-		if(audio == null)
-			return;
-
-		LNode lnode = (LNode)getLocalNode();
-		int delaySamples = (int)(lnode.delaySamples * sample_rate) + buffer_size;
-
-		if(audio.length != input.outlet.getChannelCount() || audio[0].length == delaySamples) {
-			audio = new float[input.outlet.getChannelCount()][];
-			for(int i = 0; i < audio.length; i++)
-				audio[i] = new float[delaySamples];
-		}
-	}
-
-	@Override
-	protected void onMessage(Postmaster.Message message) {
-
-	}
-
-	@Override
-	protected void onDestroy() {
-
 	}
 }

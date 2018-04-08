@@ -61,12 +61,12 @@ public class OracleMidiInputDevice extends MidiInputDevice {
 	}
 
 	@Override
-	public MidiPacket[] onRead(int sample_count) {
+	public synchronized MidiPacket[] onRead(int sample_count) {
 		ensureRunning();
 
 		// Returns everything for now
 		// TODO respect timestamps and sample_count
-		MidiPacket[] output = (MidiPacket[])buffer.toArray(new MidiPacket[buffer.size()]);
+		MidiPacket[] output = buffer.toArray(new MidiPacket[buffer.size()]);
 		buffer.clear();
 		return output;
 	}

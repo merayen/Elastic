@@ -9,16 +9,10 @@ import net.merayen.elastic.util.Postmaster.Message;
 public class LProcessor extends LocalProcessor {
 
 	@Override
-	protected void onInit() {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onInit() {}
 
 	@Override
-	protected void onPrepare() {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onPrepare() {}
 
 	@Override
 	protected void onProcess() {
@@ -27,22 +21,17 @@ public class LProcessor extends LocalProcessor {
 		if(outlet != null && !outlet.satisfied()) {
 			List<short[]>buffer = ((LNode)getLocalNode()).buffer;
 
-			outlet.midi[0] = buffer.toArray(new short[buffer.size()][]);
+			if(!buffer.isEmpty())
+				outlet.putMidi(0, buffer.toArray(new short[buffer.size()][]));
+
 			outlet.written = buffer_size;
 			outlet.push();
 		}
 	}
 
 	@Override
-	protected void onMessage(Message message) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onMessage(Message message) {}
 
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-
-	}
-
+	protected void onDestroy() {}
 }

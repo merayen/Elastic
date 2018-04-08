@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 
 class PolySessions {

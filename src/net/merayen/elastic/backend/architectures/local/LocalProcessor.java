@@ -28,14 +28,14 @@ import net.merayen.elastic.util.Postmaster;
 public abstract class LocalProcessor {
 	LocalNode localnode; // Our parent LocalNode that keeps us. TODO implement asynchronous message system
 	int session_id;
-	LocalProcessor parent;
+	private LocalProcessor parent;
 	protected int buffer_size;
 	protected int sample_rate;
 	long process_time;
 	int process_count;
 	AverageStat<Long> process_times = new AverageStat<>(1000); // Used by Supervisor for statistics
 
-	int voice_stop;
+	private int voice_stop;
 
 	final Map<String, Outlet> outlets = new HashMap<>();
 	final Map<String, Inlet> inlets = new HashMap<>();
@@ -257,5 +257,9 @@ public abstract class LocalProcessor {
 	 */
 	public List<Integer> getChildrenSessionIDs() {
 		return Collections.unmodifiableList(children_sessions);
+	}
+
+	protected long getSamplePosition() {
+		return localnode.supervisor.samplePosition;
 	}
 }

@@ -8,7 +8,7 @@ import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor {
 	AudioInlet inlet;
-	LocalProcessor receiverProcessor;
+	float[] channelDistribution;
 
 	@Override
 	protected void onInit() {

@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.local.lets;
 
+import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.logicnodes.Format;
 
 public class AudioOutlet extends Outlet {
@@ -34,5 +35,10 @@ public class AudioOutlet extends Outlet {
 
 	public int getChannelCount() {
 		return channel_count;
+	}
+
+	@Override
+	public void forwardFromOutlet(Outlet source) {
+		throw new NotImplementedError();
 	}
 }

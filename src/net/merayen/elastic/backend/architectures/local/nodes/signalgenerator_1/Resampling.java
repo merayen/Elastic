@@ -15,7 +15,6 @@ class ResamplingFactory {
 
 		float sampleRatio = sampleRate / (float)waveIn.length;
 		resampler = new Resampler(false, sampleRatio / Math.floor(sampleRate / 4f), sampleRatio / 4f );
-		System.out.println(resampler.getFilterWidth());
 	}
 
 	Resampling create(float[] output) {
@@ -31,7 +30,7 @@ class Resampling {
 	/**
 	 * Access this float-array to retrieve output data.
 	 */
-	public final float[] waveOut;
+	private final float[] waveOut;
 
 	Resampling(Resampler resampler, float[] waveIn, float[] waveOut, int sampleRate) {
 		this.resampler = resampler;
