@@ -2,7 +2,8 @@ package net.merayen.elastic.backend.logicnodes;
 
 public enum Format {
 	AUDIO("audio"),
-	MIDI("midi");
+	MIDI("midi"),
+	SIGNAL("signal");
 
 	public String name;
 

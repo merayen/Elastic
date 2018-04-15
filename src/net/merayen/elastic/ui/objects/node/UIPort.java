@@ -15,7 +15,6 @@ public class UIPort extends UIObject {
 	public final static Color AUX_PORT = new Color(150, 150, 150);
 
 	private MouseHandler port_drag;
-	public String title = "";
 	public final String name;
 	public final boolean output;
 	public final UINode uinode;
@@ -80,9 +79,14 @@ public class UIPort extends UIObject {
 			draw.setColor(color.getRed(), color.getGreen(), color.getBlue());
 			draw.fillOval(-4f, -4f, 8f, 8f);
 
-			/*draw.setColor(0, 0, 0);
-			draw.setFont("SansSerif", 10f);
-			draw.text(title, 10f, 5f);*/
+			if(getAbsolute_translation().scale_x < 1.2f) {
+				draw.setColor(255, 255, 255);
+				draw.setFont("SansSerif", 10f);
+				if (output)
+					draw.text(name, 5f, 3);
+				else
+					draw.text(name, -draw.getTextWidth(name) - 5, 3);
+			}
 		}
 
 		super.onDraw(draw);

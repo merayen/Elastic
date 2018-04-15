@@ -75,8 +75,8 @@ public class LogicNode extends BaseLogicNode {
 		}
 
 		//System.out.println("Amplitude: " + ((FloatArray)data.data.get("amplitude")).data[0]);
-		if(data.containsKey("vu"))
-			sendDataToUI(new HashMap<String, Object>() {{put("vu", data.get("vu"));}});
+		if(data.containsKey("vuLeft"))
+			sendDataToUI(new HashMap<String, Object>() {{put("vuLeft", data.get("vuLeft"));}});
 		if(data.containsKey("offset"))
 			sendDataToUI(new HashMap<String, Object>() {{put("offset", data.get("offset"));}});
 

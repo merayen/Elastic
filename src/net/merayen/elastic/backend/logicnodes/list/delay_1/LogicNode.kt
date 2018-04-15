@@ -22,9 +22,7 @@ class LogicNode : BaseLogicNode() {
 
     override fun onInit() {}
 
-    override fun onParameterChange(key: String, value: Any) {
-        set(key, value);
-    }
+    override fun onParameterChange(key: String, value: Any) = set(key, value)
 
     override fun onData(data: Map<String, Any>) {}
 

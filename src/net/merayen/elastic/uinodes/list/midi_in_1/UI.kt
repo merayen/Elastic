@@ -46,7 +46,7 @@ class UI : UINode() {
 	}
 
 	override fun onDraw(draw: Draw) {
-		midi_device!!.label = "Device: "
+		midi_device!!.text = "Device: "
 		super.onDraw(draw)
 	}
 

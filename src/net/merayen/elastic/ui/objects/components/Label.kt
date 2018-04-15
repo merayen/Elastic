@@ -5,32 +5,35 @@ import net.merayen.elastic.ui.UIObject
 
 class Label : UIObject() {
 
-    var label = ""
-    var font_size = 10f
-    var font_name = "Geneva"
-    var align: Align? = null
-    var labelWidth: Float = 0.toFloat()
-        private set
+	var text = ""
+	var fontSize = 10f
+	var font_name = "Geneva"
+	var align: Align? = null
+	var labelWidth: Float = 0.toFloat()
+		private set
 
-    enum class Align {
-        LEFT, CENTER, RIGHT
-    }
+	var eventTransparent = false
+	
+	enum class Align {
+		LEFT, CENTER, RIGHT
+	}
 
-    override fun onDraw(draw: Draw) {
-        draw.setFont(font_name, font_size)
-        labelWidth = draw.getTextWidth(label)
+	override fun onDraw(draw: Draw) {
+		if(eventTransparent)
+			draw.disableOutline()
 
-        var x_offset = 0f
-        if (align == Align.CENTER)
-            x_offset = -labelWidth / 2f
-        else if (align == Align.RIGHT)
-            x_offset = -labelWidth
+		draw.setFont(font_name, fontSize)
+		labelWidth = draw.getTextWidth(text)
 
-        draw.setColor(50, 50, 50)
-        draw.text(label, x_offset - font_size / 10f, font_size - font_size / 10f)
-        draw.setColor(200, 200, 200)
-        draw.text(label, x_offset, font_size)
+		var x_offset = 0f
+		if (align == Align.CENTER)
+			x_offset = -labelWidth / 2f
+		else if (align == Align.RIGHT)
+			x_offset = -labelWidth
 
-        super.onDraw(draw)
-    }
+		draw.setColor(50, 50, 50)
+		draw.text(text, x_offset - fontSize / 10f, fontSize - fontSize / 10f)
+		draw.setColor(200, 200, 200)
+		draw.text(text, x_offset, fontSize)
+	}
 }

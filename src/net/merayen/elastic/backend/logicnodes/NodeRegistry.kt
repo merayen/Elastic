@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.logicnodes
 
 import java.util.ArrayList
 
-object Registry {
+object NodeRegistry {
 	val nodes: MutableList<String> = ArrayList()
 
 	init {
@@ -17,5 +17,6 @@ object Registry {
 		nodes.add("adsr_1")
 		nodes.add("midi_spread_1")
 		nodes.add("delay_1")
+		nodes.add("compressor_1")
 	}
 }

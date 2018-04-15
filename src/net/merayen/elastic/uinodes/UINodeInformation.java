@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.merayen.elastic.backend.logicnodes.Registry;
+import net.merayen.elastic.backend.logicnodes.NodeRegistry;
 
 public class UINodeInformation {
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.";
@@ -15,7 +15,7 @@ public class UINodeInformation {
 	public static List<BaseInfo> getNodeInfos() {
 		List<BaseInfo> result = new ArrayList<>();
 
-		for(String p : Registry.INSTANCE.getNodes()) {
+		for(String p : NodeRegistry.INSTANCE.getNodes()) {
 			try {
 				result.add( (BaseInfo)Class.forName(UI_CLASS_PATH + p + ".Info").newInstance() );
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {

@@ -8,7 +8,7 @@ import net.merayen.elastic.util.Point;
 
 public class Button extends UIObject {
 	public interface IHandler {
-		public void onClick();
+		void onClick();
 	}
 
 	public String label;

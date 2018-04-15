@@ -12,9 +12,11 @@ public class FormatMaps {
 	static {
 		outlet_formats.put(Format.AUDIO, AudioOutlet.class);
 		outlet_formats.put(Format.MIDI, MidiOutlet.class);
+		outlet_formats.put(Format.SIGNAL, SignalOutlet.class);
 
 		inlet_formats.put(Format.AUDIO, AudioInlet.class);
 		inlet_formats.put(Format.MIDI, MidiInlet.class);
+		inlet_formats.put(Format.SIGNAL, SignalInlet.class);
 	}
 
 	private FormatMaps() {}

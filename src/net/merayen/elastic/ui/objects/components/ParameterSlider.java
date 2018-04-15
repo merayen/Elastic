@@ -18,9 +18,9 @@ public class ParameterSlider extends UIObject {
 	private IHandler handler;
 
 	public interface IHandler {
-		public void onChange(double value, boolean programatic);
-		public void onButton(int offset);
-		public String onLabelUpdate(double value);
+		void onChange(double value, boolean programatic);
+		void onButton(int offset);
+		String onLabelUpdate(double value);
 	}
 
 	public void onInit() {

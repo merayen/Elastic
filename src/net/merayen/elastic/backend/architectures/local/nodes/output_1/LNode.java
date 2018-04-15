@@ -80,7 +80,7 @@ public class LNode extends LocalNode {
 		outgoing.put("audio", channels);
 
 		if(channel_count > 0) {
-			outgoing.put("vu", amplitude);
+			outgoing.put("vuLeft", amplitude);
 			outgoing.put("offset", offset);
 		}
 	}

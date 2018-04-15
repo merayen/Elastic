@@ -33,7 +33,7 @@ class UI : UINode() {
 		clip.add(adsrgraph)
 
 		var label = Label()
-		label.label = "Attack"
+		label.text = "Attack"
 		label.translation.x = 35f
 		label.translation.y = 175f
 		label.align = Label.Align.CENTER
@@ -42,14 +42,16 @@ class UI : UINode() {
 		attack_slider = CircularSlider()
 		attack_slider.translation.x = 20f
 		attack_slider.translation.y = 190f
-		attack_slider.setHandler { v ->
-			sendParameter("attack", Math.pow(v.toDouble(), 2.0).toFloat() * 10)
-			adsrgraph.attack_time = Math.pow(attack_slider.value.toDouble(), 2.0).toFloat() * 10
+		attack_slider.handler = object : CircularSlider.Handler {
+			override fun onChange(value: Float) {
+				sendParameter("attack", Math.pow(value.toDouble(), 2.0).toFloat() * 10)
+				adsrgraph.attack_time = Math.pow(attack_slider.value.toDouble(), 2.0).toFloat() * 10
+			}
 		}
 		add(attack_slider)
 
 		label = Label()
-		label.label = "Decay"
+		label.text = "Decay"
 		label.translation.x = 75f
 		label.translation.y = 175f
 		label.align = Label.Align.CENTER
@@ -58,14 +60,16 @@ class UI : UINode() {
 		decay_slider = CircularSlider()
 		decay_slider.translation.x = 60f
 		decay_slider.translation.y = 190f
-		decay_slider.setHandler { v ->
-			sendParameter("decay", Math.pow(v.toDouble(), 2.0).toFloat() * 10)
-			adsrgraph.decay_time = Math.pow(decay_slider.value.toDouble(), 2.0).toFloat() * 10
+		decay_slider.handler = object : CircularSlider.Handler {
+			override fun onChange(v: Float) {
+				sendParameter("decay", Math.pow(v.toDouble(), 2.0).toFloat() * 10)
+				adsrgraph.decay_time = Math.pow(decay_slider.value.toDouble(), 2.0).toFloat() * 10
+			}
 		}
 		add(decay_slider)
 
 		label = Label()
-		label.label = "Sustain"
+		label.text = "Sustain"
 		label.translation.x = 115f
 		label.translation.y = 175f
 		label.align = Label.Align.CENTER
@@ -74,14 +78,16 @@ class UI : UINode() {
 		sustain_slider = CircularSlider()
 		sustain_slider.translation.x = 100f
 		sustain_slider.translation.y = 190f
-		sustain_slider.setHandler { v ->
-			sendParameter("sustain", v)
-			adsrgraph.sustain_value = sustain_slider.value
+		sustain_slider.handler = object : CircularSlider.Handler {
+			override fun onChange(value: Float) {
+				sendParameter("sustain", value)
+				adsrgraph.sustain_value = sustain_slider.value
+			}
 		}
 		add(sustain_slider)
 
 		label = Label()
-		label.label = "Release"
+		label.text = "Release"
 		label.translation.x = 155f
 		label.translation.y = 175f
 		label.align = Label.Align.CENTER
@@ -90,9 +96,11 @@ class UI : UINode() {
 		release_slider = CircularSlider()
 		release_slider.translation.x = 140f
 		release_slider.translation.y = 190f
-		release_slider.setHandler { v ->
-			sendParameter("release", Math.pow(v.toDouble(), 2.0).toFloat() * 10)
-			adsrgraph.release_time = Math.pow(release_slider.value.toDouble(), 2.0).toFloat() * 10
+		release_slider.handler = object : CircularSlider.Handler {
+			override fun onChange(value: Float) {
+				sendParameter("release", Math.pow(value.toDouble(), 2.0).toFloat() * 10)
+				adsrgraph.release_time = Math.pow(release_slider.value.toDouble(), 2.0).toFloat() * 10
+			}
 		}
 		add(release_slider)
 
