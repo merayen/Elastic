@@ -23,7 +23,6 @@ class CircularSlider : UIObject() {
 			if(value != field) {
 				field = Math.min(Math.max(value, 0f), 1f)
 				valueLabel.text = handler?.onLabelUpdate(field) ?: ""
-				println("Value change ${field} ${this.value} ${handler}")
 			}
 		}
 

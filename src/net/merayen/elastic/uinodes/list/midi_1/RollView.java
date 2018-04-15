@@ -48,6 +48,6 @@ class RollView extends UIObject {
 	public void onUpdate() {
 		scroll.setLayoutWidth(width);
 		scroll.setLayoutHeight(height);
-		midi_roll.layoutWidth = width;
+		midi_roll.setLayoutWidth(width);
 	}
 }

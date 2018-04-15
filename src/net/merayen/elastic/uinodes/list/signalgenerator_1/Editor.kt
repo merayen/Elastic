@@ -52,8 +52,6 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		val bwb = SignalBezierCurveBoxControlFrame()
 		bwb.translation.x = 20f
 		bwb.translation.y = 40f
-		//bwb.translation.scale_x = 0.5f
-		//bwb.translation.scale_y = 0.5f
 		bwb.layoutWidth = 160f
 		bwb.layoutHeight = 100f
 

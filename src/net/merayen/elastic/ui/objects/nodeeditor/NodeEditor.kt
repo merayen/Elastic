@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.nodeeditor
 
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.ui.UIObject
 
@@ -10,4 +11,8 @@ abstract class NodeEditor(val nodeId: String) : UIObject() {
 
 	override fun getWidth() = layoutWidth
 	override fun getHeight() = layoutHeight
+
+	protected fun sendData(value: Map<String, Any>) {
+		sendMessage(NodeDataMessage(nodeId, value))
+	}
 }

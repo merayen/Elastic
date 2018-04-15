@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import kotlin.math.*
 
-class UI : UINode {
+class UI : UINode() {
 	private val WIDTH = 300f
 	private val HEIGHT = 100f
 	private val vu = VUMeter()
@@ -24,7 +24,7 @@ class UI : UINode {
 
 	private var lastUpdate = 0L
 
-	constructor() {
+	init {
 		layoutWidth = WIDTH
 		layoutHeight = HEIGHT
 
@@ -83,7 +83,6 @@ class UI : UINode {
 
 		inputAmplitude.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("inputAmplitude", calcCentricPow(value))
-
 			override fun onLabelUpdate(value: Float) = "${log(abs(calcCentricPow(value)), 10f)}"
 		}
 
@@ -97,13 +96,11 @@ class UI : UINode {
 
 		attack.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("attack", value.pow(2))
-
 			override fun onLabelUpdate(value: Float) = "${(value * 1000).toInt()}ms"
 		}
 
 		release.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("release", value.pow(2))
-
 			override fun onLabelUpdate(value: Float) = "${(value * 1000).toInt()}ms"
 		}
 
@@ -117,7 +114,6 @@ class UI : UINode {
 
 		threshold.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("threshold", (1 - value / 1.0001f).pow(2))
-
 			override fun onLabelUpdate(value: Float) = "-${(log(1 / (1 - value / 1.0001f), 10f) * 10).roundToInt()} dB"
 		}
 
@@ -150,7 +146,7 @@ class UI : UINode {
 
 	override fun onData(message: NodeDataMessage) {
 		if(message.value["amplitude"] != null)
-			compressionValue = message.value["amplitude"] as Float
+			compressionValue = 1 - log(1 / max(0.0001f, message.value["amplitude"] as Float), 10f) / 3f
 	}
 
 	override fun onParameter(key: String, value: Any) {

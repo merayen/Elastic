@@ -107,13 +107,3 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onDestroy() {}
 }
-
-/*
- a = 1
- t = 1
- attack = .1
- rate = 44100
- for x in range(rate // 1):
-    a -= ((1.2 * a) - t) * ((1 / attack) / rate)
- print(a, 1.2*a)
-*/
