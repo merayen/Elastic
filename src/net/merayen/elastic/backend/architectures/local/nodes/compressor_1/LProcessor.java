@@ -50,6 +50,7 @@ public class LProcessor extends LocalProcessor {
 			double release = lnode.release;
 			double threshold = lnode.threshold;
 			float inputAmplitude = (float)lnode.inputAmplitude;
+			float inputSidechainAmplitude = (float)lnode.inputSidechainAmplitude;
 			float outputAmplitude = (float)lnode.outputAmplitude;
 
 			output.setChannelCount(channelCount);
@@ -76,7 +77,7 @@ public class LProcessor extends LocalProcessor {
 					float sample = Math.abs(inAudio[i]);
 
 					if (sample > maxAmplitudes[i])
-						maxAmplitudes[i] = sample;
+						maxAmplitudes[i] = sample * inputSidechainAmplitude;
 				}
 			}
 
