@@ -19,7 +19,7 @@ class Label : UIObject() {
 	}
 
 	override fun onDraw(draw: Draw) {
-		if((absolute_translation?.scale_x ?: 0f) > fontSize / 7f)
+		if((absolute_translation?.scale_x ?: 0f) > fontSize / 7f) // Hide text if it is too small
 			return;
 
 		if(eventTransparent)
