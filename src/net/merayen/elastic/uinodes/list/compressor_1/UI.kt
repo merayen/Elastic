@@ -83,15 +83,17 @@ class UI : UINode() {
 
 		inputAmplitude.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("inputAmplitude", calcCentricPow(value))
-			override fun onLabelUpdate(value: Float) = "${log(abs(calcCentricPow(value)), 10f)}"
+			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
 		inputSidechainAmplitude.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("inputSidechainAmplitude", calcCentricPow(value))
+			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
 		outputAmplitude.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) = sendParameter("outputAmplitude", calcCentricPow(value))
+			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
 		attack.handler = object : CircularSlider.Handler {
@@ -113,14 +115,15 @@ class UI : UINode() {
 		}
 
 		threshold.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("threshold", (1 - value / 1.0001f).pow(2))
-			override fun onLabelUpdate(value: Float) = "-${(log(1 / (1 - value / 1.0001f), 10f) * 10).roundToInt()} dB"
+			override fun onChange(value: Float) = sendParameter("threshold", min(1f, value.pow(2) + 0.0001f))
+			override fun onLabelUpdate(value: Float) = "-${(log(1 / min(1f, value.pow(2) + 0.0001f), 10f) * 10).roundToInt()}dB"
 		}
 
 		titlebar.title = "Compressor"
 	}
 
-	private fun calcCentricPow(value: Float) = -max(0f, (1 - value * 2)).pow(2) * 1000 + ((max(0f, (value - 0.5f) * 2)).pow(2) * 1000)
+	private fun calcCentricPow(value: Float) = 10f.pow((value * 2 - 1) * 3)
+	private fun calcCentricToKnob(value: Float) = (log(max(0.001f, (value as Number).toFloat()), 10f) / 3 + 1) / 2
 
 	override fun onUpdate() {
 		super.onUpdate()
@@ -153,8 +156,10 @@ class UI : UINode() {
 		when (key) {
 			"attack" -> attack.value = (value as Number).toFloat().pow(0.5f)
 			"release" -> release.value = (value as Number).toFloat().pow(0.5f)
-			"threshold" -> threshold.value = 1 - ((value as Number).toFloat() / 1.0001f).pow(0.5f)
-			//"inputAmplitude" -> inputAmplitude.value =
+			"threshold" -> threshold.value = ((value as Number).toFloat()).pow(0.5f)
+			"inputAmplitude" -> inputAmplitude.value = calcCentricToKnob((value as Number).toFloat())
+			"inputSidechainAmplitude" -> inputSidechainAmplitude.value = calcCentricToKnob((value as Number).toFloat())
+			"outputAmplitude" -> outputAmplitude.value = calcCentricToKnob((value as Number).toFloat())
 		}
 	}
 }

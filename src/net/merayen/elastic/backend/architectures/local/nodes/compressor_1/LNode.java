@@ -11,6 +11,7 @@ public class LNode extends LocalNode {
 	}
 
 	double inputAmplitude = 1;
+	double inputSidechainAmplitude = 1;
 	double outputAmplitude = 1;
 	double attack = 1;
 	double release = 1;
@@ -41,6 +42,8 @@ public class LNode extends LocalNode {
 			ratio = ((Number)value).floatValue();
 		else if(key.equals("inputAmplitude"))
 			inputAmplitude = ((Number)value).floatValue();
+		else if(key.equals("inputSidechainAmplitude"))
+			inputSidechainAmplitude = ((Number)value).floatValue();
 		else if(key.equals("outputAmplitude"))
 			outputAmplitude = ((Number)value).floatValue();
 	}

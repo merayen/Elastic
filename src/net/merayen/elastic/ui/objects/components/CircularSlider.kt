@@ -60,6 +60,8 @@ class CircularSlider : UIObject() {
 		valueLabel.align = Label.Align.CENTER
 		valueLabel.eventTransparent = true
 		add(valueLabel)
+
+		valueLabel.text = handler?.onLabelUpdate(value) ?: ""
 	}
 
 	override fun onDraw(draw: Draw) {

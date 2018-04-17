@@ -19,6 +19,9 @@ class Label : UIObject() {
 	}
 
 	override fun onDraw(draw: Draw) {
+		if((absolute_translation?.scale_x ?: 0f) > fontSize / 7f)
+			return;
+
 		if(eventTransparent)
 			draw.disableOutline()
 

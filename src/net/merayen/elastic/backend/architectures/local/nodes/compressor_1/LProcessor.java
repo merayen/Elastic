@@ -31,6 +31,7 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		Inlet in = getInlet("input");
+		Inlet sidechain = getInlet("sidechain");
 		Outlet out = getOutlet("output");
 
 		if (in instanceof AudioInlet && out instanceof AudioOutlet) {
@@ -39,12 +40,17 @@ public class LProcessor extends LocalProcessor {
 			LNode lnode = (LNode)getLocalNode();
 
 			final int start = in.read;
-			final int stop = in.outlet.written;
+			int stop = in.outlet.written;
+			if(sidechain != null && sidechain.outlet.written < stop)
+				stop = sidechain.outlet.written;
+
 			int channelCount = input.outlet.getChannelCount();
 
 			double attack = lnode.attack;
 			double release = lnode.release;
 			double threshold = lnode.threshold;
+			float inputAmplitude = (float)lnode.inputAmplitude;
+			float outputAmplitude = (float)lnode.outputAmplitude;
 
 			output.setChannelCount(channelCount);
 
@@ -52,13 +58,24 @@ public class LProcessor extends LocalProcessor {
 			double releaseDiv = 1.442740497 * release * sample_rate;
 
 			// Analyze all channels for peak values TODO support RMS?
-			for(int channel = 0; channel < channelCount; channel++) {
-				float[] inAudio = input.outlet.audio[channel];
+			if(sidechain == null) {
+				for (int channel = 0; channel < channelCount; channel++) {
+					float[] inAudio = input.outlet.audio[channel];
+
+					for (int i = start; i < stop; i++) {
+						float sample = Math.abs(inAudio[i]);
+
+						if (sample > maxAmplitudes[i])
+							maxAmplitudes[i] = sample;
+					}
+				}
+			} else if(sidechain instanceof AudioInlet) {
+				float[] inAudio = ((AudioInlet)sidechain).outlet.audio[0];
 
 				for (int i = start; i < stop; i++) {
 					float sample = Math.abs(inAudio[i]);
 
-					if(sample > maxAmplitudes[i])
+					if (sample > maxAmplitudes[i])
 						maxAmplitudes[i] = sample;
 				}
 			}
@@ -81,7 +98,7 @@ public class LProcessor extends LocalProcessor {
 				float[] outAudio = output.audio[channel];
 
 				for (int i = start; i < stop; i++)
-					outAudio[i] = inAudio[i] * amplitudes[i];
+					outAudio[i] = inAudio[i] * amplitudes[i] * outputAmplitude;
 			}
 
 			if(amplitude < 0.001)
@@ -90,6 +107,9 @@ public class LProcessor extends LocalProcessor {
 			in.read = stop;
 			output.written = stop;
 			output.push();
+
+			if(sidechain != null)
+				sidechain.read = stop;
 		} else {
 			if (in != null) {
 				in.read = buffer_size;
@@ -98,6 +118,8 @@ public class LProcessor extends LocalProcessor {
 				out.written = buffer_size;
 				out.push();
 			}
+			if(sidechain != null)
+				sidechain.read = buffer_size;
 		}
 	}
 
