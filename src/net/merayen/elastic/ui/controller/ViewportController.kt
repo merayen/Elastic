@@ -16,19 +16,5 @@ class ViewportController(gate: Gate) : Controller(gate) {
 	override fun onMessageFromUI(message: Message) {
 		if (message is ViewportHelloMessage) // Received from ViewportContainer UIObject when it has inited. We can then manage it
 			viewportContainer = message.viewport_container
-
-		else if (message is EditNodeMessage) {
-			val list = viewportContainer?.viewports
-			if (list != null){
-				for (viewport in list) {
-					if (viewport.view is EditNodeView) {
-						val view = viewport.view as EditNodeView
-						if (!view.pinned) {
-							view.editNode(message.node)
-						}
-					}
-				}
-			}
-		}
 	}
 }

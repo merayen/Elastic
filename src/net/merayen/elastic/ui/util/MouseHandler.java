@@ -34,6 +34,8 @@ public class MouseHandler {
 	private boolean mouse_over = false;
 	private boolean mouse_dragging = false;
 
+	private MouseEvent currentMouseEvent;
+
 	private final MouseEvent.Button button; // Which button on mouse to react on
 
 	public MouseHandler(UIObject uiobject) {
@@ -56,6 +58,7 @@ public class MouseHandler {
 	public void handle(UIEvent event) { // XXX Should we ensure UIObject is initialized before
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
+			currentMouseEvent = e;
 
 			if(button != null && e.button != null && e.button != button)
 				return;
@@ -71,7 +74,6 @@ public class MouseHandler {
 					handler_class.onMouseDown(p_relative);
 
 					drag_start = new net.merayen.elastic.util.Point(p_relative);
-					//handler_class.onMouseDrag(p_relative, new net.merayen.elastic.ui.Point(0, 0));
 				} else {
 					handler_class.onMouseOutsideDown(p_absolute);
 				}
@@ -115,5 +117,14 @@ public class MouseHandler {
 				}
 			}
 		}
+
+		currentMouseEvent = null;
+	}
+
+	/**
+	 * Retrieve current mouse event. Only available when inside one of the Handler callbacks
+	 */
+	public MouseEvent getMouseEvent() {
+		return currentMouseEvent;
 	}
 }

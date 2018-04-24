@@ -6,6 +6,7 @@ import java.util.Collections
 import net.merayen.elastic.ui.SurfaceHandler
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.Gate.UIGate
+import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
 import net.merayen.elastic.ui.surface.Surface
 import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.util.UniqueID
@@ -15,51 +16,52 @@ import net.merayen.elastic.util.UniqueID
  * Holds track of all the windows (called surfaces), and which to draw in which context.
  */
 class Top(private val surfacehandler: SurfaceHandler) : UIObject() {
-    private val windows = ArrayList<Window>()
-    internal var ui_gate: UIGate? = null
+	val mouseCursorManager = MouseCursorManager()
+	private val windows = ArrayList<Window>()
+	private var ui_gate: UIGate? = null
 
-    init {
-        createWindow()
-    }
+	init {
+		createWindow()
+		add(mouseCursorManager)
+	}
 
-    override fun onInit() {}
+	/**
+	 * We override this method to return the correct UIObject for the window being drawn.
+	 * TODO decide which Window()-object to return upon DrawContext-type.
+	 */
+	override fun onGetChildren(surface_id: String): List<UIObject> {
+		val result = ArrayList<UIObject>()
 
-    /**
-     * We override this method to return the correct UIObject for the window being drawn.
-     * TODO decide which Window()-object to return upon DrawContext-type.
-     */
-    override fun onGetChildren(surface_id: String): List<UIObject> {
-        for (w in windows)
-            if (w.surfaceID == surface_id)
-                return object : ArrayList<UIObject>() {
-                    init {
-                        add(w)
-                    }
-                }
+		for (w in windows) {
+			if (w.surfaceID == surface_id) {
+				result.add(w)
+				break
+			}
+		}
 
-        println("Window ID not found")
-        return ArrayList()
-    }
+		if(result.isEmpty())
+			println("Window ID not found")
 
-    fun setUIGate(ui_gate: UIGate) {
-        this.ui_gate = ui_gate
-    }
+		result.add(mouseCursorManager)
 
-    fun getWindows(): List<Window> {
-        return Collections.unmodifiableList(windows)
-    }
+		return result
+	}
 
-    private fun createSurface(id: String): Surface {
-        return surfacehandler.createSurface(id)
-    }
+	fun setUIGate(ui_gate: UIGate) {
+		this.ui_gate = ui_gate
+	}
 
-    fun createWindow() {
-        val w = Window(createSurface(UniqueID.create()))
-        windows.add(w)
-        add(w)
-    }
+	fun getWindows(): List<Window> {
+		return Collections.unmodifiableList(windows)
+	}
 
-    public override fun sendMessage(message: Postmaster.Message) {
-        ui_gate!!.send(message)
-    }
+	fun createWindow() {
+		val w = Window(surfacehandler.createSurface(UniqueID.create()))
+		windows.add(w)
+		add(w)
+	}
+
+	override fun sendMessage(message: Postmaster.Message) {
+		ui_gate!!.send(message)
+	}
 }

@@ -63,10 +63,10 @@ public class UINet extends UIObject {
 				draw.line(p1.x, p1.y, p2.x, p2.y);
 
 				if (c.a instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
-					window.debug.set("UINet UITemporaryPort: %s\n", p1);
+					window.getDebug().set("UINet UITemporaryPort: %s\n", p1);
 
 				if (c.b instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
-					window.debug.set("UINet UITemporaryPort: %s\n", p2);
+					window.getDebug().set("UINet UITemporaryPort: %s\n", p2);
 			}
 		}
 
@@ -74,7 +74,7 @@ public class UINet extends UIObject {
 		for(Connection c : connections)
 			sb.append(String.format("%s <-> %s", c.a, c.b));
 
-		UINodeUtil.getWindow(this).debug.set("UI port connections", String.format("%d: %s", connections.size(), sb));
+		UINodeUtil.getWindow(this).getDebug().set("UI port connections", String.format("%d: %s", connections.size(), sb));
 	}
 
 	/**

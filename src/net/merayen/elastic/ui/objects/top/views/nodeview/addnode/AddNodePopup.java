@@ -22,7 +22,7 @@ public class AddNodePopup {
 
 		popup = new PopupSlide();
 
-		window.overlay.add(popup);
+		window.getOverlay().add(popup);
 
 		openAddNodePopup();
 	}

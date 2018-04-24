@@ -83,7 +83,7 @@ public class ViewportDrag extends UIObject {
 	@Override
 	public void onUpdate() {
 		Window window = UINodeUtil.getWindow(this);
-		window.debugPrint("ViewportDrag outline() " + lol, this.getOutline_abs_px());
+		window.getDebug().set("ViewportDrag outline() " + lol, this.getOutline_abs_px());
 	}
 
 	@Override

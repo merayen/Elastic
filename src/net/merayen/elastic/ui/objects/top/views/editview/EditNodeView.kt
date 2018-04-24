@@ -9,10 +9,9 @@ import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
 import net.merayen.elastic.ui.objects.top.views.View
 
 class EditNodeView : View() {
-	var editNodeController: EditNodeController? = null
+	private var editNodeController: EditNodeController? = null
 	private var nodeEditor: NodeEditor? = null
 
-	var pinned = false
 	var nodeId: String? = null
 		private set
 
@@ -22,15 +21,14 @@ class EditNodeView : View() {
 	override fun cloneView(): View {
 		val editNodeView = EditNodeView()
 		editNodeView.nodeId = nodeId
-		editNodeView.pinned = pinned
 		return editNodeView
 	}
 
 	override fun onInit() {
 		super.onInit()
 		sendMessage(EditNodeController.Hello(this))
-		add(bar)
 		add(content)
+		add(bar)
 
 		content.translation.y = 20f
 	}
@@ -50,6 +48,7 @@ class EditNodeView : View() {
 		super.onUpdate()
 		nodeEditor?.layoutWidth = getWidth()
 		nodeEditor?.layoutHeight = getHeight() - content.translation.y
+		bar.width = getWidth()
 	}
 
 	fun init(editNodeController: EditNodeController) {

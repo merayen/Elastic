@@ -47,7 +47,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 							val file_instances = dtde.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
 							val files: List<String> = (file_instances.map { it.absolutePath })
 
-							queueEvent(FileDropEvent(dtde.dropTargetContext.component.name, 0, 0, MouseEvent.Action.DROP, MouseEvent.Button.LEFT, files.toTypedArray())) // TODO figure out coordinates
+							queueEvent(FileDropEvent(dtde.dropTargetContext.component.name, 0, 0, 0, MouseEvent.Action.DROP, MouseEvent.Button.LEFT, files.toTypedArray())) // TODO figure out coordinates
 
 							for (f in files)
 								println("File dropped: " + f)
@@ -118,7 +118,9 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 		}
 
 		override fun mouseEntered(e: java.awt.event.MouseEvent) {}
-		override fun mouseExited(e: java.awt.event.MouseEvent) {}
+		override fun mouseExited(e: java.awt.event.MouseEvent) {
+			createMouseEvent(e, MouseEvent.Action.OUT_OF_RANGE)
+		}
 		override fun mouseClicked(e: java.awt.event.MouseEvent) {}
 
 		override fun mouseMoved(e: java.awt.event.MouseEvent) {
@@ -151,7 +153,6 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 	}
 
 	init {
-
 		java.awt.EventQueue.invokeLater {
 			frame = LolFrame(Runnable { end() })
 			panel = LolPanel()
@@ -180,7 +181,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 		else if (b == java.awt.event.MouseEvent.BUTTON3)
 			button = MouseEvent.Button.RIGHT
 
-		queueEvent(MouseEvent(e.component.name, e.x, e.y, action, button))
+		queueEvent(MouseEvent(e.component.name, 0, e.x, e.y, action, button)) // Mouse is always id 0. Gamepads will have an higher id
 	}
 
 	private fun queueEvent(event: UIEvent) {

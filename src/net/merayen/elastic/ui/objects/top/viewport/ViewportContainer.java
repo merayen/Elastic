@@ -216,7 +216,7 @@ public class ViewportContainer extends UIObject {
 				else
 					layout.resizeHeight(m.get("viewport"), new_size / height);
 
-				UINodeUtil.getWindow(self).debug.set("ViewContainer new_size", new_size / (vertical ? width : height));
+				UINodeUtil.getWindow(self).getDebug().set("ViewContainer new_size", new_size / (vertical ? width : height));
 			}
 		});
 

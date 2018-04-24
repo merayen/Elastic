@@ -6,6 +6,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
+import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.util.TaskExecutor
 import net.merayen.elastic.util.UniqueID
 
@@ -40,6 +41,25 @@ abstract class View : UIObject {
 
 	constructor(id: String) {
 		this.id = id
+	}
+
+	/**
+	 * Swap this view with another View.
+	 */
+	fun <T : View> swap(cls: Class<out T>): T {
+		val newView: T
+
+		try {
+			newView = cls.newInstance()
+		} catch (e: InstantiationException) {
+			throw RuntimeException(e)
+		} catch (e: IllegalAccessException) {
+			throw RuntimeException(e)
+		}
+
+		search.parentByType(ViewportContainer::class.java)!!.swapView(this, newView)
+
+		return newView
 	}
 
 	abstract fun cloneView(): View

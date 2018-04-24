@@ -62,14 +62,14 @@ public class Viewport extends UIObject {
 
 			@Override
 			public void onDrag(float diff, boolean vertical) {
-				UINodeUtil.getWindow(self).debugPrint("ViewportDrag onDrag()", diff + "," + vertical + ", " + original_size);
+				UINodeUtil.getWindow(self).getDebug().set("ViewportDrag onDrag()", diff + "," + vertical + ", " + original_size);
 				float relative_diff = original_size + diff;
 				handler.onNewViewportResize(relative_diff, vertical);
 			}
 
 			@Override
 			public void onDrop(float diff, boolean vertical) {
-				UINodeUtil.getWindow(self).debugPrint("ViewportDrag onDrop()", diff + ", " + vertical);
+				UINodeUtil.getWindow(self).getDebug().set("ViewportDrag onDrop()", diff + ", " + vertical);
 			}
 		});
 		clip.add(drag);
@@ -119,7 +119,7 @@ public class Viewport extends UIObject {
 		drag.height = height - BORDER_WIDTH * 2;
 
 		Window window = UINodeUtil.getWindow(this);
-		window.debugPrint("Viewport " + lol, getTranslation() + "   [" + width + ", " + height + "]");
+		window.getDebug().set("Viewport " + lol, getTranslation() + "   [" + width + ", " + height + "]");
 	}
 
 	public String toString() {

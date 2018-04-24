@@ -12,9 +12,9 @@ import net.merayen.elastic.util.Point;
  */
 public class Movable extends MouseHandler { // TODO make it not inherit, rather contain MouseHandler
 	public interface IMoveable {
-		public void onGrab(); // Is grabbed
-		public void onMove(); // Is moving
-		public void onDrop(); // Dropped
+		void onGrab();
+		void onMove();
+		void onDrop();
 	}
 
 	/**

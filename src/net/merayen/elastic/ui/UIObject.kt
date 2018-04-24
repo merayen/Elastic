@@ -86,13 +86,13 @@ open class UIObject {
 		}*/
 
 	open fun getWidth(): Float {
-		val deep = deepOutline
-		return deep!!.x2 - deep.x1
+		val deep = deepOutline!!
+		return deep.x2 - deep.x1
 	}
 
 	open fun getHeight(): Float {
-		val deep = deepOutline
-		return deep!!.y2 - deep.y1
+		val deep = deepOutline!!
+		return deep.y2 - deep.y1
 	}
 
 	open fun onInit() {}

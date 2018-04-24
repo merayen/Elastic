@@ -35,7 +35,7 @@ public class PopupSlide extends UIObject {
 			Window window = UINodeUtil.getWindow(this);
 
 			// Closes ourself if clicked outside
-			draw.empty(0, 0, window.width, window.height);
+			draw.empty(0, 0, window.getScreenWidth(), window.getScreenHeight());
 		}
 
 		@Override
@@ -49,8 +49,8 @@ public class PopupSlide extends UIObject {
 		public void onUpdate() {
 			Window window = UINodeUtil.getWindow(this);
 			Dimension dimension = getItemMaxDimension();
-			getTranslation().x = window.width / 2- dimension.getWidth() / 2;
-			getTranslation().y = window.height / 2 - dimension.getHeight() / 2;
+			getTranslation().x = window.getScreenWidth() / 2- dimension.getWidth() / 2;
+			getTranslation().y = window.getScreenHeight() / 2 - dimension.getHeight() / 2;
 
 			placeItems();
 		}

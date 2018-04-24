@@ -22,7 +22,12 @@ public class MouseEvent extends UIEvent {
 		/**
 		 * When dragging something and lets it go
 		 */
-		DROP
+		DROP,
+
+		/**
+		 * When mouse has gone outside a surface
+		 */
+		OUT_OF_RANGE
 	}
 
 	public enum Button {
@@ -34,12 +39,18 @@ public class MouseEvent extends UIEvent {
 	public final Action action;
 	public final Button button;
 
+	/**
+	 * id of the cursor. The regular mouse will always be 0, while gamepads will be something else.
+	 */
+	public final int id;
+
 	public final int x, y;
 
-	public List<UIObject> objects_hit;
+	List<UIObject> objects_hit;
 
-	public MouseEvent(String surface_id, int x, int y, Action action, Button button) {
+	public MouseEvent(String surface_id, int id, int x, int y, Action action, Button button) {
 		super(surface_id);
+		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.action = action;
@@ -67,15 +78,13 @@ public class MouseEvent extends UIEvent {
 		hits.sort( (a,b) -> b.getDraw_z() - a.getDraw_z());
 
 		if(hits.size() > 0) {
-			String m = "Object hit: ";
+			StringBuilder m = new StringBuilder("Object hit: ");
 			for(UIObject o : hits)
-				m += o.getClass().getSimpleName() + ", ";
+				m.append(o.getClass().getSimpleName()).append(", ");
 
-			if(uiobject != null)
-				uiobject.debug.set("MouseEvent.calcHit", m);
+			uiobject.getDebug().set("MouseEvent.calcHit", m.toString());
 		} else {
-			if(uiobject != null)
-				uiobject.debug.unset("MouseEvent.calcHit");
+			uiobject.getDebug().unset("MouseEvent.calcHit");
 		}
 
 		return hits;

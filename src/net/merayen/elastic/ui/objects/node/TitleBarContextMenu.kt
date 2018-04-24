@@ -24,9 +24,9 @@ internal class TitleBarContextMenu(titlebar: UIObject) : UIObject() {
 					if(nodeId != null)
 						sendMessage(RemoveNodeMessage(nodeId))
 				} else if(item === editNode) {
-					val node = search.parentByType(UINode::class.java)
+					/*val node = search.parentByType(UINode::class.java)
 					if(node != null && node is INodeEditable)
-						sendMessage(EditNodeMessage(node))
+						sendMessage(EditNodeMessage(node))*/ // TODO fix dette? Finne random view? Bruke eksisterende view? Popup?
 				}
 			}
 		})

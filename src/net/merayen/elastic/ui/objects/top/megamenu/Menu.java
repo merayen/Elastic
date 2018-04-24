@@ -21,18 +21,7 @@ class Menu extends AutoLayout {
 		Menu self = this;
 
 		super.onInit();
-		views = new ViewSelector((cls) -> {
-			View old_view = self.getSearch().parentByType(View.class);
-			View new_view;
-
-			try {
-				new_view = cls.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new RuntimeException(e);
-			}
-
-			self.getSearch().parentByType(ViewportContainer.class).swapView(old_view, new_view);
-		});
+		views = new ViewSelector((cls) -> self.getSearch().parentByType(View.class).swap(cls));
 		add(views);
 
 		add(new Button() {{
@@ -44,18 +33,7 @@ class Menu extends AutoLayout {
 
 		add(new Button() {{
 			label = "Open Project";
-			setHandler(() -> {
-				View old_view = self.getSearch().parentByType(View.class);
-				View new_view;
-
-				try {
-					new_view = FileBrowserView.class.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-
-				self.getSearch().parentByType(ViewportContainer.class).swapView(old_view, new_view);
-			});
+			setHandler(() -> self.getSearch().parentByType(View.class).swap(FileBrowserView.class));
 		}});
 
 		add(new Button() {{
