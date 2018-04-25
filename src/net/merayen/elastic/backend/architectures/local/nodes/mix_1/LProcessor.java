@@ -133,18 +133,18 @@ public class LProcessor extends LocalProcessor {
 
 			} else {
 				if(fac != null)
-					fac.read = buffer_size;
+					fac.read = fac.outlet.written;
 
 				out.written = buffer_size;
 				out.push();
 			}
 		} else { // No output connected. No processing is done. We just forward input ports
 			if(fac != null)
-				fac.read = buffer_size;
+				fac.read = fac.outlet.written;
 			if(a != null)
-				a.read = buffer_size;
+				a.read = a.outlet.written;
 			if(b != null)
-				b.read = buffer_size;
+				b.read = b.outlet.written;
 		}
 	}
 

@@ -48,26 +48,20 @@ public class ViewBar extends AutoLayout {
 			}
 
 			@Override
-			public void onHover(@NotNull MouseCarryItem item) {
-				System.out.println("Oh, come here!");
-			}
+			public void onHover(@NotNull MouseCarryItem item) {}
 
 			@Override
 			public void onBlurInterest() {
-				//System.out.println("Oh, oh well");
 				interested = false;
 			}
 
 			@Override
 			public void onInterest(@NotNull MouseCarryItem item) {
-				System.out.println("Interested!!!");
 				interested = true;
 			}
 
 			@Override
-			public void onBlur() {
-				//System.out.println("Come on! You just hovered me!");
-			}
+			public void onBlur() {}
 		};
 	}
 
