@@ -41,10 +41,17 @@ public class LNode extends LocalNode {
 			int i = 0;
 			for(LocalProcessor x : processors) {
 				LProcessor processor = (LProcessor)x;
+				if(processor.tangent_down != null && processor.tangent_down[1] == tangent)
+					processor.basePitch = (count == 1) ? 0 : (i++ / (count - 1f) * 2 - 1) * width;
+			}
+
+			/*for(LocalProcessor x : processors) {
+				LProcessor processor = (LProcessor)x;
 				if(processor.tangent_down != null && processor.tangent_down[1] == tangent) {
-					processor.pitch = (count == 1) ? 0 : ((i++ / (float) count) * 2 - 1) * width;
+					System.out.print(processor.basePitch + "\t");
 				}
 			}
+			System.out.println();*/
 		}
 	}
 

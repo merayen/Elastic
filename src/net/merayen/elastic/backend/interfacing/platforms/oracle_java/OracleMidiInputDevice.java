@@ -30,14 +30,10 @@ public class OracleMidiInputDevice extends MidiInputDevice {
 	public void onReconfigure() {}
 
 	@Override
-	protected void onStop() {
-		
-	}
+	protected void onStop() {}
  
 	@Override
-	protected void onKill() {
-		
-	}
+	protected void onKill() {}
 
 	@Override
 	public void spool(int samples) {}

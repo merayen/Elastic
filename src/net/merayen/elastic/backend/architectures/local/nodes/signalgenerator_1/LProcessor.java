@@ -13,7 +13,9 @@ import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.backend.midi.MidiControllers;
+import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.midi.MidiStatuses;
+import net.merayen.elastic.backend.midi.MidiUtils;
 import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {
@@ -35,13 +37,53 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private List<short[]> keys_down = new ArrayList<>();
 
 	private boolean sustain;
-	private short[] active_tangent;
-	private float pitch;
 	private float volume;
+	private short[] active_tangent;
 	private float velocity;
-	private float midi_volume;
 
 	private double pos;
+
+	private MidiState midiState = new MidiState() {
+		@Override
+		protected void onPitchBendSensitivityChange(float v) {}
+
+		@Override
+		protected void onKeyDown(short tangent, float _velocity) {
+			velocity = _velocity;
+
+			if (!sustain)
+				keys_down.add(getCurrentMidiPacket());
+
+			active_tangent = getCurrentMidiPacket();
+		}
+
+		@Override
+		protected void onKeyUp(short tangent) {
+			keys_down.removeIf(m -> m[1] == tangent);
+			if (!sustain)
+				active_tangent = keys_down.isEmpty() ? null : keys_down.get(keys_down.size() - 1);
+		}
+
+		@Override
+		protected void onSustain(float value) {
+			/*if (sustain && getCurrentMidiPacket()[2] == 0) {
+				if (keys_down.isEmpty())
+					active_tangent = null;
+				else
+					active_tangent = keys_down.get(keys_down.size() - 1);
+			}
+
+			sustain = getCurrentMidiPacket()[2] != 0;*/
+		}
+
+		@Override
+		protected void onVolumeChange(float volume) {}
+
+		@Override
+		protected void onPitchChange(float semitones) {
+			//System.out.println(getSessionID() + "\t" + semitones);
+		}
+	};
 
 	@Override
 	protected void onInit() {
@@ -133,13 +175,15 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		updateKeysDown();
 
+		float pitch = midiState.getPitch();
+
 		if(active_tangent != null && resampling != null) {
 			double freq = midiNoteToFreq(active_tangent[1] + pitch);
 			float volume_div = sample_rate / 1000;
 			float[] audio = outlet.audio[0];
 
 			resampling.update((float)freq, available);
-			float new_volume = midi_volume * velocity;
+			float new_volume = midiState.getVolume() * midiState.getVelocity();
 
 			if (volume != new_volume) {
 				int start = outlet.written;
@@ -151,9 +195,8 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 			} else if(volume != 1f) {
 				int start = outlet.written;
 				int stop = start + available;
-				for (int i = start; i < stop; i++) {
+				for (int i = start; i < stop; i++)
 					audio[i] *= volume;
-				}
 			}
 
 		} else { // No key down? Silence!
@@ -170,38 +213,9 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		MidiInlet inlet = (MidiInlet)getInlet("frequency");
 		if(inlet.available() > 0) {
 			MidiOutlet.MidiFrame midiFrame;
-			while((midiFrame = inlet.getNextMidiFrame(buffer_size)) != null) {
-
-				for (short[] midiPacket : midiFrame) {
-					if ((midiPacket[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
-						midi_volume = 1;
-						velocity = midiPacket[2] / 127f;
-						volume = 0;
-
-						if (!sustain)
-							keys_down.add(midiPacket);
-
-						active_tangent = midiPacket;
-					} else if ((midiPacket[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
-						keys_down.removeIf(m -> m[1] == midiPacket[1]);
-						if (!sustain)
-							active_tangent = keys_down.isEmpty() ? null : keys_down.get(keys_down.size() - 1);
-					} else if ((midiPacket[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midiPacket[1] == MidiControllers.SUSTAIN) {
-						if (sustain && midiPacket[2] == 0) {
-							if (keys_down.isEmpty())
-								active_tangent = null;
-							else
-								active_tangent = keys_down.get(keys_down.size() - 1);
-						}
-
-						sustain = midiPacket[2] != 0;
-					} else if ((midiPacket[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && midiPacket[1] == MidiControllers.VOLUME) {
-						midi_volume = midiPacket[2] / 127f; // TODO interpolate! plz
-					} else if ((midiPacket[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
-						pitch = midiPacket[2] / 32f - 2f;
-					}
-				}
-			}
+			while((midiFrame = inlet.getNextMidiFrame(buffer_size)) != null)
+				for (short[] midiPacket : midiFrame)
+					midiState.handle(midiPacket);
 
 			inlet.read += inlet.available();
 		}

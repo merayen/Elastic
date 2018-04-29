@@ -3,17 +3,54 @@ package net.merayen.elastic.backend.architectures.local.nodes.midi_spread_1;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
-import net.merayen.elastic.backend.midi.MidiStatuses;
+import net.merayen.elastic.backend.midi.MidiMessagesCreator;
+import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.util.Postmaster.Message;
+import org.jetbrains.annotations.NotNull;
 
 public class LProcessor extends LocalProcessor {
 	private MidiInlet input;
 	private MidiOutlet output;
 
-	volatile float pitch;
-	volatile private float current_pitch;
+	volatile float basePitch;
+	volatile private float currentPitch;
 	short[] tangent_down;
-	private short midi_pitch = 63;
+	private float midiPitch = 0;
+
+	private boolean inited = false;
+
+	private boolean midiHandled;
+
+	private MidiOutlet.MidiFrame midiFrame; // Current one. To be used in the midiState handler
+
+	private MidiState midiState = new MidiState() {
+		@Override
+		protected void onKeyDown(short tangent, float velocity) {
+			output.putMidi(midiFrame.framePosition, getCurrentMidiPacket());
+			//output.putMidi(midiFrame.framePosition, MidiMessagesCreator.changePitch(currentPitch));
+			tangent_down = getCurrentMidiPacket();
+			((LNode)getLocalNode()).updateVoices();
+			midiHandled = true;
+		}
+
+		@Override
+		protected void onPitchChange(float semitones) {
+			midiPitch = semitones;
+			midiHandled = true;
+		}
+
+		@Override
+		protected void onPitchBendSensitivityChange(float semitones) {
+			output.putMidi(midiFrame.framePosition, MidiMessagesCreator.changePitchBendRange(semitones * 2));
+			midiHandled = true;
+		}
+
+		@Override
+		protected void onMidi(@NotNull short[] midiPacket) {
+			if(!midiHandled) // Forward all midi packets we have not handled
+				output.putMidi(midiFrame.framePosition, midiPacket);
+		}
+	};
 
 	@Override
 	protected void onInit() {
@@ -42,26 +79,23 @@ public class LProcessor extends LocalProcessor {
 		int start = input.read;
 		int stop = start + avail;
 
-		MidiOutlet.MidiFrame midiFrame;
+		// We send initial midi to set up
+		if(!inited) {
+			sendInitialMidi();
+			inited = true;
+		}
+
 		while((midiFrame = input.getNextMidiFrame(stop)) != null) {
-			for(short[] midi_packet : midiFrame) {
-				if((midi_packet[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
-					output.putMidi(midiFrame.framePosition, midi_packet);
-					output.putMidi(midiFrame.framePosition, new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 32 + midi_pitch)});
-					tangent_down = midi_packet;
-					((LNode)getLocalNode()).updateVoices(); // Re-assign pitches on all
-				} else if((midi_packet[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
-					midi_pitch = midi_packet[2];
-					output.putMidi(midiFrame.framePosition, new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 32 + midi_pitch)});
-				} else {
-					output.putMidi(midiFrame.framePosition, midi_packet);
-				}
+			for(short[] midiPacket : midiFrame) {
+				midiHandled = false;
+				midiState.handle(midiPacket);
 			}
 		}
 
-		if(current_pitch != pitch) { // Pitch offset has been updated. We need to send a new pitch now.
-			current_pitch = pitch;
-			output.putMidi(stop - 1, new short[]{MidiStatuses.PITCH_CHANGE, 0, (short)(current_pitch * 32 + midi_pitch)});
+		float newPitch = (basePitch + midiPitch) / (midiState.getBendRange() * 2);
+		if(currentPitch != newPitch) { // Pitch offset has been updated. We need to send a new basePitch now.
+			currentPitch = newPitch;
+			output.putMidi(stop - 1, MidiMessagesCreator.changePitch(newPitch));
 		}
 
 		output.written += avail;
@@ -73,4 +107,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onDestroy() {}
+
+	private void sendInitialMidi() {
+		// Make the basePitch bend range bigger to
+		output.putMidi(0, MidiMessagesCreator.changePitchBendRange(4));
+	}
 }
