@@ -42,8 +42,8 @@ public class LProcessor extends LocalProcessor {
 
 					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
 						for (int i = out.written; i < stop; i++) {
-							float af = (a_buffer.length > channel_no ? a_buffer[channel_no][i] : 0);
-							float bf = (b_buffer.length > channel_no ? b_buffer[channel_no][i] : 0);
+							float af = (a_buffer[channel_no] != null ? a_buffer[channel_no][i] : 0);
+							float bf = (b_buffer[channel_count] != null ? b_buffer[channel_no][i] : 0);
 
 							float volume_a = 1 - Math.max(0, Math.min(1, fac_buffer[0][i]));
 							float volume_b = 1 - Math.max(0, Math.min(1, fac_buffer[0][i] * -1));
@@ -57,8 +57,8 @@ public class LProcessor extends LocalProcessor {
 				} else {
 					float mix = ((LNode) getLocalNode()).mix;
 					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
-						float[] a_channel = (a_buffer.length > channel_no ? a_buffer[channel_no] : null);
-						float[] b_channel = (b_buffer.length > channel_no ? b_buffer[channel_no] : null);
+						float[] a_channel = a_buffer[channel_no];
+						float[] b_channel = b_buffer[channel_no];
 
 						for (int i = out.written; i < stop; i++)
 							out_buffer[channel_no][i] = (a_channel != null ? a_channel[i] : 0) * (1 - mix) + (b_channel != null ? b_channel[i] : 0) * mix;
