@@ -9,14 +9,15 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.system.intercom.RemoveNodePortMessage
+import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 
-abstract class UINode : UIObject() {
+abstract class UINode : UIObject(), FlexibleDimension {
 	lateinit var nodeId: String // Same ID as in the backend-system, netlist etc
-	var layoutWidth = 500f
-	var layoutHeight = 500f
+	override var layoutWidth = 500f
+	override var layoutHeight = 500f
 
 	protected var titlebar: Titlebar
 		private set

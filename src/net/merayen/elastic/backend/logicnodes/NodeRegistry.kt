@@ -18,5 +18,6 @@ object NodeRegistry {
 		nodes.add("midi_spread_1")
 		nodes.add("delay_1")
 		nodes.add("compressor_1")
+		nodes.add("sample_1")
 	}
 }

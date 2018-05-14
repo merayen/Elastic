@@ -22,7 +22,11 @@ class SignalBezierCurveBoxControlFrame : UIObject(), FlexibleDimension {
 			init {
 				label = "+"
 				font_size = 8f
-				setHandler { bezier.insertPoint(1) }
+				handler = object : Button.IHandler {
+					override fun onClick() {
+						bezier.insertPoint(1)
+					}
+				}
 			}
 		})
 	}

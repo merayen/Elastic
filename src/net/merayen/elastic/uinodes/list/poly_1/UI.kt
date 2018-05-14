@@ -19,7 +19,11 @@ class UI : UINode() {
 		button.label = "Open"
 		button.translation.x = 10f
 		button.translation.y = 20f
-		button.setHandler { search.parentByType(NodeView::class.java)!!.swapView(nodeId) }
+		button.handler = object : Button.IHandler {
+			override fun onClick() {
+				search.parentByType(NodeView::class.java)!!.swapView(nodeId)
+			}
+		}
 		add(button)
 
 		unison = ParameterSlider()

@@ -25,19 +25,19 @@ class Menu extends AutoLayout {
 		add(views);
 
 		add(new Button() {{
-			label = "New Project";
-			auto_dimension = false;
-			width = 196;
+			setLabel("New Project");
+			setAuto_dimension(false);
+			setLayoutWidth(196);
 			setHandler(() -> {});
 		}});
 
 		add(new Button() {{
-			label = "Open Project";
+			setLabel("Open Project");
 			setHandler(() -> self.getSearch().parentByType(View.class).swap(FileBrowserView.class));
 		}});
 
 		add(new Button() {{
-			label = "About";
+			setLabel("About");
 			setHandler(() -> {});
 		}});
 	}

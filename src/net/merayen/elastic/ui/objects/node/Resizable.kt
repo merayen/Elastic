@@ -1,13 +1,14 @@
 package net.merayen.elastic.ui.objects.node
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent.Button
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 
-class Resizable(private val node: UINode, private val handler: Handler) : UIObject() {
+class Resizable(private val node: FlexibleDimension, private val handler: Handler) : UIObject() {
 	private var mouseHandler: MouseHandler? = null
 
 	private var startWidth: Float = 0.toFloat()
@@ -21,8 +22,8 @@ class Resizable(private val node: UINode, private val handler: Handler) : UIObje
 		mouseHandler = MouseHandler(this, Button.LEFT)
 		mouseHandler!!.setHandler(object : MouseHandler.Handler() {
 			override fun onMouseDown(position: Point) {
-				startWidth = node.getWidth()
-				startHeight = node.getHeight()
+				startWidth = node.layoutWidth
+				startHeight = node.layoutHeight
 			}
 
 			override fun onMouseDrag(position: Point, offset: Point) {
@@ -40,7 +41,7 @@ class Resizable(private val node: UINode, private val handler: Handler) : UIObje
 		draw.setStroke(0.5f)
 		var i = 1
 		while (i < 8) {
-			draw.line(node.getWidth() - 2 * i, node.getHeight(), node.getWidth(), node.getHeight() - 2 * i)
+			draw.line(node.layoutWidth - 2 * i, node.layoutHeight, node.layoutWidth, node.layoutHeight - 2 * i)
 			i += 2
 		}
 	}

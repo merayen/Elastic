@@ -25,8 +25,8 @@ public class ParameterSlider extends UIObject {
 
 	public void onInit() {
 		left_button = new Button();
-		left_button.label = "-";
-		left_button.width = 11f;
+		left_button.setLabel("-");
+		left_button.setLayoutWidth(11f);
 		add(left_button);
 
 		left_button.setHandler(new Button.IHandler() {
@@ -43,8 +43,8 @@ public class ParameterSlider extends UIObject {
 		right_button = new Button();
 		right_button.getTranslation().x = width - 11f;
 		right_button.getTranslation().y = 0f;
-		right_button.label = "+";
-		right_button.width = 11f;
+		right_button.setLabel("+");
+		right_button.setLayoutWidth(11f);
 		add(right_button);
 
 		right_button.setHandler(new Button.IHandler() {

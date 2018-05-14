@@ -27,7 +27,7 @@ public class AboutDialog extends UIObject {
 		pane.add(new AboutDialogContent());
 
 		Button button = new Button();
-		button.label = "Close";
+		button.setLabel("Close");
 		button.getTranslation().x = 500f;
 		button.getTranslation().y = 550f;
 		button.setHandler(new Button.IHandler() {
