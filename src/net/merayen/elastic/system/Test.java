@@ -54,7 +54,7 @@ public class Test {
 
 		// Run "forever", project should be identical to the one created at the beginning
 		while(true) {
-			roflmao.t = System.currentTimeMillis() + 1000 * 10;
+			roflmao.t = System.currentTimeMillis() + 1000 * 60;
 			waitFor(() -> System.currentTimeMillis() > roflmao.t);
 			System.out.println("Saving checkpoint");
 			system.sendMessageToBackend(new CreateCheckpointMessage());
