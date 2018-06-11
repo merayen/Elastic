@@ -156,7 +156,7 @@ public class NodeView extends View {
 		if(event instanceof MouseWheelEvent) {
 			MouseWheelEvent e = (MouseWheelEvent)event;
 
-			if(isFocused()) {
+			if(isFocused()) { // Decides if we are the receiver of the event
 				float s_x = container.getTranslation().scale_x;
 				float s_y = container.getTranslation().scale_y;
 

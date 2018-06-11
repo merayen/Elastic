@@ -132,7 +132,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 		}
 
 		override fun mouseWheelMoved(e: java.awt.event.MouseWheelEvent) {
-			queueEvent(MouseWheelEvent(e.component.name, e))
+			queueEvent(MouseWheelEvent(e.component.name, 0, e.wheelRotation))
 		}
 
 		override fun keyTyped(e: KeyEvent) {}

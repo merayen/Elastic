@@ -60,15 +60,15 @@ public class LProcessor extends LocalProcessor {
 		if(delays == null || delays.length != channelCount) {
 			delays = new Delay[channelCount];
 			for(int i = 0; i < channelCount; i++) {
-				delays[i] = new Delay(sample_rate * 2); // Allows 1 second of delay
+				delays[i] = new Delay(sample_rate * 4); // Allows 1 second of delay
 
 				// DEBUG. Take these parameters from the UI instead
 				final int TAPS = 100;
 				for(int lol = 0; lol < TAPS; lol++)
-					delays[i].addTap(new Delay.Tap((int)(Math.floor(Math.random() * sample_rate)), 0.1f, 0f / TAPS));
+					delays[i].addTap(new Delay.Tap((int)(Math.floor(Math.random() * sample_rate * 2)), 0.5f, 0.99f / TAPS));
 
-				delays[i].addTap(new Delay.Tap(sample_rate / 4, 0.0f, .2f));
-				delays[i].addTap(new Delay.Tap(sample_rate / 2, 0.0f, .3f));
+				/*delays[i].addTap(new Delay.Tap(sample_rate / 4, 0.0f, .2f));
+				delays[i].addTap(new Delay.Tap(sample_rate / 2, 0.0f, .3f));*/
 			}
 		}
 	}

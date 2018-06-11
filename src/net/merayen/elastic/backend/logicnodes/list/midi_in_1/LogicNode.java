@@ -36,22 +36,13 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onConnect(String port) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onConnect(String port) {}
 
 	@Override
-	protected void onDisconnect(String port) {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onDisconnect(String port) {}
 
 	@Override
-	protected void onRemove() {
-		// TODO Auto-generated method stub
-
-	}
+	protected void onRemove() {}
 
 	@Override
 	protected void onPrepareFrame(Map<String, Object> data) {
@@ -72,9 +63,5 @@ public class LogicNode extends BaseLogicNode {
 	protected void onFinishFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onData(Map<String, Object> data) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	protected void onData(Map<String, Object> data) {}
 }

@@ -112,11 +112,4 @@ public class MouseEvent extends UIEvent {
 
 		return objects_hit.indexOf(uiobject);
 	}
-
-	/**
-	 * Get mouse cursor position on UIObject.
-	 */
-	public Point getOffset(UIObject uiobject) {
-		return uiobject.getRelativeFromAbsolute(x, y);
-	}
 }

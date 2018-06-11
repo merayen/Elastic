@@ -222,7 +222,6 @@ class Supervisor {
 			lp.process_time = 0;
 		}
 
-		long t_process = System.nanoTime();
 		while(!scheduled.isEmpty()) { // TODO implement logic that detects hanging processors
 			List<LocalProcessor> to_process = scheduled;
 			scheduled = new ArrayList<>();

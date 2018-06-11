@@ -3,10 +3,12 @@ package net.merayen.elastic.ui.objects.top.views.filebrowserview;
 import java.io.File;
 import java.util.ArrayList;
 
+import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.Scroll;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
+import org.jetbrains.annotations.NotNull;
 
 class FileList extends UIObject {
 	interface Handler {
@@ -32,7 +34,7 @@ class FileList extends UIObject {
 					remove(obj);
 
 				add(new FileListItem() {{
-					label = ".. (go back)";
+					setLabel(".. (go back)");
 					setHandler(() -> {
 						if(handler != null)
 							handler.onSelect(null);
@@ -42,7 +44,7 @@ class FileList extends UIObject {
 				if(files != null) {
 					for(File f : files) {
 						add(new FileListItem() {{
-							label = f.getName();
+							setLabel(f.getName());
 							setHandler(() -> {
 								if(handler != null)
 									handler.onSelect(f);
@@ -73,6 +75,12 @@ class FileList extends UIObject {
 	public void onUpdate() {
 		scroll.setLayoutHeight(height);
 		scroll.setLayoutWidth(width);
+	}
+
+	@Override
+	public void onDraw(@NotNull Draw draw) {
+		draw.setColor(255,0,255);
+		draw.rect(0,0, width, height);
 	}
 
 	void browse(String path) {

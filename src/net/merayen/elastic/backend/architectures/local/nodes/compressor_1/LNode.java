@@ -31,7 +31,6 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onParameter(String key, Object value) {
-		System.out.println("Compressor parameter received: " + key + ": " + value);
 		if(key.equals("threshold"))
 			threshold = ((Number)value).floatValue();
 		else if(key.equals("attack"))

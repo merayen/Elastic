@@ -16,7 +16,6 @@ public class FileBrowserView extends View {
 		file_list.getTranslation().x = 0;
 		file_list.getTranslation().y = 20;
 		file_list.setHandler(new FileList.Handler() {
-			
 			@Override
 			public void onSelect(File file) {
 				if(file == null)
@@ -31,8 +30,8 @@ public class FileBrowserView extends View {
 
 	@Override
 	public void onUpdate() {
-		file_list.width = getWidth() - 20;
-		file_list.height = getHeight();
+		file_list.width = getWidth();
+		file_list.height = getHeight() - 20;
 	}
 
 	@Override
