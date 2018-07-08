@@ -53,7 +53,7 @@ public class LogicNode extends BaseLogicNode {
 
 			int i = 0;
 			for(MidiPacket mp : midi_packets)
-				midi[i++] = mp.midi;
+				midi[i++] = mp.midi; // TODO FIXME FUCKTHIS Nullpointer exception
 
 			data.put("midi", midi);
 		}

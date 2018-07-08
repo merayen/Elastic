@@ -252,7 +252,7 @@ class Supervisor {
 		for(Node node : netlist.getNodes()) {
 			LocalNode ln = local_properties.getLocalNode(node);
 
-			ln.onFinishFrame();
+			ln.finishFrame();
 
 			response.data.put(node.getID(), ln.outgoing);
 		}
@@ -271,6 +271,7 @@ class Supervisor {
 			for(int i = 0; i < 10 && i < list.size(); i++) {
 				LocalNode ln = list.get(i);
 				System.out.printf("%d: sessions=%d, count=%d, avg=%.3fms, max=%.3fms: %s\n", i, ln.getProcessors().size(), ln.getStatisticsProcessCount(), ln.getStatisticsAvg() / 1E6, ln.getStatisticsMax() / 1E6, ln.getClass().getPackage().getName());
+
 			}
 
 			process_time_last = System.currentTimeMillis() + 1000;

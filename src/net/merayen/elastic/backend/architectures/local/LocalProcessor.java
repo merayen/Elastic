@@ -35,8 +35,6 @@ public abstract class LocalProcessor {
 	int process_count;
 	AverageStat<Long> process_times = new AverageStat<>(1000); // Used by Supervisor for statistics
 
-	private int voice_stop;
-
 	final Map<String, Outlet> outlets = new HashMap<>();
 	final Map<String, Inlet> inlets = new HashMap<>();
 
@@ -69,8 +67,6 @@ public abstract class LocalProcessor {
 		this.session_id = session_id;
 		this.buffer_size = localnode.buffer_size;
 		this.sample_rate = localnode.sample_rate;
-
-		voice_stop = buffer_size;
 	}
 
 	/**

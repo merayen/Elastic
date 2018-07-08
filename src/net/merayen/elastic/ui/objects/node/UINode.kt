@@ -1,14 +1,10 @@
 package net.merayen.elastic.ui.objects.node
 
+import net.merayen.elastic.system.intercom.*
 import java.util.ArrayList
 
 import net.merayen.elastic.ui.Draw
 
-import net.merayen.elastic.system.intercom.CreateNodePortMessage
-import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
-import net.merayen.elastic.system.intercom.RemoveNodeMessage
-import net.merayen.elastic.system.intercom.RemoveNodePortMessage
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.util.Postmaster
@@ -109,6 +105,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			remove(port!!)
 			nodePorts.remove(port)
 			onRemovePort(port)
-		}
+		} else if (message is NodeStatusMessage)
+			println(message)
 	}
 }

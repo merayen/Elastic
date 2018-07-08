@@ -8,6 +8,7 @@ import java.util.Map;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.system.intercom.NodeStatusMessage;
 
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
@@ -28,6 +29,8 @@ public abstract class LocalNode {
 
 	public Map<String, Object> ingoing = new HashMap<>(); // Data sent to this node from LogicNodes
 	public final Map<String, Object> outgoing = new HashMap<>(); // Data that is the result from the processing (read from the outside)
+
+	private long lastNodeStats = System.currentTimeMillis();
 
 	/**
 	 * Initialize here.
@@ -71,6 +74,14 @@ public abstract class LocalNode {
 		this.sample_rate = sample_rate;
 		this.buffer_size = buffer_size;
 		this.properties = new NodeProperties(netlist);
+	}
+
+	void finishFrame() {
+		onFinishFrame();
+		if(lastNodeStats + 1000 < System.currentTimeMillis()) {
+			outgoing.put("node_stats", new NodeStatusMessage(node.getID(), (float)getStatisticsMax(), 0, getStatisticsProcessCount()));
+			lastNodeStats = System.currentTimeMillis();
+		}
 	}
 
 	/**

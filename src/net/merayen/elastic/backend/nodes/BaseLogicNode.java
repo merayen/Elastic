@@ -143,6 +143,13 @@ public abstract class BaseLogicNode {
 			onCreate();
 	}
 
+	void processData(Map<String, Object> data) {
+		onData(data);
+
+		if(data.containsKey("node_stats"))
+			sendMessageToUI((NodeStatusMessage)data.get("node_stats"));
+	}
+
 	/**
 	 * Only used by the 
 	 */
