@@ -42,12 +42,11 @@ public class LProcessor extends LocalProcessor {
 				if (iter.next() == getCurrentMidiPacket()[1])
 					iter.remove();
 
-			if (keys_down.isEmpty()) {
+			if (keys_down.isEmpty() && current_tangent_up == null) {
 				current_tangent_up = getCurrentMidiPacket();
 				getADSR().push(position + midiFrame.framePosition, -1);
-			} else {
-				output.putMidi(midiFrame.framePosition, new short[]{MidiStatuses.KEY_UP, getCurrentMidiPacket()[1], 0});
 			}
+
 			handledMidiPacket = true;
 		}
 

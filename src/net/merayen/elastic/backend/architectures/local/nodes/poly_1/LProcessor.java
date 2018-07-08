@@ -95,9 +95,8 @@ public class LProcessor extends LocalProcessor {
 
 		forwardOutputData();
 
-		if(input != null && input.read == buffer_size) {
+		if(input != null && input.read == buffer_size)
 			removeInactiveSessions();
-		}
 	}
 
 	private void push_tangent(short tangent, short velocity, int position) { // TODO support unison, and forwarding of channel number
@@ -281,7 +280,6 @@ public class LProcessor extends LocalProcessor {
 			}
 
 			if(!active) {
-
 				sessions.removeSession(session);
 				removeSession(session.session_id);
 				//System.out.println("Poly is killing session " + session.session_id);
