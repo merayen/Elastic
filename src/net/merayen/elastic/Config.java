@@ -12,7 +12,7 @@ public class Config {
 		public static class debug {
 			public static boolean messages;
 			public static boolean verbose;
-			public static boolean performance = true;
+			public static boolean performance = false;
 		}
 	}
 }

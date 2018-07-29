@@ -8,8 +8,6 @@ import net.merayen.elastic.util.Point
 import kotlin.math.abs
 
 abstract class SourceItem(val source: UIObject) : MouseHandler(source) {
-	private val mouseCursorManager = (source.search.top as Top).mouseCursorManager
-
 	var tolerance = 0f
 
 	private var active = false
@@ -30,7 +28,7 @@ abstract class SourceItem(val source: UIObject) : MouseHandler(source) {
 				active = false
 				if (dragging) {
 					dragging = false
-					mouseCursorManager.removeCarryItem(mouseEvent.id)
+					mouseCursorManager().removeCarryItem(mouseEvent.id)
 					onDrop()
 				}
 			}
@@ -55,6 +53,8 @@ abstract class SourceItem(val source: UIObject) : MouseHandler(source) {
 
 	private fun startDrag() {
 		dragging = true
-		mouseCursorManager.setCarryItem(mouseEvent.id, onGrab())
+		mouseCursorManager().setCarryItem(mouseEvent.id, onGrab())
 	}
+
+	private fun mouseCursorManager() = (source.search.top as Top).mouseCursorManager
 }

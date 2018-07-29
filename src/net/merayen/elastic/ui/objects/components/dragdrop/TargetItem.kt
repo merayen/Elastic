@@ -3,17 +3,25 @@ package net.merayen.elastic.ui.objects.components.dragdrop
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
+import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 
-abstract class TargetItem(target: UIObject) : MouseHandler(target) {
-	private val mouseCursorManager = (target.search.top as Top).mouseCursorManager
+abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
+	private val mouseCursorManager: MouseCursorManager by lazy {
+		(target.search.top as Top).mouseCursorManager
+	}
+
+	private var mouseDown = false
 	private var currentItem: MouseCarryItem? = null
 	private var interested = false
 
 	init {
 		setHandler(object : MouseHandler.Handler() {
 			override fun onMouseOver() {
+				if(!mouseDown)
+					return
+
 				val item = mouseCursorManager.retrieveCarryItem(mouseEvent.id)
 				if(item != null) {
 					currentItem = item
@@ -22,6 +30,9 @@ abstract class TargetItem(target: UIObject) : MouseHandler(target) {
 			}
 
 			override fun onMouseOut() {
+				if(!mouseDown)
+					return
+
 				val item = mouseCursorManager.retrieveCarryItem(mouseEvent.id)
 
 				if(item != null)
@@ -35,15 +46,15 @@ abstract class TargetItem(target: UIObject) : MouseHandler(target) {
 
 				if(item != null) {
 					onDrop(item)
+					onBlurInterest()
 					onBlur()
 				}
 
 				currentItem = null
-				interested = false
 			}
 
 			override fun onGlobalMouseMove(global_position: Point?) {
-				if(interested)
+				if(interested || !mouseDown)
 					return;
 
 				val item = mouseCursorManager.retrieveCarryItem(mouseEvent.id)
@@ -54,11 +65,16 @@ abstract class TargetItem(target: UIObject) : MouseHandler(target) {
 			}
 
 			override fun onGlobalMouseUp(global_position: Point?) {
+				mouseDown = false
 				if(interested) {
 					interested = false
 					onBlurInterest()
 					onBlur()
 				}
+			}
+
+			override fun onMouseOutsideDown(global_position: Point?) {
+				mouseDown = true
 			}
 		})
 	}

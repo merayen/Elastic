@@ -33,8 +33,7 @@ class FileList extends UIObject {
 				for(UIObject obj : new ArrayList<>(getSearch().getChildren()))
 					remove(obj);
 
-				add(new FileListItem() {{
-					setLabel(".. (go back)");
+				add(new FileListItem(new File(".. (go back)"), false) {{
 					setHandler(() -> {
 						if(handler != null)
 							handler.onSelect(null);
@@ -43,8 +42,7 @@ class FileList extends UIObject {
 
 				if(files != null) {
 					for(File f : files) {
-						add(new FileListItem() {{
-							setLabel(f.getName());
+						add(new FileListItem(f, true) {{
 							setHandler(() -> {
 								if(handler != null)
 									handler.onSelect(f);

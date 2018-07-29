@@ -7,28 +7,27 @@ import net.merayen.elastic.ui.objects.components.dragdrop.SourceItem
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
+import java.io.File
 
-internal open class FileListItem : UIObject() {
+internal open class FileListItem(val file: File, val dragable: Boolean) : UIObject() {
 	private val mouseHandler = MouseHandler(this)
 	private var over = false
-	var label: String? = null
+	private val label: String by lazy { file.name }
 	private var width = 0f
 	private var height = 0f
 	private var handler: Handler? = null
 
 	private val sourceItem = object : SourceItem(this) {
-		override fun onGrab(): MouseCarryItem {
-			return object : MouseCarryItem() {
-				override fun onDraw(draw: Draw) {
-					draw.setColor(255, 0, 255)
-					draw.fillRect(0f, 0f, 5f, 5f)
-				}
-			}
+
+		init {
+			tolerance = 5f
 		}
 
-		override fun onDrop() {
-			println("Yup, you just dropped it")
+		override fun onGrab(): MouseCarryItem {
+			return FileListItemDragable(file)
 		}
+
+		override fun onDrop() {}
 
 	}
 
@@ -83,6 +82,7 @@ internal open class FileListItem : UIObject() {
 
 	override fun onEvent(e: UIEvent) {
 		mouseHandler.handle(e)
-		sourceItem.handle(e)
+		if(dragable)
+			sourceItem.handle(e)
 	}
 }
