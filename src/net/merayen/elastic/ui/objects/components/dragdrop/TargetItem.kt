@@ -9,6 +9,7 @@ import net.merayen.elastic.util.Point
 abstract class TargetItem(target: UIObject) : MouseHandler(target) {
 	private val mouseCursorManager = (target.search.top as Top).mouseCursorManager
 	private var currentItem: MouseCarryItem? = null
+	private var interested = false
 
 	init {
 		setHandler(object : MouseHandler.Handler() {
@@ -38,18 +39,26 @@ abstract class TargetItem(target: UIObject) : MouseHandler(target) {
 				}
 
 				currentItem = null
+				interested = false
 			}
 
-			override fun onMouseOutsideDown(global_position: Point?) {
-				val item = mouseCursorManager.retrieveCarryItem(mouseEvent.id)
+			override fun onGlobalMouseMove(global_position: Point?) {
+				if(interested)
+					return;
 
-				if(item != null)
+				val item = mouseCursorManager.retrieveCarryItem(mouseEvent.id)
+				if(item != null) {
+					interested = true
 					onInterest(item)
+				}
 			}
 
 			override fun onGlobalMouseUp(global_position: Point?) {
-				onBlurInterest()
-				onBlur()
+				if(interested) {
+					interested = false
+					onBlurInterest()
+					onBlur()
+				}
 			}
 		})
 	}

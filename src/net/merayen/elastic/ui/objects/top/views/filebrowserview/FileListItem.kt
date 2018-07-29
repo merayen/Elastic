@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.objects.top.views.filebrowserview
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.components.dragdrop.SourceItem
+import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 
@@ -13,6 +15,22 @@ internal open class FileListItem : UIObject() {
 	private var width = 0f
 	private var height = 0f
 	private var handler: Handler? = null
+
+	private val sourceItem = object : SourceItem(this) {
+		override fun onGrab(): MouseCarryItem {
+			return object : MouseCarryItem() {
+				override fun onDraw(draw: Draw) {
+					draw.setColor(255, 0, 255)
+					draw.fillRect(0f, 0f, 5f, 5f)
+				}
+			}
+		}
+
+		override fun onDrop() {
+			println("Yup, you just dropped it")
+		}
+
+	}
 
 	internal interface Handler {
 		fun onClick()
@@ -33,8 +51,7 @@ internal open class FileListItem : UIObject() {
 			}
 
 			override fun onMouseClick(position: Point) {
-				if (handler != null)
-					handler!!.onClick()
+				handler?.onClick()
 			}
 		})
 	}
@@ -66,5 +83,6 @@ internal open class FileListItem : UIObject() {
 
 	override fun onEvent(e: UIEvent) {
 		mouseHandler.handle(e)
+		sourceItem.handle(e)
 	}
 }
