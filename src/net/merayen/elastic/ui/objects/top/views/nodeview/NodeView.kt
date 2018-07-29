@@ -33,7 +33,7 @@ class NodeView constructor(node_id: String? = null) : View() {
 	var viewNodeID: String? = null
 		internal set // Node that we show the children of
 	private val new_node_id: String? = null
-	private val container = NodeViewContainer()
+	val container = NodeViewContainer()
 	val uiNet: UINet
 	private val movable: Movable
 	private val nodes = ArrayList<UINode>()
@@ -42,34 +42,7 @@ class NodeView constructor(node_id: String? = null) : View() {
 
 	private var context_menu: NodeViewContextMenu? = null
 
-	private var dragAndDropTarget = object : TargetItem(container) {
-		var interested = false
-		var hover = false
-
-		override fun onInterest(item: MouseCarryItem) {
-			if(item is FileListItemDragable)
-				interested = true
-		}
-
-		override fun onBlurInterest() {
-			interested = false
-		}
-
-		override fun onHover(item: MouseCarryItem) {
-			if(item is FileListItemDragable)
-				hover = true
-		}
-
-		override fun onBlur() {
-			hover = false
-		}
-
-		override fun onDrop(item: MouseCarryItem) {
-			if(item is FileListItemDragable) {
-				hover = false
-			}
-		}
-	}
+	private var dragAndDropTarget = NodeViewDropTarget(this)
 
 	init {
 		this.viewNodeID = node_id
@@ -94,8 +67,8 @@ class NodeView constructor(node_id: String? = null) : View() {
 		super.onDraw(draw)
 
 		when {
-			dragAndDropTarget.hover -> draw.setColor(255, 20, 255)
-			dragAndDropTarget.interested -> draw.setColor(255, 255, 0)
+			dragAndDropTarget.hover -> draw.setColor(100, 100, 200)
+			dragAndDropTarget.interested -> draw.setColor(50, 50, 100)
 			else -> draw.setColor(20, 20, 50)
 		}
 

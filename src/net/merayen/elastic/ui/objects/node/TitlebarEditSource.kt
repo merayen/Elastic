@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui.objects.node
 
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.dragdrop.PopupLabel
 import net.merayen.elastic.ui.objects.components.dragdrop.SourceItem
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 
