@@ -2,7 +2,6 @@ package net.merayen.elastic.ui.objects.components
 
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
-import kotlin.math.sin
 
 class PopupLabel(var text: String = "") : UIObject() {
 	private var layoutWidth = 100f
@@ -11,6 +10,7 @@ class PopupLabel(var text: String = "") : UIObject() {
 	var fontSize = 10f
 
 	override fun onDraw(draw: Draw) {
+		draw.disableOutline()
 		draw.setFont("", fontSize)
 		layoutWidth = draw.getTextWidth(text) + 10f
 		layoutHeight = fontSize + 10f + fontSize / 5f

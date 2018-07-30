@@ -8,7 +8,7 @@ import net.merayen.elastic.uinodes.BaseInfo;
 
 public class AddNodePopup {
 	public interface Handler {
-		public void onSelectNode(BaseInfo info);
+		void onSelectNode(BaseInfo info);
 	}
 
 	private final Window window;
