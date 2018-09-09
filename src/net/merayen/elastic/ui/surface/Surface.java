@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.event.UIEvent;
 
 public abstract class Surface {
 	public interface Handler {
-		public void onDraw(java.awt.Graphics2D graphics2d);
+		void onDraw(java.awt.Graphics2D graphics2d);
 	}
 
 	private String id;

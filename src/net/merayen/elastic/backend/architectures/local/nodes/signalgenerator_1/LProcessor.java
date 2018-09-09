@@ -183,7 +183,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 			float[] audio = outlet.audio[0];
 
 			resampling.update((float)freq, available);
-			float new_volume = midiState.getVolume() * midiState.getVelocity();
+			float new_volume = (float)Math.pow(midiState.getVolume(), 3) * midiState.getVelocity();
 
 			if (volume != new_volume) {
 				int start = outlet.written;

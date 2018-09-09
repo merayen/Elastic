@@ -16,6 +16,10 @@ import net.merayen.elastic.util.tap.TapSpreader;
  * This is the top class for everything.
  */
 public class ElasticSystem {
+	static {
+		System.load("/usr/lib/x86_64-linux-gnu/libffms2.so.4");
+	}
+
 	public interface IListener {
 		public void onMessageToUI(Postmaster.Message message);
 		public void onMessageToBackend(Postmaster.Message message);
