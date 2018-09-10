@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.script.interpreter
 
 import net.merayen.elastic.backend.script.parser.Parser
+import java.util.*
 
 class OutOfArrayMemory(used: Int, available: Int) : InterpreterException("Tried to allocate $used memory while only $available is available for arrays")
 
@@ -23,7 +24,18 @@ class Interpreter(parser: Parser) {
 		if(memoryUsed > environment.arrayHeapSizeRestriction)
 			throw OutOfArrayMemory(memoryUsed, environment.arrayHeapSizeRestriction)
 
-		for (dim in dims)
-			environment.arrayVariables[dim.arrayVariableName] = FloatArray(dim.arrayLength.toInt())
+		val random = Random()
+		for (dim in dims) {
+			val array = FloatArray(dim.arrayLength.toInt())
+
+			// Scrambles the memory, as no memory is cleared upon running a program. This helps to find bugs where the dev has not inited/written to memory
+			for (i in 0 until dim.arrayLength)
+				if (random.nextBoolean())
+					array[i] = (random.nextDouble() * Float.MAX_VALUE).toFloat()
+				else
+					array[i] = (random.nextDouble() * Float.MIN_VALUE).toFloat()
+
+			environment.variables[dim.arrayVariableName] = array
+		}
 	}
 }

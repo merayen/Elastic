@@ -5,42 +5,184 @@ import net.merayen.elastic.backend.script.parser.Parser
 
 fun main(args: Array<String>) {
 	var program = """
-		# This is a program
+		# This program calculates prime numbers in the range 1 to 100
+		# Python:
+		#	def is_prime(n):
+		#		if n <= 1:
+		#			return False
+		#
+		#		if n <= 3:
+		#			return True
+		#
+		#		if n % 2 == 0 or n % 3 == 0:
+		#			return False
+		#
+		#		i = 5
+		#		while i * i <= n:
+		#			if n % i == 0 or n % (i + 2) == 0:
+		#				return False
+		#			i += 6
+		#
+		#		return True
+		#
+		#		for i in range(100):
+		#			if is_prime(i):
+		#				print(i)
+
+
 		program
 			dim
-				[]my_array
-				101
+				@n
 
-			let
-				[]my_array
-				0
-				1
+			dim
+				@result
+				100
+
+			dim
+				@result_i
+
+			dim
+				@i
+
+			dim
+				@we found a prime number!  # ...yes. This is a valid variable name.
 
 			let
 				@i
 				0
-			while  # while i < 100
+
+			let
+				@n
+				0
+
+			let
+				@result_i
+				0
+
+			while
 				less-than
-					@i
+					@n
 					100
 				do
-					let  # my_array[i+1] = my_array[i]
-						[]my_array
-						add
-							@i
-							1
-						get
-							[]my_array
-							@i
 
-					increment  # i++
-						@i
-						1
+					let
+						@we found a prime number!
+						0
+
+					if
+						less-than
+							@n
+							2
+						then
+							# Not a prime number
+						else
+							if
+								less-than
+									@n
+									4
+								then
+									let
+										@we found a prime number!  # Again... This is a valid variable name. Author of this language is retarded.
+										1
+								else
+									if
+										any  # or
+											equal
+												mod
+													@n
+													2
+												0
+											equal
+												mod
+													@n
+													3
+												0
+										then
+											let
+												@we found a prime number!
+												0
+										else
+											let
+												@i
+												5
+											while
+												all
+													not
+														equal
+															round
+																@i
+															-1
+													less-than-or-equal
+														round  # Need to do this when we test for equal, as floating points are not that precise as integers
+															multiply
+																@i
+																@i
+														round  # Need to do this when we test for equal, as floating points are not that precise as integers
+															@n
+												do
+													if
+														any
+															equal
+																round  # Need to do this when we test for equal, as floating points are not that precise as integers
+																	mod
+																		@n
+																		@i
+																0
+															equal
+																round  # Need to do this when we test for equal, as floating points are not that precise as integers
+																	mod
+																		@n
+																		add
+																			@i
+																			2
+																0
+														then
+															let
+																@we found a prime number!
+																0
+															let
+																@i
+																-1  # Breaks the loop... lol. Will implement "break" that will escape "while" and "program"
+															print
+																1
+														else
+															let
+																@i
+																add
+																	@i
+																	6
+											let
+												@we found a prime number!
+												1
+					if
+						all
+							@we found a prime number!
+							not
+								equal
+									print
+										round
+											@i
+									-1
+						then
+							print
+								3
+							let-index  # A prime number!
+								@result
+								@result_i
+								@n
+							increment
+								@result_i
+					increment
+						@n
 		""".trimIndent()
+
+	Parser(program) // Just to warm up the JVM
 
 	var parsing = -System.currentTimeMillis();
 	val parser = Parser(program)
 	parsing += System.currentTimeMillis()
+
+	Interpreter(parser) // Just to warm up the JVM
 
 	var setup = -System.currentTimeMillis()
 	val interpreter = Interpreter(parser)
@@ -50,16 +192,7 @@ fun main(args: Array<String>) {
 	interpreter.run()
 	run += System.currentTimeMillis()
 
-	println("Variables: ${interpreter.environment.variables}")
-	print("Array variables: ")
-	for (array in interpreter.environment.arrayVariables) {
-		print("\t${array.key}\n\t")
-		for (f in array.value) {
-			print(f.toString().padEnd(10))
-		}
-	}
-
-	println()
+	println("Memory after being run:\n" + interpreter.environment.memoryToString())
 
 	println("Execution times:\n\tParsing source: ${parsing}ms\n\tReading tree: ${setup}ms\n\tExecuting program: ${run}ms")
 }
