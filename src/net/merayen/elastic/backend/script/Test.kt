@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
 
 			dim
 				@result
-				100
+				1000
 
 			dim
 				@result_i
@@ -62,7 +62,7 @@ fun main(args: Array<String>) {
 			while
 				less-than
 					@n
-					100
+					7900
 				do
 
 					let
@@ -143,8 +143,6 @@ fun main(args: Array<String>) {
 															let
 																@i
 																-1  # Breaks the loop... lol. Will implement "break" that will escape "while" and "program"
-															print
-																1
 														else
 															let
 																@i
@@ -159,13 +157,10 @@ fun main(args: Array<String>) {
 							@we found a prime number!
 							not
 								equal
-									print
-										round
-											@i
+									round
+										@i
 									-1
 						then
-							print
-								3
 							let-index  # A prime number!
 								@result
 								@result_i
@@ -182,7 +177,8 @@ fun main(args: Array<String>) {
 	val parser = Parser(program)
 	parsing += System.currentTimeMillis()
 
-	Interpreter(parser) // Just to warm up the JVM
+	for(i in 0 until 100) // Just to warm up the JVM
+		Interpreter(parser).run()
 
 	var setup = -System.currentTimeMillis()
 	val interpreter = Interpreter(parser)

@@ -101,7 +101,7 @@ class Variable(env: Environment, parent: InterpreterNode?, parserItem: Parser.It
  * Usage:
  *  let
  *      @my_variable_or_array
- *      1234  # or a variable
+ *      1234  # Value, a variable or a function
  */
 class Let(env: Environment, parent: InterpreterNode?, parserItem: Parser.Item) : FunctionType(env, parent, parserItem) {
 	init {
@@ -129,9 +129,9 @@ class Let(env: Environment, parent: InterpreterNode?, parserItem: Parser.Item) :
 
 
 /**
- * Assigns a value to an index in an array.
+ * Assigns a value to an array by index.
  * Usage:
- *  set
+ *  let-index
  *      @my_array   # Can also be a "variable", but a variable only has index 0 available
  *      123         # The index to place the value
  *      1.234       # The value. Can be a variable or a function
@@ -159,9 +159,14 @@ class LetIndex(env: Environment, parent: InterpreterNode?, parserItem: Parser.It
  * Creates an array (or variable, which is just an array of size=1). It is not possible to set the size of the array dynamically. This is for performance reasons.
  * This is a no-op. The code will be scanned before execution to set up the float-buffers.
  * Usage:
- *  dim
+ *  dim  # Creates an array (length 1 and up)
  *      @my_array
  *      100         # Optional. Length of array. If not given, it is 1. Must be more than 0
+ *
+ *  or
+ *
+ *  dim  # Creates a variable (actually an array with length 1)
+ *      @my_variable
  */
 class Dim(env: Environment, parent: InterpreterNode?, parserItem: Parser.Item) : FunctionType(env, parent, parserItem) {
 	val arrayVariableName: String
