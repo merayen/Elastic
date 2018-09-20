@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.script.highlang
 
+import kotlin.math.max
 import kotlin.reflect.KClass
 
 abstract class Token(private val lexer: Lexer) {
@@ -27,17 +28,20 @@ abstract class Token(private val lexer: Lexer) {
 	protected fun consume(regex: Regex) = lexer.consume(regex)
 
 	protected fun startsWith(string: String) = lexer.source.startsWith(string)
+	protected val currentLine: String
+		get() = lexer.currentLine()
+
 	protected val position: Int
 		get() = lexer.cursor
 
-	protected fun debug() = println("DEBUG: " + lexer.currentLine())
+	protected fun debug() = println("DEBUG: " + lexer.currentLine() + "\n" + " ".repeat(lexer.currentLinePosition() + 6) + "^")
 
 	override fun toString() = this::class.simpleName + "(" + onToString().joinToString(", ") + ")"
 
 	fun syntaxError(description: String) {
 		throw RuntimeException(
 				"Line ${lexer.currentLineNumber()}, position ${lexer.currentLinePosition()}: $description\n" +
-				lexer.currentLine() + "\n" + (" ".repeat(lexer.currentLinePosition() - 1) + '^')
+				lexer.currentLine() + "\n" + (" ".repeat(max(0, lexer.currentLinePosition() - 1)) + '^')
 		)
 	}
 }
@@ -82,9 +86,11 @@ class Variable(lexer: Lexer) : Token(lexer) {
 		private set
 
 	override fun onExecute(): Boolean {
-		name = consume(Regex("[a-zA-Z]+"))
+		name = consume(Regex("[a-zA-Z_]+"))
 		return name != null
 	}
+
+	override fun onToString() = arrayOf<Any?>(name)
 }
 
 
@@ -122,7 +128,30 @@ class Whitespace(lexer: Lexer) : Token(lexer) {
 			lastPosition = position
 		}
 
-		return false // Never an interest to store whitespaces
+		return true
+	}
+}
+
+
+/**
+ * Consumes all whitespaces
+ */
+class EmptySpace(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		val initial = position
+		var lastPosition = position
+		while (true) {
+			consume(" ")
+			consume("\t")
+			consume("\n")
+
+			if (lastPosition == position)
+				break
+
+			lastPosition = position
+		}
+
+		return initial != position
 	}
 }
 
@@ -132,12 +161,18 @@ class Whitespace(lexer: Lexer) : Token(lexer) {
  */
 class CodeBlock(lexer: Lexer) : Token(lexer) {
 	override fun onExecute(): Boolean {
+		consume(Whitespace::class)
+
 		if (consume("{") == null)
 			return false // Not a CodeBlock
 
 		var lastPosition = position
 		while (true) {
+			consume(EmptySpace::class)
+
 			consume(Statement::class)
+
+			consume(EmptySpace::class)
 
 			if (consume("}") != null)
 				break // End of CodeBlock
@@ -156,21 +191,36 @@ class CodeBlock(lexer: Lexer) : Token(lexer) {
 class Statement(lexer: Lexer) : Token(lexer) {
 	private val possible = arrayOf(
 			VariableDeclaration::class,
-
+			For::class,
+			While::class,
+			FunctionCall::class,
+			FunctionDeclaration::class,
+			Pass::class
 	)
 
 	override fun onExecute(): Boolean {
 		consume(Whitespace::class)
 		for (tokenClass in possible) {
 			val token = consume(tokenClass)
-			if (token != null)
+			if (token != null) {
+				consume(Whitespace::class)
+				//if (consume("\n") == null)
+				//	syntaxError("Expected end of line")
 				return true
+			}
 		}
 
-		if (consume("\n") == null)
-			syntaxError("Expected end of line")
+		syntaxError("Invalid statement")
 
-		return false
+		return false // Never gets here
+	}
+}
+
+
+class Pass(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		consume(Whitespace::class)
+		return consume("pass") != null
 	}
 }
 
@@ -181,9 +231,7 @@ class Number(lexer: Lexer) : Token(lexer) {
 	override fun onExecute(): Boolean {
 		consume(Whitespace::class)
 
-		var num = consume(Regex("^[0-9]+.[0-9]+"))
-		if (num == null)
-			num = consume(Regex("^[0-9]+"))
+		val num = consume(Regex("^[0-9]+\\.[0-9]+")) ?: consume(Regex("^[0-9]+"))
 
 		if (num != null) {
 			number = num.toFloat()
@@ -205,15 +253,152 @@ class EqualityOperator(lexer: Lexer) : Token(lexer) {
 }
 
 
-/*class FunctionCall(lexer: Lexer) : Token(lexer) {
-	override fun onExecute() {
+class FunctionCall(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
 		val variable = consume(Variable::class)
+		if(variable == null)
+			return false
+
+		val args = consume(FunctionCallArguments::class)
+		if(args == null)
+			return false
+
+		return true
 	}
 }
 
 
-class For(lexer: Lexer) : Token(lexer) {
-	override fun onExecute() {
-		consume("for ")
+class FunctionCallArguments(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		if (consume("(") == null)
+			return false
+
+		var lastPosition = position
+		while (consume(")") == null) {
+			consume(Expression::class)
+			consume(Whitespace::class)
+			consume(",")
+
+			if (lastPosition == position)
+				syntaxError("Invalid function arguments")
+
+			lastPosition = position
+		}
+
+		return true
+	}
+}
+
+
+class Expression(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		consume(Whitespace::class)
+
+		when {
+			consume(Number::class) != null -> {}
+			consume(FunctionCall::class) != null -> {}
+			consume(Variable::class) != null -> {}
+			else -> syntaxError("Expected a valid expression")
+		}
+		return true
+	}
+}
+
+
+class FunctionDeclaration(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		if (consume("def ") == null)
+			return false
+
+		val name = consume(Variable::class)
+		if (name == null)
+			return false
+
+		consume(Whitespace::class)
+
+		if (consume(FunctionArguments::class) == null)
+			return false
+
+		if (consume(CodeBlock::class) == null)
+			return false
+
+		return true
+	}
+}
+
+
+class FunctionArguments(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		if (consume("(") == null)
+			return false
+
+		var lastPosition = position
+		while (consume(")") == null) {
+			consume(Whitespace::class)
+			consume(Variable::class)
+			consume(Whitespace::class)
+			consume(",")
+
+			if (lastPosition == position)
+				syntaxError("Invalid function arguments")
+
+			lastPosition = position
+		}
+
+		return true
+	}
+}
+
+
+/*class FunctionKeywordArgument(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		consume("")
 	}
 }*/
+
+
+class For(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		if (consume("for ") == null)
+			return false
+
+		consume(Whitespace::class)
+
+		if (consume(Variable::class) == null)
+			return false
+
+		consume(Whitespace::class)
+
+		if (consume("in ") == null)
+			return false
+
+		consume(Whitespace::class)
+
+		if (consume(Expression::class) == null)
+			return false
+
+		consume(Whitespace::class)
+
+		if (consume(CodeBlock::class) == null)
+			syntaxError("Expected indented code block below")
+
+		return true
+	}
+}
+
+
+class While(lexer: Lexer) : Token(lexer) {
+	override fun onExecute(): Boolean {
+		if (consume("while ") == null)
+			return false
+
+		if (consume(Expression::class) == null)
+			syntaxError("Expected expression")
+
+		if (consume(CodeBlock::class) == null)
+			syntaxError("Expected indented code block below")
+
+		return true
+	}
+
+}

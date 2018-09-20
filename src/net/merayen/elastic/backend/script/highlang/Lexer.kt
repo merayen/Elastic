@@ -41,6 +41,7 @@ class Lexer(var source: String) {
 
 	fun consume(token: KClass<out Token>): Token? {
 		val tokenInstance = token.primaryConstructor?.call(this) ?: return null
+		var lastPosition = cursor
 
 		tokenStack.add(tokenInstance)
 		val result = tokenInstance.onExecute()
@@ -49,9 +50,10 @@ class Lexer(var source: String) {
 		if (result) {
 			tokenInstance.parent = tokenStack.last
 			return tokenInstance
+		} else {
+			cursor = lastPosition
+			return null
 		}
-
-		return null
 	}
 
 	fun currentLine() = source.split("\n")[currentLineNumber() - 1]

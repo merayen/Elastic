@@ -12,11 +12,25 @@ fun main(args: Array<String>) {
 
 	val programSimple = """
 		var hei = 123.456
+
+
+		def min_funksjon(a, b ,c)
+			pass
+
 		var hoh = 1
-		kjhkk
+
+		noe(hei(1337))
+
+		for i in range(1,5)
+			noe(123)
+
+		while 1
+			pass
+
 	""".trimIndent()
 
 	val lexer = Lexer(programSimple)
+	LexerOptimizer(LexerTraverse(lexer)).removeNoOpTokens()
 	println(LexerPrinter(LexerTraverse(lexer)))
 	val l = lexer
 }
