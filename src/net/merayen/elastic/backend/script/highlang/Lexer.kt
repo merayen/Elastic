@@ -14,7 +14,6 @@ class Lexer(var source: String) {
 
 	init {
 		source = preparse(source)
-		println(source)
 		tokenStack.add(result)
 		result.onExecute()
 	}
@@ -25,6 +24,13 @@ class Lexer(var source: String) {
 			return text
 		}
 
+		return null
+	}
+
+	fun consume(textArray: Array<String>): String? {
+		for (x in textArray)
+			if (consume(x) != null)
+				return x
 		return null
 	}
 

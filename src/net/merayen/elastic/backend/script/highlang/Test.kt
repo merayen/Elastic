@@ -14,19 +14,25 @@ fun main(args: Array<String>) {
 		var hei = 123.456
 
 
-		def min_funksjon(a, b ,c)
+		def my_function(a, b ,c)
 			pass
 
 		var hoh = 1
 
 		noe(hei(1337))
+		hoh(7)
 
 		for i in range(1,5)
 			noe(123)
-
-		while 1
+		while 1 + (2 * 5) / 4
 			pass
 
+		if (noe*5)**2 + (58.3 / 8 % 5)
+			pass
+		elif 8
+			pass
+		else
+			pass
 	""".trimIndent()
 
 	val lexer = Lexer(programSimple)
