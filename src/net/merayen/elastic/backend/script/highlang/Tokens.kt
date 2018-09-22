@@ -88,6 +88,16 @@ class Variable(lexer: Lexer) : Token(lexer) {
 
 	override fun onExecute(): Boolean {
 		name = consume(Regex("^[a-zA-Z_]+"))
+
+		if (consume("[") != null) {
+			consume(Whitespace::class)
+
+			if (consume(Expression::class) == null)
+				syntaxError("Expected expression in array index")
+
+			consume(Whitespace::class)
+			consume("]")
+		}
 		return name != null
 	}
 
@@ -95,18 +105,31 @@ class Variable(lexer: Lexer) : Token(lexer) {
 }
 
 
-class VariableOperation
+class VariableSet(lexer: Lexer): Token(lexer) {
+	var operation: String? = null
+		private set
 
-/*class EndLine(lexer: Lexer): Token(lexer) {
+	val operators = arrayOf("=", "+=", "-=", "*=", "/=", "%=", "|=", "&=", "^=")
+
 	override fun onExecute(): Boolean {
+		val variableName = consume(Variable::class)
+		if (variableName == null)
+			return false
+
 		consume(Whitespace::class)
-		if (consume("\n") != null)
-			return true
+
+		operation = consume(operators)
+		if (operation == null)
+			return false
+
+		consume(Whitespace::class)
+
+		if (consume(Expression::class) == null)
+			syntaxError("Expected an expression")
 
 		return true
 	}
-
-}*/
+}
 
 
 /**
@@ -203,6 +226,7 @@ class CodeBlock(lexer: Lexer) : Token(lexer) {
 class Statement(lexer: Lexer) : Token(lexer) {
 	private val possible = arrayOf(
 			VariableDeclaration::class,
+			VariableSet::class,
 			For::class,
 			While::class,
 			If::class,
@@ -365,6 +389,7 @@ class Operator(lexer: Lexer) : Token(lexer) {
 				"/",
 				"%",
 				"&",
+				"^",
 				"|",
 				"and",
 				"or",

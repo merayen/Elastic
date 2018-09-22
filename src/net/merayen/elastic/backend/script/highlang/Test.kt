@@ -19,6 +19,8 @@ fun main(args: Array<String>) {
 
 		var hoh = 1
 
+		hoh[123] += hei[456]
+
 		noe(hei(1337))
 		hoh(7)
 
