@@ -2,17 +2,17 @@ package net.merayen.elastic.backend.script.highlang
 
 import kotlin.collections.ArrayList
 
-class LexerTraverse(private val lexer: Lexer) {
-	fun allChildren(inToken: Token? = null): ArrayList<Token> {
-		val result = ArrayList<Token>()
+class LexerTraverse(private val inToken: Token) {
+	/*class Path : ArrayList<Token>() {
 
-		val token: Token
-		if (inToken == null) {
-			result.add(lexer.result)
-			token = lexer.result
-		} else {
-			token = inToken
-		}
+	}*/
+
+	class DoNotTraverse
+
+	fun allChildren() = allChildren(inToken)
+
+	private fun allChildren(token: Token): ArrayList<Token> {
+		val result = ArrayList<Token>()
 
 		for (child in token.children) {
 			result.add(child)
@@ -22,24 +22,15 @@ class LexerTraverse(private val lexer: Lexer) {
 		return result
 	}
 
-	fun walk(token: Token? = null, func: (Array<Token>, Token) -> Unit) {
-		//val path = ArrayDeque<Token>()
+	fun walk(func: (Array<Token>, Token) -> Boolean) {
+		walk(inToken, func)
+	}
 
-		for (visitToken in allChildren(token)) {
-			val path = getPath(visitToken)
+	private fun walk(token: Token, func: (Array<Token>, Token) -> Boolean) {
+		if(func(getPath(token).toTypedArray(), token))
+			for (visitToken in allChildren())
+				walk(visitToken, func)
 
-			// Not working
-			/*if (visitToken.parent == null)
-				// Topmost. Ok!
-			else if (path.size > 0 && visitToken.parent == path.last)
-				// Still same parent
-			else if (path.size == 0 || visitToken.parent?.parent == path.last)
-				path.add(visitToken.parent) // New parent
-			else
-				while (path.size > 0 && path.removeLast() != visitToken.parent);*/
-
-			func(path.toTypedArray(), visitToken)
-		}
 	}
 
 	private fun getPath(token: Token): ArrayList<Token> {

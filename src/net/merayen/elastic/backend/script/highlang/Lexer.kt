@@ -73,7 +73,12 @@ class Lexer(var source: String) {
  * Adds "{" and "}"
  */
 private fun preparse(text: String): String {
-	val lines = text.trimMargin().split("\n").toMutableList()
+	val lines = text.trimMargin()
+			.split("\n")
+			// Removes comments in preparse-stage, as the "#"-character isn't used for anything else (no support for strings)
+			.asSequence()
+			.map { if (it.contains("#")) it.substring(0, it.indexOf("#")) else it }
+			.toMutableList()
 	lines.add("")
 
 	var depth = 0

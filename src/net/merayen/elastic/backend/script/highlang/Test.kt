@@ -1,31 +1,42 @@
 package net.merayen.elastic.backend.script.highlang
 
 fun main(args: Array<String>) {
-	val program = """
-		var aFloatArray[512]
-		var aFloatVariable = 0
-		var anotherFloatVariable  # Not initialized. Has an undetermined value
-
-		def my_function(aFloatArray[], aFloatVariable)  # arguments are scoped and hides the global ones due to equal names
-			for i in range(
-	""".trimIndent()
-
-	val programSimple = """
-		var hei = 123.456
+	//testWorking()
+	testUnknownVariable()
+}
 
 
-		def my_function(a, b ,c)
-			pass
+private fun run(program: String) {
+	val lexer = Lexer(program)
+	LexerOptimizer(LexerTraverse(lexer.result)).removeNoOpTokens()
+	println(LexerPrinter(LexerTraverse(lexer.result)))
+	Validation(lexer.result)
+}
 
-		var hoh = 1
 
-		hoh[123] += hei[456]
+private fun testWorking() {
+	run("""
+		var variable = 123.456  # This is a comment
+		var uninitialized  # Defaults to fp32 type. Initial value is undetermined
+		var initialized: fp16 = 123.456
+		var array[256]: fp16
 
-		noe(hei(1337))
-		hoh(7)
+		variable += 1.23 if variable > 5 + 2 else 3.21 + 3
+		array[ 100 ] = array[variable]
+
+		uninitialized += 1
+
+		def function_a(a, b ,c)
+			return a + b + c
+
+		def function_b(variable)
+			variable += 1
+			return variable
+
+		function_b(function_a(1, 2, variable))
 
 		for i in range(1,5)
-			noe(123)
+			function_b(i)
 		while 1 + (2 * 5) / 4
 			pass
 
@@ -35,10 +46,24 @@ fun main(args: Array<String>) {
 			pass
 		else
 			pass
-	""".trimIndent()
+	""".trimIndent())
+}
 
-	val lexer = Lexer(programSimple)
-	LexerOptimizer(LexerTraverse(lexer)).removeNoOpTokens()
-	println(LexerPrinter(LexerTraverse(lexer)))
-	val l = lexer
+
+fun testUnknownVariable() {
+	run("""
+		unknown_variable = 5
+	""".trimIndent())
+}
+
+
+fun testOverlapVariableWarning() {
+	run("""
+		var variable = 5
+
+		def function(variable)
+			return variable + 2
+
+		function(10)
+	""".trimIndent())
 }
