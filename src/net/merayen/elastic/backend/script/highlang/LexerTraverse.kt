@@ -28,7 +28,7 @@ class LexerTraverse(private val inToken: Token) {
 
 	private fun walk(token: Token, func: (Array<Token>, Token) -> Boolean) {
 		if(func(getPath(token).toTypedArray(), token))
-			for (visitToken in allChildren())
+			for (visitToken in token.children)
 				walk(visitToken, func)
 
 	}

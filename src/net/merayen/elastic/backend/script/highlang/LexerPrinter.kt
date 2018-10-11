@@ -5,6 +5,7 @@ class LexerPrinter(private val traverse: LexerTraverse, private val token: Token
 		var result = ""
 		traverse.walk() { path, token ->
 			result += "\t".repeat(path.size) + "${token}\n"
+			true
 		}
 		return result
 	}

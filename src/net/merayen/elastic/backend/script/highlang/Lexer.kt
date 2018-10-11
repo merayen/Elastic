@@ -47,7 +47,7 @@ class Lexer(var source: String) {
 
 	fun consume(token: KClass<out Token>): Token? {
 		val tokenInstance = token.primaryConstructor?.call(this) ?: return null
-		var lastPosition = cursor
+		val lastPosition = cursor
 
 		tokenStack.add(tokenInstance)
 		val result = tokenInstance.onExecute()
