@@ -483,14 +483,20 @@ class FunctionDeclaration(lexer: Lexer) : Token(lexer) {
 	lateinit var variable: VariableWrite
 		private set
 
+	lateinit var codeBlock: CodeBlock
+		private set
+
+	lateinit var functionArguments: HashMap<String, VariableWrite>
+		private set
+
 	override fun onExecute(): Boolean {
 		consume("def ") ?: return false
 
 		variable = (consume(VariableWrite::class) ?: throw SyntaxError("Expected name of function")) as VariableWrite
 
 		consume(Whitespace::class)
-		consume(FunctionArguments::class) ?: throw SyntaxError("Expected tuple with function arguments")
-		consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below function definition")
+		functionArguments = ((consume(FunctionArguments::class) ?: throw SyntaxError("Expected tuple with function arguments")) as FunctionArguments).functionArguments
+		codeBlock = (consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below function definition")) as CodeBlock
 
 		return true
 	}
@@ -515,15 +521,21 @@ class NativeFunctionDeclaration(lexer: Lexer) : Token(lexer) {
 
 
 class FunctionArguments(lexer: Lexer) : Token(lexer) {
+	val functionArguments = HashMap<String, VariableWrite>()
+
 	override fun onExecute(): Boolean {
 		consume("(") ?: return false
+
+		consume(Whitespace::class)
 
 		var lastPosition = parserPosition
 		while (consume(")") == null) {
 			consume(Whitespace::class)
-			consume(VariableWrite::class)
+			val variableWrite = (consume(VariableWrite::class) ?: throw SyntaxError("Expected function argument")) as VariableWrite
+			functionArguments.put(variableWrite.variable.name, variableWrite)
 			consume(Whitespace::class)
-			consume(",")
+
+			consume(",")// ?: throw SyntaxError("Expected ',' or a ')' after the argument")
 
 			if (lastPosition == parserPosition)
 				throw SyntaxError("Invalid function arguments")
@@ -537,11 +549,17 @@ class FunctionArguments(lexer: Lexer) : Token(lexer) {
 
 
 class For(lexer: Lexer) : Token(lexer) {
+	lateinit var codeBlock: CodeBlock
+		private set
+
+	lateinit var loopVariable: VariableWrite
+		private set
+
 	override fun onExecute(): Boolean {
 		consume("for ") ?: return false
 
 		consume(Whitespace::class)
-		consume(VariableWrite::class) ?: return false
+		loopVariable = (consume(VariableWrite::class) ?: return false) as VariableWrite
 		consume(Whitespace::class)
 
 		consume("in ") ?: return false
@@ -550,7 +568,7 @@ class For(lexer: Lexer) : Token(lexer) {
 		consume(Expression::class) ?: return false
 		consume(Whitespace::class)
 
-		consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")
+		codeBlock = (consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")) as CodeBlock
 
 		return true
 	}
@@ -558,12 +576,15 @@ class For(lexer: Lexer) : Token(lexer) {
 
 
 class While(lexer: Lexer) : Token(lexer) {
+	lateinit var codeBlock: CodeBlock
+		private set
+
 	override fun onExecute(): Boolean {
 		consume("while ") ?: return false
 
 		consume(Expression::class) ?: throw SyntaxError("Expected expression")
 		consume(Whitespace::class)
-		consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")
+		codeBlock = (consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")) as CodeBlock
 
 		return true
 	}
@@ -571,17 +592,28 @@ class While(lexer: Lexer) : Token(lexer) {
 
 
 class If(lexer: Lexer) : Token(lexer) {
+	val codeBlocks = ArrayList<CodeBlock>()
+
 	override fun onExecute(): Boolean {
 		consume("if ") ?: return false
-
 		consume(Whitespace::class)
 		consume(Expression::class) ?: throw SyntaxError("Expected expression")
 		consume(Whitespace::class)
-		consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")
+		codeBlocks.add((consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")) as CodeBlock)
 		consume(Whitespace::class)
-		while (consume(IfElif::class) != null);
+
+		while (true) {
+			val ifElif = (consume(IfElif::class) ?: break) as IfElif
+
+			codeBlocks.add(ifElif.codeBlock)
+		}
+
 		consume(Whitespace::class)
-		consume(IfElse::class)
+
+		val ifElse = consume(IfElse::class) as IfElse?
+
+		if (ifElse != null)
+			codeBlocks.add(ifElse.codeBlock)
 
 		return true
 	}
@@ -589,14 +621,14 @@ class If(lexer: Lexer) : Token(lexer) {
 
 
 class IfElif(lexer: Lexer) : Token(lexer) {
+	lateinit var codeBlock: CodeBlock
+		private set
+
 	override fun onExecute(): Boolean {
 		consume("elif ") ?: return false
-
 		consume(Expression::class) ?: throw SyntaxError("Expected expression")
-
 		consume(Whitespace::class)
-
-		consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")
+		codeBlock = (consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")) as CodeBlock
 
 		return true
 	}
@@ -604,12 +636,13 @@ class IfElif(lexer: Lexer) : Token(lexer) {
 
 
 class IfElse(lexer: Lexer) : Token(lexer) {
+	lateinit var codeBlock: CodeBlock
+		private set
+
 	override fun onExecute(): Boolean {
 		consume("else ") ?: return false
-
 		consume(Whitespace::class)
-
-		consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")
+		codeBlock = (consume(CodeBlock::class) ?: throw SyntaxError("Expected indented code block below")) as CodeBlock
 
 		return true
 	}
@@ -619,9 +652,7 @@ class IfElse(lexer: Lexer) : Token(lexer) {
 class Return(lexer: Lexer) : Token(lexer) {
 	override fun onExecute(): Boolean {
 		consume("return ") ?: return false
-
 		consume(Whitespace::class)
-
 		consume(Expression::class)
 
 		return true

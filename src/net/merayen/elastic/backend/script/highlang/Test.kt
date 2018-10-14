@@ -5,6 +5,11 @@ import java.lang.RuntimeException
 fun main(args: Array<String>) {
 	testWorking()
 	testUnknownVariable()
+	testParentScopeVariableAccess()
+	testVariableUsageBeforeDeclaration()
+	testVariableNotDeclaredInFunction()
+	testVariableShadowsFunctionArgument()
+	testArgumentUsageInFunction()
 	testDoubleDeclaration()
 	testForLoop()
 	testWhileLoop()
@@ -15,8 +20,8 @@ fun main(args: Array<String>) {
 private fun run(program: String): Validation {
 	val lexer = Lexer(program)
 	LexerOptimizer(LexerTraverse(lexer.result)).removeNoOpTokens()
-	println(LexerPrinter(LexerTraverse(lexer.result)))
-	return Validation(lexer.result)
+	//println(LexerPrinter(LexerTraverse(lexer.result)))
+	return Validation(HighlangProcessor(lexer.result))
 }
 
 
@@ -68,6 +73,66 @@ private fun testUnknownVariable() {
 }
 
 
+private fun testParentScopeVariableAccess() {
+	val v = run("""
+		var my_var = 1337
+		def func()
+			my_var += 1
+	""".trimIndent())
+
+	if (v.items.size > 0)
+		no()
+}
+
+
+private fun testVariableUsageBeforeDeclaration() {
+	val v = run("""
+		def func()
+			my_var += 1
+			var my_var
+	""".trimIndent())
+
+	if (v.items.size != 1)
+		no()
+	if (v.items[0].type != Validation.Type.VARIABLE_NOT_DECLARED)
+		no()
+}
+
+private fun testVariableNotDeclaredInFunction() {
+	val v = run("""
+		def func()
+			hei += 1
+	""".trimIndent())
+
+	if (v.items.size != 1)
+		no()
+	if (v.items[0].type != Validation.Type.VARIABLE_NOT_DECLARED)
+		no()
+}
+
+
+private fun testVariableShadowsFunctionArgument() {
+	val v = run("""
+		def func(argument)
+			var argument
+	""".trimIndent())
+
+	if (v.items.size > 0)
+		no()
+}
+
+
+private fun testArgumentUsageInFunction() {
+	val v = run("""
+		def func(argument)
+			argument += 1
+	""".trimIndent())
+
+	if (v.items.size > 0)
+		no()
+}
+
+
 private fun testDoubleDeclaration() {
 	val v = run("""
 		var my_var = 1337
@@ -76,7 +141,7 @@ private fun testDoubleDeclaration() {
 
 	if (v.errors.size != 1)
 		no()
-	if (v.errors[0].type != Validation.Type.VARIABLE_ALREADY_DECLARED)
+	if (v.errors[0].type != Validation.Type.VARIABLE_ALREADY_DECLARED_IN_SCOPE)
 		no()
 	if (v.errors[0].token.line != 2)
 		no()
@@ -111,16 +176,6 @@ private fun testWhileLoop() {
 private fun testImport() {
 	val v = run("""
 		import mylib
-	""".trimIndent())
-}
-
-
-private fun testOverlapVariableWarning() {
-	run("""
-		var variable = 5
-
-		def function(variable)
-			return variable + 2
 	""".trimIndent())
 }
 
