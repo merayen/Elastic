@@ -5,7 +5,7 @@ package net.merayen.elastic.backend.script.highlang
  * Also validates underway.
  */
 class HighlangProcessor(token: CodeBlock) {
-	class Scope(val token: CodeBlock, val inheritedVariables: HashMap<String, VariableWrite> = HashMap()) {
+	class Scope(val parent: Scope? = null, val token: CodeBlock, val inheritedVariables: HashMap<String, VariableWrite> = HashMap()) {
 
 		/**
 		 * All tokens in the current scope, in a flat list for easy iteration.
@@ -78,7 +78,7 @@ class HighlangProcessor(token: CodeBlock) {
 						val funcVariables = HashMap<String, VariableWrite>(variables)
 						funcVariables.putAll(token.functionArguments)
 
-						result[token.codeBlock] = Scope(token.codeBlock, funcVariables)
+						result[token.codeBlock] = Scope(this, token.codeBlock, funcVariables)
 						false
 					}
 					token is For -> {
@@ -86,16 +86,16 @@ class HighlangProcessor(token: CodeBlock) {
 						val funcVariables = HashMap<String, VariableWrite>(variables)
 						funcVariables.put(token.loopVariable.variable.name, token.loopVariable)
 
-						result[token.codeBlock] = Scope(token.codeBlock, funcVariables)
+						result[token.codeBlock] = Scope(this, token.codeBlock, funcVariables)
 						false
 					}
 					token is While -> {
-						result[token.codeBlock] = Scope(token.codeBlock, variables)
+						result[token.codeBlock] = Scope(this, token.codeBlock, variables)
 						false
 					}
 					token is If -> {
 						for (x in token.codeBlocks)
-							result[x] = Scope(x, variables)
+							result[x] = Scope(this, x, variables)
 						false
 					}
 					else -> true
@@ -106,5 +106,5 @@ class HighlangProcessor(token: CodeBlock) {
 		}
 	}
 
-	val scope = Scope(token)
+	val scope = Scope(null, token)
 }

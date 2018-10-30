@@ -74,8 +74,8 @@ class VariableDeclaration(lexer: Lexer) : Token(lexer) {
 	val variableName: String
 		get() {
 			for(token in children)
-				if (token is Variable)
-					return token.name
+				if (token is VariableWrite)
+					return token.variable.name
 
 			throw RuntimeException()
 		}
@@ -88,6 +88,9 @@ class VariableDeclaration(lexer: Lexer) : Token(lexer) {
 
 			return VariableTypes.FP32  // Default when not defined
 		}
+
+	var variableValue = 0.0
+		private set
 
 	override fun onToString() = arrayOf<Any?>()
 
@@ -102,7 +105,7 @@ class VariableDeclaration(lexer: Lexer) : Token(lexer) {
 
 		if (consume("=") != null) {
 			consume(Whitespace::class)
-			consume(Number::class) ?: throw SyntaxError("Expected a number")
+			variableValue = ((consume(Number::class) ?: throw SyntaxError("Expected a number")) as Number).number ?: 0.0
 		}
 
 		return true
@@ -326,16 +329,19 @@ class Pass(lexer: Lexer) : Token(lexer) {
 
 
 class Import(lexer: Lexer) : Token(lexer) {
+	lateinit var packageName: VariableWrite
+
 	override fun onExecute(): Boolean {
 		consume("import ") ?: return false
-		consume(VariableWrite::class)
+		consume(Whitespace::class)
+		packageName = (consume(VariableWrite::class) ?: throw SyntaxError("Expected package to import")) as VariableWrite
 		return true
 	}
 }
 
 
 class Number(lexer: Lexer) : Token(lexer) {
-	var number: Float? = null
+	var number: Double? = null
 
 	override fun onExecute(): Boolean {
 		consume(Whitespace::class)
@@ -343,7 +349,7 @@ class Number(lexer: Lexer) : Token(lexer) {
 		val num = consume(Regex("^[0-9]+\\.[0-9]+")) ?: consume(Regex("^[0-9]+"))
 
 		if (num != null) {
-			number = num.toFloat()
+			number = num.toDouble()
 			return true
 		}
 

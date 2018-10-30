@@ -9,7 +9,7 @@ enum class VariableTypes(val value: String) {
 	INT32("int32"),
 	INT64("int64"),
 	FUNCTION("function"),
-
+	MODULE("module"),
 	YIELD("yield"); // Only used for functions used in for-loop
 
 	companion object {
