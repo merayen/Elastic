@@ -91,10 +91,10 @@ public class Resampler {
         this.LpScl = 1.0f;
         this.Nwing = Npc * (this.Nmult - 1) / 2; // # of filter coeffs in right wing
 
-        double Rolloff = 0.90;
-        double Beta = 6;
+        final double Rolloff = 0.90;
+        final double Beta = 6;
 
-        double[] Imp64 = new double[this.Nwing];
+        final double[] Imp64 = new double[this.Nwing];
 
         FilterKit.lrsLpFilter(Imp64, this.Nwing, 0.5 * Rolloff, Beta, Npc);
         this.Imp = new float[this.Nwing];
@@ -155,14 +155,14 @@ public class Resampler {
                     + " and maxFactor=" + maxFactor);
         }
 
-        int outBufferLen = buffers.getOutputBufferLength();
-        int inBufferLen = buffers.getInputBufferLength();
+        final int outBufferLen = buffers.getOutputBufferLength();
+        final int inBufferLen = buffers.getInputBufferLength();
 
-        float[] Imp = this.Imp;
-        float[] ImpD = this.ImpD;
+        final float[] Imp = this.Imp;
+        final float[] ImpD = this.ImpD;
         float LpScl = this.LpScl;
-        int Nwing = this.Nwing;
-        boolean interpFilt = false; // TRUE means interpolate filter coeffs
+        final int Nwing = this.Nwing;
+        final boolean interpFilt = false; // TRUE means interpolate filter coeffs
 
         int inBufferUsed = 0;
         int outSampleCount = 0;
@@ -199,12 +199,6 @@ public class Resampler {
 
             // This is the maximum number of samples we can process
             // per loop iteration
-
-            /*
-             * #ifdef DEBUG
-             * printf("XSize: %d Xoff: %d Xread: %d Xp: %d lastFlag: %d\n",
-             * this.XSize, this.Xoff, this.Xread, this.Xp, lastFlag); #endif
-             */
 
             // Copy as many samples as we can from the input buffer into X
             int len = this.XSize - this.Xread;

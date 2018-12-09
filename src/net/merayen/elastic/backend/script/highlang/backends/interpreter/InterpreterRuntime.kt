@@ -28,7 +28,7 @@ class InterpreterRuntime(private val highlangProcessor: HighlangProcessor) : Abs
 
 	private fun runScope(scope: HighlangProcessor.Scope, inheritedVariables: HashMap<String, VariableEntry>) {
 		// What should happen here? We should inherit variables from the previous scope
-		// ...but only if we are a direct child of that scope
+		// ...but only if we are a direct child of that scope. Lol. no. Wrong logic...
 
 		// Inherit variables from parent scope
 		val scopeVariables = HashMap<String, VariableEntry>(inheritedVariables)
