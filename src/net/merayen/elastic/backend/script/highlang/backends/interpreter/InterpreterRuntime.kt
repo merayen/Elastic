@@ -34,7 +34,7 @@ class InterpreterRuntime(private val highlangProcessor: HighlangProcessor) : Abs
 		val scopeVariables = HashMap<String, VariableEntry>(inheritedVariables)
 
 		// Add (or overwrite) local scope variables
-		for (v in scope.variables)
+		/*for (v in scope.variables)
 			scopeVariables[v.key] = VariableEntry(v.key, v.value.type)
 
 		stack.add(StackEntry(scope, inheritedVariables))
@@ -54,7 +54,7 @@ class InterpreterRuntime(private val highlangProcessor: HighlangProcessor) : Abs
 				else -> throw RuntimeException("Could not understand token $token")
 			}
 		}
-		stack.pollLast()
+		stack.pollLast()*/
 	}
 
 	override fun getRuntimeVariables(): java.util.HashMap<String, Any> {

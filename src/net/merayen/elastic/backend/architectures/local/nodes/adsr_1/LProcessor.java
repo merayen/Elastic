@@ -9,7 +9,6 @@ import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.util.Postmaster.Message;
-import org.jetbrains.annotations.NotNull;
 
 public class LProcessor extends LocalProcessor {
 	private MidiOutlet output;
@@ -57,7 +56,7 @@ public class LProcessor extends LocalProcessor {
 		}
 
 		@Override
-		protected void onMidi(@NotNull short[] midiPacket) {
+		protected void onMidi(short[] midiPacket) {
 			if(!handledMidiPacket)
 				output.putMidi(midiFrame.framePosition, midiPacket);
 		}

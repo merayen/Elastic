@@ -3,7 +3,6 @@ package net.merayen.elastic.ui.objects.top.viewbar;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
-import net.merayen.elastic.ui.intercom.EditNodeMessage;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 import net.merayen.elastic.ui.objects.components.dragdrop.TargetItem;
@@ -15,7 +14,6 @@ import net.merayen.elastic.ui.objects.top.mouse.InterestedObjectDecoration;
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView;
-import org.jetbrains.annotations.NotNull;
 
 public class ViewBar extends AutoLayout {
 	public ViewBar() {
@@ -36,7 +34,7 @@ public class ViewBar extends AutoLayout {
 
 		targetItem = new TargetItem(this) {
 			@Override
-			public void onDrop(@NotNull MouseCarryItem item) {
+			public void onDrop(MouseCarryItem item) {
 				if(item instanceof EditNodeMouseCarryItem) {
 					UINode node = ((EditNodeMouseCarryItem)item).getNode();
 
@@ -48,7 +46,7 @@ public class ViewBar extends AutoLayout {
 			}
 
 			@Override
-			public void onHover(@NotNull MouseCarryItem item) {}
+			public void onHover(MouseCarryItem item) {}
 
 			@Override
 			public void onBlurInterest() {
@@ -56,7 +54,7 @@ public class ViewBar extends AutoLayout {
 			}
 
 			@Override
-			public void onInterest(@NotNull MouseCarryItem item) {
+			public void onInterest(MouseCarryItem item) {
 				interested = true;
 			}
 
@@ -80,7 +78,7 @@ public class ViewBar extends AutoLayout {
 	}
 
 	@Override
-	public void onEvent(@NotNull UIEvent e) {
+	public void onEvent(UIEvent e) {
 		super.onEvent(e);
 		targetItem.handle(e);
 	}

@@ -6,7 +6,6 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.midi.MidiMessagesCreator;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.util.Postmaster.Message;
-import org.jetbrains.annotations.NotNull;
 
 public class LProcessor extends LocalProcessor {
 	private MidiInlet input;
@@ -46,7 +45,7 @@ public class LProcessor extends LocalProcessor {
 		}
 
 		@Override
-		protected void onMidi(@NotNull short[] midiPacket) {
+		protected void onMidi(short[] midiPacket) {
 			if(!midiHandled) // Forward all midi packets we have not handled
 				output.putMidi(midiFrame.framePosition, midiPacket);
 		}
