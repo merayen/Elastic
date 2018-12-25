@@ -9,8 +9,8 @@ import net.merayen.elastic.ui.objects.components.framework.PopupParameter;
  */
 public class PopupParameter1D extends UIObject { // TODO rename to PopupParameter
 	public interface Handler {
-		public void onMove(float value);
-		public void onChange(float value);
+		void onMove(float value);
+		void onChange(float value);
 	}
 
 	private class Window extends UIObject {
@@ -31,7 +31,7 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 	private Handler handler;
 
 	public float popup_height = 200f;
-	public final BoxLabel label = new BoxLabel("###");
+	public final BoxLabel label = new BoxLabel();
 
 	public float drag_scale = 1f;
 
@@ -47,7 +47,6 @@ public class PopupParameter1D extends UIObject { // TODO rename to PopupParamete
 			public void onMove() {
 				box.popup.getTranslation().x = 0; // Constrain X-axis
 				if(handler != null)
-					//handler.onMove(box.popup.translation.y / popup_height);
 					handler.onMove(box.getY());
 			}
 

@@ -37,7 +37,7 @@ public class InputSignalParameters extends UIObject {
 		amplitude.drag_scale = 1f;
 		add(amplitude);
 
-		offset.getTranslation().y = 0;
+		offset.getTranslation().y = 20;
 		offset.label.setText("Offset");
 		offset.drag_scale = 1f;
 		add(offset);
@@ -67,11 +67,6 @@ public class InputSignalParameters extends UIObject {
 		});
 
 		updateTexts();
-	}
-
-	@Override
-	public void onUpdate() {
-		offset.getTranslation().x = amplitude.label.getWidth() + 10;
 	}
 
 	public float getAmplitude() {

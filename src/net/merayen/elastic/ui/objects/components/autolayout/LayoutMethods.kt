@@ -54,6 +54,11 @@ object LayoutMethods {
 		override fun getHeight() = height
 	}
 
+
+	/**
+	 * Arranges UIObjects in a horizontal line. Supports both UIObjects with fixed with and FlexibleDimension-UIObjects that can be resized by this
+	 * AutoLayout-sizer.
+	 */
 	class HorizontalLiquidBox : AutoLayout.Placement, FlexibleDimension {
 		class Constraint(val factor: Float = 0f) {
 			internal var calculatedFactor = 0f
@@ -107,7 +112,7 @@ object LayoutMethods {
 				if (obj !is FlexibleDimension)
 					fixedWidthSum += obj.getWidth()
 				else
-					flexibleWidthSum += constraints[obj]!!.factor
+					flexibleWidthSum += constraints[obj]!!.factor / obj.translation.scale_x
 
 			val flexibleRatio = (1 - fixedWidthSum / layoutWidth) / flexibleWidthSum
 			if (flexibleRatio > 0) {

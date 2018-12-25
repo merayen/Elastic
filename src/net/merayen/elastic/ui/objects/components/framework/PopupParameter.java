@@ -6,9 +6,9 @@ import net.merayen.elastic.ui.util.Movable;
 
 public class PopupParameter extends UIObject {
 	public interface Handler {
-		public void onGrab();
-		public void onMove();
-		public void onDrop();
+		void onGrab();
+		void onMove();
+		void onDrop();
 	}
 
 	/**

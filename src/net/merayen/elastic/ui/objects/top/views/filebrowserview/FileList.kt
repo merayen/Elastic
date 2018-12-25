@@ -93,6 +93,6 @@ internal class FileList : UIObject() {
 	fun up() {
 		val parent = File(path!!).parentFile
 		if (parent != null)
-			browse(parent!!.absolutePath)
+			browse(parent.absolutePath)
 	}
 }

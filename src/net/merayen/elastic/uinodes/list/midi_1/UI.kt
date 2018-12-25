@@ -5,6 +5,7 @@ import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import net.merayen.elastic.uinodes.list.midi_1.editor.Editor
 
 class UI : UINode, INodeEditable {
 	constructor() {

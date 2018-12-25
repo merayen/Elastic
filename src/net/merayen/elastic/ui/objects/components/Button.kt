@@ -7,10 +7,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 
-open class Button : UIObject(), FlexibleDimension {
-
-	var label: String = ""
-
+open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 	override var layoutWidth = 50f
 	override var layoutHeight = 15f
 	var auto_dimension = true
