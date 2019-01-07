@@ -17,7 +17,7 @@ import net.merayen.elastic.util.tap.TapSpreader;
  */
 public class ElasticSystem {
 	static {
-		System.load("/usr/lib/x86_64-linux-gnu/libffms2.so.4");
+		//System.load("/usr/lib/x86_64-linux-gnu/libffms2.so.4");
 	}
 
 	public interface IListener {

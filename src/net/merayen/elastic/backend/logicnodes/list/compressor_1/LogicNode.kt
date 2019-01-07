@@ -18,33 +18,10 @@ class LogicNode : BaseLogicNode() {
 	override fun onParameterChange(key: String?, value: Any?) = set(key, value)
 
 	override fun onCreate() {
-		createPort(object : PortDefinition() {
-			init {
-				name = "input"
-			}
-		})
-
-		createPort(object : PortDefinition() {
-			init {
-				name = "sidechain"
-			}
-		})
-
-		createPort(object : PortDefinition() {
-			init {
-				name = "output"
-				format = Format.AUDIO
-				output = true
-			}
-		})
-
-		createPort(object : PortDefinition() {
-			init {
-				name = "attenuation"
-				format = Format.SIGNAL
-				output = true
-			}
-		})
+		createPort(PortDefinition("input"))
+		createPort(PortDefinition("sidechain"))
+		createPort(PortDefinition("output", Format.AUDIO))
+		createPort(PortDefinition("attenuation", Format.SIGNAL))
 
 		set("inputAmplitude", 1f);
 		set("inputSidechainAmplitude", 1f);

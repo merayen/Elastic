@@ -19,6 +19,20 @@ public abstract class BaseLogicNode {
 		public String name; // Name of the port
 		public boolean output; // If port is output or not
 		public Format format; // Format the port uses. Only for output-ports
+
+		public PortDefinition() {}
+
+		/** Define a input port **/
+		public PortDefinition(String name) {
+			this.name = name;
+		}
+
+		/** Define an output port with format **/
+		public PortDefinition(String name, Format format) {
+			this.name = name;
+			this.format = format;
+			this.output = true;
+		}
 	}
 
 	private LogicEnvironment env;

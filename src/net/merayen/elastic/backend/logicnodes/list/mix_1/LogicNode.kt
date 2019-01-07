@@ -6,31 +6,10 @@ import net.merayen.elastic.backend.nodes.BaseLogicNode
 class LogicNode : BaseLogicNode() {
 
     override fun onCreate() {
-        createPort(object : BaseLogicNode.PortDefinition() {
-            init {
-                name = "a"
-            }
-        })
-
-        createPort(object : BaseLogicNode.PortDefinition() {
-            init {
-                name = "b"
-            }
-        })
-
-        createPort(object : BaseLogicNode.PortDefinition() {
-            init {
-                name = "fac"
-            }
-        })
-
-        createPort(object : BaseLogicNode.PortDefinition() {
-            init {
-                name = "out"
-                output = true
-                format = Format.AUDIO
-            }
-        })
+        createPort(BaseLogicNode.PortDefinition("a"))
+        createPort(BaseLogicNode.PortDefinition("b"))
+        createPort(BaseLogicNode.PortDefinition("fac"))
+        createPort(BaseLogicNode.PortDefinition("out", Format.AUDIO))
     }
 
     override fun onInit() {}

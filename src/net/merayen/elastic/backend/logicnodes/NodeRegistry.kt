@@ -19,5 +19,6 @@ object NodeRegistry {
 		nodes.add("delay_1")
 		nodes.add("compressor_1")
 		nodes.add("sample_1")
+		nodes.add("eq_1")
 	}
 }
