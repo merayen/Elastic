@@ -10,6 +10,8 @@ class UI : UINode() {
 		super.onInit()
 		layoutWidth = 300f
 		layoutHeight = 150f
+
+		this.titlebar.title = "Equalizer"
 	}
 
 	override fun onCreatePort(port: UIPort) {
