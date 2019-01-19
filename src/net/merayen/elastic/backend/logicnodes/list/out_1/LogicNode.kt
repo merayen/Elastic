@@ -4,11 +4,7 @@ import net.merayen.elastic.backend.nodes.BaseLogicNode
 
 class LogicNode : BaseLogicNode() {
 	override fun onCreate() {
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "in"
-			}
-		})
+		createPort(BaseLogicNode.PortDefinition("in"))
 	}
 
 	override fun onInit() {}

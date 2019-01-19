@@ -13,11 +13,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onCreate() {
-		createPort(new PortDefinition() {{
-			name = "output";
-			output = true;
-			format = Format.MIDI;
-		}});
+		createPort(new PortDefinition("output", Format.MIDI));
 	}
 
 	@Override

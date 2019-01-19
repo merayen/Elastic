@@ -39,6 +39,8 @@ class UI : UINode() {
 			}
 		})
 		add(unison)
+
+		this.titlebar.title = "Poly"
 	}
 
 	override fun onCreatePort(port: UIPort) {
