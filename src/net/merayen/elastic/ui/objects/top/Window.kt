@@ -16,7 +16,9 @@ class Window(private val surface: Surface) : UIObject() {
 
 	// Cached screen layoutWidth and layoutHeight. Updates on every draw. Children UIObjects can use this to get screen size in pixels
 	var screenWidth = 0f
+		private set
 	var screenHeight = 0f
+		private set
 
 	/**
 	 * Windows and other popups can be put here.

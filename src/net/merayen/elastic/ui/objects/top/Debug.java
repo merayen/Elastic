@@ -20,6 +20,7 @@ public class Debug extends UIObject {
 	public void onDraw(Draw draw) {
 		super.onDraw(draw);
 
+		draw.disableOutline();
 		Object[] m = list.keySet().toArray();
 		Arrays.sort(m);
 

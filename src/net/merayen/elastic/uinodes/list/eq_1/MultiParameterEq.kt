@@ -10,25 +10,26 @@ class MultiParameterEq : UIObject(), FlexibleDimension {
 
 	private val eqPoints = MultiParameterEqData()
 
-	private val multiParameterEqCurveBox = MultiParameterEqCurveBox(eqPoints, object : MultiParameterEqCurveBox.Handler {
-		override fun onCreatePoint() {
-			println("hei")
-		}
+	private val editPanel = MultiParameterEqEditPanel()
 
+	private val multiParameterEqCurveBox = MultiParameterEqCurveBox(eqPoints, object : MultiParameterEqCurveBox.Handler {
+		override fun onCreatePoint() {}
 		override fun onDeletePoint() {}
 		override fun onChangePoint() {}
 	})
 
 	override fun onInit() {
 		add(multiParameterEqCurveBox)
+		add(editPanel)
 	}
 
-	override fun onDraw(draw: Draw) {
-
-	}
+	override fun onDraw(draw: Draw) {}
 
 	override fun onUpdate() {
 		multiParameterEqCurveBox.layoutWidth = layoutWidth
-		multiParameterEqCurveBox.layoutHeight = layoutHeight
+		multiParameterEqCurveBox.layoutHeight = layoutHeight - 30f
+
+		editPanel.translation.x = 10f
+		editPanel.translation.y = layoutHeight - 25f
 	}
 }

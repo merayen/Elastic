@@ -117,9 +117,6 @@ public class Viewport extends UIObject {
 
 		drag.width = width - BORDER_WIDTH * 2;
 		drag.height = height - BORDER_WIDTH * 2;
-
-		Window window = UINodeUtil.getWindow(this);
-		window.getDebug().set("Viewport " + lol, getTranslation() + "   [" + width + ", " + height + "]");
 	}
 
 	public String toString() {

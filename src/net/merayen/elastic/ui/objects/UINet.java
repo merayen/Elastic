@@ -69,12 +69,6 @@ public class UINet extends UIObject {
 					window.getDebug().set("UINet UITemporaryPort: %s\n", p2);
 			}
 		}
-
-		StringBuilder sb = new StringBuilder();
-		for(Connection c : connections)
-			sb.append(String.format("%s <-> %s", c.a, c.b));
-
-		UINodeUtil.getWindow(this).getDebug().set("UI port connections", String.format("%d: %s", connections.size(), sb));
 	}
 
 	/**

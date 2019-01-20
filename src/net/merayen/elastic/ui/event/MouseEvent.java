@@ -64,25 +64,38 @@ public class MouseEvent extends UIEvent {
 		List<UIObject> objs = uiobject.getSearch().getAllChildren();
 		objs.add(uiobject);
 
-		for(UIObject o : objs)
-			if(
-				o.isInitialized() &&
-				o.getOutline_abs_px() != null &&
-				x >= o.getOutline_abs_px().x1 &&
-				y >= o.getOutline_abs_px().y1 &&
-				x < o.getOutline_abs_px().x2 &&
-				y < o.getOutline_abs_px().y2
+		for (UIObject o : objs)
+			if (
+					o.isInitialized() &&
+							o.getOutline_abs_px() != null &&
+							x >= o.getOutline_abs_px().x1 &&
+							y >= o.getOutline_abs_px().y1 &&
+							x < o.getOutline_abs_px().x2 &&
+							y < o.getOutline_abs_px().y2
 			)
 				hits.add(o);
 
-		hits.sort( (a,b) -> b.getDraw_z() - a.getDraw_z());
+		hits.sort((a, b) -> b.getDraw_z() - a.getDraw_z());
 
-		if(hits.size() > 0) {
-			StringBuilder m = new StringBuilder("Object hit: ");
-			for(UIObject o : hits)
-				m.append(o.getClass().getSimpleName()).append(", ");
+		if (hits.size() > 0) {
+			StringBuilder m = new StringBuilder();
+			//for(UIObject o : hits) {
+			UIObject o = hits.get(0);
+
+			while (o.getParent() != null) {
+				String[] s = o.getClass().getName().split("\\.");
+				if (s.length > 1) {
+					m.append(s[s.length - 2]);
+					m.append(".");
+				}
+				m.append(s[s.length - 1]);
+				m.append("   ");
+
+				o = o.getParent();
+			}
 
 			uiobject.getDebug().set("MouseEvent.calcHit", m.toString());
+			//uiobject.getDebug().set("MouseEvent.calcHit", hits.get(0).getClass().getName());
 		} else {
 			uiobject.getDebug().unset("MouseEvent.calcHit");
 		}
@@ -91,10 +104,10 @@ public class MouseEvent extends UIEvent {
 	}
 
 	public boolean isHit(UIObject uiobject) {
-		if(objects_hit == null)
+		if (objects_hit == null)
 			objects_hit = calcHit(UINodeUtil.getWindow(uiobject));
 
-		if(objects_hit.size() > 0)
+		if (objects_hit.size() > 0)
 			return objects_hit.get(0) == uiobject;
 
 		return false;
@@ -107,7 +120,7 @@ public class MouseEvent extends UIEvent {
 	 * -1 = not hit at all
 	 */
 	public int hitDepth(UIObject uiobject) {
-		if(objects_hit == null)
+		if (objects_hit == null)
 			objects_hit = calcHit(UINodeUtil.getWindow(uiobject));
 
 		return objects_hit.indexOf(uiobject);

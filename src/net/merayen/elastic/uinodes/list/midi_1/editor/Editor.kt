@@ -28,7 +28,6 @@ class Editor : NodeEditor {
 			override fun onTransposeNote(value: Int) {
 
 			}
-
 		})
 
 		menuBar.layoutHeight = 40f
