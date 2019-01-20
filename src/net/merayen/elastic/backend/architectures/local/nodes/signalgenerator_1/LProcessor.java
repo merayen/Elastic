@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
@@ -41,7 +42,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private short[] active_tangent;
 	private float velocity;
 
-	private double pos;
+	private double pos = new Random().nextDouble() * Math.PI * 2;
 
 	private MidiState midiState = new MidiState() {
 		@Override
@@ -200,7 +201,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 			}
 
 		} else { // No key down? Silence!
-			pos = 0;
+			pos = new Random().nextDouble() * Math.PI * 2;
 			for(int i = 0; i < buffer_size; i++)
 				outlet.audio[0][i] = 0;
 		}

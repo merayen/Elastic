@@ -7,8 +7,13 @@ import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
 
 public class MenuListItem extends UIObject {
-	public static abstract class Handler {
-		public void onClick() {}
+	public interface Handler {
+		void onClick();
+	}
+
+	public MenuListItem(String label, Handler handler) {
+		this.label = label;
+		this.handler = handler;
 	}
 
 	public String label = "";

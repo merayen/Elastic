@@ -31,18 +31,11 @@ class UI : UINode() {
 		which.translation.y = 50f
 		add(which)
 
-		var mli = MenuListItem()
-		mli.label = "Hei!"
-		mli.setHandler(object : MenuListItem.Handler() {
-			override fun onClick() {
-				println("Yoho!")
-			}
-		})
-		which.menu_list.addMenuItem(mli)
+		var mli = MenuListItem("Hei!", MenuListItem.Handler {})
+		which.menuList.addMenuItem(mli)
 
-		mli = MenuListItem()
-		mli.label = "Du!"
-		which.menu_list.addMenuItem(mli)
+		mli = MenuListItem("Du!", MenuListItem.Handler {})
+		which.menuList.addMenuItem(mli)
 	}
 
 	override fun onDraw(draw: Draw) {
