@@ -3,7 +3,9 @@ package net.merayen.elastic.uinodes.list.eq_1
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.CircularSlider
 import net.merayen.elastic.ui.objects.components.DropDown
+import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.framework.Joystick
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.menu.MenuListItem
 
 class MultiParameterEqEditPanel : UIObject() {
@@ -26,10 +28,11 @@ class MultiParameterEqEditPanel : UIObject() {
 
 	override fun onInit() {
 		for ( (name,description) in algorithms) {
-			algorithm.menuList.addMenuItem(MenuListItem(description, MenuListItem.Handler {}))
+			val name = name
+			algorithm.addMenuItem(DropDown.Item(Label(name), TextContextMenuItem(name)))
 		}
-
 		algorithm.translation.y = 10f
+		algorithm.layoutWidth = 50f
 		add(algorithm)
 
 		frequency.handler = object : CircularSlider.Handler {

@@ -10,7 +10,7 @@ import net.merayen.elastic.util.Point
 /**
  * Puts up a context menu on top of everything (Top().overlay)
  */
-class ContextMenu(trigger: UIObject, count: Int, handler: Handler) {
+class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, handler: Handler) {
 
     private val menu: Menu
     private val mouse: MouseHandler
@@ -19,16 +19,16 @@ class ContextMenu(trigger: UIObject, count: Int, handler: Handler) {
         fun onSelect(item: ContextMenuItem?, position: Point)
     }
 
-    constructor(trigger: UIObject, handler: Handler) : this(trigger, 8, handler) {}
+    constructor(trigger: UIObject, button: MouseEvent.Button, handler: Handler) : this(trigger, 8, button, handler) {}
 
     init {
         menu = Menu(count)
 
-        mouse = MouseHandler(trigger, MouseEvent.Button.RIGHT)
+        mouse = MouseHandler(trigger, button)
         mouse.setHandler(object : MouseHandler.Handler() {
-            internal var start_x: Float = 0.toFloat()
-            internal var start_y: Float = 0.toFloat()
-            internal var relative: Point? = null
+            var start_x: Float = 0.toFloat()
+            var start_y: Float = 0.toFloat()
+            var relative: Point? = null
 
             override fun onMouseDown(position: Point) {
                 UINodeUtil.getWindow(trigger).overlay.add(menu)

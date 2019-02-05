@@ -14,19 +14,19 @@ public class MenuList extends UIObject {
 	}
 
 	private ArrayList<MenuListItem> items = new ArrayList<MenuListItem>();
-	private MouseHandler mouse_handler;
+	//private MouseHandler mouse_handler;
 	private Handler handler;
 
 	@Override
 	public void onInit() {
-		mouse_handler = new MouseHandler(this);
+		/*mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onGlobalMouseUp(Point position) {
 				if(handler != null)
 					handler.onOutsideClick();
 			}
-		});
+		});*/
 
 		super.onInit();
 	}
@@ -49,10 +49,10 @@ public class MenuList extends UIObject {
 		super.onDraw(draw);
 	}
 
-	@Override
+	/*@Override
 	public void onEvent(UIEvent e) {
 		mouse_handler.handle(e);
-	}
+	}*/
 
 	public void addMenuItem(MenuListItem menu_item) {
 		add(menu_item);
@@ -61,7 +61,7 @@ public class MenuList extends UIObject {
 
 	public void removeMenuItem(MenuListItem menu_item) {
 		remove(menu_item);
-		items.remove(menu_item); // XXX Virker faktisk dette?
+		items.remove(menu_item);
 	}
 
 	public float getMenuWidth() {

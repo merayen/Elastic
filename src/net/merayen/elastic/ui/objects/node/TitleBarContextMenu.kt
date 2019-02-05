@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.node
 
 import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.intercom.EditNodeMessage
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
@@ -17,7 +18,7 @@ internal class TitleBarContextMenu(titlebar: UIObject) : UIObject() {
 	private val deleteNode = TextContextMenuItem("Delete")
 
 	init {
-		menu = ContextMenu(titlebar, object : ContextMenu.Handler {
+		menu = ContextMenu(titlebar, MouseEvent.Button.RIGHT, object : ContextMenu.Handler {
 			override fun onSelect(item: ContextMenuItem?, position: Point) {
 				if (item === deleteNode) {
 					val nodeId = search.parentByType(UINode::class.java)?.nodeId

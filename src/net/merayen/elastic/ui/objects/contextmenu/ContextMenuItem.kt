@@ -4,6 +4,7 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 
 abstract class ContextMenuItem : UIObject() {
+
     var active: Boolean = false // true if being selected
     var radius: Float = 0.toFloat()
     internal var x: Float = 0.toFloat()

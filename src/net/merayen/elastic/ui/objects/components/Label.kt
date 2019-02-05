@@ -3,16 +3,12 @@ package net.merayen.elastic.ui.objects.components
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 
-class Label : UIObject() {
-
-	var text = ""
+class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObject() {
 	var fontSize = 10f
 	var font_name = "Geneva"
 	var align: Align? = null
 	var labelWidth: Float = 0.toFloat()
 		private set
-
-	var eventTransparent = false
 	
 	enum class Align {
 		LEFT, CENTER, RIGHT

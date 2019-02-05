@@ -5,6 +5,7 @@ import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.menu.MenuListItem
@@ -31,20 +32,14 @@ class UI : UINode() {
 		which.translation.y = 50f
 		add(which)
 
-		var mli = MenuListItem("Hei!", MenuListItem.Handler {})
-		which.menuList.addMenuItem(mli)
+		which.addMenuItem(DropDown.Item(Label("Hei"), TextContextMenuItem("Hei!")))
 
-		mli = MenuListItem("Du!", MenuListItem.Handler {})
-		which.menuList.addMenuItem(mli)
+		which.addMenuItem(DropDown.Item(Label("Du"), TextContextMenuItem("Du!")))
 	}
 
 	override fun onDraw(draw: Draw) {
 		midi_device!!.text = "Device: "
 		super.onDraw(draw)
-	}
-
-	fun onRemovePort(name: String) {
-		// Never removes any port anyway, so not implemented
 	}
 
 	override fun onCreatePort(port: UIPort) {

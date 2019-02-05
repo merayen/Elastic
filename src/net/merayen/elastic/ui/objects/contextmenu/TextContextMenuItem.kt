@@ -5,13 +5,7 @@ import net.merayen.elastic.ui.Draw
 /**
  * Only shows a label.
  */
-class TextContextMenuItem : ContextMenuItem {
-    var text: String
-
-    constructor(text: String) {
-        this.text = text
-    }
-
+class TextContextMenuItem(var text: String) : ContextMenuItem() {
     override fun onDraw(draw: Draw) {
         super.onDraw(draw)
 
