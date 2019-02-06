@@ -39,8 +39,8 @@ public class Tabs extends AutoLayout {
 		}
 
 		@Override
-		public void onEvent(UIEvent e) {
-			mouse_handler.handle(e);
+		public void onEvent(UIEvent event) {
+			mouse_handler.handle(event);
 		}
 	}
 

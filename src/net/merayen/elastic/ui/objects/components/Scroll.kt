@@ -47,8 +47,8 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
             draw.fillRect(0f, 0f, barWidth, barWidth)
         }
 
-        override fun onEvent(e: UIEvent) {
-            movable.handle(e)
+        override fun onEvent(event: UIEvent) {
+            movable.handle(event)
         }
     }
 

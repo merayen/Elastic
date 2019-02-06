@@ -234,14 +234,14 @@ private fun testWhileLoop() {
 
 
 private fun testImport() {
-	val v = parse("""
+	parse("""
 		import mylib
 	""".trimIndent())
 }
 
 
 private fun testVariableDeclaration() {
-	val v = run("""
+	run("""
 	module navn
 		var global_var = 3
 	module main

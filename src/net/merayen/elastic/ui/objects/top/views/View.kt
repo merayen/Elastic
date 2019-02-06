@@ -50,7 +50,7 @@ abstract class View : UIObject {
 		val newView: T
 
 		try {
-			newView = cls.newInstance()
+			newView = cls.getDeclaredConstructor().newInstance()
 		} catch (e: InstantiationException) {
 			throw RuntimeException(e)
 		} catch (e: IllegalAccessException) {

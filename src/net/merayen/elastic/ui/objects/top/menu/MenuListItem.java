@@ -63,8 +63,8 @@ public class MenuListItem extends UIObject {
 		super.onDraw(draw);
 	}
 
-	public void onEvent(UIEvent e) {
-		mouse_handler.handle(e);
+	public void onEvent(UIEvent event) {
+		mouse_handler.handle(event);
 	}
 
 	public float getMenuItemWidth() {

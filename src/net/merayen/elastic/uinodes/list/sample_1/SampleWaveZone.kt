@@ -70,7 +70,7 @@ class SampleWaveZone(private val handler: Handler) : UIObject(), FlexibleDimensi
 		}
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouse.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouse.handle(event)
 	}
 }

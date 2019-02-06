@@ -44,6 +44,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 					override fun drop(dtde: DropTargetDropEvent) {
 						dtde.acceptDrop(dtde.dropAction)
 						try {
+							@Suppress("UNCHECKED_CAST")
 							val file_instances = dtde.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
 							val files: List<String> = (file_instances.map { it.absolutePath })
 
@@ -197,13 +198,13 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 	}
 
 	override fun pullEvents(): List<UIEvent> {
-		var result: List<UIEvent>? = null
+		var result: List<UIEvent>
 
 		synchronized(eventsQueue) {
 			result = ArrayList(eventsQueue)
 			eventsQueue.clear()
 		}
 
-		return result ?: ArrayList<UIEvent>()
+		return result
 	}
 }

@@ -61,8 +61,8 @@ class UI : UINode() {
 		decay_slider.translation.x = 60f
 		decay_slider.translation.y = 190f
 		decay_slider.handler = object : CircularSlider.Handler {
-			override fun onChange(v: Float) {
-				sendParameter("decay", Math.pow(v.toDouble(), 2.0).toFloat() * 10)
+			override fun onChange(value: Float) {
+				sendParameter("decay", Math.pow(value.toDouble(), 2.0).toFloat() * 10)
 				adsrgraph.decay_time = Math.pow(decay_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}

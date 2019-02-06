@@ -49,7 +49,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 
 				for (nv in nodeViews)
 					if (nv.viewNodeID == message.parent)
-						nv.addNode(message.node_id, message.name, message.version, message.parent)
+						nv.addNode(message.node_id, message.name, message.version)
 
 			}
 

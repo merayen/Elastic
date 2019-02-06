@@ -12,7 +12,7 @@ import java.io.File
 internal open class FileListItem(val file: File, val dragable: Boolean) : UIObject() {
 	private val mouseHandler = MouseHandler(this)
 	private var over = false
-	private val label: String by lazy { file.name }
+	private val label = file.name ?: ""
 	private var width = 0f
 	private var height = 0f
 	private var handler: Handler? = null
@@ -56,8 +56,6 @@ internal open class FileListItem(val file: File, val dragable: Boolean) : UIObje
 	}
 
 	override fun onDraw(draw: Draw) {
-		val label = label ?: return
-
 		draw.setFont("", 15f)
 		width = draw.getTextWidth(label)
 		height = 15f
@@ -80,9 +78,9 @@ internal open class FileListItem(val file: File, val dragable: Boolean) : UIObje
 		return height
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouseHandler.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouseHandler.handle(event)
 		if(dragable)
-			sourceItem.handle(e)
+			sourceItem.handle(event)
 	}
 }

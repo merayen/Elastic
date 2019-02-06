@@ -87,8 +87,8 @@ class CircularSlider : UIObject() {
 		valueLabel.fontSize = size / 5
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mousehandler.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mousehandler.handle(event)
 	}
 
 	private fun drawLine(draw: Draw, value: Float, length: Float) {

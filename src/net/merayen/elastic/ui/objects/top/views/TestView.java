@@ -44,8 +44,8 @@ public class TestView extends View {
 		}
 
 		@Override
-		public void onEvent(UIEvent e) {
-			movable.handle(e);
+		public void onEvent(UIEvent event) {
+			movable.handle(event);
 		}
 	}
 

@@ -23,14 +23,14 @@ class MouseCursor(val surfaceMouseCursors: SurfaceMouseCursors, val id: Int) : U
 
 	var enabled = true
 
-	override fun onEvent(e: UIEvent) {
-		if(e is MouseEvent && e.id == id) {
-			if(e.action == MouseEvent.Action.OUT_OF_RANGE) {
+	override fun onEvent(event: UIEvent) {
+		if(event is MouseEvent && event.id == id) {
+			if(event.action == MouseEvent.Action.OUT_OF_RANGE) {
 				enabled = false
 			} else {
 				enabled = true
-				translation.x = e.x.toFloat()
-				translation.y = e.y.toFloat()
+				translation.x = event.x.toFloat()
+				translation.y = event.y.toFloat()
 			}
 		}
 	}

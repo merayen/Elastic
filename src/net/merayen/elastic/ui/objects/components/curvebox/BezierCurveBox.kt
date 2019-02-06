@@ -41,7 +41,6 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		get() {
 			val result = ArrayList<Number>()
 
-			val i = 0
 			for (bd in points) {
 				result.add(bd.left_dot.translation.x)
 				result.add(bd.left_dot.translation.y)
@@ -196,6 +195,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		}
 
 		val bps = points[0] // The initial point
+		@Suppress("UNCHECKED_CAST")
 		draw.bezier(bps.position.translation.x, bps.position.translation.y, p as Array<Point>)
 
 		// Draw lines from the dots to the points

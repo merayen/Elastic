@@ -10,7 +10,6 @@ import net.merayen.elastic.ui.objects.node.EditNodeMouseCarryItem;
 import net.merayen.elastic.ui.objects.node.INodeEditable;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.top.megamenu.MegaMenu;
-import net.merayen.elastic.ui.objects.top.mouse.InterestedObjectDecoration;
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView;
@@ -78,8 +77,8 @@ public class ViewBar extends AutoLayout {
 	}
 
 	@Override
-	public void onEvent(UIEvent e) {
-		super.onEvent(e);
-		targetItem.handle(e);
+	public void onEvent(UIEvent event) {
+		super.onEvent(event);
+		targetItem.handle(event);
 	}
 }

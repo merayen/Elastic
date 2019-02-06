@@ -40,7 +40,7 @@ class Joystick(private val handler: Handler) : UIObject() {
 		box.text = handler.onLabel(0f, 0f)
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouseHandler.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouseHandler.handle(event)
 	}
 }

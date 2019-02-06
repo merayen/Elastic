@@ -27,10 +27,9 @@ class MultiParameterEqEditPanel : UIObject() {
 	private val amplitude = CircularSlider()
 
 	override fun onInit() {
-		for ( (name,description) in algorithms) {
-			val name = name
+		for ( (name,_) in algorithms)
 			algorithm.addMenuItem(DropDown.Item(Label(name), TextContextMenuItem(name)))
-		}
+
 		algorithm.translation.y = 10f
 		algorithm.layoutWidth = 50f
 		add(algorithm)

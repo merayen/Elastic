@@ -43,6 +43,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		if(message is NodeParameterMessage) {
 			when {
 				message.key == "data.curve" ->
+					@Suppress("UNCHECKED_CAST")
 					curve.bezier.setPoints(message.value as List<Number>)
 			}
 		}

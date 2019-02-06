@@ -70,7 +70,7 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 		draw.fillRect(1f, 1f, layoutWidth - 2f, layoutHeight - 2f)
 
 		draw.setColor(200, 200, 200)
-		draw.text(label!!, layoutWidth / 2 - text_width / 2, font_size)
+		draw.text(label, layoutWidth / 2 - text_width / 2, font_size)
 
 		super.onDraw(draw)
 	}

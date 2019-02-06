@@ -98,7 +98,7 @@ open class UIObject {
 	open fun onInit() {}
 	open fun onDraw(draw: Draw) {}
 	open fun onUpdate() {}
-	open fun onEvent(e: UIEvent) {}
+	open fun onEvent(event: UIEvent) {}
 
 	/**
 	 * Override this method to artificially set the children of the UIObject in a onDraw(), onUpdate() and onEvent() call tree.

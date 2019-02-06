@@ -32,7 +32,7 @@ class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, priva
 			draw.fillOval(0f, 0f, 5f, 5f)
 		}
 
-		override fun onEvent(e: UIEvent) {
+		override fun onEvent(event: UIEvent) {
 
 		}
 	}
@@ -104,8 +104,8 @@ class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, priva
 		draw.rect(0f, 0f, layoutWidth, layoutHeight)
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouseHandler.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouseHandler.handle(event)
 	}
 
 	private fun createPoint(x: Float) {

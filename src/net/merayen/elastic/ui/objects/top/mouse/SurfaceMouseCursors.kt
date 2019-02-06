@@ -18,9 +18,9 @@ class SurfaceMouseCursors : UIObject() {
 		mouseCursorManager = (this.search.top as Top).mouseCursorManager
 	}
 
-	override fun onEvent(e: UIEvent) {
-		if(e is MouseEvent)
-			ensureCursor(e.id)
+	override fun onEvent(event: UIEvent) {
+		if(event is MouseEvent)
+			ensureCursor(event.id)
 	}
 
 	private fun ensureCursor(id: Int) {

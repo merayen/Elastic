@@ -80,8 +80,8 @@ class MenuBarItem(label: String) : UIObject() {
 		}
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouse_handler!!.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouse_handler!!.handle(event)
 	}
 
 	private fun toggleMenu() {

@@ -41,6 +41,7 @@ class UI : UINode(), INodeEditable {
 				updateFrequencyText()
 			}
 			message.key == "data.curve" ->
+				@Suppress("UNCHECKED_CAST")
 				curve.bezier.setPoints(message.value as List<Number>)
 			message.key == "data.InputSignalParameters:frequency" ->
 				(frequency_port_parameter!!.connected as InputSignalParameters).handleMessage(message)

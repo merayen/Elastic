@@ -91,12 +91,12 @@ class NodeView constructor(node_id: String? = null) : View() {
 	 * Add a node.
 	 * Node must already be existing in the backend.
 	 */
-	fun addNode(node_id: String, name: String, version: Int?, parent: String) {
+	fun addNode(node_id: String, name: String, version: Int?) {
 		val path = String.format(UI_CLASS_PATH, name, version, "UI")
 
 		val uinode: UINode
 		try {
-			uinode = Class.forName(path).newInstance() as UINode
+			uinode = Class.forName(path).getDeclaredConstructor().newInstance() as UINode
 		} catch (e: Exception) {
 			throw RuntimeException(e)
 		}

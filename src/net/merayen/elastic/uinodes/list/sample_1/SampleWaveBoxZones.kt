@@ -79,8 +79,8 @@ class SampleWaveBoxZones(private val handler: Handler) : UIObject(), FlexibleDim
 		}
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouse.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouse.handle(event)
 	}
 
 	fun removeZone(zone: SampleWaveZone) {
@@ -89,8 +89,8 @@ class SampleWaveBoxZones(private val handler: Handler) : UIObject(), FlexibleDim
 	}
 
 	private fun focusZone(zone: SampleWaveZone) {
-		for(zone in zones)
-			zone.focus = false
+		for(z in zones)
+			z.focus = false
 
 		zone.focus = true
 		selectedZone = zone

@@ -5,10 +5,10 @@ import net.merayen.elastic.util.Postmaster
 class NodeStatusMessage : Postmaster.Message, NodeMessage {
 	val _nodeId: String
 	val load: Float
-	val voices: Integer
-	val processCount: Integer
+	val voices: Int
+	val processCount: Int
 
-	constructor(nodeId: String, load: Float, voices: Integer, processCount: Integer) {
+	constructor(nodeId: String, load: Float, voices: Int, processCount: Int) {
 		this._nodeId = nodeId
 		this.load = load
 		this.voices = voices

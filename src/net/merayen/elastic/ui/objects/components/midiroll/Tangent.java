@@ -74,8 +74,8 @@ class Tangent extends UIObject {
 	}
 
 	@Override
-	public void onEvent(UIEvent e) {
-		mouse_handler.handle(e);
+	public void onEvent(UIEvent event) {
+		mouse_handler.handle(event);
 	}
 
 	void goStandby() {

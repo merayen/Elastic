@@ -5,18 +5,13 @@ import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
-import net.merayen.elastic.ui.event.MouseEvent.Button
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
-import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
-import net.merayen.elastic.ui.objects.top.menu.MenuList
-import net.merayen.elastic.ui.objects.top.menu.MenuListItem
-import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 
 class DropDown : UIObject(), FlexibleDimension {
 	interface Handler {
-		fun onClick()
+		fun onChange()
 	}
 
 	class Item(val dropdownItem: UIObject, val contextMenuItem: ContextMenuItem)
@@ -51,8 +46,8 @@ class DropDown : UIObject(), FlexibleDimension {
 		contextMenu.addMenuItem(item.contextMenuItem)
 	}
 
-	override fun onEvent(e: UIEvent) {
-		contextMenu.handle(e)
+	override fun onEvent(event: UIEvent) {
+		contextMenu.handle(event)
 	}
 
 	private fun setViewItem(item: Item) {
@@ -60,11 +55,9 @@ class DropDown : UIObject(), FlexibleDimension {
 		if(cItem != null)
 			remove(cItem.dropdownItem)
 
-		if (item != null) {
-			item.dropdownItem.translation.x = 10f
-			item.dropdownItem.translation.y = 5f
-			add(item.dropdownItem)
-		}
+		item.dropdownItem.translation.x = 10f
+		item.dropdownItem.translation.y = 5f
+		add(item.dropdownItem)
 
 		currentItem = item
 	}

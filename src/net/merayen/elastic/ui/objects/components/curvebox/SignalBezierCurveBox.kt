@@ -38,6 +38,7 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 				)
 			}
 
+			@Suppress("UNCHECKED_CAST")
 			return result as Array<BezierCurve.Dot>
 		}
 

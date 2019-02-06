@@ -46,7 +46,7 @@ class Resizable(private val node: FlexibleDimension, private val handler: Handle
 		}
 	}
 
-	override fun onEvent(e: UIEvent) {
-		mouseHandler!!.handle(e)
+	override fun onEvent(event: UIEvent) {
+		mouseHandler!!.handle(event)
 	}
 }
