@@ -25,6 +25,6 @@ public class LoadProjectAction extends Action {
 		messages.addAll(NetListMessages.INSTANCE.disassemble(env.project.data.getRawNetList()));
 		messages.add(new FinishResetNetListMessage());
 
-		backend_context.message_handler.sendToBackend(messages);
+		backendContext.message_handler.sendToBackend(messages);
 	}
 }

@@ -10,7 +10,6 @@ import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 import java.util.HashSet
-import kotlin.math.absoluteValue
 
 /**
  * Java Swing Surface.
@@ -45,13 +44,13 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 						dtde.acceptDrop(dtde.dropAction)
 						try {
 							@Suppress("UNCHECKED_CAST")
-							val file_instances = dtde.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-							val files: List<String> = (file_instances.map { it.absolutePath })
+							val fileInstances = dtde.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
+							val files: List<String> = (fileInstances.map { it.absolutePath })
 
 							queueEvent(FileDropEvent(dtde.dropTargetContext.component.name, 0, 0, 0, MouseEvent.Action.DROP, MouseEvent.Button.LEFT, files.toTypedArray())) // TODO figure out coordinates
 
 							for (f in files)
-								println("File dropped: " + f)
+								println("File dropped: $f")
 
 						} catch (e: UnsupportedFlavorException) {
 							e.printStackTrace()

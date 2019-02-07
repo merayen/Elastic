@@ -23,6 +23,8 @@ public class Test {
 
 		//net.merayen.elastic.ui.Test.test();
 
+		//net.merayen.elastic.backend.queue.TestKt.test();
+
 		net.merayen.elastic.system.Test.test();
 
 		System.out.println("Test done");
