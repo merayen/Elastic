@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.data.project;
 
 import org.json.simple.JSONObject;
 
-import net.merayen.elastic.backend.data.resource.Resource;
+import net.merayen.elastic.backend.data.dependencygraph.DependencyItem;
 import net.merayen.elastic.backend.data.revision.Revision;
 import net.merayen.elastic.backend.data.storage.StorageFile;
 import net.merayen.elastic.backend.data.storage.StorageView;
@@ -15,26 +15,30 @@ public class Checkpoint {
 		this.project = project;
 	}
 
+	/**
+	 * Create a checkpoint
+	 */
 	public Revision create() {
 		JSONObject dump = Serializer.dump(project.data.getNetList());
 
 		Revision old_revision = project.data.revision_tree.getCurrent();
 		Revision new_revision = project.data.revision_tree.create();
 
-		Resource new_revision_resource = project.data.resource_manager.create("revisions/" + new_revision.id);
-		Resource new_netlist_resource = project.data.resource_manager.create("netlists/" + new_revision.id);
+		DependencyItem new_revision_dependencyItem = project.data.dependencyGraph.create("revisions/" + new_revision.id + ".json");
+		DependencyItem new_netlist_dependencyItem = project.data.dependencyGraph.create("netlists/" + new_revision.id + ".json");
 
-		new_revision_resource.depends.add(new_netlist_resource);
+		new_revision_dependencyItem.getDependsOn().add(new_netlist_dependencyItem);
 
-		if(old_revision == null)
-			project.data.resource_manager.getTop().depends.add(new_revision_resource);
+		if (old_revision == null)
+			project.data.dependencyGraph.getTop().getDependsOn().add(new_revision_dependencyItem);
 		else
-			project.data.resource_manager.get("revisions/" + old_revision.id).depends.add(new_revision_resource);
+			project.data.dependencyGraph.get("revisions/" + old_revision.id + ".json").getDependsOn().add(new_revision_dependencyItem);
 
 		// Store the NetList
-		StorageView sv = project.data.storage.createView();
-		StorageFile sf = sv.writeFile(new_netlist_resource.id);
-		sf.write(dump.toJSONString().getBytes());
+		try (StorageView sv = project.data.storage.createView()) {
+			StorageFile sf = sv.writeFile(new_netlist_dependencyItem.getId());
+			sf.write(dump.toJSONString().getBytes());
+		}
 
 		project.data.revision_tree.setCurrent(new_revision);
 
@@ -50,7 +54,7 @@ public class Checkpoint {
 	/**
 	 * Shift to a certain revision.
 	 */
-	public void use(Revision revison) {
-		project.data.revision_tree.setCurrent(revison);
+	public void use(Revision revision) {
+		project.data.revision_tree.setCurrent(revision);
 	}
 }

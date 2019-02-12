@@ -11,4 +11,4 @@ package net.merayen.elastic.system.intercom.backend
  * @param x The X-position of where the file got dropped
  * @param y The Y-position of where the file got dropped
  */
-class ImportFileIntoNodeGroupMessage(val filePath: String, val nodeId: String, val x: Float, val y: Float) : BackendMessage()
+class ImportFileIntoNodeGroupMessage(val filePaths: Array<String>, val nodeId: String, val x: Float, val y: Float) : BackendMessage()

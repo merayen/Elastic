@@ -3,10 +3,11 @@ package net.merayen.elastic.backend.data.project;
 import java.io.File;
 import java.util.Set;
 
+import net.merayen.elastic.backend.data.dependencygraph.DependencyItem;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import net.merayen.elastic.backend.data.resource.ResourceManager;
+import net.merayen.elastic.backend.data.dependencygraph.DependencyGraph;
 import net.merayen.elastic.backend.data.revision.RevisionTree;
 import net.merayen.elastic.backend.data.storage.FileSystemStorage;
 import net.merayen.elastic.backend.data.storage.Storage;
@@ -19,7 +20,7 @@ public class ProjectData {
 
 	public final Storage storage;
 	public final RevisionTree revision_tree;
-	public final ResourceManager resource_manager;
+	public final DependencyGraph dependencyGraph;
 	private NetList netlist = new NetList();
 
 	private final boolean new_project;
@@ -30,7 +31,7 @@ public class ProjectData {
 		if(!(new File(project.path)).exists()) {
 			storage = new FileSystemStorage(project.path);
 			revision_tree = new RevisionTree();
-			resource_manager = new ResourceManager();
+			dependencyGraph = new DependencyGraph();
 
 			DefaultProject.build(this);
 
@@ -45,13 +46,13 @@ public class ProjectData {
 			try (StorageView sv = storage.createView()) {
 				JSONObject json_project;
 				try {
-					json_project = (JSONObject) new org.json.simple.parser.JSONParser().parse(new String(sv.readFile("project").read()));
+					json_project = (JSONObject) new org.json.simple.parser.JSONParser().parse(new String(sv.readFile("project.json").read()));
 				} catch (ParseException e) {
 					throw new RuntimeException(e);
 				}
 
 				revision_tree = net.merayen.elastic.backend.data.revision.Serializer.load((JSONObject)json_project.get("revisions")); // TODO restore from file
-				resource_manager = net.merayen.elastic.backend.data.resource.Serializer.load((JSONObject)json_project.get("resources")); // TODO restore from file
+				dependencyGraph = net.merayen.elastic.backend.data.dependencygraph.Serializer.load((JSONObject)json_project.get("dependencygraph")); // TODO restore from file
 
 				new_project = false;
 			}
@@ -61,9 +62,8 @@ public class ProjectData {
 	}
 
 	void init() {
-		if(new_project) {
+		if(new_project)
 			project.checkpoint.create();
-		}
 	}
 
 	/**
@@ -71,30 +71,28 @@ public class ProjectData {
 	 * Thought: Elastic should not have a Save-feature for the user, everything goes automatically.
 	 * TODO make it atomic, like, store it with another name, and then replace the current project file?
 	 */
-	void save(StorageView sv) {
-		synchronized (this) {
-			StorageFile sf = sv.writeFile("project");
+	synchronized void save(StorageView sv) {
+		StorageFile sf = sv.writeFile("project.json");
 
-			JSONObject project;
+		JSONObject project;
 
-			try {
-				project = (JSONObject)new org.json.simple.parser.JSONParser().parse(new String(sf.read()));
-			} catch (ParseException e) {
-				throw new RuntimeException(e);
-			}
-
-			JSONObject revisions = net.merayen.elastic.backend.data.revision.Serializer.dump(revision_tree);
-			JSONObject resources = net.merayen.elastic.backend.data.resource.Serializer.dump(resource_manager);
-
-			project.put("revisions", revisions);
-			project.put("resources", resources);
-
-			sf.seek(0);
-			sf.write(project.toJSONString().getBytes());
-			sf.truncate(sf.position());
-
-			store(sv);
+		try {
+			project = (JSONObject)new org.json.simple.parser.JSONParser().parse(new String(sf.read()));
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
 		}
+
+		JSONObject revisions = net.merayen.elastic.backend.data.revision.Serializer.dump(revision_tree);
+		JSONObject dependencygraph = net.merayen.elastic.backend.data.dependencygraph.Serializer.dump(dependencyGraph);
+
+		project.put("revisions", revisions);
+		project.put("dependencygraph", dependencygraph);
+
+		sf.seek(0);
+		sf.write(project.toJSONString().getBytes());
+		sf.truncate(sf.position());
+
+		store(sv);
 	}
 
 	/**
@@ -114,7 +112,7 @@ public class ProjectData {
 		if(revision_tree.getCurrent() == null)
 			return new NetList();
 
-		String path = "netlists/" + revision_tree.getCurrent().id;
+		String path = "netlists/" + revision_tree.getCurrent().id + ".json";
 		try (StorageView sv = storage.createView()) {
 			String s = new String(sv.readFile(path).read());
 			return net.merayen.elastic.netlist.Serializer.restore((JSONObject)new org.json.simple.parser.JSONParser().parse(s));
@@ -124,11 +122,11 @@ public class ProjectData {
 	}
 
 	void tidy() {
-		Set<String> resources = resource_manager.getAll().keySet();
+		Set<String> resources = dependencyGraph.getAll().keySet();
 
 		try (StorageView sv = storage.createView()) {
 			for(String m : sv.listAll(".")) {
-				if(!resources.contains(m) && !m.equals("project")) {
+				if(!resources.contains(m) && !m.equals("project.json")) {
 					String p = project.path + "/" + m;
 					System.out.println("Tidying file " + p);
 					new File(p).delete();
@@ -138,11 +136,21 @@ public class ProjectData {
 	}
 
 	/**
-	 * Stores the current data.
+	 * Stores the current data. Huh?
 	 */
 	void store(StorageView sv) {
 		/*StorageFile file = sv.writeFile("netlists/" + revision.id);
 		file.write(net.merayen.elastic.netlist.Serializer.dump(netlist).toJSONString().getBytes(Charset.forName("UTF-8")));*/
+	}
+
+	/**
+	 * Store a new file into the project.
+	 * Automatically puts a dependency to another object.
+	 * @param file
+	 * @param dependsOn
+	 */
+	public void storeFile(File file, String dependsOn) {
+
 	}
 
 	private void loadLinks() {

@@ -33,7 +33,7 @@ class NodeView constructor(node_id: String? = null) : View() {
 	var viewNodeID: String? = null
 		internal set // Node that we show the children of
 	private val new_node_id: String? = null
-	val container = NodeViewContainer()
+	val container = NodeViewContainer(this)
 	val uiNet: UINet
 	private val movable: Movable
 	private val nodes = ArrayList<UINode>()

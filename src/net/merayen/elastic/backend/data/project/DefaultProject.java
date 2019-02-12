@@ -1,9 +1,9 @@
 package net.merayen.elastic.backend.data.project;
 
+import net.merayen.elastic.backend.data.dependencygraph.DependencyItem;
 import org.json.simple.JSONObject;
 
 import net.merayen.elastic.Info;
-import net.merayen.elastic.backend.data.resource.Resource;
 import net.merayen.elastic.backend.data.storage.StorageFile;
 import net.merayen.elastic.backend.data.storage.StorageView;
 
@@ -13,13 +13,13 @@ import net.merayen.elastic.backend.data.storage.StorageView;
 class DefaultProject {
 	static void build(ProjectData dm) {
 		try (StorageView sv = dm.storage.createView()) {
-			StorageFile sf = sv.writeFile("project");
+			StorageFile sf = sv.writeFile("project.json");
 	
 			JSONObject obj = new JSONObject();
 			obj.put("storage_version", Info.storageVersion);
 	
-			Resource r = dm.resource_manager.create("revisions/top");
-			dm.resource_manager.get("").depends.add(r); // Makes top-most resource depend on the revision, so that it doesn't disappear
+			DependencyItem r = dm.dependencyGraph.create("revisions/top");
+			dm.dependencyGraph.get("").getDependsOn().add(r); // Makes top-most dependencygraph depend on the revision, so that it doesn't disappear
 	
 			sf.write(obj.toJSONString().getBytes());
 		}

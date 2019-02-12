@@ -38,9 +38,7 @@ public class FileSystemStorage implements Storage {
 		if(!new File(path).exists())
 			throw new StorageFileNotFound(path);
 
-		FileSystemStorageFile v = new FileSystemStorageFile(path, StorageFile.READ);
-
-		return v;
+		return new FileSystemStorageFile(path, StorageFile.READ);
 	}
 
 	FileSystemStorageFile writeFile(String path) { // Used by FileSystemStorageView
@@ -48,9 +46,7 @@ public class FileSystemStorage implements Storage {
 
 		makeFolder(new File(path).getParent());
 
-		FileSystemStorageFile v = new FileSystemStorageFile(path, StorageFile.WRITE);
-
-		return v;
+		return new FileSystemStorageFile(path, StorageFile.WRITE);
 	}
 
 	boolean exists(String path) {
