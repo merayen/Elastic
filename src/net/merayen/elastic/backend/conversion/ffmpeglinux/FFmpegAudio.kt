@@ -55,7 +55,7 @@ class FFmpegAudio(inputFiles: Array<File>, settings: Settings) : ConversionModul
             throw ConversionError("Could not get info of file ${file.absolutePath}, ffprobe says: ${String(process.errorStream.readBytes())}")
 
         val info = JSONParser().parse(result) as? JSONObject ?: throw ConversionError("Could not read JSON from ffprobe: $result")
-        val streams = info["streams"] as? JSONArray ?: throw ConversionError("Could not not streams-section from ffprobe: $result")
+        val streams = info["streams"] as? JSONArray ?: throw ConversionError("Could not read streams-section from ffprobe: $result")
 
         val durationString = ((info["format"] as? JSONObject)?.get("duration") as? String) ?: throw ConversionError("Could not extract duration of the media. ffprobe says: ${result}")
         val duration = durationString.toFloat()
@@ -93,15 +93,16 @@ class FFmpegAudio(inputFiles: Array<File>, settings: Settings) : ConversionModul
             throw ConversionError("FFmpeg used more than 30 seconds")
         }
 
-        process.inputStream.readBytes()
+        val result = process.inputStream.readBytes()
+        val error = process.errorStream.readBytes()
 
         if (process.exitValue() != 0)
-            throw ConversionError("FFmpeg returned with exit code ${process.exitValue()}")
+            throw ConversionError("FFmpeg returned with exit code ${process.exitValue()}: ${String(error)}")
 
         return File(destFilePath)
     }
 
     companion object {
-        class Settings : ConversionModule.Settings() // TODO settings to enable video, which sample rate to convert to etc
+        class Settings : ConversionModule.Settings() // TODO settings for sample rate to convert to etc
     }
 }

@@ -63,12 +63,13 @@ public class LProcessor extends LocalProcessor {
 				delays[i] = new Delay(sample_rate * 4); // Allows 1 second of delay
 
 				// DEBUG. Take these parameters from the UI instead
-				final int TAPS = 10;
+				final int TAPS = 100;
 				for(int lol = 0; lol < TAPS; lol++)
-					delays[i].addTap(new Delay.Tap((int)(Math.floor(((lol + 1f) / ((float)TAPS + 1f)) * sample_rate * .2)), 0.5f, 0.5f / TAPS));
+					delays[i].addTap(new Delay.Tap((int)(Math.floor(sample_rate * Math.random() * 2)), 0.5f, 0.5f / TAPS));
+					//delays[i].addTap(new Delay.Tap((int)(Math.floor(((lol + 1f) / ((float)TAPS + 1f)) * sample_rate * Math.random())), 0.5f, 0.1f / TAPS));
 
-				/*delays[i].addTap(new Delay.Tap(sample_rate / 4, 0.0f, .2f));
-				delays[i].addTap(new Delay.Tap(sample_rate / 2, 0.0f, .3f));*/
+				delays[i].addTap(new Delay.Tap(sample_rate, 0.0f, .2f));
+				delays[i].addTap(new Delay.Tap(sample_rate * 2, 0.0f, .3f));
 			}
 		}
 	}

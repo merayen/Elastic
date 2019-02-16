@@ -78,10 +78,9 @@ public class Delay {
 			no();
 
 		float[] fasit = new float[]{0, 1, 2+0, 3+1, 4+2, 5+3, 6+4, 7+5, 8+6, 9+7};
-		float[] result = delay.buffer;
 
 		for(int i = 0; i < fasit.length; i++)
-			if(fasit[i] != result[i])
+			if(fasit[i] != delay.buffer[i])
 				no();
 	}
 }
