@@ -37,7 +37,7 @@ public class Viewport extends UIObject {
 
 	private float original_size;
 
-	public Viewport(Handler handler) {
+	Viewport(Handler handler) {
 		this.handler = handler;
 		clip.getTranslation().x = BORDER_WIDTH;
 		clip.getTranslation().y = BORDER_WIDTH;
@@ -77,10 +77,6 @@ public class Viewport extends UIObject {
 
 	@Override
 	public void onDraw(Draw draw) {
-		//draw.setColor(100, 100, 100);
-		//draw.setStroke(BORDER_WIDTH * 4);
-		//draw.rect(0, 0, layoutWidth, layoutHeight);
-
 		draw.setColor(150, 150, 150);
 		draw.setStroke(BORDER_WIDTH);
 		draw.rect(BORDER_WIDTH, BORDER_WIDTH, width - BORDER_WIDTH * 2, height - BORDER_WIDTH * 2);
@@ -88,11 +84,6 @@ public class Viewport extends UIObject {
 		draw.setColor(200, 200, 200);
 		draw.setStroke(BORDER_WIDTH / 2f);
 		draw.rect(BORDER_WIDTH, BORDER_WIDTH, width - BORDER_WIDTH * 2, height - BORDER_WIDTH * 2);
-
-		/*draw.line(0, 0, 0, layoutHeight);
-		draw.line(layoutWidth, 0, layoutWidth, layoutHeight);
-		draw.line(0, 0, layoutWidth, 0);
-		draw.line(0, layoutHeight, layoutWidth, layoutHeight);*/
 	}
 
 	@Override
@@ -107,8 +98,8 @@ public class Viewport extends UIObject {
 			}
 		}
 
-		clip.width = width - BORDER_WIDTH * 2;
-		clip.height = height - BORDER_WIDTH * 2;
+		clip.setLayoutWidth(width - BORDER_WIDTH * 2);
+		clip.setLayoutHeight(height - BORDER_WIDTH * 2);
 
 		if(current_view != null) {
 			current_view.setLayoutWidth(width - BORDER_WIDTH * 2);

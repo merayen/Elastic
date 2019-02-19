@@ -6,5 +6,4 @@ class NetListController(gate: Gate) : Controller(gate) {
 	override fun onInit() {}
 	override fun onMessageFromBackend(message: Message) {}
 	override fun onMessageFromUI(message: Message) {}
-	override fun onAfterDraw() {}
 }

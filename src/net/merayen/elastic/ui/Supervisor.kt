@@ -110,15 +110,6 @@ class Supervisor(private val handler: Handler) {
 		backend_gate.send(message)
 	}
 
-	/**
-	 * Run jobs that are scheduled to be run outside the draw-loop.
-	 * This is to do e.g native UI calls that will stop the thread and spawn a new one.
-	 * As we only support 1 thread that paints at the screen.
-	 */
-	fun runPostDrawJobs() {
-		gate.runPostDrawJobs()
-	}
-
 	fun end() {
 		surfacehandler.end()
 	}

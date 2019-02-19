@@ -23,8 +23,8 @@ class UI : UINode() {
 		clip = UIClip()
 		clip.translation.x = 20f
 		clip.translation.y = 20f
-		clip.width = 200f
-		clip.height = 150f
+		clip.layoutWidth = 200f
+		clip.layoutHeight = 150f
 		add(clip)
 
 		adsrgraph = ADSRGraph()

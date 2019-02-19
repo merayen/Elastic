@@ -73,6 +73,7 @@ internal class TrackHeader : UIObject() {
 
 		trackName.translation.x = 5f
 		trackName.translation.y = 25f
+		trackName.description = "Name of the track"
 		add(trackName)
 	}
 

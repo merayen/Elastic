@@ -68,8 +68,8 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
         contentWidth = uiobject.getWidth()
         contentHeight = uiobject.getHeight()
 
-        clip.width = layoutWidth - barWidth
-        clip.height = layoutHeight - barWidth
+        clip.layoutWidth = layoutWidth - barWidth
+        clip.layoutHeight = layoutHeight - barWidth
 
         if (uiobject.translation.x > 0f)
             uiobject.translation.x = 0f

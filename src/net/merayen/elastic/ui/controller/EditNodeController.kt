@@ -36,6 +36,4 @@ class EditNodeController(gate: Gate) : Controller(gate) {
 	}
 
 	fun getNodeProperties(nodeId: String) = gate.netlist.getNode(nodeId).properties
-
-	override fun onAfterDraw() {}
 }

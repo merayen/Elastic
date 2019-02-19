@@ -23,11 +23,6 @@ abstract class Controller(protected val gate: Gate) {
 	 */
 	abstract fun onMessageFromUI(message: Postmaster.Message)
 
-	/**
-	 * Gets run after everything has been draw.
-	 */
-	abstract fun onAfterDraw()
-
 	fun sendToBackend(message: Postmaster.Message) {
 		gate.sendMessageToBackend(message)
 	}
