@@ -76,15 +76,6 @@ open class UIObject {
 	 * Retrieves the width of the object.
 	 * Feel free to override to return a custom value.
 	 */
-	/*open if(outline == null)
-			return 0;
-
-		return outline.x2 - outline.x1; val width: Float
-		get() {
-			val deep = deepOutline
-			return deep!!.x2 - deep.x1
-		}*/
-
 	open fun getWidth(): Float {
 		val deep = deepOutline!!
 		return deep.x2 - deep.x1
@@ -158,8 +149,8 @@ open class UIObject {
 	}
 
 	internal fun initialize() {
+		isInitialized = true // Placed in the beginning to prevent repeated calls to onInit()
 		onInit()
-		isInitialized = true
 	}
 
 	internal fun updateDraw(draw: Draw) = onDraw(draw)

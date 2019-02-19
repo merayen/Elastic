@@ -60,7 +60,6 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
     override fun onDraw(draw: Draw) {
         draw.setColor(50, 50, 50)
-        //draw.setStroke(barWidth)
         draw.fillRect(0f, layoutHeight - barWidth, layoutWidth, barWidth)
         draw.fillRect(layoutWidth - barWidth, 0f, barWidth, layoutHeight)
     }

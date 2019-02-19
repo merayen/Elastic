@@ -95,7 +95,7 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 			}
 
 			override fun onSelect(dot: BezierDotDragable) {
-				dot.color.red = 40
+				dot.color.red = 0.15f
 			}
 		}
 

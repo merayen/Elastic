@@ -5,7 +5,6 @@ import net.merayen.elastic.ui.objects.components.Button;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 import net.merayen.elastic.ui.objects.top.viewbar.ViewSelector;
-import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.filebrowserview.FileBrowserView;
 
@@ -26,7 +25,7 @@ class Menu extends AutoLayout {
 
 		add(new Button() {{
 			setLabel("New Project");
-			setAuto_dimension(false);
+			setAutoDimension(false);
 			setLayoutWidth(196);
 			setHandler(() -> {});
 		}});

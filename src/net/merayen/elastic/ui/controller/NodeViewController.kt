@@ -109,4 +109,6 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
             sendToBackend(message)
         }
     }
+
+    override fun onAfterDraw() {}
 }

@@ -85,13 +85,13 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 			left_dot.radius = 0.02f
 			right_dot.radius = 0.02f
 
-			left_dot.color.red = 255
-			left_dot.color.green = 255
-			left_dot.color.blue = 200
+			left_dot.color.red = 1f
+			left_dot.color.green = 1f
+			left_dot.color.blue = 0.8f
 
-			right_dot.color.red = 255
-			right_dot.color.green = 255
-			right_dot.color.blue = 200
+			right_dot.color.red = 1f
+			right_dot.color.green = 1f
+			right_dot.color.blue = 0.8f
 		}
 	}
 

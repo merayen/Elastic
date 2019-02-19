@@ -8,7 +8,7 @@ internal class TrackBody : UIObject() {
     var layoutHeight = 0f
 
     override fun onDraw(draw: Draw) {
-        draw.setColor(20, 20, 50)
-        draw.fillRect(2f, 2f, layoutWidth - 4, layoutHeight - 4)
+        /*draw.setColor(0.5f, 0.6f, 0.5f)
+        draw.fillRect(2f, 2f, layoutWidth - 4, layoutHeight - 4)*/
     }
 }

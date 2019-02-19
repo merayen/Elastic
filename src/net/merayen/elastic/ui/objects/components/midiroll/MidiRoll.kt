@@ -4,12 +4,13 @@ import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 
 class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
-
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
 	private lateinit var piano: Piano
-	internal lateinit var net: PianoNet
+	private lateinit var net: PianoNet
+	private lateinit var midiZones: MidiZones
+	private lateinit var notes: PianoNotes
 
 	private val OCTAVE_COUNT = 8
 
@@ -37,6 +38,14 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 	override fun onUpdate() {
 		net.layoutWidth = layoutWidth
+	}
+
+	fun loadMidi(midi: Array<Array<Short>>) {
+
+	}
+
+	fun retrieveMidi(): Array<Array<Short>> {
+		TODO()
 	}
 
 	override fun getWidth() = net.getWidth()

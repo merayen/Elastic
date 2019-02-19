@@ -94,6 +94,7 @@ class Gate(val top: Top, private val handler: Handler) {
 		controllers.add(ViewportController(this))
 		controllers.add(NodeViewController(this))
 		controllers.add(EditNodeController(this))
+		controllers.add(NativeUIController(this))
 	}
 
 	private fun init() {
@@ -105,5 +106,10 @@ class Gate(val top: Top, private val handler: Handler) {
 
 	fun sendMessageToBackend(message: Postmaster.Message) {
 		handler.onMessageToBackend(message)
+	}
+
+	fun runPostDrawJobs() {
+		for(controller in controllers)
+			controller.onAfterDraw()
 	}
 }

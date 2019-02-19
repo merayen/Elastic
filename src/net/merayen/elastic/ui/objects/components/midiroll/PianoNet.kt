@@ -8,7 +8,9 @@ class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
-	internal var octave_width = (5 * 7).toFloat()
+	var octaveWidth = (5 * 7).toFloat()
+
+	var barWidth = 10f
 
 	private val BLACK_TANGENTS = booleanArrayOf(false, true, false, true, false, false, true, false, true, false, true, false)
 
@@ -23,16 +25,25 @@ class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
 
 			draw.setColor(50 - b * 20, 50 - b * 20, 50 - b * 20)
 
-			draw.fillRect(0f, y, layoutWidth, octave_width / 12)
+			draw.fillRect(0f, y, layoutWidth, octaveWidth / 12)
 
 			draw.setColor(0, 0, 0)
-			draw.rect(0f, y, layoutWidth, octave_width / 12)
+			draw.rect(0f, y, layoutWidth, octaveWidth / 12)
 
-			y += octave_width / 12
+			y += octaveWidth / 12
 			pos++
 			pos %= 12
 		}
 
+		drawBars(draw)
+
 		layoutHeight = y
+	}
+
+	private fun drawBars(draw: Draw) {
+		draw.setColor(0.1f, 0.1f, 0.1f)
+		/*while () {
+
+		}*/
 	}
 }

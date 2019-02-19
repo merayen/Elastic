@@ -19,7 +19,6 @@ class VUMeter : UIObject(), FlexibleDimension {
 	}
 
 	override fun onUpdate() {
-		super.onUpdate()
 		layoutHeight = layoutWidth / 1.5f
 	}
 

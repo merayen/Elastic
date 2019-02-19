@@ -7,8 +7,8 @@ import net.merayen.elastic.ui.UIObject;
 
 class Piano extends UIObject {
 	public interface Handler {
-		public void onDown(int tangent_no);
-		public void onUp(int tangent_no);
+		void onDown(int tangent_no);
+		void onUp(int tangent_no);
 	}
 
 	float width = 20;

@@ -16,7 +16,6 @@ import java.util.HashSet
  * TODO move somewhere else?
  */
 class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
-
 	private lateinit var panel: LolPanel
 	private lateinit var frame: LolFrame
 	private val eventsQueue = ArrayList<UIEvent>()

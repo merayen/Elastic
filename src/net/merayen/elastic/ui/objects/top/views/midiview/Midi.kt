@@ -26,7 +26,6 @@ class Midi : UIObject() {
 	}
 
 	override fun onUpdate() {
-		super.onUpdate()
 		midi.layoutWidth = layoutWidth
 		midi.layoutHeight = layoutHeight
 	}

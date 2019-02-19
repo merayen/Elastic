@@ -12,12 +12,17 @@ internal class Arrangement : UIObject() {
 	private val trackList = TrackList()
 	private val arrangementListScroll = Scroll(trackList)
 	private val buttonBar = AutoLayout(LayoutMethods.HorizontalBox(5f, 100000f))
+	private val arrangementGrid = ArrangementGrid()
 
 	override fun onInit() {
 		add(arrangementListScroll)
 		add(buttonBar)
+		add(arrangementGrid)
 
 		arrangementListScroll.translation.y = 20f
+
+		arrangementGrid.translation.x = 100f
+		arrangementGrid.translation.y = 20f
 
 		buttonBar.add(object : Button() {
 			init {
@@ -39,5 +44,8 @@ internal class Arrangement : UIObject() {
 		trackList.layoutWidth = layoutWidth
 		arrangementListScroll.layoutWidth = layoutWidth
 		arrangementListScroll.layoutHeight = layoutHeight - 20
+
+		arrangementGrid.layoutWidth = layoutWidth
+		arrangementGrid.layoutHeight = layoutHeight
 	}
 }

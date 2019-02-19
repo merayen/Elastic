@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.queue
 import java.util.ArrayDeque
 
 /**
- * A async queue with support for progress reporting.
+* An async queue with support for progress reporting.
  */
 class Queue(val threadCount: Int) {
     private val tasks = ArrayDeque<QueueTask>()

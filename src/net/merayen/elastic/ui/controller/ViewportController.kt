@@ -17,4 +17,6 @@ class ViewportController(gate: Gate) : Controller(gate) {
 		if (message is ViewportHelloMessage) // Received from ViewportContainer UIObject when it has inited. We can then manage it
 			viewportContainer = message.viewport_container
 	}
+
+	override fun onAfterDraw() {}
 }

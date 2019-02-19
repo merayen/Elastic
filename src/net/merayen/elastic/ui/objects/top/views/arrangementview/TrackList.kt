@@ -10,5 +10,7 @@ internal class TrackList : AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods
         super.onUpdate()
         for (obj in search.children)
             (obj as Track).layoutWidth = layoutWidth - 10
+
+        placement.maxWidth = layoutWidth
     }
 }

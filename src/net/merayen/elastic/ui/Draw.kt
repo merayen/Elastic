@@ -88,6 +88,10 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		g2d.color = java.awt.Color(r, g, b, a)
 	}
 
+	fun setColor(color: Color) {
+		g2d.color = java.awt.Color(color.red, color.green, color.blue, color.alpha)
+	}
+
 	fun fillRect(x: Float, y: Float, width: Float, height: Float) {
 		val point = uiobject.getAbsolutePosition(x, y)
 		val dimension = uiobject.getAbsoluteDimension(width, height)

@@ -8,7 +8,6 @@ import net.merayen.elastic.util.Postmaster
 import java.util.ArrayList
 
 abstract class Controller(protected val gate: Gate) {
-
 	val top: Top
 		get() = gate.top
 
@@ -23,6 +22,11 @@ abstract class Controller(protected val gate: Gate) {
 	 * Message sent from the UI.
 	 */
 	abstract fun onMessageFromUI(message: Postmaster.Message)
+
+	/**
+	 * Gets run after everything has been draw.
+	 */
+	abstract fun onAfterDraw()
 
 	fun sendToBackend(message: Postmaster.Message) {
 		gate.sendMessageToBackend(message)

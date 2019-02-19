@@ -15,22 +15,22 @@ public class TransportViewButtons extends AutoLayout {
 
 		add(new Button() {{
 			setLabel("|<-");
-			setFont_size(20);
+			setFontSize(20);
 		}});
 
 		add(new Button() {{
 			setLabel("<-");
-			setFont_size(20);
+			setFontSize(20);
 		}});
 
 		add(new Button() {{
 			setLabel("I>");
-			setFont_size(20);
+			setFontSize(20);
 		}});
 
 		add(new Button() {{
 			setLabel("->");
-			setFont_size(20);
+			setFontSize(20);
 		}});
 	}
 }
