@@ -12,7 +12,9 @@ internal class ArrangementViewBar : ViewBar() {
 	override fun onInit() {
 		super.onInit()
 
-		tool.addMenuItem(DropDown.Item(Label("Hei"), TextContextMenuItem("Velg meg!")))
+		tool.addMenuItem(DropDown.Item(Label("Select"), TextContextMenuItem("Select")))
+		tool.layoutWidth = 50f
+		tool.layoutHeight = 20f
 		add(tool)
 	}
 }

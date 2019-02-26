@@ -30,8 +30,10 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 				val window = UINodeUtil.getWindow(trigger)
 				window.overlay.add(menu)
 
-				moveNativeMouseCursorPosition()
 				relative = position
+
+				moveNativeMouseCursorPosition()
+
 				menu.translation.x = window.screenWidth / 2f
 				menu.translation.y = window.screenHeight / 2f
 
@@ -56,7 +58,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 					if (selected != null && rel != null)
 						handler.onSelect(selected, rel)
 
-					restoreNativeMouseCursorPosition()
+					//restoreNativeMouseCursorPosition()
 				}
 			}
 
@@ -69,7 +71,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 				val surfaceLocation = window.surfaceLocation
 				mouseCursor.setPosition(Point(surfaceLocation.x + window.screenWidth / 2f, surfaceLocation.y + window.screenHeight / 2f))
 
-				mouseCursor.hide()
+				//mouseCursor.hide()
 			}
 
 			private fun restoreNativeMouseCursorPosition() {

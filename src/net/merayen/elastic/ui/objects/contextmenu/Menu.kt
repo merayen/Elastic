@@ -67,15 +67,12 @@ internal class Menu(private val count: Int) : UIObject() {
                     selected = menu_index
             }
         }
-
-
     }
 
     private fun drawDragLine(draw: Draw) {
         draw.setColor(0.8f, 0.8f, 0f)
         draw.setStroke(5f)
         draw.line(0f, 0f, pointer_x, pointer_y)
-
         draw.fillOval(pointer_x - 10f, pointer_y - 10f, 20f, 20f)
     }
 
@@ -91,6 +88,5 @@ internal class Menu(private val count: Int) : UIObject() {
 
     fun getSelected(): ContextMenuItem? {
         return if (selected > -1 && selected < items.size) items[selected] else null
-
     }
 }
