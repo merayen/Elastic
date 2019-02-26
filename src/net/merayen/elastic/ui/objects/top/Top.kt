@@ -8,7 +8,6 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.Gate.UIGate
 import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
 import net.merayen.elastic.ui.surface.Surface
-import net.merayen.elastic.ui.util.NativeUI
 import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.util.UniqueID
 
@@ -20,8 +19,6 @@ class Top(private val surfacehandler: SurfaceHandler) : UIObject() {
 	val mouseCursorManager = MouseCursorManager()
 	private val windows = ArrayList<Window>()
 	private var ui_gate: UIGate? = null
-
-	val nativeUI = NativeUI()
 
 	init {
 		createWindow()

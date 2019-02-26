@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.TranslationDataStack;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.surface.Surface;
+import net.merayen.elastic.util.Point;
 
 /**
  * Session-like class for the current drawing.
@@ -18,6 +19,8 @@ public class DrawContext {
 	public final java.awt.Graphics2D graphics2d; 
 	public final int width;
 	public final int height;
+
+	public final Point windowLocation;
 
 	private final Surface surface;
 
@@ -39,6 +42,9 @@ public class DrawContext {
 		this.graphics2d = graphics2d;
 		this.width = surface.getWidth();
 		this.height = surface.getHeight();
+		this.windowLocation = surface.getSurfaceLocation();
+
+
 		this.surface = surface;
 		this.incoming_events = events;
 	}
@@ -68,6 +74,6 @@ public class DrawContext {
 	}
 
 	public String getSurfaceID() {
-		return surface.getID();
+		return surface.getId();
 	}
 }

@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.objects.top.mouse.MouseCursor
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
+import net.merayen.elastic.util.Point
 
 /**
  * The very topmost UIObject for a Window, containing all the UI for that window.
@@ -19,6 +20,11 @@ class Window(private val surface: Surface) : UIObject() {
 		private set
 	var screenHeight = 0f
 		private set
+
+	var surfaceLocation = Point()
+		private set
+
+	val nativeUI = surface.nativeUI
 
 	/**
 	 * Windows and other popups can be put here.
@@ -59,6 +65,7 @@ class Window(private val surface: Surface) : UIObject() {
 	override fun onDraw(draw: Draw) {
 		screenWidth = draw.screenWidth.toFloat()
 		screenHeight = draw.screenHeight.toFloat()
+		surfaceLocation = draw.surfaceLocation
 	}
 
 	override fun onUpdate() {

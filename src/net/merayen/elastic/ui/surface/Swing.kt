@@ -1,15 +1,23 @@
 package net.merayen.elastic.ui.surface
 
 import net.merayen.elastic.ui.event.*
+import net.merayen.elastic.util.Point
+import java.awt.Cursor
+import java.awt.MouseInfo
+import java.awt.Robot
+import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.awt.dnd.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
+import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 import java.util.HashSet
+import javax.swing.JOptionPane
+import javax.swing.SwingUtilities
 
 /**
  * Java Swing Surface.
@@ -120,6 +128,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 		override fun mouseExited(e: java.awt.event.MouseEvent) {
 			createMouseEvent(e, MouseEvent.Action.OUT_OF_RANGE)
 		}
+
 		override fun mouseClicked(e: java.awt.event.MouseEvent) {}
 
 		override fun mouseMoved(e: java.awt.event.MouseEvent) {
@@ -160,13 +169,15 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 		}
 	}
 
-	override fun getWidth(): Int {
-		return this.panel.width
-	}
+	override val width: Int
+		get() = panel.width
 
-	override fun getHeight(): Int {
-		return this.panel.height
-	}
+	override val height: Int
+		get() = panel.height
+
+	override val surfaceLocation: Point
+		get() = Point(panel.locationOnScreen.x.toFloat(), this.panel.locationOnScreen.y.toFloat())
+
 
 	private fun createMouseEvent(e: java.awt.event.MouseEvent, action: MouseEvent.Action) {
 		var button: MouseEvent.Button? = null
@@ -205,4 +216,43 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 
 		return result
 	}
+
+
+	inner class SwingNativeUI : Surface.NativeUI {
+
+
+		override val mouseCursor = object : NativeUI.MouseCursor {
+			private val blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), java.awt.Point(), "blank cursor")
+
+			override fun setPosition(point: Point) {
+				SwingUtilities.invokeLater {
+					Robot().mouseMove(point.x.toInt(), point.y.toInt())
+				}
+			}
+
+			override fun getPosition(): Point {
+				val location = MouseInfo.getPointerInfo().location
+				return Point(location.getX().toFloat(), location.getY().toFloat())
+			}
+
+			override fun hide() {
+				frame.contentPane.cursor = blankCursor
+			}
+
+			override fun show() {
+				frame.contentPane.cursor = Cursor.getDefaultCursor()
+			}
+		}
+
+		override val dialog = object : NativeUI.Dialog {
+			override fun showTextInput(description: String, value: String, onDone: (value: String?) -> Unit) {
+				SwingUtilities.invokeLater {
+					onDone(JOptionPane.showInputDialog(description, value))
+				}
+			}
+		}
+
+	}
+
+	override val nativeUI = SwingNativeUI()
 }

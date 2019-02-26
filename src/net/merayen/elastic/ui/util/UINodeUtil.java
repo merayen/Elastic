@@ -8,7 +8,7 @@ public class UINodeUtil {
 	private UINodeUtil() {}
 
 	/**
-	 * Retrieves the Top() UIObject the UIObject is a child of. 
+	 * Retrieves the Window() UIObject the UIObject is a child of.
 	 */
 	public static Window getWindow(UIObject uiobject) {
 		return (Window) uiobject.getSearch().parentByType(Window.class);

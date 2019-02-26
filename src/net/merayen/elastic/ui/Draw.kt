@@ -17,7 +17,7 @@ import net.merayen.elastic.util.Point
  * TODO Abstract this, so we can present these functions to other draw systems (e.g on Android)
  */
 class Draw internal constructor(private val uiobject: UIObject, private val draw_context: DrawContext) {
-	private val g2d: java.awt.Graphics2D
+	private val g2d: java.awt.Graphics2D = draw_context.graphics2d
 
 	var outline: Rect? = null // Relative
 
@@ -33,6 +33,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 
 	val screenHeight: Int
 		get() = draw_context.height
+
+	val surfaceLocation: Point
+		get() = draw_context.windowLocation
 
 	val surfaceID: String
 		get() = draw_context.surfaceID
@@ -54,8 +57,6 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		}
 
 	init {
-		g2d = draw_context.graphics2d
-
 		if (uiobject.absolute_translation!!.clip != null)
 			clip(uiobject.absolute_translation!!.clip)
 
