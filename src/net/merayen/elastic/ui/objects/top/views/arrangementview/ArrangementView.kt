@@ -9,9 +9,10 @@ class ArrangementView : View() {
     override fun onInit() {
         super.onInit()
 
-        add(bar)
         add(arrangement)
         arrangement.translation.y = 20f
+
+        add(bar)
     }
 
     override fun onUpdate() {

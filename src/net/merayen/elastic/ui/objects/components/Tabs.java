@@ -12,17 +12,16 @@ import net.merayen.elastic.util.Point;
 
 public class Tabs extends AutoLayout {
 	public interface Handler {
-		public void onSelect(Tab tab);
+		void onSelect(Tab tab);
 	}
 
 	public static class Tab extends UIObject {
 		private interface Handler {
-			public void onClick();
+			void onClick();
 		}
 
 		private MouseHandler mouse_handler;
 		private Handler handler;
-		boolean over;
 		boolean active;
 		float width;
 
