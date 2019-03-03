@@ -60,7 +60,7 @@ class Titlebar internal constructor() : UIObject() {
 
 	override fun onDraw(draw: Draw) {
 		draw.setColor(30, 30, 30)
-		draw.fillRect(2f, 2f, layoutWidth - 4f, 10f)
+		draw.fillRect(0f, 2f, layoutWidth, 10f)
 
 		draw.setColor(200, 200, 200)
 		draw.setFont("Verdana", 8f)

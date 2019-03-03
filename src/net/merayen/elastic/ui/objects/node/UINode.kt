@@ -48,16 +48,16 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			throw RuntimeException("Forgotten super.onInit() ?")
 
 		draw.setColor(80, 80, 80)
-		draw.fillRect(-1f, -1f, layoutWidth + 2f, layoutHeight + 2f)
+		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
-		draw.setColor(100, 100, 100)
+		/*draw.setColor(100, 100, 100)
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
 		draw.setColor(180, 180, 180)
-		draw.fillRect(1f, 1f, layoutWidth - 2f, layoutHeight - 2f)
+		draw.fillRect(1f, 1f, layoutWidth - 2f, layoutHeight - 2f)*/
 
-		draw.setColor(100, 100, 100)
-		draw.fillRect(2f, 2f, layoutWidth - 4f, layoutHeight - 4f)
+		/*draw.setColor(100, 100, 100)
+		draw.fillRect(2f, 2f, layoutWidth - 4f, layoutHeight - 4f)*/
 
 		titlebar.layoutWidth = layoutWidth
 
