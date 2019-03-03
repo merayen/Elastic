@@ -4,7 +4,6 @@ import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.viewbar.ViewBar
-import java.awt.Robot
 
 internal class ArrangementViewBar : ViewBar() {
 	private val tool = DropDown()

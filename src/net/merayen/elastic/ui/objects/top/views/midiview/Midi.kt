@@ -12,7 +12,6 @@ class Midi : UIObject() {
 		override fun onUp(tangent_no: Int) {
 
 		}
-
 	})
 
 	var layoutWidth = 0f

@@ -56,7 +56,7 @@ object LayoutMethods {
 
 
 	/**
-	 * Arranges UIObjects in a horizontal line. Supports both UIObjects with fixed with and FlexibleDimension-UIObjects that can be resized by this
+	 * Arranges UIObjects in a horizontal line. Supports both UIObjects with fixed width and FlexibleDimension-UIObjects that can be resized by this
 	 * AutoLayout-sizer.
 	 */
 	class HorizontalLiquidBox : AutoLayout.Placement, FlexibleDimension {

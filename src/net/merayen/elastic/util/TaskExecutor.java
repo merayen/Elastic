@@ -23,6 +23,11 @@ public class TaskExecutor {
 			this.fire = System.currentTimeMillis() + delay_ms;
 			this.func = func;
 		}
+
+		public Task(Object key, Runnable func) {
+			this(key, 0, func);
+
+		}
 	}
 
 	private List<Task> tasks = new ArrayList<>();

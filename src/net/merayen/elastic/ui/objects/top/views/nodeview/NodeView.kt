@@ -9,11 +9,8 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.MouseWheelEvent
 import net.merayen.elastic.ui.objects.UINet
-import net.merayen.elastic.ui.objects.components.dragdrop.TargetItem
 import net.merayen.elastic.ui.objects.node.UINode
-import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.objects.top.views.View
-import net.merayen.elastic.ui.objects.top.views.filebrowserview.FileListItemDragable
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.util.TaskExecutor
@@ -30,24 +27,24 @@ class NodeView constructor(node_id: String? = null) : View() {
 	 * Retrieve the ID of the node this view displays.
 	 * @return
 	 */
-	var viewNodeID: String? = null
+	var currentNodeId: String? = null
 		internal set // Node that we show the children of
-	private val new_node_id: String? = null
+	private var newNodeId: String? = null
 	val container = NodeViewContainer(this)
 	val uiNet: UINet
 	private val movable: Movable
 	private val nodes = ArrayList<UINode>()
-	private val node_view_bar = NodeViewBar()
-	var node_view_controller: NodeViewController? = null // Automatically set by NodeViewController
+	private val nodeViewBar = NodeViewBar()
+	var nodeViewController: NodeViewController? = null // Automatically set by NodeViewController
 
 	private var context_menu: NodeViewContextMenu? = null
 
 	private var dragAndDropTarget = NodeViewDropTarget(this)
 
 	init {
-		this.viewNodeID = node_id
+		this.newNodeId = node_id
 		add(container)
-		add(node_view_bar)
+		add(nodeViewBar)
 
 		uiNet = UINet()
 		container.add(uiNet, 0) // Add the net first (also, drawn behind everything), as addNode() might have already been called
@@ -74,16 +71,19 @@ class NodeView constructor(node_id: String? = null) : View() {
 
 		draw.fillRect(2f, 2f, getWidth() - 4, getHeight() - 4)
 
-		node_view_bar.width = getWidth()
+		nodeViewBar.width = getWidth()
 	}
 
 	override fun onUpdate() {
 		super.onUpdate()
-		if (viewNodeID == null && node_view_controller != null) { // Sees if NodeViewController has seen us yet. If yes, we initialize from it
-			if (new_node_id == null)
-				swapView(node_view_controller!!.topNodeID)
-			else
-				swapView(new_node_id)
+
+		val nodeViewController = nodeViewController
+		if (nodeViewController != null) {
+			if (newNodeId == null)
+				newNodeId = nodeViewController.topNodeID
+
+			if (newNodeId != currentNodeId)
+				innerSwapView(newNodeId)
 		}
 	}
 
@@ -136,18 +136,18 @@ class NodeView constructor(node_id: String? = null) : View() {
 		node.executeMessage(message)
 	}
 
-	private fun zoom(new_scale_x: Float, new_scale_y: Float) {
-		val previous_scale_x = container.translation.scale_x
-		val previous_scale_y = container.translation.scale_y
-		val scale_diff_x = new_scale_x - previous_scale_x
-		val scale_diff_y = new_scale_y - previous_scale_y
-		val current_offset_x = container.translation.x - getWidth() / 2
-		val current_offset_y = container.translation.y - getHeight() / 2
+	private fun zoom(newScaleX: Float, newScaleY: Float) {
+		val previousScaleX = container.translation.scale_x
+		val previousScaleY = container.translation.scale_y
+		val scaleDiffX = newScaleX - previousScaleX
+		val scaleDiffY = newScaleY - previousScaleY
+		val currentOffsetX = container.translation.x - getWidth() / 2
+		val currentOffsetY = container.translation.y - getHeight() / 2
 
-		container.translation.scale_x = new_scale_x
-		container.translation.scale_y = new_scale_y
-		container.translation.x = getWidth() / 2 + current_offset_x + current_offset_x * (-scale_diff_x / new_scale_x)
-		container.translation.y = getHeight() / 2 + current_offset_y + current_offset_y * (-scale_diff_y / new_scale_y)
+		container.translation.scale_x = newScaleX
+		container.translation.scale_y = newScaleY
+		container.translation.x = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
+		container.translation.y = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
 	}
 
 	override fun onEvent(event: UIEvent) {
@@ -179,7 +179,7 @@ class NodeView constructor(node_id: String? = null) : View() {
 	}
 
 	override fun cloneView(): View {
-		val nv = NodeView(viewNodeID)
+		val nv = NodeView(currentNodeId)
 		nv.container.translation.x = container.translation.x
 		nv.container.translation.y = container.translation.y
 		nv.container.translation.scale_x = container.translation.scale_x
@@ -187,11 +187,15 @@ class NodeView constructor(node_id: String? = null) : View() {
 		return nv
 	}
 
-	fun swapView(new_node_id: String?) {
-		viewNodeID = new_node_id
+	private fun innerSwapView(newNodeId: String?) {
+		this.currentNodeId = newNodeId
 
 		// Ask for sending a new NetList. We queue it up in the ViewportContainer domain, as several NodeViews might have been created simultaneously, we then only send 1 message
-		addTask(TaskExecutor.Task(javaClass, 0) { sendMessage(NetListRefreshRequestMessage()) })
+		addTask(TaskExecutor.Task(javaClass, 10) { sendMessage(NetListRefreshRequestMessage()) })
+	}
+
+	fun swapView(newNodeId: String) {
+		this.newNodeId = newNodeId
 	}
 
 	fun reset() {
@@ -212,7 +216,7 @@ class NodeView constructor(node_id: String? = null) : View() {
 
 		nodes.clear()
 
-		context_menu = NodeViewContextMenu(container, viewNodeID)
+		context_menu = NodeViewContextMenu(container, currentNodeId)
 		container.add(context_menu!!)
 	}
 

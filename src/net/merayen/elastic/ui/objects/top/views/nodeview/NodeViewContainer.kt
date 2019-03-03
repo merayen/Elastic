@@ -13,7 +13,7 @@ class NodeViewContainer(val nodeView: NodeView) : UIObject() {
 
 	override fun onEvent(event: UIEvent) {
 		if (event is FileDropEvent) {
-			val nodeId = nodeView.viewNodeID
+			val nodeId = nodeView.currentNodeId
 
 			if (nodeId != null) {
 				for (file in event.files) {

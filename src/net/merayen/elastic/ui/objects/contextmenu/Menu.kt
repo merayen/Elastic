@@ -9,8 +9,8 @@ internal class Menu(private val count: Int) : UIObject() {
     var radius = 150f
     var selectionRadius = 150f
 
-    private var pointer_x: Float = 0.toFloat()
-    private var pointer_y: Float = 0.toFloat()
+    private var pointerX: Float = 0.toFloat()
+    private var pointerY: Float = 0.toFloat()
 
     private var selected = -1
 
@@ -47,38 +47,38 @@ internal class Menu(private val count: Int) : UIObject() {
             val x = -itemRadius + Math.sin((i / steps.toFloat()).toDouble() * Math.PI * 2.0).toFloat() * radius
             val y = -itemRadius + Math.cos((i / steps.toFloat()).toDouble() * Math.PI * 2.0).toFloat() * radius
 
-            if (!marked && (Math.abs(pointer_x) > selectionRadius / 3 || Math.abs(pointer_y) > selectionRadius / 3)) {
-                val pointer = ((Math.atan2((-pointer_x).toDouble(), (-pointer_y).toDouble()) / Math.PI + 1) / 2 * steps + 0.5f) % steps
+            if (!marked && (Math.abs(pointerX) > selectionRadius / 3 || Math.abs(pointerY) > selectionRadius / 3)) {
+                val pointer = ((Math.atan2((-pointerX).toDouble(), (-pointerY).toDouble()) / Math.PI + 1) / 2 * steps + 0.5f) % steps
                 if (pointer.toInt() == i) {
                     marked = true
                     active = true
                 }
             }
 
-            val menu_index = Math.floorMod(-i + count / 2, steps) // Makes items begin at 12 o'clock
-            if (menu_index < items.size) {
-                val cmi = items[menu_index]
+            val menuIndex = Math.floorMod(-i + count / 2, steps) // Makes items begin at 12 o'clock
+            if (menuIndex < items.size) {
+                val cmi = items[menuIndex]
                 cmi.active = active
                 cmi.radius = itemRadius
                 cmi.translation.x = x
                 cmi.translation.y = y
 
                 if (active)
-                    selected = menu_index
+                    selected = menuIndex
             }
         }
     }
 
     private fun drawDragLine(draw: Draw) {
-        draw.setColor(0.8f, 0.8f, 0f)
+        draw.setColor(1.0f, 1.0f, 0f)
         draw.setStroke(5f)
-        draw.line(0f, 0f, pointer_x, pointer_y)
-        draw.fillOval(pointer_x - 10f, pointer_y - 10f, 20f, 20f)
+        draw.line(0f, 0f, pointerX, pointerY)
+        draw.fillOval(pointerX - 10f, pointerY - 10f, 20f, 20f)
     }
 
     fun setPointer(x: Float, y: Float) {
-        pointer_x = x
-        pointer_y = y
+        pointerX = x
+        pointerY = y
     }
 
     fun addMenuItem(item: ContextMenuItem) {

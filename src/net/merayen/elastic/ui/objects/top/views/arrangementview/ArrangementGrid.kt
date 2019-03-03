@@ -23,7 +23,7 @@ class ArrangementGrid : UIObject(), FlexibleDimension {
 
 			val x = i.toFloat() * (barWidth / division)
 
-			draw.line(x,0f, x, layoutHeight)
+			draw.line(x, 0f, x, layoutHeight)
 		}
 	}
 }
