@@ -5,8 +5,10 @@ import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.viewbar.ViewBar
 
-internal class ArrangementViewBar : ViewBar() {
-	private val tool = DropDown()
+internal class ArrangementViewBar : ViewBar(ArrangementView::class) {
+	private val tool = DropDown(object : DropDown.Handler {
+		override fun onChange(selected: DropDown.Item) {}
+	})
 
 	override fun onInit() {
 		super.onInit()

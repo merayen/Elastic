@@ -38,7 +38,7 @@ class Titlebar internal constructor() : UIObject() {
 		if(parent is INodeEditable) {
 			val editable = object : UIObject() {
 				override fun onDraw(draw: Draw) {
-					if((absolute_translation?.scale_x ?: 0f) > 1f)
+					if((absolute_translation?.scaleX ?: 0f) > 1f)
 						return
 
 					draw.setColor(200, 200, 200)

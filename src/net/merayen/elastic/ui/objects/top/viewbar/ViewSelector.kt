@@ -1,8 +1,9 @@
 package net.merayen.elastic.ui.objects.top.viewbar
 
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.Tabs
-import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
+import net.merayen.elastic.ui.objects.components.DropDown
+import net.merayen.elastic.ui.objects.components.Label
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementView
 import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView
@@ -11,42 +12,42 @@ import net.merayen.elastic.ui.objects.top.views.midiview.MidiView
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
 import net.merayen.elastic.ui.objects.top.views.transportview.TransportView
+import kotlin.reflect.KClass
 
-class ViewSelector(handler: Handler) : UIObject() {
-	private val tabs: Tabs
-	private val NODE_VIEW = SelectorButton("Nodes", NodeView::class.java)
-	private val FILES_VIEW = SelectorButton("Files", FileBrowserView::class.java)
-	private val EDIT_VIEW = SelectorButton("Editor", EditNodeView::class.java)
-	private val MIDI_VIEW = SelectorButton("Midi", MidiView::class.java)
-	private val TRANSPORT_VIEW = SelectorButton("Transport", TransportView::class.java)
-	private val ARRANGEMENT_VIEW = SelectorButton("Arrangement", ArrangementView::class.java)
-	private val TEST_VIEW = SelectorButton("Splash", SplashView::class.java)
-
+internal class ViewSelector(handler: Handler) : UIObject() {
 	interface Handler {
-		fun onSelect(cls: Class<out View>)
+		fun onSelect(cls: KClass<out View>)
 	}
 
-	private class SelectorButton internal constructor(text: String, internal var view: Class<out View>) : Tabs.TextButton() {
-		init {
-			setText(text, 10f)
+	private val dropDown = DropDown(object : DropDown.Handler {
+		override fun onChange(selected: DropDown.Item) {
+			handler.onSelect(views.first { it.label == (selected as DropDownItem).label }.cls)
 		}
-	}
+	})
+
+	class DropDownItem(val cls: KClass<out View>, val label: String) : DropDown.Item(Label(label), TextContextMenuItem(label))
+
+	private val views = ArrayList<DropDownItem>()
 
 	init {
-		tabs = Tabs(LayoutMethods.HorizontalBox(2f), Tabs.Handler { tab -> handler.onSelect((tab as SelectorButton).view) })
+		views.add(DropDownItem(NodeView::class, "Nodes"))
+		views.add(DropDownItem(FileBrowserView::class, "Files"))
+		views.add(DropDownItem(EditNodeView::class, "Edit"))
+		views.add(DropDownItem(MidiView::class, "Midi"))
+		views.add(DropDownItem(TransportView::class, "Files"))
+		views.add(DropDownItem(ArrangementView::class, "Arrangement"))
+		views.add(DropDownItem(SplashView::class, "Splash"))
 	}
 
 	override fun onInit() {
-		tabs.translation.x = 2f
-		tabs.translation.y = 2f
-		add(tabs)
+		dropDown.layoutHeight = 14f
+		add(dropDown)
 
-		tabs.add(NODE_VIEW)
-		tabs.add(FILES_VIEW)
-		tabs.add(EDIT_VIEW)
-		tabs.add(MIDI_VIEW)
-		tabs.add(TRANSPORT_VIEW)
-		tabs.add(ARRANGEMENT_VIEW)
-		tabs.add(TEST_VIEW)
+		for (item in views)
+			dropDown.addMenuItem(item)
+	}
+
+	fun setViewClass(cls: KClass<out View>) {
+		dropDown.setViewItem(views.first { it.cls === cls })
 	}
 }

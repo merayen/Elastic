@@ -94,6 +94,7 @@ class Gate(val top: Top, private val handler: Handler) {
 		controllers.add(ViewportController(this))
 		controllers.add(NodeViewController(this))
 		controllers.add(EditNodeController(this))
+		controllers.add(ArrangementController(this))
 	}
 
 	private fun init() {

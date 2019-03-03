@@ -64,10 +64,10 @@ open class UIObject {
 			result.x2 -= absolute_translation!!.x
 			result.y2 -= absolute_translation!!.y
 
-			result.x1 *= absolute_translation!!.scale_x
-			result.y1 *= absolute_translation!!.scale_y
-			result.x2 *= absolute_translation!!.scale_x
-			result.y2 *= absolute_translation!!.scale_y
+			result.x1 *= absolute_translation!!.scaleX
+			result.y1 *= absolute_translation!!.scaleY
+			result.x2 *= absolute_translation!!.scaleX
+			result.y2 *= absolute_translation!!.scaleY
 
 			return result
 		}
@@ -157,7 +157,7 @@ open class UIObject {
 
 	fun getAbsolutePosition(offset_x: Float, offset_y: Float): Point {
 		val td = absolute_translation
-		return Point((td!!.x + offset_x / td.scale_x).toInt().toFloat(), (td.y + offset_y / td.scale_y).toInt().toFloat()) // Pixel perfect
+		return Point((td!!.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
 	}
 
 	/**
@@ -165,8 +165,8 @@ open class UIObject {
 	 */
 	fun getRelativePosition(obj: UIObject): net.merayen.elastic.util.Point {
 		return net.merayen.elastic.util.Point(
-				(obj.absolute_translation!!.x - absolute_translation!!.x) * absolute_translation!!.scale_x,
-				(obj.absolute_translation!!.y - absolute_translation!!.y) * absolute_translation!!.scale_y
+				(obj.absolute_translation!!.x - absolute_translation!!.x) * absolute_translation!!.scaleX,
+				(obj.absolute_translation!!.y - absolute_translation!!.y) * absolute_translation!!.scaleY
 		)
 	}
 
@@ -175,32 +175,32 @@ open class UIObject {
 	 */
 	fun getRelativeFromAbsolute(x: Float, y: Float): net.merayen.elastic.util.Point {
 		val td = absolute_translation
-		return net.merayen.elastic.util.Point((x - td!!.x) * td.scale_x, (y - td.y) * td.scale_y)
+		return net.merayen.elastic.util.Point((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
 	}
 
 	fun getAbsoluteDimension(width: Float, height: Float): Dimension {
 		val td = absolute_translation
-		return Dimension((width / td!!.scale_x).toInt().toFloat(), (height / td.scale_y).toInt().toFloat())
+		return Dimension((width / td!!.scaleX).toInt().toFloat(), (height / td.scaleY).toInt().toFloat())
 	}
 
 	/**
 	 * Converts a single unit.
-	 * Uses both scale_x and scale_y to figure out the resulting value.
+	 * Uses both scaleX and scaleY to figure out the resulting value.
 	 */
 	fun convertUnitToAbsolute(a: Float): Int {
 		val td = absolute_translation
-		val resolution = Math.min(td!!.scale_x, td.scale_y)
+		val resolution = Math.min(td!!.scaleX, td.scaleY)
 		return (a / resolution).toInt()
 	}
 
 	/**
 	 * Converts a single unit.
-	 * Uses both scale_x and scale_y to figure out the resulting value. No it doesn't.
+	 * Uses both scaleX and scaleY to figure out the resulting value. No it doesn't.
 	 */
 	fun convertAbsoluteToUnit(a: Int): Float { // TODO Only uses the x-scale. Maybe make two functions, one for X and one for Y, and one for both somehow?
 		val td = absolute_translation
 
-		return a.toFloat() * td!!.scale_x
+		return a.toFloat() * td!!.scaleX
 	}
 
 	/**

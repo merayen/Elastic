@@ -22,7 +22,7 @@ import net.merayen.elastic.util.TaskExecutor
 /**
  * Main view. Shows all the nodes and their connections.
  */
-class NodeView constructor(node_id: String? = null) : View() {
+class NodeView : View() {
 	/**
 	 * Retrieve the ID of the node this view displays.
 	 * @return
@@ -42,7 +42,6 @@ class NodeView constructor(node_id: String? = null) : View() {
 	private var dragAndDropTarget = NodeViewDropTarget(this)
 
 	init {
-		this.newNodeId = node_id
 		add(container)
 		add(nodeViewBar)
 
@@ -71,7 +70,7 @@ class NodeView constructor(node_id: String? = null) : View() {
 
 		draw.fillRect(2f, 2f, getWidth() - 4, getHeight() - 4)
 
-		nodeViewBar.width = getWidth()
+		nodeViewBar.layoutWidth = getWidth()
 	}
 
 	override fun onUpdate() {
@@ -137,15 +136,15 @@ class NodeView constructor(node_id: String? = null) : View() {
 	}
 
 	private fun zoom(newScaleX: Float, newScaleY: Float) {
-		val previousScaleX = container.translation.scale_x
-		val previousScaleY = container.translation.scale_y
+		val previousScaleX = container.translation.scaleX
+		val previousScaleY = container.translation.scaleY
 		val scaleDiffX = newScaleX - previousScaleX
 		val scaleDiffY = newScaleY - previousScaleY
 		val currentOffsetX = container.translation.x - getWidth() / 2
 		val currentOffsetY = container.translation.y - getHeight() / 2
 
-		container.translation.scale_x = newScaleX
-		container.translation.scale_y = newScaleY
+		container.translation.scaleX = newScaleX
+		container.translation.scaleY = newScaleY
 		container.translation.x = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
 		container.translation.y = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
 	}
@@ -159,31 +158,36 @@ class NodeView constructor(node_id: String? = null) : View() {
 		if (event is MouseWheelEvent) {
 
 			if (isFocused) { // Decides if we are the receiver of the event
-				var s_x = container.translation.scale_x
-				var s_y = container.translation.scale_y
+				var sX = container.translation.scaleX
+				var sY = container.translation.scaleY
 
 				if (event.offsetY < 0) {
-					s_x /= 1.1f
-					s_y /= 1.1f
+					sX /= 1.1f
+					sY /= 1.1f
 				} else if (event.offsetY > 0) {
-					s_x *= 1.1f
-					s_y *= 1.1f
+					sX *= 1.1f
+					sY *= 1.1f
 				}
 
 				zoom(
-						Math.max(Math.min(s_x, 10f), 0.1f),
-						Math.max(Math.min(s_y, 10f), 0.1f)
+						Math.max(Math.min(sX, 10f), 0.1f),
+						Math.max(Math.min(sY, 10f), 0.1f)
 				)
 			}
 		}
 	}
 
 	override fun cloneView(): View {
-		val nv = NodeView(currentNodeId)
+		val nv = NodeView()
+
+		val currentNodeId = currentNodeId
+		if (currentNodeId != null)
+			nv.swapView(currentNodeId)
+
 		nv.container.translation.x = container.translation.x
 		nv.container.translation.y = container.translation.y
-		nv.container.translation.scale_x = container.translation.scale_x
-		nv.container.translation.scale_y = container.translation.scale_y
+		nv.container.translation.scaleX = container.translation.scaleX
+		nv.container.translation.scaleY = container.translation.scaleY
 		return nv
 	}
 

@@ -3,7 +3,6 @@ package net.merayen.elastic.ui.objects.top
 import net.merayen.elastic.Config
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.top.mouse.MouseCursor
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
@@ -56,8 +55,8 @@ class Window(private val surface: Surface) : UIObject() {
 
 	private fun initDebug() {
 		debug.translation.y = 40f
-		debug.translation.scale_x = .1f
-		debug.translation.scale_y = .1f
+		debug.translation.scaleX = .1f
+		debug.translation.scaleY = .1f
 		add(debug)
 		debug.set("DEBUG", "Has been enabled")
 	}

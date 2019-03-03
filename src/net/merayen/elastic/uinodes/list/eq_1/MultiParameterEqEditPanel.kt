@@ -21,7 +21,9 @@ class MultiParameterEqEditPanel : UIObject() {
 			"hp16" to "HP16"
 	)
 
-	private val algorithm = DropDown()
+	private val algorithm = DropDown(object : DropDown.Handler {
+		override fun onChange(selected: DropDown.Item) {}
+	})
 
 	private val frequency = CircularSlider()
 	private val amplitude = CircularSlider()

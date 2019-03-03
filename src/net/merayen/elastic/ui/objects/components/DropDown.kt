@@ -9,15 +9,15 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.util.Point
 
-class DropDown : UIObject(), FlexibleDimension {
+class DropDown(private val handler: Handler) : UIObject(), FlexibleDimension {
 	interface Handler {
-		fun onChange()
+		fun onChange(selected: Item)
 	}
 
-	class Item(val dropdownItem: UIObject, val contextMenuItem: ContextMenuItem)
+	open class Item(val dropdownItem: UIObject, val contextMenuItem: ContextMenuItem)
 
 	override var layoutWidth = 100f
-	override var layoutHeight = 20f
+	override var layoutHeight = 15f
 
 	private val items = ArrayList<Item>()
 	private var currentItem: Item? = null
@@ -30,8 +30,10 @@ class DropDown : UIObject(), FlexibleDimension {
 				if (m.contextMenuItem === item)
 					selected = m
 
-			if (selected != null)
+			if (selected != null) {
 				setViewItem(selected)
+				handler.onChange(selected)
+			}
 		}
 	})
 
@@ -50,13 +52,13 @@ class DropDown : UIObject(), FlexibleDimension {
 		contextMenu.handle(event)
 	}
 
-	private fun setViewItem(item: Item) {
+	fun setViewItem(item: Item) {
 		val cItem = currentItem
 		if(cItem != null)
 			remove(cItem.dropdownItem)
 
-		item.dropdownItem.translation.x = 10f
-		item.dropdownItem.translation.y = 5f
+		item.dropdownItem.translation.x = 5f
+		item.dropdownItem.translation.y = 1f
 		add(item.dropdownItem)
 
 		currentItem = item

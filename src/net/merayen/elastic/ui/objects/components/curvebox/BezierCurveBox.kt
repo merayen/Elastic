@@ -169,8 +169,8 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 	override fun onDraw(draw: Draw) {
 		// Make our content scale to a 0 to 1 coordinate system
-		translation.scale_x = 1 / layoutWidth
-		translation.scale_y = 1 / layoutHeight
+		translation.scaleX = 1 / layoutWidth
+		translation.scaleY = 1 / layoutHeight
 		translation.clip = Rect(0f, 0f, layoutWidth + 1, layoutHeight + 1)
 
 		draw.setColor(20, 20, 40)

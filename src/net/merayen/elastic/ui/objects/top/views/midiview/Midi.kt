@@ -20,8 +20,8 @@ class Midi : UIObject() {
 	override fun onInit() {
 		super.onInit()
 		add(midi)
-		midi.translation.scale_x = .1f
-		midi.translation.scale_y = .1f
+		midi.translation.scaleX = .1f
+		midi.translation.scaleY = .1f
 	}
 
 	override fun onUpdate() {

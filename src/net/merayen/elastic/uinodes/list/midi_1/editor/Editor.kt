@@ -51,8 +51,8 @@ class Editor : NodeEditor {
 			}
 		})
 
-		midiRoll.translation.scale_x = 0.5f
-		midiRoll.translation.scale_y = 0.5f
+		midiRoll.translation.scaleX = 0.5f
+		midiRoll.translation.scaleY = 0.5f
 
 		layout.translation.y = 40f
 
@@ -71,7 +71,7 @@ class Editor : NodeEditor {
 
 		menuBar.layoutWidth = getWidth()
 
-		midiRoll.translation.scale_x = 0.5f
+		midiRoll.translation.scaleX = 0.5f
 	}
 
 	override fun onMessage(message: NodeMessage) {}

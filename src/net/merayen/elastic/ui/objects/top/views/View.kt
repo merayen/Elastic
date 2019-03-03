@@ -9,6 +9,8 @@ import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.util.TaskExecutor
 import net.merayen.elastic.util.UniqueID
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 abstract class View : UIObject {
 	val id: String
@@ -46,11 +48,11 @@ abstract class View : UIObject {
 	/**
 	 * Swap this view with another View.
 	 */
-	fun <T : View> swap(cls: Class<out T>): T {
+	fun <T : View> swap(cls: KClass<out T>): T {
 		val newView: T
 
 		try {
-			newView = cls.getDeclaredConstructor().newInstance()
+			newView = cls.primaryConstructor!!.call()
 		} catch (e: InstantiationException) {
 			throw RuntimeException(e)
 		} catch (e: IllegalAccessException) {

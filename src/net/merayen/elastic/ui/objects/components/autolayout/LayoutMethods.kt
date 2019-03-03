@@ -112,7 +112,7 @@ object LayoutMethods {
 				if (obj !is FlexibleDimension)
 					fixedWidthSum += obj.getWidth()
 				else
-					flexibleWidthSum += constraints[obj]!!.factor / obj.translation.scale_x
+					flexibleWidthSum += constraints[obj]!!.factor / obj.translation.scaleX
 
 			val flexibleRatio = (1 - fixedWidthSum / layoutWidth) / flexibleWidthSum
 			if (flexibleRatio > 0) {

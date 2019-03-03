@@ -40,6 +40,8 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 				menu.setPointer(0f, 0f)
 
 				menu.radius = Math.min(window.screenWidth, window.screenHeight) / 4
+
+				menu.animate()
 			}
 
 			override fun onMouseDrag(position: Point, offset: Point) {

@@ -48,7 +48,7 @@ class EditNodeView : View() {
 		super.onUpdate()
 		nodeEditor?.layoutWidth = getWidth()
 		nodeEditor?.layoutHeight = getHeight() - content.translation.y
-		bar.width = getWidth()
+		bar.layoutWidth = getWidth()
 	}
 
 	fun init(editNodeController: EditNodeController) {

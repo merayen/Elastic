@@ -27,7 +27,9 @@ class UI : UINode() {
 		midi_device!!.translation.y = 20f
 		add(midi_device!!)
 
-		which = DropDown()
+		which = DropDown(object : DropDown.Handler {
+			override fun onChange(selected: DropDown.Item) {}
+		})
 		which.translation.x = 10f
 		which.translation.y = 50f
 		add(which)

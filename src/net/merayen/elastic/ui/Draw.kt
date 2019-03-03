@@ -45,10 +45,10 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 			val td = uiobject.absolute_translation!!
 			val r = if (outline == null) Rect() else Rect(outline!!)
 
-			r.x1 = r.x1 / td.scale_x + td.x
-			r.y1 = r.y1 / td.scale_y + td.y
-			r.x2 = r.x2 / td.scale_x + td.x
-			r.y2 = r.y2 / td.scale_y + td.y
+			r.x1 = r.x1 / td.scaleX + td.x
+			r.y1 = r.y1 / td.scaleY + td.y
+			r.x2 = r.x2 / td.scaleX + td.x
+			r.y2 = r.y2 / td.scaleY + td.y
 
 			if (td.clip != null)
 				r.clip(td.clip)

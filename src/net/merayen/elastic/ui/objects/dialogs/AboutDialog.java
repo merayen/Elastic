@@ -21,7 +21,6 @@ public class AboutDialog extends UIObject {
 		window = new Window();
 		window.width = 600f;
 		window.height = 600f;
-		//window.center(getTopObject().getScreenWidth(), getTopObject().getScreenHeight());
 
 		UIObject pane = window.getContentPane(); // Will be null. TODO Move to update() and wait for it to be initialized?
 		pane.add(new AboutDialogContent());
