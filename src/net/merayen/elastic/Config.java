@@ -4,7 +4,7 @@ public class Config {
 	public static class ui {
 		public static class debug {
 			public final static boolean messages = false;
-			public final static boolean overlay = false;
+			public final static boolean overlay = true;
 		}
 	}
 

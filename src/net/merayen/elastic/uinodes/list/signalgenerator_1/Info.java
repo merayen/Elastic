@@ -15,6 +15,6 @@ public class Info implements BaseInfo {
 
 	@Override
 	public String[] getCategories() {
-		return new String[]{"Generators"};
+		return new String[]{"Audio generators"};
 	}
 }

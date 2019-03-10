@@ -20,5 +20,6 @@ object NodeRegistry {
 		nodes.add("compressor_1")
 		nodes.add("sample_1")
 		nodes.add("eq_1")
+		nodes.add("midi_transpose_1")
 	}
 }

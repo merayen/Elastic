@@ -6,5 +6,5 @@ class Info : BaseInfo {
 	override fun getName() = "Equalizer"
 	override fun getDescription() = "Flexible, animatable equalizer"
 
-	override fun getCategories() = arrayOf("Filters")
+	override fun getCategories() = arrayOf("Audio effects")
 }

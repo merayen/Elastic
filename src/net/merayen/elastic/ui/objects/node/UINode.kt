@@ -12,8 +12,8 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 
 abstract class UINode : UIObject(), FlexibleDimension {
 	lateinit var nodeId: String // Same ID as in the backend-system, netlist etc
-	override var layoutWidth = 500f
-	override var layoutHeight = 500f
+	override var layoutWidth = 100f
+	override var layoutHeight = 80f
 
 	protected var titlebar: Titlebar
 		private set
