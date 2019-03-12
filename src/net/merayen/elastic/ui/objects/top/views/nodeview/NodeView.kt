@@ -37,7 +37,7 @@ class NodeView : View() {
 	private val nodeViewBar = NodeViewBar()
 	var nodeViewController: NodeViewController? = null // Automatically set by NodeViewController
 
-	private var context_menu: NodeViewContextMenu? = null
+	private var contextMenu: NodeViewContextMenu? = null
 
 	private var dragAndDropTarget = NodeViewDropTarget(this)
 
@@ -50,6 +50,16 @@ class NodeView : View() {
 
 		// Make it possible to move NodeViewContainer by dragging the background
 		movable = Movable(container, container, MouseEvent.Button.LEFT)
+		movable.setHandler(object : Movable.IMoveable {
+			override fun onGrab() {}
+			override fun onDrop() {}
+			override fun onMove() {
+				container.zoomTranslateXTarget = container.translation.x
+				container.zoomTranslateYTarget = container.translation.y
+				container.zoomScaleXTarget = container.translation.scaleX
+				container.zoomScaleYTarget = container.translation.scaleY
+			}
+		})
 	}
 
 	override fun onInit() {
@@ -136,17 +146,21 @@ class NodeView : View() {
 	}
 
 	private fun zoom(newScaleX: Float, newScaleY: Float) {
+		/*val previousScaleX = container.zoomScaleXTarget
+		val previousScaleY = container.zoomScaleYTarget*/
 		val previousScaleX = container.translation.scaleX
 		val previousScaleY = container.translation.scaleY
 		val scaleDiffX = newScaleX - previousScaleX
 		val scaleDiffY = newScaleY - previousScaleY
+		/*val currentOffsetX = container.zoomTranslateXTarget - getWidth() / 2
+		val currentOffsetY = container.zoomTranslateYTarget - getHeight() / 2*/
 		val currentOffsetX = container.translation.x - getWidth() / 2
 		val currentOffsetY = container.translation.y - getHeight() / 2
 
-		container.translation.scaleX = newScaleX
-		container.translation.scaleY = newScaleY
-		container.translation.x = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
-		container.translation.y = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
+		container.zoomScaleXTarget = newScaleX
+		container.zoomScaleYTarget = newScaleY
+		container.zoomTranslateXTarget = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
+		container.zoomTranslateYTarget = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
 	}
 
 	override fun onEvent(event: UIEvent) {
@@ -158,8 +172,8 @@ class NodeView : View() {
 		if (event is MouseWheelEvent) {
 
 			if (isFocused) { // Decides if we are the receiver of the event
-				var sX = container.translation.scaleX
-				var sY = container.translation.scaleY
+				var sX = container.zoomScaleXTarget
+				var sY = container.zoomScaleYTarget
 
 				if (event.offsetY < 0) {
 					sX /= 1.1f
@@ -211,8 +225,8 @@ class NodeView : View() {
 			container.remove(node)
 
 		// Set up context menu when right-clicking on the background
-		if (context_menu != null)
-			container.remove(context_menu!!)
+		if (contextMenu != null)
+			container.remove(contextMenu!!)
 
 		if (container.search.children.size != 1)
 		// Only UINet() should be remaining
@@ -220,8 +234,8 @@ class NodeView : View() {
 
 		nodes.clear()
 
-		context_menu = NodeViewContextMenu(container, currentNodeId)
-		container.add(context_menu!!)
+		contextMenu = NodeViewContextMenu(container, currentNodeId)
+		container.add(contextMenu!!)
 	}
 
 	companion object {
