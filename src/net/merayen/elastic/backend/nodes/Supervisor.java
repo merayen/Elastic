@@ -1,8 +1,10 @@
 package net.merayen.elastic.backend.nodes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.netlist.Line;
@@ -144,14 +146,22 @@ public class Supervisor {
 
 		} else if(message instanceof RemoveNodeMessage) {
 			RemoveNodeMessage m = (RemoveNodeMessage)message;
-			if(!restoring)
-				logicnode_list.get(m.node_id).onRemove();
 
-			logicnode_list.remove(m.node_id);
+			NetListUtil netListUtil = new NetListUtil(netlist);
+			List<Node> toRemove = netListUtil.getChildrenDeep(netlist.getNode(m.node_id));
 
-			NetListMessages.INSTANCE.apply(netlist, message);
-			handler.sendMessageToUI(new RemoveNodeMessage(m.node_id));
-			handler.sendMessageToProcessor(new RemoveNodeMessage(m.node_id));
+			toRemove.add(netlist.getNode(m.node_id));
+
+			for (Node nodeToDelete : toRemove) {
+				if (!restoring)
+					logicnode_list.get(nodeToDelete.getID()).onRemove();
+
+				logicnode_list.remove(nodeToDelete.getID());
+
+				NetListMessages.INSTANCE.apply(netlist, new RemoveNodeMessage(nodeToDelete.getID()));
+				handler.sendMessageToUI(new RemoveNodeMessage(nodeToDelete.getID()));
+				handler.sendMessageToProcessor(new RemoveNodeMessage(nodeToDelete.getID()));
+			}
 
 		} else if(message instanceof ProcessMessage) {
 			if(restoring)

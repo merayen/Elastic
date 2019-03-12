@@ -22,8 +22,8 @@ public class NetListUtil {
 	 */
 	public Set<Node> getTopNodes() {
 		Set<Node> result = new HashSet<>();
-		for(Node node : netlist.getNodes())
-			if(node_properties.getParent(node) == null)
+		for (Node node : netlist.getNodes())
+			if (node_properties.getParent(node) == null)
 				result.add(node);
 
 		return result;
@@ -31,7 +31,7 @@ public class NetListUtil {
 
 	public Node getParent(Node node) {
 		String id = node_properties.getParent(node);
-		if(id != null)
+		if (id != null)
 			return netlist.getNode(id);
 
 		return null;
@@ -40,9 +40,21 @@ public class NetListUtil {
 	public List<Node> getChildren(Node node) {
 		List<Node> result = new ArrayList<>();
 
-		for(Node n : netlist.getNodes())
-			if(node.getID().equals(node_properties.getParent(n)))
+		for (Node n : netlist.getNodes())
+			if (node.getID().equals(node_properties.getParent(n)))
 				result.add(n);
+
+		return result;
+	}
+
+	public List<Node> getChildrenDeep(Node node) {
+		List<Node> result = new ArrayList<>();
+		List<Node> children = getChildren(node);
+
+		result.addAll(children);
+
+		for (Node n : children)
+			result.addAll(getChildrenDeep(n));
 
 		return result;
 	}
