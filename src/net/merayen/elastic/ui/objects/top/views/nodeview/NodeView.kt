@@ -195,6 +195,17 @@ class NodeView : View() {
 	fun swapView(newNodeId: String) {
 		currentNodeId = newNodeId
 		sendMessage(NetListRefreshRequestMessage())
+
+		// TODO zoom and translate to cover all the nodes
+		container.zoomTranslateXTarget = 0f
+		container.zoomTranslateYTarget = 0f
+		container.zoomScaleXTarget = 1f
+		container.zoomScaleYTarget = 1f
+
+		container.translation.x = -getWidth() / 2
+		container.translation.y = -getHeight() / 2
+		container.translation.scaleX = .100f
+		container.translation.scaleY = .100f
 	}
 
 	fun reset() {
