@@ -28,8 +28,8 @@ class NodeView : View() {
 	 * @return
 	 */
 	var currentNodeId: String? = null
-		internal set // Node that we show the children of
-	private var newNodeId: String? = null
+		private set
+
 	val container = NodeViewContainer(this)
 	val uiNet: UINet
 	private val movable: Movable
@@ -81,19 +81,6 @@ class NodeView : View() {
 		draw.fillRect(2f, 2f, getWidth() - 4, getHeight() - 4)
 
 		nodeViewBar.layoutWidth = getWidth()
-	}
-
-	override fun onUpdate() {
-		super.onUpdate()
-
-		val nodeViewController = nodeViewController
-		if (nodeViewController != null) {
-			if (newNodeId == null)
-				newNodeId = nodeViewController.topNodeID
-
-			if (newNodeId != currentNodeId)
-				innerSwapView(newNodeId)
-		}
 	}
 
 	/**
@@ -205,15 +192,9 @@ class NodeView : View() {
 		return nv
 	}
 
-	private fun innerSwapView(newNodeId: String?) {
-		this.currentNodeId = newNodeId
-
-		// Ask for sending a new NetList. We queue it up in the ViewportContainer domain, as several NodeViews might have been created simultaneously, we then only send 1 message
-		addTask(TaskExecutor.Task(javaClass, 10) { sendMessage(NetListRefreshRequestMessage()) })
-	}
-
 	fun swapView(newNodeId: String) {
-		this.newNodeId = newNodeId
+		currentNodeId = newNodeId
+		sendMessage(NetListRefreshRequestMessage())
 	}
 
 	fun reset() {
@@ -228,8 +209,7 @@ class NodeView : View() {
 		if (contextMenu != null)
 			container.remove(contextMenu!!)
 
-		if (container.search.children.size != 1)
-		// Only UINet() should be remaining
+		if (container.search.children.size != 1) // Only UINet() should be remaining
 			throw RuntimeException("Should not happen")
 
 		nodes.clear()
@@ -239,6 +219,6 @@ class NodeView : View() {
 	}
 
 	companion object {
-		private val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
+		private const val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
 	}
 }

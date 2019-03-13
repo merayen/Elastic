@@ -62,7 +62,7 @@ public class Test {
 	}
 
 	interface Func {
-		public boolean noe();
+		boolean noe();
 	}
 
 	private void waitFor(Func func) {

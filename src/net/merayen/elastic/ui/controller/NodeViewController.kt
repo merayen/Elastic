@@ -112,9 +112,18 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 
 	override fun onMessageFromUI(message: Message) {
 		if (message is Hello) {  // Set us on the NodeViews, so that they can call us
+			val netListUtil = NetListUtil(gate.netlist)
 
-			for (view in getViews(NodeView::class.java))
+			for (view in getViews(NodeView::class.java)) {
 				view.nodeViewController = this
+				if (view.currentNodeId == null) {
+					val topNodes = netListUtil.topNodes
+					if (topNodes.size != 1)
+						throw RuntimeException("Expected only 1 top node in the NetList")
+
+					view.swapView(topNodes.first().id)
+				}
+			}
 
 		} else if (message is NodeParameterMessage) {
 

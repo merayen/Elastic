@@ -7,6 +7,9 @@ import net.merayen.elastic.backend.interfacing.platforms.oracle_java.DeviceScann
  */
 public class Platform {
 	public static DeviceScanner getPlatformScanner(AbstractDeviceScanner.Handler handler) {
-		return new DeviceScanner(handler); // TODO actually check the platform and probably use introspection
+		long scanTime = System.currentTimeMillis();
+		DeviceScanner ds = new DeviceScanner(handler); // TODO actually check the platform and probably use introspection
+		System.out.printf("Scanning interfaces took %.3f seconds\n", (System.currentTimeMillis() - scanTime) / 1000f);
+		return ds;
 	}
 }

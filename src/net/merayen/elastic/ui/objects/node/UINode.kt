@@ -106,6 +106,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			nodePorts.remove(port)
 			onRemovePort(port)
 		} else if (message is NodeStatusMessage)
-			println(message)
+			println(message) // TODO implement
 	}
 }

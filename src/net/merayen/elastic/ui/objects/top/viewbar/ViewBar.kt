@@ -12,6 +12,7 @@ import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView
+import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import kotlin.reflect.KClass
 
 open class ViewBar(private val viewClass: KClass<out View>) : AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox(2f, 100000f)), FlexibleDimension {
@@ -20,7 +21,7 @@ open class ViewBar(private val viewClass: KClass<out View>) : AutoLayout<LayoutM
 
 	private val menu = ViewSelector(object : ViewSelector.Handler {
 		override fun onSelect(cls: KClass<out View>) {
-			search.parentByType(View::class.java)!!.swap(cls)
+			val nodeView = search.parentByType(View::class.java)!!.swap(cls) as NodeView
 		}
 	})
 

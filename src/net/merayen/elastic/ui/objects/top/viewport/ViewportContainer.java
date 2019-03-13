@@ -62,7 +62,7 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private void defaultView() { // Testing purposes probably
-		Viewport a = createViewport(new NodeView());
+		Viewport a = createViewport(new SplashView());
 		layout = new Layout(a);
 
 		sendMessage(new ViewportHelloMessage(this));
