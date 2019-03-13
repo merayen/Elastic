@@ -34,7 +34,7 @@ internal class ViewSelector(handler: Handler) : UIObject() {
 		views.add(DropDownItem(FileBrowserView::class, "Files"))
 		views.add(DropDownItem(EditNodeView::class, "Edit"))
 		views.add(DropDownItem(MidiView::class, "Midi"))
-		views.add(DropDownItem(TransportView::class, "Files"))
+		views.add(DropDownItem(TransportView::class, "Transport"))
 		views.add(DropDownItem(ArrangementView::class, "Arrangement"))
 		views.add(DropDownItem(SplashView::class, "Splash"))
 	}
