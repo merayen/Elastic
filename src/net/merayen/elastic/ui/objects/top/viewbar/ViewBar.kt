@@ -21,7 +21,7 @@ open class ViewBar(private val viewClass: KClass<out View>) : AutoLayout<LayoutM
 
 	private val menu = ViewSelector(object : ViewSelector.Handler {
 		override fun onSelect(cls: KClass<out View>) {
-			val nodeView = search.parentByType(View::class.java)!!.swap(cls) as NodeView
+			search.parentByType(View::class.java)!!.swap(cls)
 		}
 	})
 

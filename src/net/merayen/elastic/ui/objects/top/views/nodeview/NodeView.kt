@@ -198,7 +198,7 @@ class NodeView : View() {
 	}
 
 	fun reset() {
-		System.out.printf("NodeView reset(): %s\n", this)
+		//System.out.printf("NodeView reset(): %s\n", this)
 
 		uiNet.reset()
 
