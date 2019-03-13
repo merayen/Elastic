@@ -97,6 +97,8 @@ public class UINet extends UIObject {
 		UINode node_a = nv.getNode(message.node_a);
 		UINode node_b = nv.getNode(message.node_b);
 
+
+
 		if(node_a == null || node_b == null) {
 			System.out.printf("ERROR: Could not connect nodes together as one/both does not exist in the UI. Sync issues? (node_a=%s, node_b=%s)\n", message.node_a, message.node_b);
 			return;

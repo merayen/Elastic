@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.controller
 
+import net.merayen.elastic.backend.analyzer.NetListUtil
 import java.util.ArrayList
 
 import net.merayen.elastic.system.intercom.*
@@ -42,6 +43,8 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 	override fun onInit() {}
 
 	override fun onMessageFromBackend(message: Postmaster.Message) {
+		val netListUtil = NetListUtil(gate.netlist)
+
 		// Forward message regarding the net, from backend to the UINet, to all NodeViews
 		when (message) {
 			is CreateNodeMessage -> {
@@ -67,9 +70,44 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 		}
 
 		// UINet
-		if (message is NodeConnectMessage || message is NodeDisconnectMessage || message is RemoveNodeMessage || message is RemoveNodePortMessage)
-			for (nv in nodeViews)
-				nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+		when (message) {
+			is NodeConnectMessage -> {
+				val nodeAParent = netListUtil.getParent(gate.netlist.getNode(message.node_a))
+				val nodeBParent = netListUtil.getParent(gate.netlist.getNode(message.node_b))
+
+				if (nodeAParent != nodeBParent)
+					throw RuntimeException("Should not happen")
+
+				for (nv in nodeViews)
+					if (nodeAParent.id == nv.currentNodeId)
+						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+			}
+			is NodeDisconnectMessage -> {
+				val nodeAParent = netListUtil.getParent(gate.netlist.getNode(message.node_a))
+				val nodeBParent = netListUtil.getParent(gate.netlist.getNode(message.node_b))
+
+				if (nodeAParent != nodeBParent)
+					throw RuntimeException("Should not happen")
+
+				for (nv in nodeViews)
+					if (nodeAParent.id == nv.currentNodeId)
+						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+			}
+			is RemoveNodeMessage -> {
+				val nodeParent = netListUtil.getParent(gate.netlist.getNode(message.nodeId))
+
+				for (nv in nodeViews)
+					if (nodeParent.id == nv.currentNodeId)
+						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+			}
+			is RemoveNodePortMessage -> {
+				val nodeParent = netListUtil.getParent(gate.netlist.getNode(message.nodeId))
+
+				for (nv in nodeViews)
+					if (nodeParent.id == nv.currentNodeId)
+						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+			}
+		}
 	}
 
 	override fun onMessageFromUI(message: Message) {
