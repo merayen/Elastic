@@ -11,6 +11,7 @@ import net.merayen.elastic.ui.objects.top.views.filebrowserview.FileBrowserView
 import net.merayen.elastic.ui.objects.top.views.midiview.MidiView
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
+import net.merayen.elastic.ui.objects.top.views.statisticsview.StatisticsView
 import net.merayen.elastic.ui.objects.top.views.transportview.TransportView
 import kotlin.reflect.KClass
 
@@ -36,6 +37,7 @@ internal class ViewSelector(handler: Handler) : UIObject() {
 		views.add(DropDownItem(MidiView::class, "Midi"))
 		views.add(DropDownItem(TransportView::class, "Transport"))
 		views.add(DropDownItem(ArrangementView::class, "Arrangement"))
+		views.add(DropDownItem(StatisticsView::class, "Statistics"))
 		views.add(DropDownItem(SplashView::class, "Splash"))
 	}
 
