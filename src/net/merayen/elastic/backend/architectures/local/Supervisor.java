@@ -41,7 +41,7 @@ class Supervisor {
 	private Set<Integer> dead_sessions = new HashSet<>(); // Sessions that will be killed after current process frame
 
 	// Statistics
-	private AverageStat<Long> process_time = new AverageStat<>(1000);
+	private AverageStat<Long> process_time = new AverageStat<>(100);
 	private long process_time_last;
 	private long not_processing_time_last;
 	private AverageStat<Long> not_processing_time = new AverageStat<>(1000);
@@ -261,20 +261,23 @@ class Supervisor {
 
 		process_time.add(System.nanoTime() - start);
 
-		if(Config.processor.debug.performance && process_time_last < System.currentTimeMillis()) {
-			System.out.printf("Average process time: min=%.3fms, avg=%.3fms, max=%.3fms\n", process_time.getMin() / 1E6, process_time.getAvg() / 1E6, process_time.getMax() / 1E6);
+		if(/*Config.processor.debug.performance && */process_time_last < System.currentTimeMillis()) {
+			process_time_last = System.currentTimeMillis() + 200;
+			/*System.out.printf("Average process time: min=%.3fms, avg=%.3fms, max=%.3fms\n", process_time.getMin() / 1E6, process_time.getAvg() / 1E6, process_time.getMax() / 1E6);
 			System.out.printf("Outside processing: min=%.3fms, avg=%.3fms, max=%.3fms\n", not_processing_time.getMin() / 1E6, not_processing_time.getAvg() / 1E6, not_processing_time.getMax() / 1E6);
-			System.out.printf("Samples processed: avg=%.0fms\n", not_processing_time.getAvg());
+			System.out.printf("Samples processed: avg=%.0fms\n", not_processing_time.getAvg());*/
+
 			List<LocalNode> list = getLocalNodes();
+			Map<String, StatisticsReportMessage.NodeStats> nodeStats = new HashMap<>();
 
 			list.sort((a,b) -> (int)(b.getStatisticsMax() - a.getStatisticsMax()));
 			for(int i = 0; i < 10 && i < list.size(); i++) {
 				LocalNode ln = list.get(i);
-				System.out.printf("%d: sessions=%d, count=%d, avg=%.3fms, max=%.3fms: %s\n", i, ln.getProcessors().size(), ln.getStatisticsProcessCount(), ln.getStatisticsAvg() / 1E6, ln.getStatisticsMax() / 1E6, ln.getClass().getPackage().getName());
-
+				//System.out.printf("%d: sessions=%d, count=%d, avg=%.3fms, max=%.3fms: %s\n", i, ln.getProcessors().size(), ln.getStatisticsProcessCount(), ln.getStatisticsAvg() / 1E6, ln.getStatisticsMax() / 1E6, ln.getClass().getPackage().getName());
+				nodeStats.put(ln.getID(), new StatisticsReportMessage.NodeStats(ln.getClass().getName(), 0f, (float)ln.getStatisticsAvg(), (float)ln.getStatisticsMax(), 0, ln.getStatisticsProcessCount()));
 			}
 
-			process_time_last = System.currentTimeMillis() + 1000;
+			response.statisticsReportMessage = new StatisticsReportMessage(process_time.getMin() / 1E9, process_time.getAvg() / 1E9, process_time.getMax() / 1E9, nodeStats);
 		}
 
 		not_processing_time_last = System.nanoTime();

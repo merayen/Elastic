@@ -213,6 +213,10 @@ public class Supervisor {
 		Postmaster.Message m;
 		while((m = while_processing_queue.receive()) != null)
 			handleMessageFromUI(m);
+
+		// Send any statistics report to UI if available
+		if (message.statisticsReportMessage != null)
+			sendMessageToUI(message.statisticsReportMessage);
 	}
 
 	void removePort(BaseLogicNode logic_node, String name) {

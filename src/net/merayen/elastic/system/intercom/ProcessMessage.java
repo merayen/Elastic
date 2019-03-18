@@ -14,4 +14,9 @@ public class ProcessMessage extends Postmaster.Message {
 	 * Format: (node-id, (data-identifier, the data))
 	 */
 	public final Map<String, Map<String, Object>> data = new HashMap<>();
+
+	/**
+	 * Returned by the backend in intervals, to report statistics for UI
+	 */
+	public StatisticsReportMessage statisticsReportMessage;
 }

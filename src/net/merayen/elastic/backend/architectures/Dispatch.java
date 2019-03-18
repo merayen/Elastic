@@ -12,7 +12,7 @@ public class Dispatch {
 		/**
 		 * Message received from the backend.
 		 */
-		public void onMessageFromProcessor(Postmaster.Message message);
+		void onMessageFromProcessor(Postmaster.Message message);
 	}
 
 	class Runner extends Thread {
@@ -69,13 +69,7 @@ public class Dispatch {
 			throw new RuntimeException("Already started");
 
 		executor = architecture.instance.getExecutor(message);
-		executor.setHandler(new AbstractExecutor.Handler() {
-
-			@Override
-			public void onMessageFromProcessor(Message message) {
-				handler.onMessageFromProcessor(message);
-			}
-		});
+		executor.setHandler(handler::onMessageFromProcessor);
 		runner = new Runner(executor);
 		runner.start();
 	}

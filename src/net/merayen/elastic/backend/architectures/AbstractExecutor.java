@@ -9,7 +9,7 @@ public abstract class AbstractExecutor {
 		 * Called when processor sends a message.
 		 * Do not do any time consuming tasks in this callback, rather queue the message and notify someone to react on it.
 		 */
-		public void onMessageFromProcessor(Postmaster.Message message);
+		void onMessageFromProcessor(Postmaster.Message message);
 	}
 
 	protected final int sample_rate, sample_buffer_size;
