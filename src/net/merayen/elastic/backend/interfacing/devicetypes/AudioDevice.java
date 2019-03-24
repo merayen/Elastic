@@ -26,4 +26,6 @@ public abstract class AudioDevice extends AbstractDevice {
 	public void configure(int sample_rate, int channels, int depth) {
 		configuration = new Configuration(sample_rate, channels, depth);
 	}
+
+	public abstract int getBufferSampleSize(); // TODO move to AbstractDevice
 }

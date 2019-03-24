@@ -9,16 +9,16 @@ import net.merayen.elastic.util.Postmaster;
  * This is also by no way serialized and stored.
  */
 public class NodeDataMessage extends Postmaster.Message implements NodeMessage {
-	public final String node_id;
+	public final String nodeId;
 	public final Map<String, Object> value; // Must be compatible for JSON serializing
 
 	public NodeDataMessage(String node_id, Map<String, Object> value) {
-		this.node_id = node_id;
+		this.nodeId = node_id;
 		this.value = value;
 	}
 
 	@Override
 	public String getNodeId() {
-		return node_id;
+		return nodeId;
 	}
 }

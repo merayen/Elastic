@@ -51,6 +51,12 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	}
 
 	@Override
+	public int getBufferSampleSize() {
+		Configuration c = (Configuration)configuration;
+		return line.getBufferSize() / c.channels / (c.depth / 8);
+	}
+
+	@Override
 	public void spool(int samples) {
 		System.out.println("Spooling");
 		Configuration c = (Configuration)configuration;
@@ -89,7 +95,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	public void onWrite(float[] audio) {
 		Configuration c = (Configuration)configuration;
 
-		if(buffer.length * c.depth / 8 != audio.length) 
+		if(buffer.length * c.depth / 8 != audio.length)
 			buffer = new byte[audio.length * c.depth / 8];
 
 		convertToBytes(audio, buffer, c.channels, c.depth);
@@ -122,7 +128,6 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	public void directWrite(byte[] audio) {
 		prepareLine(audio.length);
-
 		line.write(audio, 0, audio.length);
 	}
 

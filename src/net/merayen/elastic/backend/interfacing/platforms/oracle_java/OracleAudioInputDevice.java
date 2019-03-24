@@ -33,6 +33,12 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 	}
 
 	@Override
+	public int getBufferSampleSize() {
+		Configuration c = (Configuration)configuration;
+		return line.getBufferSize() / c.channels / (c.depth / 8);
+	}
+
+	@Override
 	public void spool(int samples) {
 		Configuration c = (Configuration)configuration;
 		int to_read = samples * (c.depth / 8) * c.channels;
