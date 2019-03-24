@@ -1,6 +1,12 @@
 package net.merayen.elastic.system.intercom
 
-class StatisticsReportMessage(val minFrameTime: Double, val avgFrameTime: Double, val maxFrameTime: Double, val nodeStats: Map<String, NodeStats>) : Message() {
+class StatisticsReportMessage(
+		val avgFrameTime: Double,
+		val maxFrameTime: Double,
+		val notProcessingFrameTimeAvg: Double,
+		val nodeStats: Map<String, NodeStats>,
+		val frameDuration: Double // In seconds
+) : Message() {
 	class NodeStats(
 			val nodeClassPath: String,
 

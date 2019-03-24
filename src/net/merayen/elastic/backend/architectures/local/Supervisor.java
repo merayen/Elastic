@@ -277,7 +277,7 @@ class Supervisor {
 				nodeStats.put(ln.getID(), new StatisticsReportMessage.NodeStats(ln.getClass().getName(), 0f, (float)ln.getStatisticsAvg(), (float)ln.getStatisticsMax(), 0, ln.getStatisticsProcessCount()));
 			}
 
-			response.statisticsReportMessage = new StatisticsReportMessage(process_time.getMin() / 1E9, process_time.getAvg() / 1E9, process_time.getMax() / 1E9, nodeStats);
+			response.statisticsReportMessage = new StatisticsReportMessage(process_time.getAvg() / 1E9, process_time.getMax() / 1E9, not_processing_time.getAvg() / 1E9, nodeStats, buffer_size / (double)sample_rate);
 		}
 
 		not_processing_time_last = System.nanoTime();
