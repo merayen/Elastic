@@ -229,6 +229,10 @@ class NodeView : View() {
 		container.add(contextMenu!!)
 	}
 
+	fun disable() {
+		remove(container)
+	}
+
 	companion object {
 		private const val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
 	}
