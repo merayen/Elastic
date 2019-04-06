@@ -26,14 +26,14 @@ public class Synchronization {
 		 * Don't do your processing or any other time-consuming tasks in this function, but rather notify another thread.
 		 * Synchronization() needs to keep running its tight loop to make sure all lines are synchronized.
 		 */
-		public void needData();
+		void needData();
 
 		/**
 		 * Called when you are not able to process fast enough for next frame.
 		 * Synchronization will automatically fill the output buffers and read the input buffers to resync.
 		 * You will need cancel 
 		 */
-		public void behind();
+		void behind();
 	}
 
 	private class Poller extends Thread {
@@ -112,7 +112,7 @@ public class Synchronization {
 			try {
 				synchronized (this) {
 					while(processing && running)
-						wait(100);
+						wait(1000);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
