@@ -80,6 +80,20 @@ class NodeView : View() {
 
 		draw.fillRect(2f, 2f, getWidth() - 4, getHeight() - 4)
 
+
+		// Silly, stupid grid because why not
+		draw.setStroke(1f)
+		draw.setColor(100, 100, 100)
+
+		for (i in 0 until layoutWidth.toInt() + 50 step 50) {
+			val u = i + container.translation.x % 50
+			draw.line(u, 0f, u, layoutHeight)
+		}
+		for (i in 0 until layoutHeight.toInt() + 50 step 50) {
+			val u = i + container.translation.y % 50
+			draw.line(0f, u, layoutWidth, u)
+		}
+
 		nodeViewBar.layoutWidth = getWidth()
 	}
 
