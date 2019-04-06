@@ -94,11 +94,8 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
 			}
 			is RemoveNodeMessage -> {
-				val nodeParent = netListUtil.getParent(gate.netlist.getNode(message.nodeId))
-
 				for (nv in nodeViews)
-					if (nodeParent.id == nv.currentNodeId)
-						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+					nv.uiNet.handleMessage(message) // Send to every uinet anyway
 			}
 			is RemoveNodePortMessage -> {
 				val nodeParent = netListUtil.getParent(gate.netlist.getNode(message.nodeId))

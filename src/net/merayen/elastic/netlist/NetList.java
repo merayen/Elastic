@@ -140,7 +140,7 @@ public final class NetList {
 			if(node.id.equals(id))
 				return node;
 
-		throw new RuntimeException(String.format("Node by id %s was not found", id));
+		throw new NodeNotFound();
 	}
 
 	public boolean hasNode(String id) {
