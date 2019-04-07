@@ -7,3 +7,5 @@ build
 .idea
 
 /Elastic.iml
+/NewProject.elastic
+/out
