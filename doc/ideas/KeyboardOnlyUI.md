@@ -1,6 +1,6 @@
 # Keyboard only UI management
 
-AN idea to make it possible to control Elastic completely by just using the keyboard. 
+An idea to make it possible to control Elastic completely by just using the keyboard. 
 ## Shortcuts
 
 ### Global - works everywhere

@@ -1,8 +1,5 @@
-/bin/
-.DS_Store
-/*.jar
-/.idea/
-/out/
-/Elastic.iml
-/META-INF/
-/NewProject.elastic
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
