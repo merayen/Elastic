@@ -11,7 +11,7 @@ import net.merayen.elastic.util.Point
 
 class TextInput : UIClip(), FlexibleDimension {
 	interface Handler {
-		fun onChange()
+		fun onChange(text: String)
 	}
 
 	override var layoutWidth = 50f
@@ -19,6 +19,7 @@ class TextInput : UIClip(), FlexibleDimension {
 
 	var value = ""
 	var description = ""
+	var handler: Handler? = null
 
 	private val mouseHandler = MouseHandler(this, MouseEvent.Button.LEFT)
 
@@ -26,7 +27,12 @@ class TextInput : UIClip(), FlexibleDimension {
 		super.onInit()
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
 			override fun onMouseClick(position: Point?) {
-				val dialog = TextInputDialog(description, value) { if (it != null) value = it }
+				val dialog = TextInputDialog(description, value) {
+					if (it != null) {
+						value = it
+						handler?.onChange(it)
+					}
+				}
 				add(dialog)
 			}
 		})

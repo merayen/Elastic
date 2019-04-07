@@ -31,8 +31,11 @@ class LogicNode : BaseLogicNode() {
 	override fun onParameterChange(key: String, value: Any) {
 		set(key, value)
 
-		if (key == "mute")
-			System.out.println("Mute! Got it!")
+		when (key) {
+			"mute" -> System.out.println("Mute! Got it!")
+			"trackName" -> System.out.println("Midi node received track-name '${value as String}'")
+		}
+
 	}
 
 	override fun onConnect(port: String) {}

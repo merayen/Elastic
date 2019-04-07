@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.objects.components.Button
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
+import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.MidiTrack
 import net.merayen.elastic.util.Postmaster
 
 class Arrangement : UIObject() {
@@ -36,11 +37,7 @@ class Arrangement : UIObject() {
 				label = "New track"
 				handler = object : Button.IHandler {
 					override fun onClick() {
-						val track = Track()
-						trackList.add(track)
-						track.handler = object : Track.Handler {
-							override fun onRemove() = trackList.remove(track)
-						}
+						TODO("Ask user which type of track to create and send a message to backend")
 					}
 				}
 			}
