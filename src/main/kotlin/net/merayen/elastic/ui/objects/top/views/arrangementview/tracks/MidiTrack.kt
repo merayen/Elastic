@@ -1,12 +1,14 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks
 
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Color
-import net.merayen.elastic.ui.objects.components.Button
+import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.Label
-import net.merayen.elastic.ui.objects.components.StateButton
+import net.merayen.elastic.ui.objects.components.buttons.StateButton
 import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack
+import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.EventTimeLine
 
 class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nodeId, arrangement) {
 	private var muteButton: StateButton
@@ -14,6 +16,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 	private var recordButton: StateButton
 
 	private val trackName = TextInput()
+
+	private val eventTimeLine = EventTimeLine()
 
 	init {
 		val removeButton = Button()
@@ -76,7 +80,19 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		}
 		trackPane.add(trackName)
 
-		eventPane.add(Label("Hello on you! I am a midi track!"))
+		eventPane.timeLine = eventTimeLine
+
+		eventTimeLine.handler = object : EventTimeLine.Handler {
+			override fun onEventMove(eventId: String, position: Float) {
+				val query = HashMap<String, Any>()
+				val moveEvent = HashMap<String, String>()
+
+				moveEvent["eventId"] = eventId
+				query["moveEvent"] = moveEvent
+
+				arrangement.sendMessage(NodeDataMessage(nodeId, query))
+			}
+		}
 	}
 
 	override fun onParameter(key: String, value: Any) {

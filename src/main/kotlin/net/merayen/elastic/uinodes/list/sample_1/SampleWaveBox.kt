@@ -3,7 +3,7 @@ package net.merayen.elastic.uinodes.list.sample_1
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.Button
+import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.CircularSlider
 
 class SampleWaveBox : UIObject(), FlexibleDimension {

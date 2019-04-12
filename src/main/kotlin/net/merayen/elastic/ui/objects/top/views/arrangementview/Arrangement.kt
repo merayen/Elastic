@@ -4,7 +4,7 @@ import net.merayen.elastic.system.intercom.BeginResetNetListMessage
 import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.Button
+import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
@@ -45,7 +45,7 @@ class Arrangement : UIObject() {
 	}
 
 	override fun onUpdate() {
-		trackList.layoutWidth = layoutWidth
+		trackList.layoutWidth = 100f
 		arrangementListScroll.layoutWidth = layoutWidth
 		arrangementListScroll.layoutHeight = layoutHeight - 20
 

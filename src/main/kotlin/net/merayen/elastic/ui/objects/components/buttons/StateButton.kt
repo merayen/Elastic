@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui.objects.components
+package net.merayen.elastic.ui.objects.components.buttons
 
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject

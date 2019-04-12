@@ -128,6 +128,10 @@ public abstract class BaseLogicNode {
 		np.parameters.set(node, key, value);
 	}
 
+	protected Object getParameter(String key) {
+		return np.parameters.get(node, key);
+	}
+
 	protected void sendDataToUI(Map<String, Object> data) {
 		sendMessageToUI(new NodeDataMessage(id, data));
 	}

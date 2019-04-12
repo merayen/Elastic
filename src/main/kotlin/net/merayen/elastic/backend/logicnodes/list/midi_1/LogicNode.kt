@@ -63,6 +63,16 @@ class LogicNode : BaseLogicNode() {
 			buffer.add(MidiPacket(shortArrayOf(144.toShort(), (data["tangent_down"] as Number).toShort(), 64), 0))
 		if (data.containsKey("tangent_up"))
 			buffer.add(MidiPacket(shortArrayOf(128.toShort(), (data["tangent_up"] as Number).toShort(), 64), 0))
+
+		if (data.containsKey("moveEvent")) {
+			//getParameter("eventZones") as
+		}
 	}
 
+	fun getEventZones(): ArrayList<HashMap<String, Any>> {
+		if (getParameter("eventZones") == null)
+			set("eventZones", ArrayList<HashMap<String, Any>>())
+
+		return getParameter("eventZones") as ArrayList<HashMap<String, Any>>
+	}
 }

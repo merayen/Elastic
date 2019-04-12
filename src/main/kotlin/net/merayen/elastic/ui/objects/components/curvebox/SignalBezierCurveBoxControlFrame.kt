@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.components.curvebox
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.Button
+import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 

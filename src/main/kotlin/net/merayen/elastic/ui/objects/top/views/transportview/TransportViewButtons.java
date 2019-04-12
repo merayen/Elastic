@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.transportview;
 
-import net.merayen.elastic.ui.objects.components.Button;
+import net.merayen.elastic.ui.objects.components.buttons.Button;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods;
 

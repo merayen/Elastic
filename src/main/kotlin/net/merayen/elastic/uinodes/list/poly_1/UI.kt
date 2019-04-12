@@ -2,7 +2,7 @@ package net.merayen.elastic.uinodes.list.poly_1
 
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
-import net.merayen.elastic.ui.objects.components.Button
+import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort

@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.components;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.objects.components.buttons.Button;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.Point;
 

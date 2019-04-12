@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.dialogs;
 
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.objects.components.Button;
+import net.merayen.elastic.ui.objects.components.buttons.Button;
 import net.merayen.elastic.ui.objects.components.window.Window;
 
 public class AboutDialog extends UIObject {
