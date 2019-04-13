@@ -40,7 +40,7 @@ class UI : UINode() {
 	override fun onMessage(message: NodeParameterMessage) {}
 
 	override fun onData(message: NodeDataMessage) {
-		if (message.value.containsKey("vuLeft"))
+		if ((message.value as Map<String, Any>).containsKey("vuLeft"))
 			vu.updateVU(message.value["vuLeft"] as FloatArray)
 
 		else if (message.value.containsKey("offset"))

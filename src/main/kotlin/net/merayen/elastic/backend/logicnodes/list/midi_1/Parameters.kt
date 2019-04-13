@@ -1,8 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
-import net.merayen.elastic.backend.nodes.BaseLogicNodeParameters
-
-class Parameters : BaseLogicNodeParameters() {
+class Parameters : HashMap<String, Any>() {
 	class EventZone {
 		class MidiEvent {
 			var start = 0f

@@ -32,7 +32,7 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 			val nodeId = message.nodeId
 			val node = gate.netlist.getNode(nodeId)
 			if (node != null && nodeProperties.getName(node) == "output") {
-				val statistics = message.value["statistics"] as? Map<String, Any>
+				val statistics = (message.value as Map<String, Any>)["statistics"] as? Map<String, Any>
 
 				if (statistics != null)
 					;//println(statistics["available_before_min"])

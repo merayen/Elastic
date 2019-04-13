@@ -27,7 +27,7 @@ class LogicNode : BaseLogicNode() {
 		set(key, value)
 	}
 
-	override fun onData(data: Map<String, Any>) {}
+	override fun onData(data: Any) {}
 
 	override fun onConnect(port: String) {}
 

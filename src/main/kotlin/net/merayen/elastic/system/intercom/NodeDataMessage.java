@@ -1,7 +1,5 @@
 package net.merayen.elastic.system.intercom;
 
-import java.util.Map;
-
 import net.merayen.elastic.util.Postmaster;
 
 /**
@@ -10,9 +8,9 @@ import net.merayen.elastic.util.Postmaster;
  */
 public class NodeDataMessage extends Postmaster.Message implements NodeMessage {
 	public final String nodeId;
-	public final Map<String, Object> value; // Must be compatible for JSON serializing
+	public final Object value; // Must be compatible for JSON serializing
 
-	public NodeDataMessage(String node_id, Map<String, Object> value) {
+	public NodeDataMessage(String node_id, Object value) {
 		this.nodeId = node_id;
 		this.value = value;
 	}

@@ -5,7 +5,7 @@ import net.merayen.elastic.backend.nodes.BaseLogicNode
 class LogicNode : BaseLogicNode() {
 	override fun onCreate() {}
 	override fun onInit() {}
-	override fun onData(data: MutableMap<String, Any>?) {}
+	override fun onData(data: Any) {}
 	override fun onConnect(port: String?) {}
 	override fun onDisconnect(port: String?) {}
 	override fun onRemove() {}

@@ -1,7 +1,5 @@
 package net.merayen.elastic
 
-import net.merayen.elastic.Config
-
 class Test {
 	companion object {
 		@JvmStatic

@@ -31,7 +31,7 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onData(Map<String, Object> data) {}
+	protected void onData(Object data) {}
 
 	@Override
 	protected void onConnect(String port) {}

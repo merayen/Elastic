@@ -15,7 +15,7 @@ class LogicNode : BaseLogicNode() {
 		set(key, value)
 	}
 
-	override fun onData(data: MutableMap<String, Any>?) {}
+	override fun onData(data: Any) {}
 	override fun onConnect(port: String?) {}
 	override fun onDisconnect(port: String?) {}
 	override fun onRemove() {}

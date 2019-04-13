@@ -103,5 +103,5 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onRemove() {}
 
-	override fun onData(data: Map<String, Any>) {}
+	override fun onData(data: Any) {}
 }
