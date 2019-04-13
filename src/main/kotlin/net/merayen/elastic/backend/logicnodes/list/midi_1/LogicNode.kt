@@ -34,7 +34,6 @@ class LogicNode : BaseLogicNode() {
 			"mute" -> System.out.println("Mute! Got it!")
 			"trackName" -> System.out.println("Midi node received track-name '${value as String}'")
 		}
-
 	}
 
 	override fun onConnect(port: String) {}
@@ -58,11 +57,11 @@ class LogicNode : BaseLogicNode() {
 	override fun onFinishFrame(data: Map<String, Any>) {}
 
 	override fun onData(data: Any) {
-		if (data is Map<*, *>) {
-			if (data.containsKey("tangent_down"))
-				buffer.add(MidiPacket(shortArrayOf(144.toShort(), (data["tangent_down"] as Number).toShort(), 64), 0))
-			if (data.containsKey("tangent_up"))
-				buffer.add(MidiPacket(shortArrayOf(128.toShort(), (data["tangent_up"] as Number).toShort(), 64), 0))
+		when (data) {
+			is PushTangentMessage ->
+				buffer.add(MidiPacket(shortArrayOf(144.toShort(), data.tangent, 64), 0))
+			is ReleaseTangentMessage ->
+				buffer.add(MidiPacket(shortArrayOf(128.toShort(), data.tangent, 64), 0))
 		}
 	}
 

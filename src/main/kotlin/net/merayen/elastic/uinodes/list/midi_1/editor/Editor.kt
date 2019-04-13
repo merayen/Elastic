@@ -1,5 +1,7 @@
 package net.merayen.elastic.uinodes.list.midi_1.editor
 
+import net.merayen.elastic.backend.logicnodes.list.midi_1.PushTangentMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.ReleaseTangentMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
@@ -35,19 +37,11 @@ class Editor : NodeEditor {
 
 		midiRoll = MidiRoll(object : MidiRoll.Handler {
 			override fun onUp(tangent_no: Int) {
-				sendData(object : HashMap<String, Any>() {
-					init {
-						put("tangent_up", tangent_no)
-					}
-				})
+				sendData(ReleaseTangentMessage(tangent_no.toShort()))
 			}
 
 			override fun onDown(tangent_no: Int) {
-				sendData(object : HashMap<String, Any>() {
-					init {
-						put("tangent_down", tangent_no)
-					}
-				})
+				sendData(PushTangentMessage(tangent_no.toShort()))
 			}
 		})
 

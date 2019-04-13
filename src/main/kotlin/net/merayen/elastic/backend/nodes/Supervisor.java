@@ -88,7 +88,7 @@ public class Supervisor {
 
 		} else if (message instanceof NodeDataMessage) {
 			NodeDataMessage m = (NodeDataMessage) message;
-			logicnode_list.get(m.nodeId).processData((Map<String, Object>)m.value);
+			logicnode_list.get(m.nodeId).processData(m.value);
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 			NodeConnectMessage m = (NodeConnectMessage)message;

@@ -12,7 +12,7 @@ abstract class NodeEditor(val nodeId: String) : UIObject() {
 	override fun getWidth() = layoutWidth
 	override fun getHeight() = layoutHeight
 
-	protected fun sendData(value: Map<String, Any>) {
+	protected fun sendData(value: Any) {
 		sendMessage(NodeDataMessage(nodeId, value))
 	}
 }
