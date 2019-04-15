@@ -1,5 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks
 
+import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.objects.components.buttons.Button
@@ -9,11 +11,12 @@ import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.EventTimeLine
+import net.merayen.elastic.util.UniqueID
 
 class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nodeId, arrangement) {
-	private var muteButton: StateButton
-	private var soloButton: StateButton
-	private var recordButton: StateButton
+	private val muteButton: StateButton
+	private val soloButton: StateButton
+	private val recordButton: StateButton
 
 	private val trackName = TextInput()
 
@@ -83,14 +86,26 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		eventPane.timeLine = eventTimeLine
 
 		eventTimeLine.handler = object : EventTimeLine.Handler {
-			override fun onEventMove(eventId: String, position: Float) {
-				val query = HashMap<String, Any>()
-				val moveEvent = HashMap<String, String>()
+			override fun onEventRepeat(eventId: String, count: Int) {
+				val event = eventTimeLine.getEvent(eventId)
+				if (event != null) {
+					for (i in 0 until count) {
+						arrangement.sendMessage(
+								NodeDataMessage(
+										nodeId,
+										AddEventZoneMessage(
+												UniqueID.create(),
+												event.start + event.length + event.length * i,
+												event.length
+										)
+								)
+						)
+					}
+				}
+			}
 
-				moveEvent["eventId"] = eventId
-				query["moveEvent"] = moveEvent
-
-				arrangement.sendMessage(NodeDataMessage(nodeId, query))
+			override fun onChangeEvent(eventId: String, position: Float, length: Float) {
+				arrangement.sendMessage(NodeDataMessage(nodeId, ChangeEventZoneMessage(eventId, position, length)))
 			}
 		}
 	}

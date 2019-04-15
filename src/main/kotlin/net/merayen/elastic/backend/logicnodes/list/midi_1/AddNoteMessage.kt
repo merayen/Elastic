@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
-import net.merayen.elastic.util.Postmaster
-
 /**
  * Message that is to be sent to LogicNode to create a note. LogicNode will respond with a NodeParameterMessage with the updated notes.
  *
@@ -12,4 +10,4 @@ import net.merayen.elastic.util.Postmaster
  * @param eventOffset Where in the event the tangent is pushed
  * @param eventZoneId Which event zone it should be added
  */
-class AddNoteMessage(val noteId: String, val note: Short, val velocity: Short, val length: Float, val eventOffset: Float, val eventZoneId: String) : Postmaster.Message()
+class AddNoteMessage(val noteId: String, val note: Short, val velocity: Short, val length: Float, val eventOffset: Float, val eventZoneId: String)

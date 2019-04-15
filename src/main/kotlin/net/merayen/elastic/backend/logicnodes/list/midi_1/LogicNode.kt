@@ -58,10 +58,21 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onData(data: Any) {
 		when (data) {
-			is PushTangentMessage ->
+			is PushTangentMessage -> {
 				buffer.add(MidiPacket(shortArrayOf(144.toShort(), data.tangent, 64), 0))
-			is ReleaseTangentMessage ->
+			}
+			is ReleaseTangentMessage -> {
 				buffer.add(MidiPacket(shortArrayOf(128.toShort(), data.tangent, 64), 0))
+			}
+			is AddEventZoneMessage -> {
+				println("Supposed to add EventZone ${data.eventZoneId}")
+			}
+			is ChangeEventZoneMessage -> {
+				println("Supposed to change EventZone ${data.eventZoneId}")
+			}
+			is RemoveEventZoneMessage -> {
+				println("Supposed to remove EventZone ${data.eventZoneId}")
+			}
 		}
 	}
 

@@ -7,7 +7,15 @@ import net.merayen.elastic.util.UniqueID
  */
 class EventTimeLine : BaseTimeLine() {
 	interface Handler {
-		fun onEventMove(eventId: String, position: Float)
+		/**
+		 * Called when an event has been moved.
+		 */
+		fun onChangeEvent(eventId: String, position: Float, length: Float)
+
+		/**
+		 * Called when an event should be repeated.
+		 */
+		fun onEventRepeat(eventId: String, count: Int)
 	}
 
 	override var layoutWidth = 0f
@@ -18,38 +26,72 @@ class EventTimeLine : BaseTimeLine() {
 	var zoomFactor = 0f
 		set(value) {
 			field = value
-			for (event in events)
+			for (event in events.values)
 				event.zoomFactor = value
 		}
 
-	private val events = ArrayList<Event>()
+	private val events = HashMap<String,EventZone>()
+
+	/**
+	 * Temporary events that are only used to show the user that the event are being repeated
+	 */
+	private val repeatEvents = ArrayList<EventZone>()
 
 	override fun onInit() {
-		val test = createEvent(UniqueID.create())
+		val test = createEventZone(UniqueID.create())
 		test.start = 4f
 		test.length = 1f
 
 		zoomFactor = 50f
 	}
 
-	fun createEvent(eventId: String): Event {
-		val event = Event(eventId)
+	fun createEventZone(eventZoneId: String): EventZone {
+		val event = EventZone(eventZoneId)
 
-		event.handler = object : Event.Handler {
+		event.handler = object : EventZone.Handler {
+			private var eventDragMarker: EventDragMarker? = null
+
 			override fun onMove(position: Float) {
-				handler?.onEventMove(eventId, position)
+				handler?.onChangeEvent(eventZoneId, position, event.length)
+			}
+
+			override fun onRepeatDrag() {
+				val eventRepeater = EventDragMarker()
+				eventRepeater.translation.x = event.translation.x + event.layoutWidth
+				eventRepeater.layoutHeight = layoutHeight
+
+				this.eventDragMarker = eventRepeater
+				add(eventRepeater)
+			}
+
+			override fun onRepeatMove(count: Int) {
+				eventDragMarker!!.layoutWidth = count * event.layoutWidth
+			}
+
+			override fun onRepeatDrop(count: Int) {
+				val eventRepeater = eventDragMarker
+
+				if (eventRepeater != null) {
+					remove(eventRepeater)
+					this.eventDragMarker = null
+					handler?.onEventRepeat(eventZoneId, count)
+				}
 			}
 		}
 
 		event.translation.y = 2f
-		events.add(event)
+		events.put(eventZoneId, event)
 		add(event)
 
 		return event
 	}
 
 	override fun onUpdate() {
-		for (event in events)
+		for (event in events.values)
 			event.layoutHeight = layoutHeight - 4f
+	}
+
+	fun getEvent(eventId: String): EventZone? {
+		return events[eventId]
 	}
 }

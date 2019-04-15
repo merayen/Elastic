@@ -35,6 +35,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
+
+    implementation("com.google.code.gson:gson:2.8.5")
 }
 
 application {
