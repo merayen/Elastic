@@ -1,46 +1,99 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
-import com.google.gson.Gson
+import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 
-class Parameters {
-	class EventZone {
-		class MidiEvent {
-			var start = 0f
-			var midi = shortArrayOf()
+class Parameters(private val logicNode: LogicNode) {
+	class EventZone(val map: HashMap<String, Any>) {
+		var id: String by map
+		var start: Float by map
+		var length: Float by map
+	}
+
+	class TangentEvent(val map: HashMap<String, Any>) {
+		var id: String by map
+		var eventZoneId: String by map
+		var start: Float by map
+		var length: Float by map
+
+		/**
+		 * Midi to be dispatched when tangent begins
+		 */
+		var startMidi: List<Short> by map
+
+		/**
+		 * Midi to be dispatched when tangent ends
+		 */
+		var stopMidi: List<Short> by map
+	}
+
+	class ControlEvent(val map: HashMap<String, Any>) {
+		var id: String by map
+		var eventZoneId: String by map
+		var start: Float by map
+		var midi: List<Short> by map
+	}
+
+	// ???
+	fun setEventZones(eventZones: List<EventZone>) = logicNode.set("eventZones", eventZones.map { it.map }.toList())
+
+	// ???
+	fun setTangentEvents(tangentEvents: List<TangentEvent>) = logicNode.set("tangentEvent", tangentEvents.map { it.map }.toList())
+
+	// ???
+	fun setControlEvent(controlEvents: List<ControlEvent>) = logicNode.set("controlEvent", controlEvents.map { it.map }.toList())
+
+
+	fun getEventZones(): Map<String, EventZone> = retrieveEventZones().map { it["id"] as String to EventZone(it) }.toMap()
+
+	fun getTangentEvents(): List<TangentEvent> = retrieveTangentEvents().map { TangentEvent(it) }.toList()
+
+	fun getControlEvents(): List<ControlEvent> = retrieveControlEvents().map { ControlEvent(it) }.toList()
+
+	private fun retrieveEventZones(): List<HashMap<String, Any>> {
+		var eventZones = logicNode.getParameter("eventZones") as? List<HashMap<String, Any>>
+		if (eventZones == null) {
+			eventZones = ArrayList()
+			logicNode.set("eventZones", eventZones)
 		}
 
-		val midiEvents = ArrayList<MidiEvent>()
-		var start = 0f
-		var length = 0f
+		return eventZones
 	}
 
-	class TangentEvent {
-		var eventZoneId = ""
-		var start = 0f
-		var length = 0f
-		var midi = shortArrayOf()
+	private fun retrieveTangentEvents(): List<HashMap<String, Any>> {
+		var tangentEvents = logicNode.getParameter("tangentEvents") as? List<HashMap<String, Any>>
+		if (tangentEvents == null) {
+			tangentEvents = ArrayList()
+			logicNode.set("tangentEvents", tangentEvents)
+		}
+
+		return tangentEvents
 	}
 
-	class ControlEvent {
-		var eventZoneId = ""
-		var start = 0f
-		var midi = shortArrayOf()
+	private fun retrieveControlEvents(): List<HashMap<String, Any>> {
+		var controlEvents = logicNode.getParameter("controlEvents") as? List<HashMap<String, Any>>
+		if (controlEvents == null) {
+			controlEvents = ArrayList()
+			logicNode.set("controlEvents", controlEvents)
+		}
+
+		return controlEvents
 	}
 
-	val eventZones = ArrayList<EventZone>()
-	val tangentEvents = ArrayList<TangentEvent>()
-	val controlEvent = ArrayList<ControlEvent>()
+	fun handle(key: String, value: Any) {
+		when(key) {
+			"eventZones" -> {
+
+				logicNode.set("eventZones", value)
+			}
+		}
+	}
 }
 
 fun main() {
-	val parameters = Parameters()
-	val eventZone = Parameters.EventZone()
-	eventZone.start = 5f
-	parameters.eventZones.add(eventZone)
-
-	val dump = Gson().toJson(parameters)
-	println(dump)
-
-	val readParameters = Gson().fromJson<Parameters>(dump, Parameters::class.java)
-	println(readParameters.eventZones[0].start)
+	val eventZone = Parameters.EventZone(HashMap(mapOf("id" to "id123", "start" to 1.234f, "length" to 2.345f)))
+	val controlEvent = Parameters.ControlEvent(HashMap(mapOf("id" to "id123", "start" to 1.234f, "length" to 2.345f, "eventZoneId" to "eventid", "midi" to shortArrayOf(1,2,3,4,5).toList())))
+	val dumped = JSONObject.toJSONString(controlEvent.map)
+	val loadedControlEvent = Parameters.ControlEvent(JSONParser().parse(dumped) as HashMap<String,Any>)
+	println(loadedControlEvent.midi)
 }

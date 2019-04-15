@@ -120,7 +120,7 @@ public abstract class BaseLogicNode {
 		supervisor.removePort(this, name);
 	}
 
-	protected void set(String key, Object value) {
+	public void set(String key, Object value) {
 		NodeParameterMessage message = new NodeParameterMessage(id, key, value);
 		supervisor.sendMessageToProcessor(message);
 		supervisor.sendMessageToUI(message);
@@ -128,7 +128,7 @@ public abstract class BaseLogicNode {
 		np.parameters.set(node, key, value);
 	}
 
-	protected Object getParameter(String key) {
+	public Object getParameter(String key) {
 		return np.parameters.get(node, key);
 	}
 

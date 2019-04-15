@@ -9,6 +9,8 @@ import net.merayen.elastic.backend.nodes.BaseLogicNode
 class LogicNode : BaseLogicNode() {
 	internal var buffer: MutableList<MidiPacket> = ArrayList()
 
+	private val parameters = Parameters(this)
+
 	override fun onCreate() {
 		createPort(object : BaseLogicNode.PortDefinition() {
 			init {
