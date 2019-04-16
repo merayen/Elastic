@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
+import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
 import net.merayen.elastic.util.UniqueID
 
 /**
@@ -15,7 +16,7 @@ class EventTimeLine : BaseTimeLine() {
 		/**
 		 * Called when an event should be repeated.
 		 */
-		fun onEventRepeat(eventId: String, count: Int)
+		fun onRepeatEvent(eventId: String, count: Int)
 	}
 
 	override var layoutWidth = 0f
@@ -38,44 +39,23 @@ class EventTimeLine : BaseTimeLine() {
 	private val repeatEvents = ArrayList<EventZone>()
 
 	override fun onInit() {
-		val test = createEventZone(UniqueID.create())
-		test.start = 4f
-		test.length = 1f
+		/*val test = createEventZone(UniqueID.create())
+		test.start = 1f
+		test.length = 1f*/
 
-		zoomFactor = 50f
+		zoomFactor = 100f
 	}
 
 	fun createEventZone(eventZoneId: String): EventZone {
 		val event = EventZone(eventZoneId)
 
 		event.handler = object : EventZone.Handler {
-			private var eventDragMarker: EventDragMarker? = null
-
-			override fun onMove(position: Float) {
-				handler?.onChangeEvent(eventZoneId, position, event.length)
+			override fun onChange(start: Float, length: Float) {
+				handler?.onChangeEvent(eventZoneId, start, length)
 			}
 
-			override fun onRepeatDrag() {
-				val eventRepeater = EventDragMarker()
-				eventRepeater.translation.x = event.translation.x + event.layoutWidth
-				eventRepeater.layoutHeight = layoutHeight
-
-				this.eventDragMarker = eventRepeater
-				add(eventRepeater)
-			}
-
-			override fun onRepeatMove(count: Int) {
-				eventDragMarker!!.layoutWidth = count * event.layoutWidth
-			}
-
-			override fun onRepeatDrop(count: Int) {
-				val eventRepeater = eventDragMarker
-
-				if (eventRepeater != null) {
-					remove(eventRepeater)
-					this.eventDragMarker = null
-					handler?.onEventRepeat(eventZoneId, count)
-				}
+			override fun onRepeat(count: Int) {
+				handler?.onRepeatEvent(eventZoneId, count)
 			}
 		}
 
@@ -86,6 +66,13 @@ class EventTimeLine : BaseTimeLine() {
 		return event
 	}
 
+	fun clearEventZones() {
+		for (event in events.values)
+			remove(event)
+
+		events.clear()
+	}
+
 	override fun onUpdate() {
 		for (event in events.values)
 			event.layoutHeight = layoutHeight - 4f
@@ -93,5 +80,15 @@ class EventTimeLine : BaseTimeLine() {
 
 	fun getEvent(eventId: String): EventZone? {
 		return events[eventId]
+	}
+
+	fun loadEventZones(eventZones: List<Parameters.EventZone>) {
+		clearEventZones()
+
+		for (event in eventZones) {
+			val e = createEventZone(event.id)
+			e.start = event.start
+			e.length = event.length
+		}
 	}
 }

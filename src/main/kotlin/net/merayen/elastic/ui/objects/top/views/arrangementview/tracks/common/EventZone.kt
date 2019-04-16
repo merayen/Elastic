@@ -9,27 +9,17 @@ import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Point
 
-class EventZone(val eventZoneId: String) : UIObject(), FlexibleDimension {
+class EventZone(val id: String) : UIObject(), FlexibleDimension {
 	interface Handler {
 		/**
-		 * When user has moved an event
+		 * When user has moved an event (and let it go)
 		 */
-		fun onMove(position: Float)
-
-		/**
-		 * When user starts dragging the repeat box
-		 */
-		fun onRepeatDrag()
-
-		/**
-		 * When user moves the repeat-box
-		 */
-		fun onRepeatMove(count: Int)
+		fun onChange(start: Float, length: Float)
 
 		/**
 		 * When user let go of the event repeat-box
 		 */
-		fun onRepeatDrop(count: Int)
+		fun onRepeat(count: Int)
 	}
 
 	private class DragBox : UIObject(), FlexibleDimension {
@@ -92,7 +82,6 @@ class EventZone(val eventZoneId: String) : UIObject(), FlexibleDimension {
 		translation.y = 2f
 
 		movable.setHandler(object : Movable.IMoveable {
-
 			override fun onGrab() {
 				moving = true
 			}
@@ -102,22 +91,94 @@ class EventZone(val eventZoneId: String) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onDrop() {
-				handler?.onMove(translation.x / zoomFactor)
+				handler?.onChange(translation.x / zoomFactor, length)
 				moving = false
 			}
 		})
 
 		repeatBox.handler = object : DragBox.Handler {
+			private var eventDragMarker: EventDragMarker? = null
+
 			override fun onDrag() {
-				handler?.onRepeatDrag()
+				val eventRepeater = EventDragMarker()
+				eventRepeater.translation.x = layoutWidth
+				eventRepeater.layoutHeight = layoutHeight
+
+				this.eventDragMarker = eventRepeater
+				add(eventRepeater)
 			}
 
 			override fun onMove(xOffset: Float) {
-				handler?.onRepeatMove(((xOffset / zoomFactor) / length).toInt())
+				val count = ((xOffset / zoomFactor) / length).toInt()
+				eventDragMarker!!.layoutWidth = count * layoutWidth
 			}
 
 			override fun onDrop(xOffset: Float) {
-				handler?.onRepeatDrop(((xOffset / zoomFactor) / length).toInt())
+				val eventRepeater = eventDragMarker
+
+				if (eventRepeater != null) {
+					val count = ((xOffset / zoomFactor) / length).toInt()
+					remove(eventRepeater)
+					this.eventDragMarker = null
+					handler?.onRepeat(count)
+				}
+			}
+		}
+
+		lengthBox.handler = object : DragBox.Handler {
+			private var eventDragMarker: EventDragMarker? = null
+
+			override fun onDrag() {
+				val eventRepeater = EventDragMarker()
+				eventRepeater.translation.x = layoutWidth
+				eventRepeater.layoutHeight = layoutHeight
+
+				this.eventDragMarker = eventRepeater
+				add(eventRepeater)
+			}
+
+			override fun onMove(xOffset: Float) {
+				val diff = ((xOffset / zoomFactor) / length)
+				eventDragMarker!!.layoutWidth = diff * layoutWidth
+			}
+
+			override fun onDrop(xOffset: Float) {
+				val eventRepeater = eventDragMarker
+
+				if (eventRepeater != null) {
+					val newLength = ((xOffset / zoomFactor) / length)
+					remove(eventRepeater)
+					this.eventDragMarker = null
+					handler?.onChange(start, newLength)
+				}
+			}
+		}
+
+		startBox.handler = object : DragBox.Handler {
+			private var eventDragMarker: EventDragMarker? = null
+
+			override fun onDrag() {
+				val eventRepeater = EventDragMarker()
+				eventRepeater.layoutHeight = layoutHeight
+
+				this.eventDragMarker = eventRepeater
+				add(eventRepeater)
+			}
+
+			override fun onMove(xOffset: Float) {
+				eventDragMarker!!.translation.x = xOffset
+				eventDragMarker!!.layoutWidth = -xOffset
+			}
+
+			override fun onDrop(xOffset: Float) {
+				val eventRepeater = eventDragMarker
+
+				if (eventRepeater != null) {
+					val newStart = xOffset / zoomFactor
+					remove(eventRepeater)
+					this.eventDragMarker = null
+					handler?.onChange(start + newStart, length - newStart)
+				}
 			}
 		}
 

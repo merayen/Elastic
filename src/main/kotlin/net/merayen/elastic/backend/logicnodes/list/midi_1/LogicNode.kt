@@ -67,13 +67,32 @@ class LogicNode : BaseLogicNode() {
 				buffer.add(MidiPacket(shortArrayOf(128.toShort(), data.tangent, 64), 0))
 			}
 			is AddEventZoneMessage -> {
-				println("Supposed to add EventZone ${data.eventZoneId}")
+				println("Adding EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
+				val eventZones = parameters.getEventZones()
+				val eventZone = Parameters.EventZone()
+				eventZone.id = data.eventZoneId
+				eventZone.start = data.start
+				eventZone.length = data.length
+				eventZones.add(eventZone)
+
+				parameters.setEventZones(eventZones)
 			}
 			is ChangeEventZoneMessage -> {
-				println("Supposed to change EventZone ${data.eventZoneId}")
+				println("Changing EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
+				val eventZones = parameters.getEventZones()
+				val eventZone = eventZones.find { it.id == data.eventZoneId }
+
+				if (eventZone != null) {
+					eventZone.start = data.start
+					eventZone.length = data.length
+					parameters.setEventZones(eventZones)
+				}
 			}
 			is RemoveEventZoneMessage -> {
-				println("Supposed to remove EventZone ${data.eventZoneId}")
+				println("Removing EventZone id=${data.eventZoneId}")
+				val eventZones = parameters.getEventZones()
+				val eventZone = eventZones.removeIf { it.id == data.eventZoneId }
+				parameters.setEventZones(eventZones)
 			}
 		}
 	}

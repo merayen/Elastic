@@ -4,13 +4,13 @@ import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 
 class Parameters(private val logicNode: LogicNode) {
-	class EventZone(val map: HashMap<String, Any>) {
+	class EventZone(val map: HashMap<String, Any> = HashMap()) {
 		var id: String by map
 		var start: Float by map
 		var length: Float by map
 	}
 
-	class TangentEvent(val map: HashMap<String, Any>) {
+	class TangentEvent(val map: HashMap<String, Any> = HashMap()) {
 		var id: String by map
 		var eventZoneId: String by map
 		var start: Float by map
@@ -27,28 +27,25 @@ class Parameters(private val logicNode: LogicNode) {
 		var stopMidi: List<Short> by map
 	}
 
-	class ControlEvent(val map: HashMap<String, Any>) {
+	class ControlEvent(val map: HashMap<String, Any> = HashMap()) {
 		var id: String by map
 		var eventZoneId: String by map
 		var start: Float by map
 		var midi: List<Short> by map
 	}
 
-	// ???
 	fun setEventZones(eventZones: List<EventZone>) = logicNode.set("eventZones", eventZones.map { it.map }.toList())
 
-	// ???
 	fun setTangentEvents(tangentEvents: List<TangentEvent>) = logicNode.set("tangentEvent", tangentEvents.map { it.map }.toList())
 
-	// ???
 	fun setControlEvent(controlEvents: List<ControlEvent>) = logicNode.set("controlEvent", controlEvents.map { it.map }.toList())
 
 
-	fun getEventZones(): Map<String, EventZone> = retrieveEventZones().map { it["id"] as String to EventZone(it) }.toMap()
+	fun getEventZones(): ArrayList<EventZone> = ArrayList(retrieveEventZones().map { EventZone(it) })
 
-	fun getTangentEvents(): List<TangentEvent> = retrieveTangentEvents().map { TangentEvent(it) }.toList()
+	fun getTangentEvents(): ArrayList<TangentEvent> = ArrayList(retrieveTangentEvents().map { TangentEvent(it) })
 
-	fun getControlEvents(): List<ControlEvent> = retrieveControlEvents().map { ControlEvent(it) }.toList()
+	fun getControlEvents(): ArrayList<ControlEvent> = ArrayList(retrieveControlEvents().map { ControlEvent(it) })
 
 	private fun retrieveEventZones(): List<HashMap<String, Any>> {
 		var eventZones = logicNode.getParameter("eventZones") as? List<HashMap<String, Any>>
