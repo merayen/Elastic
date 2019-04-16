@@ -5,7 +5,6 @@ import net.merayen.elastic.system.intercom.NodeParameterMessage
 abstract class ArrangementTrack(val nodeId: String, private val arrangement: Arrangement) {
 	val trackPane = TrackPane()
 	val eventPane = EventPane()
-	val editPane = EditPane()
 
 	abstract fun onParameter(key: String, value: Any)
 

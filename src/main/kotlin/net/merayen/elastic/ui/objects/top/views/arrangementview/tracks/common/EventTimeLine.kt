@@ -131,7 +131,6 @@ class EventTimeLine : BaseTimeLine() {
 			event.layoutHeight = layoutHeight - 4f
 			layoutWidth = max(layoutWidth, event.translation.x + event.layoutWidth)
 		}
-		this.layoutWidth = max(layoutWidth, minimumWidth)
 	}
 
 	override fun onEvent(event: UIEvent) {

@@ -5,6 +5,7 @@ import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.BaseEditPane
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.BaseTimeLine
+import kotlin.math.max
 
 class EventPane : UIObject(), FlexibleDimension {
 	override var layoutWidth = 0f
@@ -48,7 +49,9 @@ class EventPane : UIObject(), FlexibleDimension {
 
 	override fun onUpdate() {
 		timeLine?.layoutHeight = layoutHeight
-		timeLine?.minimumWidth = layoutWidth
+		timeLine?.layoutWidth = max(layoutWidth, timeLine?.layoutWidth ?: 0f)
+		editPane?.layoutHeight = layoutHeight
+		editPane?.layoutWidth = max(editPane?.layoutWidth ?: 0f, layoutWidth)
 	}
 
 	private fun updateView() {

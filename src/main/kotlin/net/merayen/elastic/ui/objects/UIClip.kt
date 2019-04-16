@@ -11,7 +11,7 @@ import net.merayen.elastic.ui.UIObject
  */
 open class UIClip : UIObject(), FlexibleDimension {
 	override var layoutWidth = 50f
-	override var layoutHeight = 15f
+	override var layoutHeight = 50f
 
 	override fun onDraw(draw: Draw) {
 		translation.clip = Rect(0f, 0f, layoutWidth, layoutHeight)

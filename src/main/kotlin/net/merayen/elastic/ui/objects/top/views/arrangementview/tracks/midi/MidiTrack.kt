@@ -22,7 +22,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 	private val trackName = TextInput()
 
 	private val eventTimeLine = EventTimeLine()
-	private val midiEditPane = MidiEditPane()
+	private val midiEditPane = MidiEditPane(nodeId)
 
 	init {
 		val removeButton = Button()
@@ -97,8 +97,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				arrangement.sendMessage(NodeDataMessage(nodeId, RemoveEventZoneMessage(id)))
 			}
 
-			override fun onRepeatEvent(eventId: String, count: Int) {
-				val event = eventTimeLine.getEvent(eventId)
+			override fun onRepeatEvent(id: String, count: Int) {
+				val event = eventTimeLine.getEvent(id)
 				if (event != null) {
 					for (i in 0 until count) {
 						arrangement.sendMessage(
@@ -122,6 +122,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			override fun onEditEvent(id: String) {
 				midiEditPane.eventZone = eventTimeLine.getEvent(id)
 				eventPane.editMode = true
+				trackPane.layoutHeight = 200f
 			}
 		}
 	}

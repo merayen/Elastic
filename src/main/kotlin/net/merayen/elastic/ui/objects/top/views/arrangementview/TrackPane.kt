@@ -18,11 +18,9 @@ class TrackPane : UIObject(), FlexibleDimension {
 
 	private val resizer = object : UIObject() {
 		override fun onDraw(draw: Draw) {
-			draw.setStroke(2f)
-			draw.setColor(0.3f, 0.3f, 0.3f)
-			draw.line(0f, 0f, layoutWidth, 0f)
+			draw.setStroke(4f)
 			draw.setColor(0.2f, 0.2f, 0.2f)
-			draw.line(0f, 2f, layoutWidth, 2f)
+			draw.fillRect(0f, 0f, layoutWidth, 4f)
 		}
 	}
 
