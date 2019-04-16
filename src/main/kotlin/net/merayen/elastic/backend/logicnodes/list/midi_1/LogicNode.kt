@@ -96,11 +96,4 @@ class LogicNode : BaseLogicNode() {
 			}
 		}
 	}
-
-	fun getEventZones(): ArrayList<HashMap<String, Any>> {
-		if (getParameter("eventZones") == null)
-			set("eventZones", ArrayList<HashMap<String, Any>>())
-
-		return getParameter("eventZones") as ArrayList<HashMap<String, Any>>
-	}
 }

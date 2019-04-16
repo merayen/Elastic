@@ -37,7 +37,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 
 			override fun onMouseDown(position: Point) {
 				val window = UINodeUtil.getWindow(trigger)
-				window.overlay.add(menu)
+				window!!.overlay.add(menu)
 
 				relative = position
 
@@ -46,8 +46,6 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 				menu.translation.x = window.screenWidth / 2f
 				menu.translation.y = window.screenHeight / 2f
 
-				menu.setPointer(0f, 0f)
-
 				menu.radius = Math.min(window.screenWidth, window.screenHeight) / 4
 
 				menu.animate()
@@ -55,16 +53,15 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 			}
 
 			override fun onMouseDrag(position: Point, offset: Point) {
-				//val window = UINodeUtil.getWindow(trigger)
-				//window.overlay.getRelativePosition(menu)
 				val absolute = menu.absolutePosition
 
-				menu.setPointer(mouse.mouseEvent.x - absolute.x, mouse.mouseEvent.y - absolute.y)
+				if (absolute != null)
+					menu.setPointer(mouse.mouseEvent.x - absolute.x, mouse.mouseEvent.y - absolute.y)
 			}
 
 			override fun onGlobalMouseUp(position: Point) {
 				if (menu.parent != null) {
-					UINodeUtil.getWindow(trigger).overlay.remove(menu)
+					UINodeUtil.getWindow(trigger)!!.overlay.remove(menu)
 					val selected = menu.getSelected()
 					val rel = relative
 					if (selected != null && rel != null)
@@ -75,8 +72,8 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 			}
 
 			private fun moveNativeMouseCursorPosition() {
-				val window = UINodeUtil.getWindow(trigger)
-				val mouseCursor = UINodeUtil.getWindow(trigger).nativeUI.mouseCursor
+				val window = UINodeUtil.getWindow(trigger)!!
+				val mouseCursor = UINodeUtil.getWindow(trigger)!!.nativeUI.mouseCursor
 
 				originalMousePointerLocation = mouseCursor.getPosition()
 
@@ -88,7 +85,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 
 			private fun restoreNativeMouseCursorPosition() {
 				val loc = originalMousePointerLocation
-				val mouseCursor = UINodeUtil.getWindow(trigger).nativeUI.mouseCursor
+				val mouseCursor = UINodeUtil.getWindow(trigger)!!.nativeUI.mouseCursor
 				if (loc != null)
 					mouseCursor.setPosition(loc)
 

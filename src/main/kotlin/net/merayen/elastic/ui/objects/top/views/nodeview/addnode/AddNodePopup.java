@@ -16,7 +16,7 @@ public class AddNodePopup {
 	private final Handler handler;
 
 	public AddNodePopup(UIObject uiobject, Handler handler) {
-		window = UINodeUtil.getWindow(uiobject);
+		window = UINodeUtil.INSTANCE.getWindow(uiobject);
 
 		this.handler = handler;
 

@@ -10,6 +10,6 @@ class TextInputDialog(private val description: String, private val value: String
 	}
 
 	override fun onInit() {
-		UINodeUtil.getWindow(this).nativeUI.dialog.showTextInput(description, value) { value -> onDone(value) }
+		UINodeUtil.getWindow(this)?.nativeUI?.dialog?.showTextInput(description, value) { value -> onDone(value) }
 	}
 }

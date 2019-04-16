@@ -46,7 +46,7 @@ public class UINet extends UIObject {
 
 	@Override
 	public void onDraw(Draw draw) {
-		Window window = UINodeUtil.getWindow(this);
+		Window window = UINodeUtil.INSTANCE.getWindow(this);
 		draw.disableOutline();
 
 		for(Connection c : connections) {
@@ -89,7 +89,7 @@ public class UINet extends UIObject {
 	}
 
 	public void connect(UIPort a, UIPort b) {
-		UINodeUtil.getTop(this).sendMessage(new NodeConnectMessage(a.getNode().getNodeId(), a.name, b.getNode().getNodeId(), b.name));
+		UINodeUtil.INSTANCE.getTop(this).sendMessage(new NodeConnectMessage(a.getNode().getNodeId(), a.name, b.getNode().getNodeId(), b.name));
 	}
 
 	private void internalConnect(NodeConnectMessage message) {
@@ -114,7 +114,7 @@ public class UINet extends UIObject {
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
-		UINodeUtil.getTop(this).sendMessage(new NodeDisconnectMessage(a.getNode().getNodeId(), a.name, b.getNode().getNodeId(), b.name));
+		UINodeUtil.INSTANCE.getTop(this).sendMessage(new NodeDisconnectMessage(a.getNode().getNodeId(), a.name, b.getNode().getNodeId(), b.name));
 	}
 
 	private void internalDisconnect(NodeDisconnectMessage message) {
@@ -163,7 +163,7 @@ public class UINet extends UIObject {
 	 * Disconnects all connections on a port.
 	 */
 	public void disconnectAll(UIPort p) {
-		Top top = UINodeUtil.getTop(this);
+		Top top = UINodeUtil.INSTANCE.getTop(this);
 		for(Connection c : connections)
 			if(p == c.a || p == c.b)
 				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().getNodeId(), c.a.name, c.b.getNode().getNodeId(), c.b.name));

@@ -62,14 +62,14 @@ public class Viewport extends UIObject {
 
 			@Override
 			public void onDrag(float diff, boolean vertical) {
-				UINodeUtil.getWindow(self).getDebug().set("ViewportDrag onDrag()", diff + "," + vertical + ", " + original_size);
+				UINodeUtil.INSTANCE.getWindow(self).getDebug().set("ViewportDrag onDrag()", diff + "," + vertical + ", " + original_size);
 				float relative_diff = original_size + diff;
 				handler.onNewViewportResize(relative_diff, vertical);
 			}
 
 			@Override
 			public void onDrop(float diff, boolean vertical) {
-				UINodeUtil.getWindow(self).getDebug().set("ViewportDrag onDrop()", diff + ", " + vertical);
+				UINodeUtil.INSTANCE.getWindow(self).getDebug().set("ViewportDrag onDrop()", diff + ", " + vertical);
 			}
 		});
 		clip.add(drag);

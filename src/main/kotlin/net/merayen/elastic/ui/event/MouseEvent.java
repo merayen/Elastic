@@ -105,7 +105,7 @@ public class MouseEvent extends UIEvent {
 
 	public boolean isHit(UIObject uiobject) {
 		if (objects_hit == null)
-			objects_hit = calcHit(UINodeUtil.getWindow(uiobject));
+			objects_hit = calcHit(UINodeUtil.INSTANCE.getWindow(uiobject));
 
 		if (objects_hit.size() > 0)
 			return objects_hit.get(0) == uiobject;
@@ -121,7 +121,7 @@ public class MouseEvent extends UIEvent {
 	 */
 	public int hitDepth(UIObject uiobject) {
 		if (objects_hit == null)
-			objects_hit = calcHit(UINodeUtil.getWindow(uiobject));
+			objects_hit = calcHit(UINodeUtil.INSTANCE.getWindow(uiobject));
 
 		return objects_hit.indexOf(uiobject);
 	}

@@ -65,7 +65,7 @@ public class UIPortTemporary extends UIPort {
 
 	@Override
 	public void onDraw(Draw draw) {
-		UINodeUtil.getWindow(this).getDebug().set("UIPortTemporary " + this, String.format("source_port=%s, target=%s", source_port == null ? null : source_port.name, target == null ? null : target.name));
+		UINodeUtil.INSTANCE.getWindow(this).getDebug().set("UIPortTemporary " + this, String.format("source_port=%s, target=%s", source_port == null ? null : source_port.name, target == null ? null : target.name));
 	}
 
 	@Override

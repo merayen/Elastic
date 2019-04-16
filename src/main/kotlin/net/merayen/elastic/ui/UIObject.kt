@@ -12,7 +12,7 @@ open class UIObject {
 		private set
 	internal val children: MutableList<UIObject> = ArrayList()
 
-	var outline_abs_px: net.merayen.elastic.ui.Rect? = Rect() // Absolute, in screen pixels
+	var outline_abs_px: Rect? = Rect() // Absolute, in screen pixels
 	internal var outline: Rect? = Rect()
 
 	var draw_z: Int = 0 // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()
@@ -33,10 +33,13 @@ open class UIObject {
 
 	val search = Search(this)
 
-	val absolutePosition: net.merayen.elastic.util.Point
+	val absolutePosition: Point?
 		get() {
 			val td = absolute_translation
-			return net.merayen.elastic.util.Point(td!!.x, td.y)
+			if (td != null)
+				return Point(td.x, td.y)
+
+			return null
 		}
 
 	/**
@@ -173,9 +176,9 @@ open class UIObject {
 	/**
 	 * Get our internal (relative) position from absolute position.
 	 */
-	fun getRelativeFromAbsolute(x: Float, y: Float): net.merayen.elastic.util.Point {
+	fun getRelativeFromAbsolute(x: Float, y: Float): Point {
 		val td = absolute_translation
-		return net.merayen.elastic.util.Point((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
+		return Point((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
 	}
 
 	fun getAbsoluteDimension(width: Float, height: Float): Dimension {
@@ -210,7 +213,6 @@ open class UIObject {
 	 */
 	fun getOutline(): Rect? {
 		return if (outline == null) null else Rect(outline!!)
-
 	}
 
 	open fun sendMessage(message: Postmaster.Message) {

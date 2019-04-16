@@ -32,7 +32,7 @@ public class PopupSlide extends UIObject {
 
 		@Override
 		public void onDraw(Draw draw) {
-			Window window = UINodeUtil.getWindow(this);
+			Window window = UINodeUtil.INSTANCE.getWindow(this);
 
 			// Closes ourself if clicked outside
 			draw.empty(0, 0, window.getScreenWidth(), window.getScreenHeight());
@@ -47,7 +47,7 @@ public class PopupSlide extends UIObject {
 	private class Menu extends UIObject {
 		@Override
 		public void onUpdate() {
-			Window window = UINodeUtil.getWindow(this);
+			Window window = UINodeUtil.INSTANCE.getWindow(this);
 			Dimension dimension = getItemMaxDimension();
 			getTranslation().x = window.getScreenWidth() / 2- dimension.getWidth() / 2;
 			getTranslation().y = window.getScreenHeight() / 2 - dimension.getHeight() / 2;
