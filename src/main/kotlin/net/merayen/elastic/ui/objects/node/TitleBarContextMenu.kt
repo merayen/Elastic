@@ -18,7 +18,11 @@ internal class TitleBarContextMenu(titlebar: UIObject) : UIObject() {
 	private val deleteNode = TextContextMenuItem("Delete")
 
 	init {
-		menu = ContextMenu(titlebar, MouseEvent.Button.RIGHT, object : ContextMenu.Handler {
+		menu = ContextMenu(titlebar, MouseEvent.Button.RIGHT)
+
+		menu.handler = object : ContextMenu.Handler {
+			override fun onMouseDown(position: Point) {}
+
 			override fun onSelect(item: ContextMenuItem?, position: Point) {
 				if (item === deleteNode) {
 					val nodeId = search.parentByType(UINode::class.java)?.nodeId
@@ -30,7 +34,7 @@ internal class TitleBarContextMenu(titlebar: UIObject) : UIObject() {
 						sendMessage(EditNodeMessage(node))*/ // TODO fix dette? Finne random view? Bruke eksisterende view? Popup?
 				}
 			}
-		})
+		}
 
 		menu.addMenuItem(EmptyContextMenuItem())
 		menu.addMenuItem(EmptyContextMenuItem())

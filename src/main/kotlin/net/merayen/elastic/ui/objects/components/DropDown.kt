@@ -22,20 +22,26 @@ class DropDown(private val handler: Handler) : UIObject(), FlexibleDimension {
 	private val items = ArrayList<Item>()
 	private var currentItem: Item? = null
 
-	private val contextMenu = ContextMenu(this, MouseEvent.Button.LEFT, object : ContextMenu.Handler {
-		override fun onSelect(item: ContextMenuItem?, position: Point) {
-			var selected: Item? = null
+	private val contextMenu = ContextMenu(this, MouseEvent.Button.LEFT)
 
-			for (m in items)
-				if (m.contextMenuItem === item)
-					selected = m
+	override fun onInit() {
+		contextMenu.handler = object : ContextMenu.Handler {
+			override fun onMouseDown(position: Point) {}
 
-			if (selected != null) {
-				setViewItem(selected)
-				handler.onChange(selected)
+			override fun onSelect(item: ContextMenuItem?, position: Point) {
+				var selected: Item? = null
+
+				for (m in items)
+					if (m.contextMenuItem === item)
+						selected = m
+
+				if (selected != null) {
+					setViewItem(selected)
+					handler.onChange(selected)
+				}
 			}
 		}
-	})
+	}
 
 	override fun onDraw(draw: Draw) {
 		draw.setColor(0, 0, 0)

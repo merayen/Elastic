@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.contextmenu
 
+import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
@@ -10,15 +11,23 @@ import net.merayen.elastic.util.Point
 /**
  * Puts up a context menu on top of everything (Top().overlay)
  */
-class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, handler: Handler) {
+class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
+	interface Handler {
+		fun onSelect(item: ContextMenuItem?, position: Point)
+		fun onMouseDown(position: Point)
+	}
+
+	var handler: Handler? = null
+	var backgroundColor: Color
+		set(value) {
+			menu.backgroundColor = value
+		}
+		get() = menu.backgroundColor
+
 	private val menu: Menu = Menu(count)
 	private val mouse: MouseHandler = MouseHandler(trigger, button)
 
-	interface Handler {
-		fun onSelect(item: ContextMenuItem?, position: Point)
-	}
-
-	constructor(trigger: UIObject, button: MouseEvent.Button, handler: Handler) : this(trigger, 8, button, handler)
+	constructor(trigger: UIObject, button: MouseEvent.Button) : this(trigger, 8, button)
 
 	init {
 		mouse.setHandler(object : MouseHandler.Handler() {
@@ -42,11 +51,12 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 				menu.radius = Math.min(window.screenWidth, window.screenHeight) / 4
 
 				menu.animate()
+				handler?.onMouseDown(position)
 			}
 
 			override fun onMouseDrag(position: Point, offset: Point) {
-				val window = UINodeUtil.getWindow(trigger)
-				window.overlay.getRelativePosition(menu)
+				//val window = UINodeUtil.getWindow(trigger)
+				//window.overlay.getRelativePosition(menu)
 				val absolute = menu.absolutePosition
 
 				menu.setPointer(mouse.mouseEvent.x - absolute.x, mouse.mouseEvent.y - absolute.y)
@@ -58,9 +68,9 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 					val selected = menu.getSelected()
 					val rel = relative
 					if (selected != null && rel != null)
-						handler.onSelect(selected, rel)
+						handler?.onSelect(selected, rel)
 
-					//restoreNativeMouseCursorPosition()
+					restoreNativeMouseCursorPosition()
 				}
 			}
 
@@ -73,7 +83,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button, hand
 				val surfaceLocation = window.surfaceLocation
 				mouseCursor.setPosition(Point(surfaceLocation.x + window.screenWidth / 2f, surfaceLocation.y + window.screenHeight / 2f))
 
-				//mouseCursor.hide()
+				mouseCursor.hide()
 			}
 
 			private fun restoreNativeMouseCursorPosition() {

@@ -31,5 +31,6 @@ class EventPane : UIObject(), FlexibleDimension {
 
 	override fun onUpdate() {
 		timeLine?.layoutHeight = layoutHeight
+		timeLine?.minimumWidth = layoutWidth
 	}
 }

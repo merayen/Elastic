@@ -12,6 +12,7 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.addnode.AddNodePopup;
 import net.merayen.elastic.uinodes.BaseInfo;
 import net.merayen.elastic.util.NodeUtil;
 import net.merayen.elastic.util.Point;
+import org.jetbrains.annotations.NotNull;
 
 class NodeViewContextMenu extends UIObject {
 	private final ContextMenu menu;
@@ -25,7 +26,12 @@ class NodeViewContextMenu extends UIObject {
 
 		this.node_id = node_id;
 		UIObject self = this;
-		menu = new ContextMenu(background, 8, MouseEvent.Button.RIGHT, new ContextMenu.Handler() {
+		menu = new ContextMenu(background, 8, MouseEvent.Button.RIGHT);
+
+		menu.setHandler(new ContextMenu.Handler() {
+			@Override
+			public void onMouseDown(@NotNull Point position) {}
+
 			@Override
 			public void onSelect(ContextMenuItem item, Point position) { // TODO move stuff below out to a separate class
 				if(item == add_node_item) {

@@ -76,15 +76,6 @@ class Parameters(private val logicNode: LogicNode) {
 
 		return controlEvents
 	}
-
-	fun handle(key: String, value: Any) {
-		when(key) {
-			"eventZones" -> {
-
-				logicNode.set("eventZones", value)
-			}
-		}
-	}
 }
 
 fun main() {

@@ -1,13 +1,19 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
+import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Point
+import kotlin.math.max
 
 class EventZone(val id: String) : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -20,6 +26,16 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 		 * When user let go of the event repeat-box
 		 */
 		fun onRepeat(count: Int)
+
+		/**
+		 * When event has been selected. Should be moved to the top in the draw list
+		 */
+		fun onSelect()
+
+		/**
+		 * EventZone should be deleted
+		 */
+		fun onRemove()
 	}
 
 	private class DragBox : UIObject(), FlexibleDimension {
@@ -65,8 +81,11 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 0f
 	override var layoutHeight = 0f
 
+	var selected = false
+
 	var handler: Handler? = null
 
+	private val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
 	private val movable = Movable(this, this, MouseEvent.Button.LEFT)
 
 	private val startBox = DragBox()
@@ -81,9 +100,34 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 	override fun onInit() {
 		translation.y = 2f
 
+		contextMenu.handler = object : ContextMenu.Handler {
+			override fun onMouseDown(position: Point) {
+				handler?.onSelect()
+			}
+
+			override fun onSelect(item: ContextMenuItem?, position: Point) {
+				if (item is TextContextMenuItem && item.text == "Remove")
+					handler?.onRemove()
+			}
+		}
+
+		contextMenu.backgroundColor = Color(0.3f, 0.3f, .5f)
+
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(TextContextMenuItem("Remove"))
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(TextContextMenuItem("Edit"))
+
+		val self = this
 		movable.setHandler(object : Movable.IMoveable {
+			var start = 0f
 			override fun onGrab() {
 				moving = true
+				start = self.translation.x
+				handler?.onSelect()
 			}
 
 			override fun onMove() {
@@ -91,8 +135,8 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onDrop() {
-				handler?.onChange(translation.x / zoomFactor, length)
-				moving = false
+				if (self.translation.x != start)
+					handler?.onChange(max(0f, translation.x / zoomFactor), length)
 			}
 		})
 
@@ -100,12 +144,14 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			private var eventDragMarker: EventDragMarker? = null
 
 			override fun onDrag() {
-				val eventRepeater = EventDragMarker()
-				eventRepeater.translation.x = layoutWidth
-				eventRepeater.layoutHeight = layoutHeight
+				val eventDragMarker = EventDragMarker()
+				eventDragMarker.translation.x = layoutWidth
+				eventDragMarker.layoutHeight = layoutHeight
 
-				this.eventDragMarker = eventRepeater
-				add(eventRepeater)
+				this.eventDragMarker = eventDragMarker
+				add(eventDragMarker)
+
+				handler?.onSelect()
 			}
 
 			override fun onMove(xOffset: Float) {
@@ -114,14 +160,14 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onDrop(xOffset: Float) {
-				val eventRepeater = eventDragMarker
+				val eventDragMarker = eventDragMarker!!
 
-				if (eventRepeater != null) {
-					val count = ((xOffset / zoomFactor) / length).toInt()
-					remove(eventRepeater)
-					this.eventDragMarker = null
+				val count = ((xOffset / zoomFactor) / length).toInt()
+				remove(eventDragMarker)
+				this.eventDragMarker = null
+
+				if (count > 0)
 					handler?.onRepeat(count)
-				}
 			}
 		}
 
@@ -129,25 +175,29 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			private var eventDragMarker: EventDragMarker? = null
 
 			override fun onDrag() {
-				val eventRepeater = EventDragMarker()
-				eventRepeater.translation.x = layoutWidth
-				eventRepeater.layoutHeight = layoutHeight
+				val eventDragMarker = EventDragMarker()
+				eventDragMarker.translation.x = layoutWidth
+				eventDragMarker.layoutHeight = layoutHeight
 
-				this.eventDragMarker = eventRepeater
-				add(eventRepeater)
+				this.eventDragMarker = eventDragMarker
+				add(eventDragMarker)
+
+				handler?.onSelect()
 			}
 
 			override fun onMove(xOffset: Float) {
-				val diff = ((xOffset / zoomFactor) / length)
-				eventDragMarker!!.layoutWidth = diff * layoutWidth
+				val eventDragMarker = eventDragMarker!!
+
+				eventDragMarker.translation.x = 0f
+				eventDragMarker.layoutWidth = layoutWidth + xOffset
 			}
 
 			override fun onDrop(xOffset: Float) {
-				val eventRepeater = eventDragMarker
+				val eventDragMarker = eventDragMarker
 
-				if (eventRepeater != null) {
-					val newLength = ((xOffset / zoomFactor) / length)
-					remove(eventRepeater)
+				if (eventDragMarker != null) {
+					val newLength = max(1 / 16f, length + xOffset / zoomFactor)
+					remove(eventDragMarker)
 					this.eventDragMarker = null
 					handler?.onChange(start, newLength)
 				}
@@ -158,26 +208,30 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			private var eventDragMarker: EventDragMarker? = null
 
 			override fun onDrag() {
-				val eventRepeater = EventDragMarker()
-				eventRepeater.layoutHeight = layoutHeight
+				val eventDragMarker = EventDragMarker()
+				eventDragMarker.layoutHeight = layoutHeight
 
-				this.eventDragMarker = eventRepeater
-				add(eventRepeater)
+				this.eventDragMarker = eventDragMarker
+				add(eventDragMarker)
+
+				handler?.onSelect()
 			}
 
 			override fun onMove(xOffset: Float) {
-				eventDragMarker!!.translation.x = xOffset
-				eventDragMarker!!.layoutWidth = -xOffset
+				val eventDragMarker = eventDragMarker!!
+
+				eventDragMarker.translation.x = xOffset
+				eventDragMarker.layoutWidth = layoutWidth - xOffset
 			}
 
 			override fun onDrop(xOffset: Float) {
-				val eventRepeater = eventDragMarker
+				val eventDragMarker = eventDragMarker
 
-				if (eventRepeater != null) {
+				if (eventDragMarker != null) {
 					val newStart = xOffset / zoomFactor
-					remove(eventRepeater)
+					remove(eventDragMarker)
 					this.eventDragMarker = null
-					handler?.onChange(start + newStart, length - newStart)
+					handler?.onChange(start + newStart, max(1 / 16f, length - newStart))
 				}
 			}
 		}
@@ -188,11 +242,19 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 	}
 
 	override fun onDraw(draw: Draw) {
-		draw.setColor(0.5f, 0.5f, .8f)
+		if (selected)
+			draw.setColor(0.4f, 0.4f, .6f)
+		else
+			draw.setColor(0.2f, 0.2f, .5f)
+
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
-		draw.setColor(0.5f, 0.5f, 0.5f)
-		draw.setStroke(1f)
+		if (selected)
+			draw.setColor(0.8f, 0.8f, 0.8f)
+		else
+			draw.setColor(0.5f, 0.5f, 0.5f)
+
+		draw.setStroke(2f)
 		draw.rect(0f, 0f, layoutWidth, layoutHeight)
 	}
 
@@ -202,14 +264,16 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			translation.x = start * zoomFactor
 		}
 
-		startBox.translation.y = layoutHeight - 10f
-		lengthBox.translation.x = layoutWidth - 10f
-		lengthBox.translation.y = layoutHeight - 10f
-		repeatBox.translation.x = layoutWidth - 10f
+		startBox.translation.x = 2f
+		startBox.translation.y = layoutHeight - 10f - 2f
+		lengthBox.translation.x = layoutWidth - 10f - 2f
+		lengthBox.translation.y = layoutHeight - 10f - 2f
+		repeatBox.translation.x = layoutWidth - 10f - 2f
 		repeatBox.translation.y = layoutHeight / 2 - 5f
 	}
 
 	override fun onEvent(event: UIEvent) {
+		contextMenu.handle(event)
 		movable.handle(event)
 	}
 }

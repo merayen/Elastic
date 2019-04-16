@@ -9,7 +9,12 @@ class EventDragMarker : UIObject(), FlexibleDimension {
 	override var layoutHeight = 0f
 
 	override fun onDraw(draw: Draw) {
-		draw.setColor(0.8f, 0.5f, 0.8f)
-		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
+		draw.setColor(0f, 0f, 0f)
+		draw.setStroke(4f)
+		draw.rect(0f, 0f, layoutWidth, layoutHeight)
+
+		draw.setColor(1f, 1f, 1f)
+		draw.setStroke(2f)
+		draw.rect(0f, 0f, layoutWidth, layoutHeight)
 	}
 }

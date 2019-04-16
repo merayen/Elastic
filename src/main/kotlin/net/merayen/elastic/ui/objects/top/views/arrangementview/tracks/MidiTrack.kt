@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks
 import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
+import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.objects.components.buttons.Button
@@ -87,6 +88,14 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		eventPane.timeLine = eventTimeLine
 
 		eventTimeLine.handler = object : EventTimeLine.Handler {
+			override fun onCreateEvent(id: String, start: Float, length: Float) {
+				arrangement.sendMessage(NodeDataMessage(nodeId, AddEventZoneMessage(id, start, length)))
+			}
+
+			override fun onRemoveEvent(id: String) {
+				arrangement.sendMessage(NodeDataMessage(nodeId, RemoveEventZoneMessage(id)))
+			}
+
 			override fun onRepeatEvent(eventId: String, count: Int) {
 				val event = eventTimeLine.getEvent(eventId)
 				if (event != null) {
@@ -117,7 +126,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			"solo" -> soloButton.value = value as Boolean
 			"record" -> recordButton.value = value as Boolean
 			"trackName" -> trackName.value = value as String
-			"eventZones" -> eventTimeLine.loadEventZones(value as List<Parameters.EventZone>)
+			"eventZones" -> eventTimeLine.loadEventZones((value as List<HashMap<String,Any>>).map { Parameters.EventZone(it) })
 		}
 	}
 }

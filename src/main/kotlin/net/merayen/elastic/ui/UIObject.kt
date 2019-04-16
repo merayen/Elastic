@@ -163,8 +163,8 @@ open class UIObject {
 	/**
 	 * Returns the relative position of the object "obj" to this object.
 	 */
-	fun getRelativePosition(obj: UIObject): net.merayen.elastic.util.Point {
-		return net.merayen.elastic.util.Point(
+	fun getRelativePosition(obj: UIObject): Point {
+		return Point(
 				(obj.absolute_translation!!.x - absolute_translation!!.x) * absolute_translation!!.scaleX,
 				(obj.absolute_translation!!.y - absolute_translation!!.y) * absolute_translation!!.scaleY
 		)
