@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
-import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.MidiTrack
+import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi.MidiTrack
 import net.merayen.elastic.util.Postmaster
 
 class Arrangement : UIObject() {

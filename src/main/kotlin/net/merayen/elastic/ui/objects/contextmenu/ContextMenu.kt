@@ -4,6 +4,7 @@ import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
+import net.merayen.elastic.ui.objects.top.Window
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.ui.util.UINodeUtil
 import net.merayen.elastic.util.Point
@@ -32,12 +33,18 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 	init {
 		mouse.setHandler(object : MouseHandler.Handler() {
 			var relative: Point? = null
+			private var window: Window? = null
 
 			var originalMousePointerLocation: Point? = null
 
 			override fun onMouseDown(position: Point) {
 				val window = UINodeUtil.getWindow(trigger)
-				window!!.overlay.add(menu)
+				this.window = window
+
+				if (window == null)
+					return
+
+				window.overlay.add(menu)
 
 				relative = position
 
@@ -72,8 +79,9 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 			}
 
 			private fun moveNativeMouseCursorPosition() {
-				val window = UINodeUtil.getWindow(trigger)!!
-				val mouseCursor = UINodeUtil.getWindow(trigger)!!.nativeUI.mouseCursor
+				val window = window ?: return
+
+				val mouseCursor = window.nativeUI.mouseCursor
 
 				originalMousePointerLocation = mouseCursor.getPosition()
 
@@ -84,8 +92,11 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 			}
 
 			private fun restoreNativeMouseCursorPosition() {
+				val window = window ?: return
+
 				val loc = originalMousePointerLocation
-				val mouseCursor = UINodeUtil.getWindow(trigger)!!.nativeUI.mouseCursor
+
+				val mouseCursor = window.nativeUI.mouseCursor
 				if (loc != null)
 					mouseCursor.setPosition(loc)
 

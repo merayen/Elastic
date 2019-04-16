@@ -36,6 +36,11 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 		 * EventZone should be deleted
 		 */
 		fun onRemove()
+
+		/**
+		 * User wants to edit event
+		 */
+		fun onEdit()
 	}
 
 	private class DragBox : UIObject(), FlexibleDimension {
@@ -106,8 +111,12 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onSelect(item: ContextMenuItem?, position: Point) {
-				if (item is TextContextMenuItem && item.text == "Remove")
-					handler?.onRemove()
+				if (item is TextContextMenuItem) {
+					when (item.text) {
+						"Remove" -> handler?.onRemove()
+						"Edit" -> handler?.onEdit()
+					}
+				}
 			}
 		}
 

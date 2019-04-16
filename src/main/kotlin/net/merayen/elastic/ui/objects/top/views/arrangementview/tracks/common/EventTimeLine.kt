@@ -36,6 +36,11 @@ class EventTimeLine : BaseTimeLine() {
 		 * Called when to create a new event
 		 */
 		fun onCreateEvent(id: String, start: Float, length: Float)
+
+		/**
+		 * User wants to edit an event
+		 */
+		fun onEditEvent(id: String)
 	}
 
 	override var layoutWidth = 0f
@@ -76,12 +81,12 @@ class EventTimeLine : BaseTimeLine() {
 		val event = EventZone(eventZoneId)
 
 		event.handler = object : EventZone.Handler {
+
 			override fun onSelect() {
 				selectedEventZoneIds.clear()
 				selectedEventZoneIds.add(event.id)
 				updateSelections()
 			}
-
 			override fun onChange(start: Float, length: Float) {
 				handler?.onChangeEvent(eventZoneId, start, length)
 			}
@@ -93,12 +98,16 @@ class EventTimeLine : BaseTimeLine() {
 			override fun onRemove() {
 				handler?.onRemoveEvent(event.id)
 			}
+
+			override fun onEdit() {
+				handler?.onEditEvent(event.id)
+			}
 		}
 
 		event.translation.y = 2f
 		event.layoutHeight = layoutHeight - 4f
 		event.zoomFactor = zoomFactor
-		events.put(eventZoneId, event)
+		events[eventZoneId] = event
 		add(event)
 
 		return event

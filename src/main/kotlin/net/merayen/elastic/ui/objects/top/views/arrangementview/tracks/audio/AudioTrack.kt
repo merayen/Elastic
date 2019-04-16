@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks
+package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.audio
 
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack

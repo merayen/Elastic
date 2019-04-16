@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks
+package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi
 
 import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
@@ -7,7 +7,6 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.objects.components.buttons.Button
-import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.buttons.StateButton
 import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
@@ -23,6 +22,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 	private val trackName = TextInput()
 
 	private val eventTimeLine = EventTimeLine()
+	private val midiEditPane = MidiEditPane()
 
 	init {
 		val removeButton = Button()
@@ -86,6 +86,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		trackPane.add(trackName)
 
 		eventPane.timeLine = eventTimeLine
+		eventPane.editPane = midiEditPane
 
 		eventTimeLine.handler = object : EventTimeLine.Handler {
 			override fun onCreateEvent(id: String, start: Float, length: Float) {
@@ -117,6 +118,11 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			override fun onChangeEvent(eventId: String, position: Float, length: Float) {
 				arrangement.sendMessage(NodeDataMessage(nodeId, ChangeEventZoneMessage(eventId, position, length)))
 			}
+
+			override fun onEditEvent(id: String) {
+				midiEditPane.eventZone = eventTimeLine.getEvent(id)
+				eventPane.editMode = true
+			}
 		}
 	}
 
@@ -126,7 +132,16 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			"solo" -> soloButton.value = value as Boolean
 			"record" -> recordButton.value = value as Boolean
 			"trackName" -> trackName.value = value as String
-			"eventZones" -> eventTimeLine.loadEventZones((value as List<HashMap<String,Any>>).map { Parameters.EventZone(it) })
+			"eventZones" -> {
+				eventTimeLine.loadEventZones((value as List<HashMap<String,Any>>).map { Parameters.EventZone(it) })
+
+				// Exit edit mode if we get updates on events and the event has disappeared
+				val editEventZone = midiEditPane.eventZone
+				if (editEventZone != null && eventTimeLine.getEvent(editEventZone.id) == null) {
+					eventPane.editMode = false
+					midiEditPane.eventZone = null
+				}
+			}
 		}
 	}
 }
