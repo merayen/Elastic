@@ -69,6 +69,11 @@ class Arrangement : UIObject() {
 				if (message.name == "midi") {
 					val midiTrack = MidiTrack(message.nodeId, this)
 					midiTrack.handler = object : MidiTrack.Handler {
+						override fun onEventSelect() {
+							for (track in tracks) // TODO check for modifer-key. If user is holding SHIFT, do not unselect everything
+								track.clearSelections()
+						}
+
 						var startPosition: Point? = null
 
 						override fun onSelectionDrag(start: Point, offset: Point) {
@@ -82,8 +87,8 @@ class Arrangement : UIObject() {
 
 							val x = if (offset.x >= 0) pos.x + startPosition.x else startPosition.x + pos.x + offset.x
 							val y = if (offset.y >= 0) pos.y + startPosition.y else startPosition.y + pos.y + offset.y
-							var width = if (offset.x >= 0) offset.x else -offset.x
-							var height = if (offset.y >= 0) offset.y else -offset.y
+							val width = if (offset.x >= 0) offset.x else -offset.x
+							val height = if (offset.y >= 0) offset.y else -offset.y
 
 							selectionRectangle.translation.x = x
 							selectionRectangle.translation.y = y
@@ -98,7 +103,6 @@ class Arrangement : UIObject() {
 
 							startPosition = null
 						}
-
 					}
 					trackList.add(midiTrack.trackPane)
 					eventList.add(midiTrack.eventPane)

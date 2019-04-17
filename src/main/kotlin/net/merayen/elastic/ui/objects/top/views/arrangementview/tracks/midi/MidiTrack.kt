@@ -28,7 +28,6 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 	private val midiEditPane = MidiEditPane(nodeId)
 
 	var handler: Handler? = null
-
 	init {
 		val removeButton = Button()
 		removeButton.label = "X"
@@ -94,6 +93,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		eventPane.editPane = midiEditPane
 
 		eventTimeLine.handler = object : EventTimeLine.Handler {
+			override fun onEventSelect() = handler?.onEventSelect() ?: Unit
+
 			override fun onCreateEvent(id: String, start: Float, length: Float) {
 				arrangement.sendMessage(NodeDataMessage(nodeId, AddEventZoneMessage(id, start, length)))
 			}
@@ -157,5 +158,9 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				}
 			}
 		}
+	}
+
+	override fun clearSelections() {
+		eventTimeLine.clearSelections()
 	}
 }

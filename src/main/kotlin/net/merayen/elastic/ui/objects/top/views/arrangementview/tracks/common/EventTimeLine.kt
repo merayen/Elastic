@@ -42,6 +42,12 @@ class EventTimeLine : BaseTimeLine() {
 		 * User wants to edit an event.
 		 */
 		fun onEditEvent(id: String)
+
+		/**
+		 * Indicates that user has clicked on an event. Receiver of this event should decide if all selections
+		 * should be cleared, or not (e.g when SHIFT-modifier key is held)
+		 */
+		fun onEventSelect()
 	}
 
 	override var layoutWidth = 0f
@@ -80,6 +86,10 @@ class EventTimeLine : BaseTimeLine() {
 		contextMenu.addMenuItem(TextContextMenuItem("Add"))
 
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
+			override fun onMouseDown(position: Point?) {
+				handler?.onEventSelect()
+			}
+
 			override fun onMouseDrag(position: Point, offset: Point) {
 				handler?.onSelectionDrag(position, offset)
 			}
@@ -96,8 +106,9 @@ class EventTimeLine : BaseTimeLine() {
 		event.handler = object : EventZone.Handler {
 
 			override fun onSelect() {
-				selectedEventZoneIds.clear()
+				handler?.onEventSelect()
 				selectedEventZoneIds.add(event.id)
+
 				updateSelections()
 			}
 			override fun onChange(start: Float, length: Float) {
@@ -150,6 +161,11 @@ class EventTimeLine : BaseTimeLine() {
 		super.onEvent(event)
 		contextMenu.handle(event)
 		mouseHandler.handle(event)
+	}
+
+	override fun clearSelections() {
+		selectedEventZoneIds.clear()
+		updateSelections()
 	}
 
 	fun getEvent(eventId: String): EventZone? {

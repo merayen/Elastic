@@ -9,11 +9,11 @@ internal class SelectionRectangle : UIObject(), FlexibleDimension {
 	override var layoutHeight = 0f
 
 	override fun onDraw(draw: Draw) {
-		draw.setColor(0.2f, 0.2f, 1f, 0.5f)
+		draw.setColor(0.8f, 0.8f, 1f, 0.5f)
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
-		draw.setStroke(2f)
-		draw.setColor(0.8f, 0.8f, 0.8f)
-		draw.fillRect(2f, 2f, layoutWidth - 4f, layoutHeight - 4f)
+		draw.setStroke(1f)
+		draw.setColor(1f, 1f, 1f)
+		draw.rect(1f, 1f, layoutWidth - 2f, layoutHeight - 2f)
 	}
 }

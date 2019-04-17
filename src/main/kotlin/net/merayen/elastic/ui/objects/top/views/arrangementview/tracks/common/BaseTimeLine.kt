@@ -17,4 +17,6 @@ abstract class BaseTimeLine : UIObject(), FlexibleDimension {
 		 */
 		fun onSelectionDrop(start: Point, offset: Point)
 	}
+
+	abstract fun clearSelections()
 }
