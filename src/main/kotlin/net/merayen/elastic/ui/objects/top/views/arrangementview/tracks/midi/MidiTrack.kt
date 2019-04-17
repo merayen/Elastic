@@ -12,9 +12,12 @@ import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.EventTimeLine
+import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.UniqueID
 
 class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nodeId, arrangement) {
+	interface Handler : ArrangementTrack.Handler
+
 	private val muteButton: StateButton
 	private val soloButton: StateButton
 	private val recordButton: StateButton
@@ -23,6 +26,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 
 	private val eventTimeLine = EventTimeLine()
 	private val midiEditPane = MidiEditPane(nodeId)
+
+	var handler: Handler? = null
 
 	init {
 		val removeButton = Button()
@@ -123,6 +128,14 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				midiEditPane.eventZone = eventTimeLine.getEvent(id)
 				eventPane.editMode = true
 				trackPane.layoutHeight = 200f
+			}
+
+			override fun onSelectionDrag(start: Point, offset: Point) {
+				handler?.onSelectionDrag(start, offset)
+			}
+
+			override fun onSelectionDrop(start: Point, offset: Point) {
+				handler?.onSelectionDrop(start, offset)
 			}
 		}
 	}

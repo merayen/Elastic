@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
+import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.UniqueID
 import kotlin.math.max
@@ -16,7 +17,7 @@ import kotlin.math.max
  * Event editor. Edit events. Events.
  */
 class EventTimeLine : BaseTimeLine() {
-	interface Handler {
+	interface Handler : BaseTimeLine.Handler {
 		/**
 		 * Called when an event has been moved.
 		 */
@@ -28,17 +29,17 @@ class EventTimeLine : BaseTimeLine() {
 		fun onRepeatEvent(id: String, count: Int)
 
 		/**
-		 * Signals that an event should be deleted
+		 * Signals that an event should be deleted.
 		 */
 		fun onRemoveEvent(id: String)
 
 		/**
-		 * Called when to create a new event
+		 * Called when to create a new event.
 		 */
 		fun onCreateEvent(id: String, start: Float, length: Float)
 
 		/**
-		 * User wants to edit an event
+		 * User wants to edit an event.
 		 */
 		fun onEditEvent(id: String)
 	}
@@ -61,6 +62,8 @@ class EventTimeLine : BaseTimeLine() {
 
 	private val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
 
+	private val mouseHandler = MouseHandler(this, MouseEvent.Button.LEFT)
+
 	override fun onInit() {
 		super.onInit()
 
@@ -75,6 +78,16 @@ class EventTimeLine : BaseTimeLine() {
 		contextMenu.backgroundColor = Color(0.3f, 0.3f, 0.3f)
 
 		contextMenu.addMenuItem(TextContextMenuItem("Add"))
+
+		mouseHandler.setHandler(object : MouseHandler.Handler() {
+			override fun onMouseDrag(position: Point, offset: Point) {
+				handler?.onSelectionDrag(position, offset)
+			}
+
+			override fun onMouseDrop(position: Point, offset: Point) {
+				handler?.onSelectionDrop(position, offset)
+			}
+		})
 	}
 
 	fun createEventZone(eventZoneId: String): EventZone {
@@ -135,8 +148,8 @@ class EventTimeLine : BaseTimeLine() {
 
 	override fun onEvent(event: UIEvent) {
 		super.onEvent(event)
-
 		contextMenu.handle(event)
+		mouseHandler.handle(event)
 	}
 
 	fun getEvent(eventId: String): EventZone? {

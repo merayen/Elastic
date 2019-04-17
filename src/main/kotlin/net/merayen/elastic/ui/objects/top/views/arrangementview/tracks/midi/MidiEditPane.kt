@@ -22,16 +22,6 @@ class MidiEditPane(val nodeId: String) : BaseEditPane() {
 			field = value
 		}
 
-	/*override fun onDraw(draw: Draw) {
-		super.onDraw(draw)
-		draw.setColor(1f, 0f, 1f)
-		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
-
-		draw.setColor(0f, 1f, 0f)
-		draw.setFont("",32f)
-		draw.text("Editing eventZone $eventZone.id", 0f, 32f)
-	}*/
-
 	override fun onUpdate() {
 		super.onUpdate()
 		nodeEditor?.layoutWidth = layoutWidth

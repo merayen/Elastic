@@ -10,3 +10,4 @@ build
 /NewProject.elastic
 /out
 .DS_Store
+/bin

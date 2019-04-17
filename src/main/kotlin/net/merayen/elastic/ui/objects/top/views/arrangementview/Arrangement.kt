@@ -8,7 +8,9 @@ import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
+import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.SelectionRectangle
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi.MidiTrack
+import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.Postmaster
 
 class Arrangement : UIObject() {
@@ -21,6 +23,8 @@ class Arrangement : UIObject() {
 
 	private val arrangementListScroll = Scroll(eventList)
 	private val buttonBar = AutoLayout(LayoutMethods.HorizontalBox(5f, 100000f))
+
+	private val selectionRectangle = SelectionRectangle()
 
 	override fun onInit() {
 		add(arrangementListScroll)
@@ -64,6 +68,38 @@ class Arrangement : UIObject() {
 			is CreateNodeMessage -> {
 				if (message.name == "midi") {
 					val midiTrack = MidiTrack(message.nodeId, this)
+					midiTrack.handler = object : MidiTrack.Handler {
+						var startPosition: Point? = null
+
+						override fun onSelectionDrag(start: Point, offset: Point) {
+							val startPosition = startPosition ?: start
+							this.startPosition = startPosition
+
+							val pos = getRelativePosition(midiTrack.eventPane)
+
+							if (selectionRectangle.parent == null)
+								add(selectionRectangle)
+
+							val x = if (offset.x >= 0) pos.x + startPosition.x else startPosition.x + pos.x + offset.x
+							val y = if (offset.y >= 0) pos.y + startPosition.y else startPosition.y + pos.y + offset.y
+							var width = if (offset.x >= 0) offset.x else -offset.x
+							var height = if (offset.y >= 0) offset.y else -offset.y
+
+							selectionRectangle.translation.x = x
+							selectionRectangle.translation.y = y
+
+							selectionRectangle.layoutWidth = width
+							selectionRectangle.layoutHeight = height
+						}
+
+						override fun onSelectionDrop(start: Point, offset: Point) {
+							if (selectionRectangle.parent != null)
+								remove(selectionRectangle)
+
+							startPosition = null
+						}
+
+					}
 					trackList.add(midiTrack.trackPane)
 					eventList.add(midiTrack.eventPane)
 					tracks.add(midiTrack)
