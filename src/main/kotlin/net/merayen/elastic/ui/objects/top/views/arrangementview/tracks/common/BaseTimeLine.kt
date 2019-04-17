@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.SelectionRectangle
 import net.merayen.elastic.util.Point
 
 abstract class BaseTimeLine : UIObject(), FlexibleDimension {
@@ -19,4 +20,9 @@ abstract class BaseTimeLine : UIObject(), FlexibleDimension {
 	}
 
 	abstract fun clearSelections()
+
+	/**
+	 * Called when user is drawing the selection rectangle
+	 */
+	abstract fun onSelectionRectangle(selectionRectangle: UIObject)
 }

@@ -6,6 +6,7 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
 import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.buttons.StateButton
 import net.merayen.elastic.ui.objects.components.TextInput
@@ -19,15 +20,16 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 	interface Handler : ArrangementTrack.Handler
 
 	private val muteButton: StateButton
+
 	private val soloButton: StateButton
 	private val recordButton: StateButton
-
 	private val trackName = TextInput()
 
 	private val eventTimeLine = EventTimeLine()
-	private val midiEditPane = MidiEditPane(nodeId)
 
+	private val midiEditPane = MidiEditPane(nodeId)
 	var handler: Handler? = null
+
 	init {
 		val removeButton = Button()
 		removeButton.label = "X"
@@ -140,7 +142,6 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			}
 		}
 	}
-
 	override fun onParameter(key: String, value: Any) {
 		when (key) {
 			"mute" -> muteButton.value = value as Boolean
@@ -158,6 +159,10 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				}
 			}
 		}
+	}
+
+	override fun onSelectionRectangle(selectionRectangle: UIObject) {
+		eventTimeLine.onSelectionRectangle(selectionRectangle)
 	}
 
 	override fun clearSelections() {

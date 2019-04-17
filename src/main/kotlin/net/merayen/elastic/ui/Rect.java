@@ -23,8 +23,8 @@ public class Rect {
 
 	public String toString() {
 		return String.format(
-				"[Rect(x1=%f, y1=%f, x2=%f, y2=%f)]",
-				x1, y1, x2, y2
+				"[Rect(x1=%f, y1=%f, x2=%f, y2=%f, w=%f, h=%f)]",
+				x1, y1, x2, y2, getWidth(), getHeight()
 		);
 	}
 

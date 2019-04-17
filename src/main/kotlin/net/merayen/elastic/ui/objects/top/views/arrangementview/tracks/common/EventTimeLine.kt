@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.Rect
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
@@ -11,6 +13,7 @@ import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.UniqueID
+import net.merayen.elastic.ui.util.boolean
 import kotlin.math.max
 
 /**
@@ -51,8 +54,8 @@ class EventTimeLine : BaseTimeLine() {
 	}
 
 	override var layoutWidth = 0f
-	override var layoutHeight = 0f
 
+	override var layoutHeight = 0f
 	var handler: Handler? = null
 
 	var zoomFactor = 100f
@@ -62,7 +65,7 @@ class EventTimeLine : BaseTimeLine() {
 				event.zoomFactor = value
 		}
 
-	private val events = HashMap<String,EventZone>()
+	private val events = HashMap<String, EventZone>()
 
 	private var selectedEventZoneIds = ArrayList<String>()
 
@@ -111,6 +114,7 @@ class EventTimeLine : BaseTimeLine() {
 
 				updateSelections()
 			}
+
 			override fun onChange(start: Float, length: Float) {
 				handler?.onChangeEvent(eventZoneId, start, length)
 			}
@@ -194,5 +198,26 @@ class EventTimeLine : BaseTimeLine() {
 				event.selected = false
 			}
 		}
+	}
+
+	override fun onSelectionRectangle(selectionRectangle: UIObject) {
+		val pos = getRelativePosition(selectionRectangle)
+
+		for (event in events.values) {
+			val collision = boolean(
+				Rect(pos.x, pos.y, pos.x + selectionRectangle.getWidth(), pos.y + selectionRectangle.getHeight()),
+				Rect(event.translation.x, event.translation.y, event.translation.x + event.layoutWidth, event.translation.y + event.layoutHeight)
+			)
+
+			// TODO check for SHIFT-modifier
+			if (collision.width > 0 && collision.height > 0) {
+				if (event.id !in selectedEventZoneIds)
+					selectedEventZoneIds.add(event.id)
+			} else {
+				selectedEventZoneIds.remove(event.id)
+			}
+		}
+
+		updateSelections()
 	}
 }

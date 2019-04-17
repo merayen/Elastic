@@ -95,6 +95,9 @@ class Arrangement : UIObject() {
 
 							selectionRectangle.layoutWidth = width
 							selectionRectangle.layoutHeight = height
+
+							for (track in tracks)
+								track.onSelectionRectangle(selectionRectangle)
 						}
 
 						override fun onSelectionDrop(start: Point, offset: Point) {
