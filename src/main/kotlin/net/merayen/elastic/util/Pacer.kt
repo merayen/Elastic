@@ -3,7 +3,7 @@ package net.merayen.elastic.util
 import kotlin.math.min
 
 class Pacer {
-	private var last = 0L;
+	private var last = 0L
 	private var diff = 0f
 	private var started = false
 

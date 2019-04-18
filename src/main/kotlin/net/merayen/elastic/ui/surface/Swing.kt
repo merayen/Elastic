@@ -14,8 +14,7 @@ import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
-import java.util.HashSet
+import java.util.*
 import javax.swing.JOptionPane
 import javax.swing.SwingUtilities
 
@@ -23,7 +22,7 @@ import javax.swing.SwingUtilities
  * Java Swing Surface.
  * TODO move somewhere else?
  */
-class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
+class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	private lateinit var panel: LolPanel
 	private lateinit var frame: LolFrame
 	private val eventsQueue = ArrayList<UIEvent>()
@@ -87,7 +86,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 
 			title = "Elastic"
 			setSize(800, 800)
-			defaultCloseOperation = javax.swing.JFrame.EXIT_ON_CLOSE
+			defaultCloseOperation = EXIT_ON_CLOSE
 			isVisible = true
 		}
 
@@ -184,12 +183,12 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 
 		val b = e.button
 
-		if (b == java.awt.event.MouseEvent.BUTTON1)
-			button = MouseEvent.Button.LEFT
-		else if (b == java.awt.event.MouseEvent.BUTTON2)
-			button = MouseEvent.Button.MIDDLE
-		else if (b == java.awt.event.MouseEvent.BUTTON3)
-			button = MouseEvent.Button.RIGHT
+		when (b) {
+			java.awt.event.MouseEvent.BUTTON1 -> button = MouseEvent.Button.LEFT
+			java.awt.event.MouseEvent.BUTTON2 -> button = MouseEvent.Button.MIDDLE
+			java.awt.event.MouseEvent.BUTTON3 -> button = MouseEvent.Button.RIGHT
+			// Mouse is always id 0. Gamepads will have an higher id
+		}
 
 		queueEvent(MouseEvent(e.component.name, 0, e.x, e.y, action, button)) // Mouse is always id 0. Gamepads will have an higher id
 	}
@@ -218,7 +217,7 @@ class Swing(id: String, handler: Surface.Handler) : Surface(id, handler) {
 	}
 
 
-	inner class SwingNativeUI : Surface.NativeUI {
+	inner class SwingNativeUI : NativeUI {
 
 
 		override val mouseCursor = object : NativeUI.MouseCursor {

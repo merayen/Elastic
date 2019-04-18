@@ -37,7 +37,7 @@ public class Postmaster {
 		Message[] result;
 
 		synchronized (queue) {
-			result = queue.toArray(new Message[queue.size()]);
+			result = queue.toArray(new Message[0]);
 			queue.clear();
 		}
 

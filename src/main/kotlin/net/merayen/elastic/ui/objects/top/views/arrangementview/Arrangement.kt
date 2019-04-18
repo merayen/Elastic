@@ -39,7 +39,7 @@ class Arrangement : UIObject() {
 		buttonBar.add(object : Button() {
 			init {
 				label = "New track"
-				handler = object : Button.IHandler {
+				handler = object : IHandler {
 					override fun onClick() {
 						TODO("Ask user which type of track to create and send a message to backend")
 					}

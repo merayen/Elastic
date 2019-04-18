@@ -16,7 +16,7 @@ public class Delay {
 		}
 	}
 
-	public final float buffer[];
+	public final float[] buffer;
 
 	private int position;
 

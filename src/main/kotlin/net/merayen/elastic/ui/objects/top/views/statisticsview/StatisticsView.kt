@@ -4,7 +4,6 @@ import net.merayen.elastic.system.intercom.StatisticsReportMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.Meter
 import net.merayen.elastic.ui.objects.top.views.View
-import net.merayen.elastic.util.Pacer
 import kotlin.math.roundToInt
 
 class StatisticsView : View() {

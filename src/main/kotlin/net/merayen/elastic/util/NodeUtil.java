@@ -17,6 +17,6 @@ public class NodeUtil {
 	}
 
 	public static String createID() {
-		return new Integer(UUID.randomUUID().hashCode()).toString();
+		return Integer.toString(UUID.randomUUID().hashCode());
 	}
 }

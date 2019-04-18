@@ -7,7 +7,6 @@ import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.components.midiroll.MidiRoll
 import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
-import java.util.HashMap
 
 /**
  * Editor for the MIDI-roll shown in a separate view.

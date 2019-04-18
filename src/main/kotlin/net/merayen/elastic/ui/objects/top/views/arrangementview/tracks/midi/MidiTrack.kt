@@ -44,7 +44,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				label = "M"
 				textColor = Color(1f, 1f, 1f)
 				backgroundColor = Color(1f, 0f, 0f)
-				handler = object : StateButton.Handler {
+				handler = object : Handler {
 					override fun onClick(value: Boolean) {
 						sendParameter("mute", value)
 					}
@@ -57,7 +57,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				label = "S"
 				textColor = Color()
 				backgroundColor = Color(1f, 1f, 0f)
-				handler = object : StateButton.Handler {
+				handler = object : Handler {
 					override fun onClick(value: Boolean) {
 						sendParameter("solo", value)
 					}
@@ -70,7 +70,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				label = "R"
 				textColor = Color(1f, 1f, 1f)
 				backgroundColor = Color(1f, 0.5f, 0.5f)
-				handler = object : StateButton.Handler {
+				handler = object : Handler {
 					override fun onClick(value: Boolean) {
 						sendParameter("record", value)
 					}

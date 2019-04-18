@@ -23,9 +23,9 @@ class LogicNode : BaseLogicNode() {
 		createPort(PortDefinition("output", Format.AUDIO))
 		createPort(PortDefinition("attenuation", Format.SIGNAL))
 
-		set("inputAmplitude", 1f);
-		set("inputSidechainAmplitude", 1f);
-		set("outputAmplitude", 1f);
+		set("inputAmplitude", 1f)
+		set("inputSidechainAmplitude", 1f)
+		set("outputAmplitude", 1f)
 		set("attack", 0.1f)
 		set("release", 0.1f)
 		set("threshold", 1f)

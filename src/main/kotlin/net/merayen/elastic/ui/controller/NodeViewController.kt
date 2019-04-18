@@ -38,11 +38,11 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 	 * NodeViews send this message when they are created.
 	 * These messages get picked up by us and we register them.
 	 */
-	class Hello : Postmaster.Message()
+	class Hello : Message()
 
 	override fun onInit() {}
 
-	override fun onMessageFromBackend(message: Postmaster.Message) {
+	override fun onMessageFromBackend(message: Message) {
 		val netListUtil = NetListUtil(gate.netlist)
 
 		// Forward message regarding the net, from backend to the UINet, to all NodeViews
@@ -146,7 +146,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 
 		} else if (message is NetListRefreshRequestMessage) { // Move it out to a separate controller, with only purpose to accumulate the netlist and resend it?
 
-			val messages = ArrayList<Postmaster.Message>()
+			val messages = ArrayList<Message>()
 			messages.add(BeginResetNetListMessage())
 			messages.addAll(NetListMessages.disassemble(gate.netlist))
 			messages.add(FinishResetNetListMessage())

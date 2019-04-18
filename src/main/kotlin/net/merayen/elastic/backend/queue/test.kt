@@ -37,19 +37,18 @@ fun test() {
     val resultArray = IntArray(100)
 
     for (u in 0 until resultArray.size) {
-        val i = u
         queue.addTask(object : QueueTask(someSequence) {
             override fun onCleanup() {
-                if (i == 90)
-                    println("Rensker $i")
+                if (u == 90)
+                    println("Rensker $u")
             }
 
             override fun onProcess() {
                 //Thread.sleep(resultArray.size.toLong() - i)
                 Thread.sleep(500)
                 synchronized(testData.task2Counter) {
-                    resultArray[i] = testData.task2Counter
-                    println("Kjører $i ${testData.task2Counter}")
+                    resultArray[u] = testData.task2Counter
+                    println("Kjører $u ${testData.task2Counter}")
                     testData.task2Counter++
                 }
             }

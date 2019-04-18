@@ -16,7 +16,7 @@ class EditNodeController(gate: Gate) : Controller(gate) {
 			is NodeMessage ->
 				for(view in getViews(EditNodeView::class.java))
 					if(view.nodeId == message.nodeId)
-						view.receiveMessage(message);
+						view.receiveMessage(message)
 		}
 	}
 
@@ -35,5 +35,5 @@ class EditNodeController(gate: Gate) : Controller(gate) {
 		it is NodeMessage && it.nodeId == nodeId
 	}
 
-	fun getNodeProperties(nodeId: String) = gate.netlist.getNode(nodeId).properties
+	fun getNodeProperties(nodeId: String) = gate.netlist.getNode(nodeId)?.properties
 }

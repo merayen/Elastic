@@ -2,7 +2,6 @@ package net.merayen.elastic.ui.objects.components.autolayout;
 
 import java.util.List;
 
-import net.merayen.elastic.ui.FlexibleDimension;
 import net.merayen.elastic.ui.UIObject;
 
 public class AutoLayout<T extends AutoLayout.Placement> extends UIObject {

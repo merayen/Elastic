@@ -13,7 +13,7 @@ public class TapSpreader<T> {
 	private final List<Tap<T>> list = new ArrayList<>();
 
 	public Tap<T> create() {
-		Tap<T> t = new Tap<T>(this);
+		Tap<T> t = new Tap<>(this);
 
 		synchronized (upcoming) {
 			upcoming.add(t);

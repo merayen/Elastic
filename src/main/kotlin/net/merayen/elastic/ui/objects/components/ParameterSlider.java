@@ -30,14 +30,11 @@ public class ParameterSlider extends UIObject {
 		left_button.setLayoutWidth(11f);
 		add(left_button);
 
-		left_button.setHandler(new Button.IHandler() {
-			@Override
-			public void onClick() {
-				if(handler != null) {
-					handler.onButton(-1);
-					handler.onChange(value, false);
-					label = handler.onLabelUpdate(value);
-				}
+		left_button.setHandler(() -> {
+			if(handler != null) {
+				handler.onButton(-1);
+				handler.onChange(value, false);
+				label = handler.onLabelUpdate(value);
 			}
 		});
 
@@ -48,14 +45,11 @@ public class ParameterSlider extends UIObject {
 		right_button.setLayoutWidth(11f);
 		add(right_button);
 
-		right_button.setHandler(new Button.IHandler() {
-			@Override
-			public void onClick() {
-				if(handler != null) {
-					handler.onButton(1);
-					handler.onChange(value, false);
-					label = handler.onLabelUpdate(value);
-				}
+		right_button.setHandler(() -> {
+			if(handler != null) {
+				handler.onButton(1);
+				handler.onChange(value, false);
+				label = handler.onLabelUpdate(value);
 			}
 		});
 

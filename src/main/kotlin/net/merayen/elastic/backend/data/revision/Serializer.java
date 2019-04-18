@@ -20,7 +20,7 @@ public class Serializer {
 		for(Object x : list) {
 			JSONObject rev = (JSONObject)x;
 			if(rev.containsKey("parent"))
-				rt.list.get((String)rev.get("id")).parent = rt.list.get(rev.get("parent"));
+				rt.list.get(rev.get("id")).parent = rt.list.get(rev.get("parent"));
 		}
 
 		rt.current = rt.list.get(data.get("current"));

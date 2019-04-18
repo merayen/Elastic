@@ -1,11 +1,9 @@
 package net.merayen.elastic.ui.objects;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
-import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.system.intercom.NodeConnectMessage;
+import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
+import net.merayen.elastic.system.intercom.RemoveNodeMessage;
+import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
@@ -17,6 +15,11 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.Postmaster;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Draws the lines between the ports on the nodes.
@@ -39,7 +42,7 @@ public class UINet extends UIObject {
 		}
 	}
 
-	private List<Connection> connections = new ArrayList<Connection>();
+	private List<Connection> connections = new ArrayList<>();
 
 	private UIPortTemporary temporary_port; // Invisible port that is dragged
 	private UIPort dragging_port_source;

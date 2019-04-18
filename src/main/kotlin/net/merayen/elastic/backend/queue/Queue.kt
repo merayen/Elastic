@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.queue
 
 import java.util.ArrayDeque
+import kotlin.collections.HashSet
 
 /**
 * An async queue with support for progress reporting.
@@ -35,10 +36,10 @@ class Queue(val threadCount: Int) {
                         state == QueueTask.QueueTaskState.FAILED ||
                         state == QueueTask.QueueTaskState.CANCELLED
                 ) {
-                    tasks.remove(task);
-                    threads.remove(task._thread);
-                    retry = true;
-                    break@loop
+                    tasks.remove(task)
+					threads.remove(task._thread)
+					retry = true
+					break@loop
 
                 } else if (state == QueueTask.QueueTaskState.QUEUED) {
                     if (task.sequence == null || task.sequence !in activeSequences) {

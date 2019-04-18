@@ -2,7 +2,6 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview
 
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.SelectionRectangle
 import net.merayen.elastic.util.Point
 
 abstract class ArrangementTrack(val nodeId: String, private val arrangement: Arrangement) {

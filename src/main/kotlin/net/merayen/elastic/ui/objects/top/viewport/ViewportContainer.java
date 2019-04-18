@@ -3,8 +3,6 @@ package net.merayen.elastic.ui.objects.top.viewport;
 import java.util.*;
 
 import net.merayen.elastic.ui.Draw;
-import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
-import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;

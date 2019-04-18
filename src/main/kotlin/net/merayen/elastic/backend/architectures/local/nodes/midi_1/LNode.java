@@ -1,11 +1,12 @@
 package net.merayen.elastic.backend.architectures.local.nodes.midi_1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class LNode extends LocalNode {
 
@@ -24,8 +25,7 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onProcess(Map<String, Object> data) {
 		if(data.containsKey("midi"))
-			for(short[] m : (short[][])data.get("midi"))
-				midi_from_ui.add(m);
+			midi_from_ui.addAll(Arrays.asList((short[][]) data.get("midi")));
 	}
 
 	@Override

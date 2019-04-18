@@ -1,12 +1,12 @@
 package net.merayen.elastic.ui.objects.top.menu;
 
-import java.util.ArrayList;
-
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
+import java.util.ArrayList;
+
 public class Bar extends UIObject {
-	public ArrayList<MenuBarItem> items = new ArrayList<MenuBarItem>();
+	public ArrayList<MenuBarItem> items = new ArrayList<>();
 	public float width = 500f;
 	private final float height = 20f;
 

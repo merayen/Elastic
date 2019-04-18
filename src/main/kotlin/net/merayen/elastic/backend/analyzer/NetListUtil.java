@@ -1,12 +1,12 @@
 package net.merayen.elastic.backend.analyzer;
 
+import net.merayen.elastic.netlist.NetList;
+import net.merayen.elastic.netlist.Node;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import net.merayen.elastic.netlist.NetList;
-import net.merayen.elastic.netlist.Node;
 
 public class NetListUtil {
 	private final NetList netlist;
@@ -48,10 +48,9 @@ public class NetListUtil {
 	}
 
 	public List<Node> getChildrenDeep(Node node) {
-		List<Node> result = new ArrayList<>();
 		List<Node> children = getChildren(node);
 
-		result.addAll(children);
+		List<Node> result = new ArrayList<>(children);
 
 		for (Node n : children)
 			result.addAll(getChildrenDeep(n));

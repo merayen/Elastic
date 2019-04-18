@@ -96,7 +96,7 @@ class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, priva
 		// The EQ-curve
 		draw.setColor(1f, 1f, 0f)
 		draw.setStroke(1f)
-		draw.bezier(0f, layoutHeight / 2, arrayOf<Point>(Point(layoutWidth, 0f), Point(0f, layoutHeight), Point(layoutWidth, layoutHeight / 2)))
+		draw.bezier(0f, layoutHeight / 2, arrayOf(Point(layoutWidth, 0f), Point(0f, layoutHeight), Point(layoutWidth, layoutHeight / 2)))
 
 		// Border
 		draw.setStroke(1f)

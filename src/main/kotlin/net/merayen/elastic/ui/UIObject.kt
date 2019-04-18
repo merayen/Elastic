@@ -161,7 +161,7 @@ open class UIObject {
 	fun getAbsolutePosition(offset_x: Float, offset_y: Float): Point? {
 		val td = absolute_translation ?: return null
 
-		return Point((td!!.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
+		return Point((td.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
 	}
 
 	/**

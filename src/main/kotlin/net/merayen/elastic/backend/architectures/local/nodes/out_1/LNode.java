@@ -4,7 +4,6 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.OutputInterfaceNode;
 

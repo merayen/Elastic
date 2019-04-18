@@ -4,7 +4,6 @@ import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.StatisticsReportMessage
 import net.merayen.elastic.ui.objects.top.views.statisticsview.StatisticsView
-import net.merayen.elastic.util.NodeUtil
 import net.merayen.elastic.util.Postmaster
 
 class StatisticsReportController(gate: Gate) : Controller(gate) {
@@ -35,7 +34,7 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 				val statistics = (message.value as Map<String, Any>)["statistics"] as? Map<String, Any>
 
 				if (statistics != null)
-					;//println(statistics["available_before_min"])
+				;//println(statistics["available_before_min"])
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.components
 
-import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 
 class Checkbox : UIObject() {

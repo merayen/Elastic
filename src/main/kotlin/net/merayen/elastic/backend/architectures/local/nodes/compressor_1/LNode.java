@@ -31,20 +31,29 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onParameter(String key, Object value) {
-		if(key.equals("threshold"))
-			threshold = ((Number)value).floatValue();
-		else if(key.equals("attack"))
-			attack = Math.max(0.001, ((Number)value).floatValue());
-		else if(key.equals("release"))
-			release = Math.max(0.001, ((Number)value).floatValue());
-		else if(key.equals("ratio"))
-			ratio = ((Number)value).floatValue();
-		else if(key.equals("inputAmplitude"))
-			inputAmplitude = ((Number)value).floatValue();
-		else if(key.equals("inputSidechainAmplitude"))
-			inputSidechainAmplitude = ((Number)value).floatValue();
-		else if(key.equals("outputAmplitude"))
-			outputAmplitude = ((Number)value).floatValue();
+		switch (key) {
+			case "threshold":
+				threshold = ((Number) value).floatValue();
+				break;
+			case "attack":
+				attack = Math.max(0.001, ((Number) value).floatValue());
+				break;
+			case "release":
+				release = Math.max(0.001, ((Number) value).floatValue());
+				break;
+			case "ratio":
+				ratio = ((Number) value).floatValue();
+				break;
+			case "inputAmplitude":
+				inputAmplitude = ((Number) value).floatValue();
+				break;
+			case "inputSidechainAmplitude":
+				inputSidechainAmplitude = ((Number) value).floatValue();
+				break;
+			case "outputAmplitude":
+				outputAmplitude = ((Number) value).floatValue();
+				break;
+		}
 	}
 
 	@Override

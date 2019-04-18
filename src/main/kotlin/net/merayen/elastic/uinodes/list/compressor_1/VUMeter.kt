@@ -14,10 +14,6 @@ class VUMeter : UIObject(), FlexibleDimension {
 			field = min(1f, max(0f, value))
 		}
 
-	override fun onInit() {
-		super.onInit()
-	}
-
 	override fun onUpdate() {
 		layoutHeight = layoutWidth / 1.5f
 	}

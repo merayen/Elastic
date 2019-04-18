@@ -55,7 +55,7 @@ abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
 
 			override fun onGlobalMouseMove(global_position: Point?) {
 				if(interested || !mouseDown)
-					return;
+					return
 
 				val item = mouseCursorManager.retrieveCarryItem(mouseEvent.id)
 				if(item != null) {

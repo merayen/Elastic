@@ -1,19 +1,17 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
-import java.util.ArrayList
-
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.controller.NodeViewController
-import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.MouseWheelEvent
+import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Postmaster
-import net.merayen.elastic.util.TaskExecutor
+import java.util.*
 
 // TODO accept NetList as input and rebuild ourselves automatically from that
 // TODO allow forwarding of node messages from and to the backend.

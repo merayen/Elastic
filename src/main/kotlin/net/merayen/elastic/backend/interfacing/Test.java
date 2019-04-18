@@ -2,9 +2,6 @@ package net.merayen.elastic.backend.interfacing;
 
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
-import net.merayen.elastic.backend.interfacing.platforms.oracle_java.OracleAudioInputDevice;
-import net.merayen.elastic.backend.interfacing.platforms.oracle_java.OracleAudioOutputDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
 import net.merayen.elastic.backend.util.SoundTest;
 
 public class Test {

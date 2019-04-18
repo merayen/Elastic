@@ -57,7 +57,7 @@ class FFmpegAudio(inputFiles: Array<File>, settings: Settings) : ConversionModul
         val info = JSONParser().parse(result) as? JSONObject ?: throw ConversionError("Could not read JSON from ffprobe: $result")
         val streams = info["streams"] as? JSONArray ?: throw ConversionError("Could not read streams-section from ffprobe: $result")
 
-        val durationString = ((info["format"] as? JSONObject)?.get("duration") as? String) ?: throw ConversionError("Could not extract duration of the media. ffprobe says: ${result}")
+        val durationString = ((info["format"] as? JSONObject)?.get("duration") as? String) ?: throw ConversionError("Could not extract duration of the media. ffprobe says: $result")
         val duration = durationString.toFloat()
 
         var sampleRate: Int? = null

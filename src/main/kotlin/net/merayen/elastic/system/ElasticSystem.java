@@ -21,8 +21,8 @@ public class ElasticSystem {
 	}
 
 	public interface IListener {
-		public void onMessageToUI(Postmaster.Message message);
-		public void onMessageToBackend(Postmaster.Message message);
+		void onMessageToUI(Postmaster.Message message);
+		void onMessageToBackend(Postmaster.Message message);
 	}
 
 	Supervisor ui;

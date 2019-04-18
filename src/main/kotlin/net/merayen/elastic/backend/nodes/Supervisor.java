@@ -22,13 +22,13 @@ import net.merayen.elastic.util.Postmaster;
  */
 public class Supervisor {
 	public interface Handler {
-		public void sendMessageToUI(Postmaster.Message message);
-		public void sendMessageToProcessor(Postmaster.Message message);
+		void sendMessageToUI(Postmaster.Message message);
+		void sendMessageToProcessor(Postmaster.Message message);
 
 		/**
 		 * Called when processing a frame has been finished.
 		 */
-		public void onProcessDone();
+		void onProcessDone();
 	}
 
 	private final Handler handler;

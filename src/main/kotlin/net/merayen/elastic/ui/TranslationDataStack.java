@@ -3,7 +3,7 @@ package net.merayen.elastic.ui;
 import java.util.ArrayList;
 
 public class TranslationDataStack {
-	private ArrayList<TranslationData> stack = new ArrayList<TranslationData>();
+	private ArrayList<TranslationData> stack = new ArrayList<>();
 
 	public void push(TranslationData td) {
 		stack.add(td);

@@ -28,21 +28,13 @@ public class AddNodePopup {
 	}
 
 	private void openAddNodePopup() {
-		popup.openPopup(new AddNodePopupSlideItem(new AddNodePopupSlideItem.Handler() {
-			@Override
-			public void onSelectCategory(String category) {
-				openNodeList(category);
-			}
-		}));
+		popup.openPopup(new AddNodePopupSlideItem(category -> openNodeList(category)));
 	}
 
 	private void openNodeList(String category) {
-		popup.openPopup(new NodeListPopupSlideItem(category, new NodeListPopupSlideItem.Handler() {
-			@Override
-			public void onSelect(BaseInfo info) {
-				handler.onSelectNode(info);
-				popup.closePopup();
-			}
+		popup.openPopup(new NodeListPopupSlideItem(category, info -> {
+			handler.onSelectNode(info);
+			popup.closePopup();
 		}));
 	}
 }

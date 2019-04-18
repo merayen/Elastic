@@ -25,12 +25,7 @@ public class BackendContext {
 	public BackendContext(ElasticSystem system, InitBackendMessage message) {
 		env = Env.create(system, message);
 
-		dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
-			@Override
-			public void onMessageFromProcessor(Postmaster.Message message) {
-				message_handler.queueFromProcessor(message);
-			}
-		});
+		dispatch = new Dispatch(Architecture.LOCAL, message1 -> message_handler.queueFromProcessor(message1));
 
 		dispatch.launch(message);
 

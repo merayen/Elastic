@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.script.parser
 
 class Parser(val text: String) {
-	abstract class Item(val name: String, val children: ArrayList<Item> = ArrayList<Item>())
+	abstract class Item(val name: String, val children: ArrayList<Item> = ArrayList())
 
 	class Function(name: String) : Item(name)
 
@@ -49,7 +49,7 @@ class Parser(val text: String) {
 
 		for (x in text)
 			if (x == '\t')
-				level++;
+				level++
 			else
 				break
 

@@ -1,8 +1,8 @@
 package net.merayen.elastic.backend.interfacing;
 
-import java.util.List;
-
 import net.merayen.elastic.util.AverageStat;
+
+import java.util.List;
 
 /**
  * Represents a hardware device, like a audio interface, midi keyboard etc.
@@ -58,15 +58,6 @@ public abstract class AbstractDevice {
 	protected Configuration configuration;
 
 	protected String vendor;
-
-	/**
-	 * Called when device is asked to start processing.
-	 * Not required to start, but if devices has some start-up time, it is advised
-	 * to at least prepare the device in this call.
-	 * 
-	 * XXX remove? Every device should read their config and check for changes, and care if only necessary?
-	 */
-	//protected abstract void onBegin();
 
 	/**
 	 * Called when a configuration has been changed.

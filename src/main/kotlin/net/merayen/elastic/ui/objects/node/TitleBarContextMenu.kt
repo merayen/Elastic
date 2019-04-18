@@ -4,7 +4,6 @@ import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
-import net.merayen.elastic.ui.intercom.EditNodeMessage
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem

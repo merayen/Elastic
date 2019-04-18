@@ -1,8 +1,5 @@
 package net.merayen.elastic.backend.architectures.local.nodes.poly_1;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
@@ -11,6 +8,9 @@ import net.merayen.elastic.backend.architectures.local.nodes.poly_1.PolySessions
 import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 import net.merayen.elastic.util.Postmaster.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Creates sessions of is children group when a tangent is pressed.
@@ -121,7 +121,7 @@ public class LProcessor extends LocalProcessor {
 				}
 			}
 
-			sessions.push(spawned_session_id, tangent, midi_outlet, outnodes.toArray(new OutputInterfaceNode[outnodes.size()]));
+			sessions.push(spawned_session_id, tangent, midi_outlet, outnodes.toArray(new OutputInterfaceNode[0]));
 	
 			midi_outlet.putMidi(position, new short[] {MidiStatuses.KEY_DOWN, tangent, velocity});
 			if(current_pitch != null)

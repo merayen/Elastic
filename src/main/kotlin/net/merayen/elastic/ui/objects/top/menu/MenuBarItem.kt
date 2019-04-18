@@ -12,7 +12,6 @@ class MenuBarItem(label: String) : UIObject() {
 	var menu_list = MenuList()
 
 	private var handler: Handler? = null
-	private val menu_shown: Boolean = false
 	var labelWidth: Float = 0.toFloat()
 		private set
 	private var mouse_handler: MouseHandler? = null
@@ -85,12 +84,8 @@ class MenuBarItem(label: String) : UIObject() {
 	}
 
 	private fun toggleMenu() {
-		if (!menu_shown) {
-			if (handler != null) handler!!.onOpen()
-			showMenu()
-		} else {
-			hideMenu()
-		}
+		if (handler != null) handler!!.onOpen()
+		showMenu()
 	}
 
 	fun showMenu() {

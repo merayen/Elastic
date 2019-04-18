@@ -1,19 +1,16 @@
 package net.merayen.elastic.ui.objects.top.menu;
 
-import java.util.ArrayList;
-
 import net.merayen.elastic.ui.Draw;
-import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+
+import java.util.ArrayList;
 
 public class MenuList extends UIObject {
 	public static abstract class Handler {
 		public void onOutsideClick() {}
 	}
 
-	private ArrayList<MenuListItem> items = new ArrayList<MenuListItem>();
+	private ArrayList<MenuListItem> items = new ArrayList<>();
 	//private MouseHandler mouse_handler;
 	private Handler handler;
 

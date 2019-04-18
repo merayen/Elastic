@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.data.project;
 import java.io.File;
 import java.util.Set;
 
-import net.merayen.elastic.backend.data.dependencygraph.DependencyItem;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 

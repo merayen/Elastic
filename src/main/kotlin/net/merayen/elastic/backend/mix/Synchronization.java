@@ -116,7 +116,6 @@ public class Synchronization {
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				return;
 			}
 		}
 	}
@@ -182,7 +181,7 @@ public class Synchronization {
 	/**
 	 * Outputs a silent frame. Consumes input until it is empty.
 	 */
-	private void dropFrame() {
+	private synchronized void dropFrame() {
 		for(AbstractDevice ad : mixer.getOpenDevices())
 			ad.spool(buffer_size);
 

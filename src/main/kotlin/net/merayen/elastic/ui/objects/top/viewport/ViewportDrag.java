@@ -3,16 +3,14 @@ package net.merayen.elastic.ui.objects.top.viewport;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
-import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 
 public class ViewportDrag extends UIObject {
 	public interface Handler {
-		public void onStartDrag(float diff, boolean vertical);
-		public void onDrag(float diff, boolean vertical);
-		public void onDrop(float diff, boolean vertical);
+		void onStartDrag(float diff, boolean vertical);
+		void onDrag(float diff, boolean vertical);
+		void onDrop(float diff, boolean vertical);
 	}
 
 	float width, height;

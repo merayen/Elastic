@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local;
 
 import java.util.*;
 
-import net.merayen.elastic.Config;
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NetListValidator;
 import net.merayen.elastic.backend.analyzer.NodeProperties;

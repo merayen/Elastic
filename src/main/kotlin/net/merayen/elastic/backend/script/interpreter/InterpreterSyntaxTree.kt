@@ -15,7 +15,7 @@ class OutOfBoundsArrayVariableAccess(arrayName: String, position: Int, size: Int
 open class IllegalArgument(text: String) : RuntimeException(text)
 
 class IllegalArgumentType(index: Int, got: KClass<out InterpreterNode>, expected: KClass<out InterpreterNode>) : IllegalArgument(
-        "Expected ${expected.simpleName} in argument position ${index}, but got ${got.simpleName}"
+        "Expected ${expected.simpleName} in argument position $index, but got ${got.simpleName}"
 )
 
 class IllegalArgumentCount(got: Int, minimum: Int, maximum: Int = minimum) : IllegalArgument(
@@ -28,7 +28,7 @@ class IllegalArgumentCount(got: Int, minimum: Int, maximum: Int = minimum) : Ill
 )
 
 
-class FunctionNotFound(functionName: String) : InterpreterException("${functionName} was not found")
+class FunctionNotFound(functionName: String) : InterpreterException("$functionName was not found")
 
 
 abstract class InterpreterNode(val env: Environment, val parent: InterpreterNode?, parserItem: Parser.Item) {
@@ -291,7 +291,7 @@ class Multiply(env: Environment, parent: InterpreterNode?, parserItem: Parser.It
 class Pow(env: Environment, parent: InterpreterNode?, parserItem: Parser.Item) : FunctionType(env, parent, parserItem) {
     init { // Validates the arguments (children)
         if (children.size != 2)
-            throw IllegalArgumentCount(children.size, 2);
+            throw IllegalArgumentCount(children.size, 2)
     }
 
     override fun eval(): Float {
@@ -506,7 +506,7 @@ class Print(env: Environment, parent: InterpreterNode?, parserItem: Parser.Item)
 
         for (child in children) {
             result = child.eval()
-            println("${child.name}: ${result}")
+            println("${child.name}: $result")
         }
 
         return result

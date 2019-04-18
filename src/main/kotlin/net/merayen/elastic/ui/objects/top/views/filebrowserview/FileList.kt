@@ -32,7 +32,7 @@ internal class FileList : UIObject() {
 
 				add(object : FileListItem(File(".. (go back)"), false) {
 					init {
-						setHandler(object : FileListItem.Handler {
+						setHandler(object : Handler {
 							override fun onClick() {
 								if (handler != null)
 									handler!!.onSelect(null)
@@ -45,7 +45,7 @@ internal class FileList : UIObject() {
 					for (f in files!!) {
 						add(object : FileListItem(f, true) {
 							init {
-								setHandler(object : FileListItem.Handler {
+								setHandler(object : Handler {
 									override fun onClick() {
 										if (handler != null)
 											handler!!.onSelect(f)

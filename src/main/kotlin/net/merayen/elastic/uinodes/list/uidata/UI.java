@@ -1,12 +1,12 @@
 package net.merayen.elastic.uinodes.list.uidata;
 
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Only purpose of this node is to store data that is related to the UI.
@@ -25,9 +25,9 @@ public class UI extends UINode {
 
 	@Override
 	protected void onMessage(NodeParameterMessage message) {
-		if(message instanceof NodeParameterMessage && isRepresentingUI()) {
-			String key = ((NodeParameterMessage)message).key;
-			Object value = ((NodeParameterMessage)message).value;
+		if(isRepresentingUI()) {
+			String key = message.key;
+			Object value = message.value;
 
 			if(key.equals("ui.default.windows")) {
 				List<Map<String, Object>> data = UIDataPropertyTypes.getWindows(value);
@@ -35,7 +35,7 @@ public class UI extends UINode {
 				// Only support for single window at the moment
 				Map<String, Object> window_properties = data.get(0);
 				System.out.println(window_properties);
-			};
+			}
 		}
 	}
 

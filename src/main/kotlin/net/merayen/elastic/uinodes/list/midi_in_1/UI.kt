@@ -8,7 +8,6 @@ import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
-import net.merayen.elastic.ui.objects.top.menu.MenuListItem
 
 class UI : UINode() {
 	private var midi_device: Label? = null

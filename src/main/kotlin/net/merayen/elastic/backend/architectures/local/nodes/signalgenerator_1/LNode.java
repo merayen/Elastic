@@ -1,13 +1,12 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
-import java.util.List;
-import java.util.Map;
-
-import com.laszlosystems.libresample4j.Resampler;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * TODO change mode when frequency-port is connected/disconnected

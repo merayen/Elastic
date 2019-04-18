@@ -35,12 +35,7 @@ class NodeViewContextMenu extends UIObject {
 			@Override
 			public void onSelect(ContextMenuItem item, Point position) { // TODO move stuff below out to a separate class
 				if(item == add_node_item) {
-					new AddNodePopup(self, new AddNodePopup.Handler() {
-						@Override
-						public void onSelectNode(BaseInfo info) {
-							createNode(info, position);
-						}
-					});
+					new AddNodePopup(self, info -> createNode(info, position));
 				}
 			}
 		});

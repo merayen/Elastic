@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
 }
 
 
-private class TestRun(val program: String) {
+private class TestRun(program: String) {
 	val validation: Validation
 	var runtimeResult: HashMap<String, Any>? = null
 

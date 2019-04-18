@@ -56,10 +56,7 @@ public class LProcessor extends LocalProcessor {
 	 * Just plays the sample as it is.
 	 */
 	private void processWithNothing(AudioOutlet out) {
-		int start = out.written;
-		int stop = buffer_size;
-
-		out.written = stop;
+		out.written = buffer_size;
 		out.push();
 	}
 

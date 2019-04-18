@@ -14,11 +14,9 @@ public class AboutDialog extends UIObject {
 		}
 	}
 
-	private Window window;
-
 	public void onInit() {
 		AboutDialog self = this;
-		window = new Window();
+		Window window = new Window();
 		window.width = 600f;
 		window.height = 600f;
 

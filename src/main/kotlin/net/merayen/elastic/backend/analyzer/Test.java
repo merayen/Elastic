@@ -1,16 +1,10 @@
 package net.merayen.elastic.backend.analyzer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.merayen.elastic.backend.logicnodes.Format;
-import net.merayen.elastic.netlist.Line;
-import net.merayen.elastic.netlist.NetList;
-import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.netlist.Port;
-import net.merayen.elastic.netlist.Serializer;
+import net.merayen.elastic.netlist.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Test {
 	private Test() {}
@@ -33,7 +27,6 @@ public class Test {
 		testAnalyzer(netlist);
 	}
 
-	@SuppressWarnings("serial")
 	private static void testAnalyzer(NetList netlist) {
 		NodeProperties properties = new NodeProperties(netlist);
 		Analyzer.analyze(netlist);

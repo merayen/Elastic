@@ -16,11 +16,8 @@ public class Test {
 
 		netlist.connect(test1, "output", test2, "input");
 
-		Dispatch dispatch = new Dispatch(Architecture.LOCAL, new Dispatch.Handler() {
-			@Override
-			public void onMessageFromProcessor(Message message) {
-				
-			}
+		Dispatch dispatch = new Dispatch(Architecture.LOCAL, message -> {
+
 		});
 
 		dispatch.launch(new InitBackendMessage(44100, 16, 1024, ""));

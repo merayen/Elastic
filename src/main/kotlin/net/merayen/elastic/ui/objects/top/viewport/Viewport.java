@@ -1,11 +1,9 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
 import net.merayen.elastic.ui.Draw;
-import org.json.simple.JSONObject;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UIClip;
-import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.util.UINodeUtil;
 
@@ -17,8 +15,8 @@ import net.merayen.elastic.ui.util.UINodeUtil;
  */
 public class Viewport extends UIObject {
 	interface Handler {
-		public void onNewViewport(boolean vertical);
-		public void onNewViewportResize(float width, boolean is_width); // Resizing of the left/over Viewport to increase size of the newly created Viewport. Negative value. One of the parameters is always 0
+		void onNewViewport(boolean vertical);
+		void onNewViewportResize(float width, boolean is_width); // Resizing of the left/over Viewport to increase size of the newly created Viewport. Negative value. One of the parameters is always 0
 	}
 
 	float width, height;

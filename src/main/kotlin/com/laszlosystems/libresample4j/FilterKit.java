@@ -74,7 +74,7 @@ public class FilterKit {
         return (sum);
     }
 
-    public static void lrsLpFilter(double c[], int N, double frq, double Beta, int Num) {
+    public static void lrsLpFilter(double[] c, int N, double frq, double Beta, int Num) {
         double IBeta, temp, temp1, inm1;
         int i;
 
@@ -119,8 +119,8 @@ public class FilterKit {
      * @param Inc increment (1 for right wing or -1 for left)
      * @return
      */
-    public static float lrsFilterUp(float Imp[], float ImpD[], int Nwing, boolean Interp, float[] Xp_array, int Xp_index, double Ph,
-            int Inc) {
+    public static float lrsFilterUp(float[] Imp, float[] ImpD, int Nwing, boolean Interp, float[] Xp_array, int Xp_index, double Ph,
+									int Inc) {
         double a = 0;
         float v, t;
 
@@ -188,8 +188,8 @@ public class FilterKit {
      * @param dhb filter sampling period
      * @return
      */
-    public static float lrsFilterUD(float Imp[], float ImpD[], int Nwing, boolean Interp, float[] Xp_array, int Xp_index, double Ph,
-            int Inc, double dhb) {
+    public static float lrsFilterUD(float[] Imp, float[] ImpD, int Nwing, boolean Interp, float[] Xp_array, int Xp_index, double Ph,
+									int Inc, double dhb) {
         float a;
         float v, t;
         double Ho;

@@ -77,27 +77,28 @@ abstract class MidiState {
 			onPitchChange(pitch)
 
 		} else if (midiPacket[0] == MidiStatuses.MOD_CHANGE) {
-			if (midiPacket[1] == MidiControllers.DATA_ENTRY_MSB) {
-				data_entry_msb = midiPacket[2]
-				dataEntryUpdate()
+			when {
+				midiPacket[1] == MidiControllers.DATA_ENTRY_MSB -> {
+					data_entry_msb = midiPacket[2]
+					dataEntryUpdate()
 
-			} else if (midiPacket[1] == MidiControllers.DATA_ENTRY_LSB) {
-				data_entry_lsb = midiPacket[2]
-				dataEntryUpdate()
+				}
+				midiPacket[1] == MidiControllers.DATA_ENTRY_LSB -> {
+					data_entry_lsb = midiPacket[2]
+					dataEntryUpdate()
 
-			} else if (midiPacket[1] == MidiControllers.RPN_LSB) {
-				rpn_lsb = midiPacket[2]
+				}
+				midiPacket[1] == MidiControllers.RPN_LSB -> rpn_lsb = midiPacket[2]
+				midiPacket[1] == MidiControllers.RPN_MSB -> rpn_msb = midiPacket[2]
+				midiPacket[1] == MidiControllers.SUSTAIN -> {
+					sustain = midiPacket[2] / 127f
+					onSustain(sustain)
 
-			} else if (midiPacket[1] == MidiControllers.RPN_MSB) {
-				rpn_msb = midiPacket[2]
-
-			} else if (midiPacket[1] == MidiControllers.SUSTAIN) {
-				sustain = midiPacket[2] / 127f
-				onSustain(sustain)
-
-			} else if (midiPacket[1] == MidiControllers.VOLUME) {
-				volume = midiPacket[2] / 127f
-				onVolumeChange(volume)
+				}
+				midiPacket[1] == MidiControllers.VOLUME -> {
+					volume = midiPacket[2] / 127f
+					onVolumeChange(volume)
+				}
 			}
 		}
 

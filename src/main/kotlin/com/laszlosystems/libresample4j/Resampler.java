@@ -178,9 +178,7 @@ public class Resampler {
             //}
 
             outSampleCount += len;
-            for (int i = 0; i < this.Yp - len; i++) {
-                this.Y[i] = this.Y[i + len];
-            }
+            if (this.Yp - len >= 0) System.arraycopy(this.Y, 0 + len, this.Y, 0, this.Yp - len);
             this.Yp -= len;
         }
 
@@ -264,9 +262,7 @@ public class Resampler {
             // Copy part of input signal that must be re-used
             int Nreuse = this.Xread - (this.Xp - this.Xoff);
 
-            for (int i = 0; i < Nreuse; i++) {
-                this.X[i] = this.X[i + (this.Xp - this.Xoff)];
-            }
+            if (Nreuse >= 0) System.arraycopy(this.X, 0 + (this.Xp - this.Xoff), this.X, 0, Nreuse);
 
             /*
             #ifdef DEBUG
@@ -288,9 +284,7 @@ public class Resampler {
                 //}
 
                 outSampleCount += len;
-                for (int i = 0; i < this.Yp - len; i++) {
-                    this.Y[i] = this.Y[i + len];
-                }
+                if (this.Yp - len >= 0) System.arraycopy(this.Y, 0 + len, this.Y, 0, this.Yp - len);
                 this.Yp -= len;
             }
 
@@ -360,8 +354,8 @@ public class Resampler {
      * Sampling rate up-conversion only subroutine; Slightly faster than
      * down-conversion;
      */
-    private int lrsSrcUp(float X[], float Y[], double factor, int Nx, int Nwing, float LpScl, float Imp[],
-                         float ImpD[], boolean Interp) {
+    private int lrsSrcUp(float[] X, float[] Y, double factor, int Nx, int Nwing, float LpScl, float[] Imp,
+                         float[] ImpD, boolean Interp) {
 
         float[] Xp_array = X;
         int Xp_index;
@@ -398,8 +392,8 @@ public class Resampler {
         return Yp_index; // Return the number of output samples
     }
 
-    private int lrsSrcUD(float X[], float Y[], double factor, int Nx, int Nwing, float LpScl, float Imp[],
-                         float ImpD[], boolean Interp) {
+    private int lrsSrcUD(float[] X, float[] Y, double factor, int Nx, int Nwing, float LpScl, float[] Imp,
+                         float[] ImpD, boolean Interp) {
 
         float[] Xp_array = X;
         int Xp_index;

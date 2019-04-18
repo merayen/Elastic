@@ -1,7 +1,6 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;

@@ -2,7 +2,6 @@ package net.merayen.elastic.netlist;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -14,8 +13,8 @@ public final class NetList {
 	@SuppressWarnings("serial") public static class ConnectionNotFound extends NetListException {}
 	@SuppressWarnings("serial") public static class AlreadyConnected extends NetListException {}
 
-	final List<Node> nodes = new ArrayList<Node>();
-	final List<Line> lines = new ArrayList<Line>();
+	final List<Node> nodes = new ArrayList<>();
+	final List<Line> lines = new ArrayList<>();
 
 	public NetList() {}
 
@@ -46,7 +45,7 @@ public final class NetList {
 	}
 
 	public Node createNode() {
-		return createNode(new Integer(UUID.randomUUID().hashCode()).toString());
+		return createNode(Integer.toString(UUID.randomUUID().hashCode()));
 	}
 
 	public Node createNode(String node_id) {

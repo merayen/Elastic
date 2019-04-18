@@ -4,9 +4,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.CircularSlider
 import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
-import net.merayen.elastic.ui.objects.components.framework.Joystick
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
-import net.merayen.elastic.ui.objects.top.menu.MenuListItem
 
 class MultiParameterEqEditPanel : UIObject() {
 	/*private val algorithm = Joystick(object : Joystick.Handler {

@@ -16,7 +16,7 @@ class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObj
 
 	override fun onDraw(draw: Draw) {
 		if((absolute_translation?.scaleX ?: 0f) > fontSize / 7f) // Hide text if it is too small
-			return;
+			return
 
 		if(eventTransparent)
 			draw.disableOutline()

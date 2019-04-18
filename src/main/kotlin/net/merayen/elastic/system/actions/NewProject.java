@@ -1,21 +1,17 @@
 package net.merayen.elastic.system.actions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import net.merayen.elastic.system.Action;
-import net.merayen.elastic.system.intercom.CreateNodeMessage;
-import net.merayen.elastic.system.intercom.NodeConnectMessage;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
-import net.merayen.elastic.system.intercom.ProcessMessage;
-import net.merayen.elastic.system.intercom.BeginResetNetListMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.ui.InitUIMessage;
+import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.tap.Tap;
 import net.merayen.elastic.util.tap.TapSpreader;
-import net.merayen.elastic.util.Postmaster;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Creates a new blank project, with a few nodes.
@@ -43,7 +39,7 @@ public class NewProject extends Action {
 						nodes.clear();
 					} else if(message instanceof ProcessMessage) {
 						//ProcessMessage pm = (ProcessMessage)message;
-						System.out.printf("Process response\n");
+						System.out.print("Process response\n");
 					}
 				}
 			});

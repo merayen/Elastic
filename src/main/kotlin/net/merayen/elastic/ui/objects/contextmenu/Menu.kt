@@ -2,10 +2,8 @@ package net.merayen.elastic.ui.objects.contextmenu
 
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
-import java.util.ArrayList
-
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.util.UINodeUtil
+import java.util.*
 import kotlin.math.min
 
 internal class Menu(private val count: Int) : UIObject() {

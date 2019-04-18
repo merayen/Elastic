@@ -8,8 +8,8 @@ import net.merayen.elastic.util.Point;
 
 class Tangent extends UIObject {
 	interface Handler {
-		public void onDown();
-		public void onUp();
+		void onDown();
+		void onUp();
 	}
 
 	public float width, height;

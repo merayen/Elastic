@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.Inlet
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet
 import net.merayen.elastic.backend.midi.MidiStatuses
-import net.merayen.elastic.backend.mix.datatypes.Midi
 import net.merayen.elastic.util.Postmaster
 import java.util.*
 
@@ -34,19 +33,21 @@ class LProcessor : LocalProcessor() {
 
 					if (output != null) {
 						for (midiPacket in midiFrame) {
-							if (midiPacket[0] == MidiStatuses.KEY_DOWN) {
-								val alteredMidiPacket = midiPacket.copyOf()
+							when {
+								midiPacket[0] == MidiStatuses.KEY_DOWN -> {
+									val alteredMidiPacket = midiPacket.copyOf()
 
-								alteredMidiPacket[1] = transposeKey(midiPacket[1])
+									alteredMidiPacket[1] = transposeKey(midiPacket[1])
 
-								keysDown.add(midiPacket[1])
+									keysDown.add(midiPacket[1])
 
-								output.putMidi(midiFrame.framePosition, alteredMidiPacket)
-							} else if (midiPacket[0] == MidiStatuses.KEY_UP) {
-								keysDown.remove(midiPacket[1])
-								output.putMidi(midiFrame.framePosition, shortArrayOf(MidiStatuses.KEY_UP, transposeKey(midiPacket[1])))
-							} else {
-								output.putMidi(midiFrame.framePosition, midiPacket)
+									output.putMidi(midiFrame.framePosition, alteredMidiPacket)
+								}
+								midiPacket[0] == MidiStatuses.KEY_UP -> {
+									keysDown.remove(midiPacket[1])
+									output.putMidi(midiFrame.framePosition, shortArrayOf(MidiStatuses.KEY_UP, transposeKey(midiPacket[1])))
+								}
+								else -> output.putMidi(midiFrame.framePosition, midiPacket)
 							}
 						}
 					}

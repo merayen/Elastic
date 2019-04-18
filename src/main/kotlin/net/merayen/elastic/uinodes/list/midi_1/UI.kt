@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.uinodes.list.midi_1.editor.Editor
 
-class UI() : UINode(), INodeEditable {
+class UI : UINode(), INodeEditable {
 	init {
 		layoutWidth = 80f
 		layoutHeight = 40f

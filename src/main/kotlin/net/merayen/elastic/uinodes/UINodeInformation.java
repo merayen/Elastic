@@ -1,9 +1,6 @@
 package net.merayen.elastic.uinodes;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.merayen.elastic.backend.logicnodes.NodeRegistry;
 
@@ -30,8 +27,7 @@ public class UINodeInformation {
 		Set<String> result = new HashSet<>();
 
 		for(BaseInfo info : getNodeInfos())
-			for(String category : info.getCategories())
-				result.add(category);
+			result.addAll(Arrays.asList(info.getCategories()));
 
 		return result;
 	}

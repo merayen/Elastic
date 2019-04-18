@@ -13,10 +13,7 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
-import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiState;
-import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.backend.midi.MidiUtils;
 import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {

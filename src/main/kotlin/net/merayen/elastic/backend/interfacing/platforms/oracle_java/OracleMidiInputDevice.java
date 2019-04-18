@@ -62,7 +62,7 @@ public class OracleMidiInputDevice extends MidiInputDevice {
 
 		// Returns everything for now
 		// TODO respect timestamps and sample_count
-		MidiPacket[] output = buffer.toArray(new MidiPacket[buffer.size()]);
+		MidiPacket[] output = buffer.toArray(new MidiPacket[0]);
 		buffer.clear();
 		return output;
 	}

@@ -1,12 +1,11 @@
 package net.merayen.elastic.ui.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.UINodeUtil;
-import net.merayen.elastic.util.Point;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO handle multiple surfaces (window) better. It does not work as of now.
@@ -59,7 +58,7 @@ public class MouseEvent extends UIEvent {
 
 	// XXX Move hit testing out in a "hit test"-like class?
 	private List<UIObject> calcHit(Window uiobject) {
-		List<UIObject> hits = new ArrayList<UIObject>();
+		List<UIObject> hits = new ArrayList<>();
 
 		List<UIObject> objs = uiobject.getSearch().getAllChildren();
 		objs.add(uiobject);

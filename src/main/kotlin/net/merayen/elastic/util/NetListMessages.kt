@@ -1,13 +1,9 @@
 package net.merayen.elastic.util
 
-import java.util.ArrayList
-
 import net.merayen.elastic.backend.analyzer.NodeProperties
-import net.merayen.elastic.netlist.Line
 import net.merayen.elastic.netlist.NetList
-import net.merayen.elastic.netlist.Node
-import net.merayen.elastic.netlist.Port
 import net.merayen.elastic.system.intercom.*
+import java.util.*
 
 /**
  * Helper class to restore NetList into either UI or backend.

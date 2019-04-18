@@ -1,15 +1,12 @@
 package net.merayen.elastic.ui.objects.top
 
-import java.util.ArrayList
-import java.util.Collections
-
 import net.merayen.elastic.ui.SurfaceHandler
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.Gate.UIGate
 import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
-import net.merayen.elastic.ui.surface.Surface
 import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.util.UniqueID
+import java.util.*
 
 /**
  * The very topmost object.

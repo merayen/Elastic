@@ -173,7 +173,7 @@ fun main(args: Array<String>) {
 
 	Parser(program) // Just to warm up the JVM
 
-	var parsing = -System.currentTimeMillis();
+	var parsing = -System.currentTimeMillis()
 	val parser = Parser(program)
 	parsing += System.currentTimeMillis()
 

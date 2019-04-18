@@ -1,4 +1,4 @@
-/******************************************************************************
+/*
  *
  * libresample4j
  * Copyright (c) 2009 Laszlo Systems, Inc. All Rights Reserved.
@@ -9,7 +9,7 @@
  *
  * License: LGPL -- see the file LICENSE.txt for more information
  *
- *****************************************************************************/
+ */
 package com.laszlosystems.libresample4j;
 
 /**
