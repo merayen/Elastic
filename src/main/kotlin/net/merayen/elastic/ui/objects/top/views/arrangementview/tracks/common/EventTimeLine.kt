@@ -201,7 +201,7 @@ class EventTimeLine : BaseTimeLine() {
 	}
 
 	override fun onSelectionRectangle(selectionRectangle: UIObject) {
-		val pos = getRelativePosition(selectionRectangle)
+		val pos = getRelativePosition(selectionRectangle) ?: return
 
 		for (event in events.values) {
 			val collision = boolean(

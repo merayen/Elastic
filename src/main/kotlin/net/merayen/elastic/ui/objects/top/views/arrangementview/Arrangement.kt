@@ -77,10 +77,10 @@ class Arrangement : UIObject() {
 						var startPosition: Point? = null
 
 						override fun onSelectionDrag(start: Point, offset: Point) {
+							val pos = getRelativePosition(midiTrack.eventPane) ?: return
+
 							val startPosition = startPosition ?: start
 							this.startPosition = startPosition
-
-							val pos = getRelativePosition(midiTrack.eventPane)
 
 							if (selectionRectangle.parent == null)
 								add(selectionRectangle)

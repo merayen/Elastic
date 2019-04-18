@@ -158,15 +158,19 @@ open class UIObject {
 
 	internal fun updateDraw(draw: Draw) = onDraw(draw)
 
-	fun getAbsolutePosition(offset_x: Float, offset_y: Float): Point {
-		val td = absolute_translation
+	fun getAbsolutePosition(offset_x: Float, offset_y: Float): Point? {
+		val td = absolute_translation ?: return null
+
 		return Point((td!!.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
 	}
 
 	/**
 	 * Returns the relative position of the object "obj" to this object.
 	 */
-	fun getRelativePosition(obj: UIObject): Point {
+	fun getRelativePosition(obj: UIObject): Point? {
+		if (obj.absolute_translation == null)
+			return null // Haven't drawn anything yet
+
 		return Point(
 				(obj.absolute_translation!!.x - absolute_translation!!.x) * absolute_translation!!.scaleX,
 				(obj.absolute_translation!!.y - absolute_translation!!.y) * absolute_translation!!.scaleY
@@ -181,9 +185,10 @@ open class UIObject {
 		return Point((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
 	}
 
-	fun getAbsoluteDimension(width: Float, height: Float): Dimension {
-		val td = absolute_translation
-		return Dimension((width / td!!.scaleX).toInt().toFloat(), (height / td.scaleY).toInt().toFloat())
+	fun getAbsoluteDimension(width: Float, height: Float): Dimension? {
+		val td = absolute_translation ?: return null
+
+		return Dimension((width / td.scaleX).toInt().toFloat(), (height / td.scaleY).toInt().toFloat())
 	}
 
 	/**

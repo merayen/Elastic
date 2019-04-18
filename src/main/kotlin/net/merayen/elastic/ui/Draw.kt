@@ -94,15 +94,15 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun fillRect(x: Float, y: Float, width: Float, height: Float) {
-		val point = uiobject.getAbsolutePosition(x, y)
-		val dimension = uiobject.getAbsoluteDimension(width, height)
+		val point = uiobject.getAbsolutePosition(x, y) ?: return
+		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
 		g2d.fillRect(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
 
 	fun rect(x: Float, y: Float, width: Float, height: Float) {
-		val point = uiobject.getAbsolutePosition(x, y)
-		val dimension = uiobject.getAbsoluteDimension(width, height)
+		val point = uiobject.getAbsolutePosition(x, y) ?: return
+		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
 		g2d.drawRect(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
@@ -123,33 +123,34 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun line(x1: Float, y1: Float, x2: Float, y2: Float) {
-		val p1 = uiobject.getAbsolutePosition(x1, y1)
-		val p2 = uiobject.getAbsolutePosition(x2, y2)
+		val p1 = uiobject.getAbsolutePosition(x1, y1) ?: return
+		val p2 = uiobject.getAbsolutePosition(x2, y2) ?: return
 		reg(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x1 - x2), Math.abs(y1 - y2))
 		g2d.drawLine(p1.x.toInt(), p1.y.toInt(), p2.x.toInt(), p2.y.toInt())
 	}
 
 	fun fillOval(x: Float, y: Float, width: Float, height: Float) {
-		val point = uiobject.getAbsolutePosition(x, y)
-		val dimension = uiobject.getAbsoluteDimension(width, height)
+		val point = uiobject.getAbsolutePosition(x, y) ?: return
+		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
 		g2d.fillOval(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
 
 	fun oval(x: Float, y: Float, width: Float, height: Float) {
 		// TODO implement lineWidth
-		val point = uiobject.getAbsolutePosition(x, y)
-		val dimension = uiobject.getAbsoluteDimension(width, height)
+		val point = uiobject.getAbsolutePosition(x, y) ?: return
+		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
 		g2d.drawOval(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
 
 	fun bezier(x: Float, y: Float, points: Array<Point>) {
+		val point = uiobject.getAbsolutePosition(x, y) ?: return
+
 		if (points.size == 0)
 			return
 
 		val f = Path2D.Float()
-		val point = uiobject.getAbsolutePosition(x, y)
 		f.moveTo(point.x, point.y)
 
 		if (points.size % 3 != 0)
@@ -157,9 +158,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 
 		var i = 0
 		while (i < points.size) {
-			val p1 = uiobject.getAbsolutePosition(points[i].x, points[i].y)
-			val p2 = uiobject.getAbsolutePosition(points[i + 1].x, points[i + 1].y)
-			val p3 = uiobject.getAbsolutePosition(points[i + 2].x, points[i + 2].y)
+			val p1 = uiobject.getAbsolutePosition(points[i].x, points[i].y)!!
+			val p2 = uiobject.getAbsolutePosition(points[i + 1].x, points[i + 1].y)!!
+			val p3 = uiobject.getAbsolutePosition(points[i + 2].x, points[i + 2].y)!!
 
 			f.curveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 			i += 3
@@ -169,7 +170,7 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun text(text: String, x: Float, y: Float) {
-		val point = uiobject.getAbsolutePosition(x, y)
+		val point = uiobject.getAbsolutePosition(x, y) ?: return
 		setFont()
 		g2d.drawString(text, point.x, point.y)
 		reg(x, y - font_size, getTextWidth(text), font_size)
