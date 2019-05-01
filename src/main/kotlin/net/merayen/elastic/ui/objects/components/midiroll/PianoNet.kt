@@ -8,42 +8,54 @@ class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
+	/**
+	 * Vertical size of 1 octave, in height units
+	 */
 	var octaveWidth = (5 * 7).toFloat()
 
-	var barWidth = 10f
+	/**
+	 * How many width units one beat is
+	 */
+	var beatWidth = 10f
 
-	private val BLACK_TANGENTS = booleanArrayOf(false, true, false, true, false, false, true, false, true, false, true, false)
+	private val BLACK_TANGENTS = arrayOf(false, true, false, true, false, true, false, false, true, false, true, false)
 
 	override fun onDraw(draw: Draw) {
-		var y = 0f
+		drawBars(draw)
+		drawLines(draw)
+	}
+
+	private fun drawLines(draw: Draw) {
+		var y = octaveWidth / 12f / 2f
 
 		draw.setStroke(0.5f)
 
 		var pos = 0
 		for (i in 0 until octave_count * 12) {
-			val b = if (BLACK_TANGENTS[pos]) 1 else 0
+			val b = BLACK_TANGENTS[pos]
 
-			draw.setColor(50 - b * 20, 50 - b * 20, 50 - b * 20)
+			if (b)
+				draw.setColor(0.1f, 0.1f, 0.1f)
+			else
+				draw.setColor(0.5f, 0.5f, 0.5f)
 
-			draw.fillRect(0f, y, layoutWidth, octaveWidth / 12)
-
-			draw.setColor(0, 0, 0)
-			draw.rect(0f, y, layoutWidth, octaveWidth / 12)
+			draw.line(0f, y, layoutWidth, y)
 
 			y += octaveWidth / 12
 			pos++
 			pos %= 12
 		}
 
-		drawBars(draw)
-
 		layoutHeight = y
 	}
 
 	private fun drawBars(draw: Draw) {
+		draw.setStroke(1f)
 		draw.setColor(0.1f, 0.1f, 0.1f)
-		/*while () {
-
-		}*/
+		var x = 0f
+		for (i in 0 until (layoutWidth / beatWidth).toInt() + 1) { // TODO don't use "0 until layoutWidth", only draw what is visible
+			draw.line(x, 0f, x, layoutHeight)
+			x += beatWidth
+		}
 	}
 }

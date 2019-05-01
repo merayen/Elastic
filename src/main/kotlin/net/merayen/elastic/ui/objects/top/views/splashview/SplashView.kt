@@ -1,15 +1,19 @@
 package net.merayen.elastic.ui.objects.top.views.splashview
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.components.SelectionRectangle
 import net.merayen.elastic.ui.objects.top.views.View
 import kotlin.math.pow
 
 class SplashView : View() {
 	private val bar = SplashViewBar()
+	private val selectionRectangle = SelectionRectangle(this)
 
 	override fun onInit() {
 		super.onInit()
 		add(bar)
+		add(selectionRectangle)
 	}
 
 	override fun cloneView(): View {
@@ -34,5 +38,10 @@ class SplashView : View() {
 	override fun onUpdate() {
 		super.onUpdate()
 		bar.layoutWidth = getWidth()
+	}
+
+	override fun onEvent(event: UIEvent) {
+		super.onEvent(event)
+		selectionRectangle.handle(event)
 	}
 }

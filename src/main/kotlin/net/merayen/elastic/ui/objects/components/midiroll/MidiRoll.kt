@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.components.midiroll
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.objects.components.SelectionRectangle
 
 class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
@@ -11,6 +12,8 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 	private lateinit var net: PianoNet
 	private lateinit var midiZones: MidiZones
 	private lateinit var notes: PianoNotes
+
+	private val selectionReadable = SelectionRectangle()
 
 	private val OCTAVE_COUNT = 8
 
