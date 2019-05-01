@@ -8,14 +8,13 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
+	private val OCTAVE_COUNT = 8
 	private lateinit var piano: Piano
 	private lateinit var net: PianoNet
-	private lateinit var midiZones: MidiZones
-	private lateinit var notes: PianoNotes
+
+	private val notes = PianoNotes(OCTAVE_COUNT)
 
 	private val selectionReadable = SelectionRectangle()
-
-	private val OCTAVE_COUNT = 8
 
 	interface Handler {
 		fun onDown(tangent_no: Int)

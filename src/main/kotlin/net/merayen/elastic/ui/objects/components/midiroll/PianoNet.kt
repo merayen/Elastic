@@ -3,8 +3,10 @@ package net.merayen.elastic.ui.objects.components.midiroll
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.components.SelectionRectangle
 
-class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
+class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
@@ -18,7 +20,22 @@ class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
 	 */
 	var beatWidth = 10f
 
+	private val selectionRectangle = SelectionRectangle(this)
+
 	private val BLACK_TANGENTS = arrayOf(false, true, false, true, false, true, false, false, true, false, true, false)
+
+	override fun onInit() {
+		selectionRectangle.handler = object : SelectionRectangle.Handler {
+			override fun onDrag() {
+
+			}
+
+			override fun onDrop() {
+
+			}
+		}
+		add(selectionRectangle)
+	}
 
 	override fun onDraw(draw: Draw) {
 		drawBars(draw)
@@ -31,7 +48,7 @@ class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
 		draw.setStroke(0.5f)
 
 		var pos = 0
-		for (i in 0 until octave_count * 12) {
+		for (i in 0 until octaveCount * 12) {
 			val b = BLACK_TANGENTS[pos]
 
 			if (b)
@@ -57,5 +74,9 @@ class PianoNet(private val octave_count: Int) : UIObject(), FlexibleDimension {
 			draw.line(x, 0f, x, layoutHeight)
 			x += beatWidth
 		}
+	}
+
+	override fun onEvent(event: UIEvent) {
+		selectionRectangle.handle(event)
 	}
 }
