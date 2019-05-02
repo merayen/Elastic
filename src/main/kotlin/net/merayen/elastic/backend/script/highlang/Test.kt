@@ -5,8 +5,8 @@ import net.merayen.elastic.backend.script.highlang.backends.HighlangBackendRegis
 import java.lang.RuntimeException
 
 fun main(args: Array<String>) {
-	/*testWorking()
-	testUnknownVariable()
+	testWorking()
+	/*testUnknownVariable()
 	testParentScopeVariableAccess()
 	testVariableUsageBeforeDeclaration()
 	testVariableNotDeclaredInFunction()
@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
 	testWhileLoop()
 	testImport()*/
 
-	testVariableDeclaration()
+	//testVariableDeclaration()
 }
 
 

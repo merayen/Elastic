@@ -8,19 +8,34 @@ import net.merayen.elastic.ui.objects.node.UIPort
 import kotlin.math.roundToInt
 
 class UI : UINode() {
-	private val parameterSlider = ParameterSlider()
+	private val toneSlider = ParameterSlider()
+	private val fineToneSlider = ParameterSlider()
 
 	init {
 		layoutWidth = 105f
-		layoutHeight = 50f
+		layoutHeight = 80f
 
-		parameterSlider.setHandler(object : ParameterSlider.IHandler {
+		toneSlider.setHandler(object : ParameterSlider.IHandler {
 			override fun onChange(value: Double, programatic: Boolean) {
 				sendParameter("transpose", ((value * 48) - 24).roundToInt())
 			}
 
 			override fun onButton(offset: Int) {
-				parameterSlider.value = (parameterSlider.value * 48 + offset).roundToInt() / 48.0
+				toneSlider.value = (toneSlider.value * 48 + offset).roundToInt() / 48.0
+			}
+
+			override fun onLabelUpdate(value: Double): String {
+				return "${(value * 48).roundToInt() - 24}"
+			}
+		})
+
+		fineToneSlider.setHandler(object : ParameterSlider.IHandler {
+			override fun onChange(value: Double, programatic: Boolean) {
+				sendParameter("transpose", ((value * 48) - 24).roundToInt())
+			}
+
+			override fun onButton(offset: Int) {
+				fineToneSlider.value = (fineToneSlider.value * 48 + offset).roundToInt() / 48.0
 			}
 
 			override fun onLabelUpdate(value: Double): String {
@@ -46,10 +61,13 @@ class UI : UINode() {
 
 		titlebar.title = "Midi transpose"
 
-		parameterSlider.translation.x = 10f
-		parameterSlider.translation.y = 20f
+		toneSlider.translation.x = 10f
+		toneSlider.translation.y = 20f
+		add(toneSlider)
 
-		add(parameterSlider)
+		fineToneSlider.translation.x = 10f
+		fineToneSlider.translation.y = 50f
+		add(fineToneSlider)
 	}
 
 	override fun onMessage(message: NodeParameterMessage) {}
@@ -57,7 +75,8 @@ class UI : UINode() {
 
 	override fun onParameter(key: String, value: Any) {
 		if (key == "transpose" && value is Number) {
-			parameterSlider.value = (value.toDouble() + 24) / 48
+			toneSlider.value = (value.toDouble() + 24) / 48
+			fineToneSlider.value = (value.toDouble() + 24) / 48
 		}
 	}
 }

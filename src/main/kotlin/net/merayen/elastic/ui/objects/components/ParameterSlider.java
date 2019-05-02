@@ -102,7 +102,8 @@ public class ParameterSlider extends UIObject {
 
 	public void setValue(double v, boolean no_event) {
 		value = Math.max(Math.min(v, 1), 0);
-		label = handler.onLabelUpdate(value);
+		if (handler != null)
+			label = handler.onLabelUpdate(value);
 	}
 
 	public void setValue(double v) {
