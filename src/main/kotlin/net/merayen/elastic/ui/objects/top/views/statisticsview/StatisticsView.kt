@@ -2,7 +2,10 @@ package net.merayen.elastic.ui.objects.top.views.statisticsview
 
 import net.merayen.elastic.system.intercom.StatisticsReportMessage
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.Rect
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Meter
+import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.top.views.View
 import kotlin.math.roundToInt
 
@@ -18,24 +21,46 @@ class StatisticsView : View() {
 	private val maxMeter = Meter()
 	private val notProcessingMeter = Meter()
 
+	class ScrollTest : UIObject() {
+		var _absoluteOutline: Rect? = null
+
+		override fun onDraw(draw: Draw) {
+			draw.disableOutline()
+			draw.setColor(1f,1f,1f)
+			draw.setStroke(1f)
+			draw.rect(10f, 10f, getWidth() - 20, getHeight() - 20)
+			_absoluteOutline = draw.absoluteOutline
+		}
+	}
+
+	private val scrollContent = ScrollTest()
+
+	private val scroll = Scroll(scrollContent)
+
 	override fun cloneView() = StatisticsView()
 
 	override fun onInit() {
 		super.onInit()
 
+		scroll.translation.x = 100f
+		scroll.translation.y = 100f
+		scroll.layoutWidth = 200f
+		scroll.layoutHeight = 200f
+		add(scroll)
+
 		with(avgMeter.translation) {
 			x = 220f
 			y = 50f
 		}
-		add(avgMeter)
+		scrollContent.add(avgMeter)
 
 		maxMeter.translation.x = 20f
 		maxMeter.translation.y = 80f
-		add(maxMeter)
+		scrollContent.add(maxMeter)
 
 		notProcessingMeter.translation.x = 20f
 		notProcessingMeter.translation.y = 110f
-		add(notProcessingMeter)
+		scrollContent.add(notProcessingMeter)
 
 		add(bar)
 	}
@@ -48,6 +73,9 @@ class StatisticsView : View() {
 		draw.text("Avg: ${"%.3f".format(avgTime / frameDuration)}ms", 150f, 100f)
 		draw.text("Max: ${"%.3f".format(maxTime / frameDuration)}ms", 150f, 150f)
 		draw.text("Avg not processing: ${"%.3f".format(notProcessingAvgTime / frameDuration)}ms", 150f, 200f)
+		draw.text("Scroll content width=${"%.3f".format(scrollContent.getWidth())}, height=${"%.3f".format(scrollContent.getHeight())}", 10f, 400f)
+		draw.text("Scroll content outline_abs=${scrollContent.absoluteOutline}", 10f, 450f)
+		draw.text("Scroll content outline_abs=${scrollContent._absoluteOutline}", 10f, 500f)
 	}
 
 	fun handleStatisticsReportMessage(message: StatisticsReportMessage) {

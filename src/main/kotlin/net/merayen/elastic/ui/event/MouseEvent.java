@@ -66,11 +66,11 @@ public class MouseEvent extends UIEvent {
 		for (UIObject o : objs)
 			if (
 					o.isInitialized() &&
-							o.getOutline_abs_px() != null &&
-							x >= o.getOutline_abs_px().x1 &&
-							y >= o.getOutline_abs_px().y1 &&
-							x < o.getOutline_abs_px().x2 &&
-							y < o.getOutline_abs_px().y2
+							o.getAbsoluteOutline() != null &&
+							x >= o.getAbsoluteOutline().x1 &&
+							y >= o.getAbsoluteOutline().y1 &&
+							x < o.getAbsoluteOutline().x2 &&
+							y < o.getAbsoluteOutline().y2
 			)
 				hits.add(o);
 

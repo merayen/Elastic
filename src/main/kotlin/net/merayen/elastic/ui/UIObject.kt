@@ -1,24 +1,23 @@
 package net.merayen.elastic.ui
 
-import java.util.ArrayList
-
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.UINodeUtil
 import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.Postmaster
+import java.util.*
 
 open class UIObject {
 	var parent: UIObject? = null
 		private set
 	internal val children: MutableList<UIObject> = ArrayList()
 
-	var outline_abs_px: Rect? = Rect() // Absolute, in screen pixels
+	var absoluteOutline: Rect? = Rect() // Absolute, in screen pixels
 	internal var outline: Rect? = Rect()
 
 	var draw_z: Int = 0 // The current *drawn* Z index of this UIObject. Retrieved by the counter from DrawContext()
 
 	var translation = TranslationData()
-	var absolute_translation: TranslationData? = null
+	var absoluteTranslation: TranslationData? = null
 
 	/**
 	 * Evaluates to true if this object has been drawn once or more, so that translation
@@ -35,7 +34,7 @@ open class UIObject {
 
 	val absolutePosition: Point?
 		get() {
-			val td = absolute_translation
+			val td = absoluteTranslation
 			if (td != null)
 				return Point(td.x, td.y)
 
@@ -48,29 +47,31 @@ open class UIObject {
 	// TODO apply absolute clip
 	val deepOutline: Rect?
 		get() {
-			var result: Rect? = outline_abs_px
+			var result: Rect? = absoluteOutline
+
+			val absoluteTranslation = absoluteTranslation ?: return null
 
 			for (o in search.allChildren) {
-				if (o.outline_abs_px == null) continue
+				val outline_abs_px = o.absoluteOutline ?: continue
 
 				if (result == null)
-					result = Rect(o.outline_abs_px!!)
+					result = Rect(outline_abs_px)
 				else
-					result.enlarge(o.outline_abs_px)
+					result.enlarge(outline_abs_px)
 			}
 
 			if (result == null)
 				return null
 
-			result.x1 -= absolute_translation!!.x
-			result.y1 -= absolute_translation!!.y
-			result.x2 -= absolute_translation!!.x
-			result.y2 -= absolute_translation!!.y
+			result.x1 -= absoluteTranslation.x
+			result.y1 -= absoluteTranslation.y
+			result.x2 -= absoluteTranslation.x
+			result.y2 -= absoluteTranslation.y
 
-			result.x1 *= absolute_translation!!.scaleX
-			result.y1 *= absolute_translation!!.scaleY
-			result.x2 *= absolute_translation!!.scaleX
-			result.y2 *= absolute_translation!!.scaleY
+			result.x1 *= absoluteTranslation.scaleX
+			result.y1 *= absoluteTranslation.scaleY
+			result.x2 *= absoluteTranslation.scaleX
+			result.y2 *= absoluteTranslation.scaleY
 
 			return result
 		}
@@ -80,12 +81,12 @@ open class UIObject {
 	 * Feel free to override to return a custom value.
 	 */
 	open fun getWidth(): Float {
-		val deep = deepOutline!!
+		val deep = deepOutline ?: return 0f
 		return deep.x2 - deep.x1
 	}
 
 	open fun getHeight(): Float {
-		val deep = deepOutline!!
+		val deep = deepOutline ?: return 0f
 		return deep.y2 - deep.y1
 	}
 
@@ -159,7 +160,7 @@ open class UIObject {
 	internal fun updateDraw(draw: Draw) = onDraw(draw)
 
 	fun getAbsolutePosition(offset_x: Float, offset_y: Float): Point? {
-		val td = absolute_translation ?: return null
+		val td = absoluteTranslation ?: return null
 
 		return Point((td.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
 	}
@@ -168,12 +169,12 @@ open class UIObject {
 	 * Returns the relative position of the object "obj" to this object.
 	 */
 	fun getRelativePosition(obj: UIObject): Point? {
-		if (obj.absolute_translation == null)
+		if (obj.absoluteTranslation == null)
 			return null // Haven't drawn anything yet
 
 		return Point(
-				(obj.absolute_translation!!.x - absolute_translation!!.x) * absolute_translation!!.scaleX,
-				(obj.absolute_translation!!.y - absolute_translation!!.y) * absolute_translation!!.scaleY
+				(obj.absoluteTranslation!!.x - absoluteTranslation!!.x) * absoluteTranslation!!.scaleX,
+				(obj.absoluteTranslation!!.y - absoluteTranslation!!.y) * absoluteTranslation!!.scaleY
 		)
 	}
 
@@ -181,12 +182,12 @@ open class UIObject {
 	 * Get our internal (relative) position from absolute position.
 	 */
 	fun getRelativeFromAbsolute(x: Float, y: Float): Point {
-		val td = absolute_translation
+		val td = absoluteTranslation
 		return Point((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
 	}
 
 	fun getAbsoluteDimension(width: Float, height: Float): Dimension? {
-		val td = absolute_translation ?: return null
+		val td = absoluteTranslation ?: return null
 
 		return Dimension((width / td.scaleX).toInt().toFloat(), (height / td.scaleY).toInt().toFloat())
 	}
@@ -196,7 +197,7 @@ open class UIObject {
 	 * Uses both scaleX and scaleY to figure out the resulting value.
 	 */
 	fun convertUnitToAbsolute(a: Float): Int {
-		val td = absolute_translation
+		val td = absoluteTranslation
 		val resolution = Math.min(td!!.scaleX, td.scaleY)
 		return (a / resolution).toInt()
 	}
@@ -206,7 +207,7 @@ open class UIObject {
 	 * Uses both scaleX and scaleY to figure out the resulting value. No it doesn't.
 	 */
 	fun convertAbsoluteToUnit(a: Int): Float { // TODO Only uses the x-scale. Maybe make two functions, one for X and one for Y, and one for both somehow?
-		val td = absolute_translation
+		val td = absoluteTranslation
 
 		return a.toFloat() * td!!.scaleX
 	}

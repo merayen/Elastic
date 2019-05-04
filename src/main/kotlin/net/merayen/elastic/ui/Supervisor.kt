@@ -1,11 +1,10 @@
 package net.merayen.elastic.ui
 
-import java.util.ArrayList
-
 import net.merayen.elastic.ui.controller.Gate
 import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.util.DrawContext
 import net.merayen.elastic.util.Postmaster
+import java.util.*
 
 /**
  * This runs in the main-thread (???), and represents everything UI, at least locally.
@@ -63,7 +62,7 @@ class Supervisor(private val handler: Handler) {
 		dc.push(uiobject)
 
 		uiobject.draw_z = dc.pushZIndex()
-		uiobject.absolute_translation = dc.translation_stack.absolute
+		uiobject.absoluteTranslation = dc.translation_stack.absolute
 
 		if (!uiobject.isInitialized)
 			uiobject.initialize()
@@ -72,8 +71,8 @@ class Supervisor(private val handler: Handler) {
 
 		uiobject.updateDraw(draw)
 
-		uiobject.outline_abs_px = draw.absoluteOutline
 		uiobject.outline = draw.outline
+		uiobject.absoluteOutline = draw.absoluteOutline
 
 		draw.destroy()
 

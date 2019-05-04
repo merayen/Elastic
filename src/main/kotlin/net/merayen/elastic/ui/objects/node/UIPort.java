@@ -79,7 +79,7 @@ public class UIPort extends UIObject {
 			draw.setColor(color.getRed(), color.getGreen(), color.getBlue());
 			draw.fillOval(-4f, -4f, 8f, 8f);
 
-			if(getAbsolute_translation().scaleX < 1.2f) {
+			if(getAbsoluteTranslation().scaleX < 1.2f) {
 				draw.setColor(255, 255, 255);
 				draw.setFont("SansSerif", 10f);
 				if (output)

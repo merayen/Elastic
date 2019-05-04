@@ -7,7 +7,7 @@ This method assigns a nested struct to a variable that has none of its elements 
 Summation node: 
 ```
 # module: add-node (one instance of it)
-var node_data = struct(123456)  # Pointer address in the struct argument that makes it map that address?  
+var node_data = struct 
     var my_variable: fp16
     var another_variable: fp32
     var uninited: fp64
@@ -24,4 +24,4 @@ def my_func()
 ```
 
 ### Issues
-* We need to consider that the underlaying architecture doesn't guarantee that e.g fp16 is fp16.
+* We need to consider that the underlying architecture doesn't guarantee that e.g fp16 is fp16.

@@ -6,7 +6,7 @@
 ## Usage in nodes
 ### As a simple processor
 ```
-use math
+import math
 
 # This actually allocates memory here.
 var ports = struct

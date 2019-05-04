@@ -1,11 +1,10 @@
 package net.merayen.elastic.ui
 
+import net.merayen.elastic.ui.util.DrawContext
+import net.merayen.elastic.util.Point
 import java.awt.Font
 import java.awt.FontMetrics
 import java.awt.geom.Path2D
-
-import net.merayen.elastic.ui.util.DrawContext
-import net.merayen.elastic.util.Point
 
 /**
  * Helper class to make drawing easy inside the UIObject()s.
@@ -42,24 +41,34 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 
 	val absoluteOutline: Rect
 		get() {
-			val td = uiobject.absolute_translation!!
-			val r = if (outline == null) Rect() else Rect(outline!!)
+			val absoluteTranslation = uiobject.absoluteTranslation!!
+			val outline = outline
 
-			r.x1 = r.x1 / td.scaleX + td.x
-			r.y1 = r.y1 / td.scaleY + td.y
-			r.x2 = r.x2 / td.scaleX + td.x
-			r.y2 = r.y2 / td.scaleY + td.y
+			if (outline != null) {
+				return Rect(
+					outline.x1 / absoluteTranslation.scaleX + absoluteTranslation.x,
+					outline.y1 / absoluteTranslation.scaleY + absoluteTranslation.y,
+					outline.x2 / absoluteTranslation.scaleX + absoluteTranslation.x,
+					outline.y2 / absoluteTranslation.scaleY + absoluteTranslation.y
+				)
+			} else {
+				return Rect()
+			}
 
-			if (td.clip != null)
-				r.clip(td.clip)
+			/*r.x1 =
+			r.y1 =
+			r.x2 =
+			r.y2 = */
 
-			return r
+			/*if (absoluteTranslation.clip != null)
+				r.clip(absoluteTranslation.clip)*/
+
+			//return r
 		}
 
 	init {
-		if (uiobject.absolute_translation!!.clip != null)
-			clip(uiobject.absolute_translation!!.clip)
-
+		if (uiobject.absoluteTranslation!!.clip != null)
+			clip(uiobject.absoluteTranslation!!.clip)
 	}
 
 	// Only to be called by UIObject.java, and must be called when finished drawing an object!
