@@ -5,5 +5,5 @@ import net.merayen.elastic.backend.script.highlang.backends.AbstractCompiler
 
 class InterpreterCompiler(highlangProcessor: HighlangProcessor) : AbstractCompiler(highlangProcessor) {
 	override fun getRuntime() = throw NotImplementedError()
-	override fun compile() {}
+	override fun compile() = Unit
 }

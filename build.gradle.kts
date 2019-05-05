@@ -49,3 +49,16 @@ sourceSets["main"].withConvention(KotlinSourceSet::class) {
     kotlin.srcDirs(arrayOf("src/main/kotlin"))
 }
 sourceSets["main"].resources.srcDirs(arrayOf("src/main/resources"))
+
+tasks.jar {
+    manifest {
+        attributes(
+                "Implementation-Title" to "Elastic",
+                "Main-Class" to "net.merayen.elastic.Main"
+        )
+    }
+
+    from(Callable {
+        configurations["compileClasspath"].map { if (it.isDirectory) it else zipTree(it) }
+    })
+}

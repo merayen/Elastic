@@ -4,7 +4,7 @@ package net.merayen.elastic.backend.script.highlang
  * Processes a Token-tree and creates Scopes of it.
  * Also validates underway.
  */
-class HighlangProcessor(token: CodeBlock) {
+class HighlangProcessor(val token: CodeBlock) {
 	class Scope(val parent: Scope? = null, val token: CodeBlock, val inheritedVariables: HashMap<String, VariableWrite> = HashMap()) {
 
 		/**
@@ -72,7 +72,7 @@ class HighlangProcessor(token: CodeBlock) {
 
 			LexerTraverse(token).walk { path, token ->
 				when {
-					path.size == 0 -> true
+					path.isEmpty() -> true
 					token is FunctionDeclaration -> {
 						// Add the function arguments into the scope
 						val funcVariables = HashMap<String, VariableWrite>(variables)

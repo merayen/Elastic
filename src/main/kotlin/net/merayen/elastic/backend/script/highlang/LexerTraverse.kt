@@ -1,14 +1,6 @@
 package net.merayen.elastic.backend.script.highlang
 
-import kotlin.collections.ArrayList
-
 class LexerTraverse(private val inToken: Token) {
-	/*class Path : ArrayList<Token>() {
-
-	}*/
-
-	class DoNotTraverse
-
 	fun allChildren() = allChildren(inToken)
 
 	private fun allChildren(token: Token): ArrayList<Token> {

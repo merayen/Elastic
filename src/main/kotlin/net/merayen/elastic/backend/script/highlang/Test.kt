@@ -2,9 +2,8 @@ package net.merayen.elastic.backend.script.highlang
 
 import net.merayen.elastic.backend.script.highlang.backends.AbstractRuntime
 import net.merayen.elastic.backend.script.highlang.backends.HighlangBackendRegistry
-import java.lang.RuntimeException
 
-fun main(args: Array<String>) {
+fun test(args: Array<String>) {
 	testWorking()
 	/*testUnknownVariable()
 	testParentScopeVariableAccess()
