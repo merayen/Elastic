@@ -1,12 +1,11 @@
 package net.merayen.elastic.backend.logicnodes.list.output_1
 
-import java.util.HashMap
-
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
 import net.merayen.elastic.backend.logicnodes.Environment
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.system.intercom.NodeDataMessage
+import java.util.*
 
 class LogicNode : BaseLogicNode() {
 	private var output_device: String? = null
@@ -25,7 +24,8 @@ class LogicNode : BaseLogicNode() {
 			if (ad is AudioDevice)
 				if (ad.isOutput)
 					if (ad.id == "oracle_java:Default Audio Device" ||// Mac OS X 10.9
-							ad.id == "oracle_java:PulseAudio Mixer" // Ubuntu 16.04
+							ad.id == "oracle_java:PulseAudio Mixer" || // Ubuntu 16.04
+						ad.id == "oracle_java:default [default]"
 					)
 						output_device = ad.id
 	}

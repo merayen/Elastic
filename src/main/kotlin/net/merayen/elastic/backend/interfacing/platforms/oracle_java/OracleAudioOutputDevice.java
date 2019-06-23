@@ -1,20 +1,13 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
-
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.util.AudioUtil;
+
+import javax.sound.sampled.*;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper for Oracle Java implementation of an audio device.
@@ -113,7 +106,8 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 		statistics.samples_processed.add(audio.length / (c.depth / 8) / c.channels);
 
-		statistics.available_after.add(available());
+		available = available();
+		statistics.available_after.add(available);
 	}
 
 	@Override
@@ -155,14 +149,14 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	private void prepareLine(int buffer_size) {
 		Configuration c = (Configuration)configuration;
 
-		if(!line.isOpen()/* || line.getBufferSize() * 16 != buffer_size * 16*/) {
+		if(!line.isOpen() || line.getBufferSize() != buffer_size) {
 			try {
-				System.out.printf("Reconfiguring Oracle audio output device %s, buffer_size=%d (current buffer size: %d)\n", c.getDescription(), buffer_size * 16, line.getBufferSize());
+				System.out.printf("Reconfiguring Oracle audio output device %s, buffer_size=%d (current buffer size: %d)\n", c.getDescription(), buffer_size, line.getBufferSize());
 
 				if(line.isOpen())
 					line.close();
 
-				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), buffer.length * 16);
+				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), buffer.length * 1);
 			} catch (LineUnavailableException e) {
 				throw new RuntimeException("Can not open audio output line with current configuration");
 			}

@@ -17,10 +17,10 @@ public class Test {
 
 		mixer.reconfigure(44100, 2, 16);
 
-		for(int i = 0; i < 10; i++) {
-			if(i % 2 == 0) {
+		for (int i = 0; i < 10; i++) {
+			if (i % 2 == 0) {
 				mixer.send(output_device, new Audio(new float[][]{
-						SoundTest.makeSound(44100, 1f, new float[]{1000}, 1f),
+						SoundTest.makeSound(44100*2, 0.5f, new float[]{1000}, 1f),
 						SoundTest.makeSound(44100, 1f, new float[]{2000}, 1f)//,
 						//SoundTest.makeSound(44100, 2f, new float[]{5008}, 1f),
 						//SoundTest.makeSound(44100, 2f, new float[]{2010}, 1f)
@@ -33,7 +33,18 @@ public class Test {
 						//SoundTest.makeSound(44100, 2f, new float[]{2010}, 1f)
 				}));
 			}
+
 			mixer.dispatch(44100);
+
+			for (AbstractDevice device : mixer.getOpenDevices()) {
+				while (device.available() > 0) {
+					synchronized (this) {
+						try {
+							wait(1);
+						} catch (InterruptedException ignored) {}
+					}
+				}
+			}
 		}
 		mixer.end();
 
@@ -64,16 +75,16 @@ public class Test {
 			@Override
 			public void needData() {
 				asked++;
-				if(asked % 10 == 0)
+				if (asked % 10 == 0)
 					;//System.out.printf("Frame duration: %d ms, total duration: %d ms\n", System.currentTimeMillis() - last, System.currentTimeMillis() - start);
 				last = System.currentTimeMillis();
 
-				for(int i = 0; i < BUFFER_SIZE; i++)
+				for (int i = 0; i < BUFFER_SIZE; i++)
 					output[i] = audio[position++];
 
 				mixer.send(output_device, new Audio(new float[][]{
-					output,
-					output
+						output,
+						output
 				}));
 
 				mixer.dispatch(BUFFER_SIZE);
@@ -92,7 +103,7 @@ public class Test {
 		sync.start();
 
 		long t = System.currentTimeMillis() + 5000;
-		while(t > System.currentTimeMillis()) {
+		while (t > System.currentTimeMillis()) {
 			try {
 				Thread.sleep(500);
 			} catch (Exception e) {
@@ -105,8 +116,8 @@ public class Test {
 	}
 
 	private String getFirstOutputDevice(Mixer mixer) {
-		for(AbstractDevice ad : mixer.getAvailableDevices()) { // Test the first output device
-			if(ad instanceof AudioOutputDevice) {
+		for (AbstractDevice ad : mixer.getAvailableDevices()) { // Test the first output device
+			if (ad instanceof AudioOutputDevice) {
 				return ad.getID();
 			}
 		}

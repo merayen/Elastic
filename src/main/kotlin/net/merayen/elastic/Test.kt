@@ -12,16 +12,16 @@ class Test {
 			//net.merayen.elastic.backend.context.Test.test();
 
 			// Works
-			/*net.merayen.elastic.backend.architectures.local.Test.test();
-			net.merayen.elastic.util.Test.test();
+			//net.merayen.elastic.backend.architectures.local.Test.test();
+			//net.merayen.elastic.util.Test.test();
 
-			net.merayen.elastic.netlist.Test.test();
-			net.merayen.elastic.system.intercom.Test.test();
+			//net.merayen.elastic.netlist.Test.test();
+			//net.merayen.elastic.system.intercom.Test.test();
 
-			net.merayen.elastic.backend.analyzer.Test.test();
-			net.merayen.elastic.backend.interfacing.Test.test();
-			net.merayen.elastic.backend.mix.Test.test();
-			net.merayen.elastic.ui.objects.top.viewport.Test.test();*/
+			//net.merayen.elastic.backend.analyzer.Test.test();
+			//net.merayen.elastic.backend.interfacing.Test.test();
+			//net.merayen.elastic.backend.mix.Test.test();
+			//net.merayen.elastic.ui.objects.top.viewport.Test.test();
 
 			//net.merayen.elastic.backend.architectures.local.nodes.delay_1.Delay.test();
 
