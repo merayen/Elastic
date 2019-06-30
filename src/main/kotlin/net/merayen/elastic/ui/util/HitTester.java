@@ -5,7 +5,7 @@ import net.merayen.elastic.util.Point;
 
 public class HitTester {
 	public static boolean inside(Point point, Rect rect) {
-		return inside(point.x, point.y, rect.x1, rect.y1, rect.x2, rect.y2);
+		return inside(point.x, point.y, rect.getX1(), rect.getY1(), rect.getX2(), rect.getY2());
 	}
 
 	public static boolean inside(float px, float py, float x1, float y1, float x2, float y2) {

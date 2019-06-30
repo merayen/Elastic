@@ -67,10 +67,10 @@ public class MouseEvent extends UIEvent {
 			if (
 					o.isInitialized() &&
 							o.getAbsoluteOutline() != null &&
-							x >= o.getAbsoluteOutline().x1 &&
-							y >= o.getAbsoluteOutline().y1 &&
-							x < o.getAbsoluteOutline().x2 &&
-							y < o.getAbsoluteOutline().y2
+							x >= o.getAbsoluteOutline().getX1() &&
+							y >= o.getAbsoluteOutline().getY1() &&
+							x < o.getAbsoluteOutline().getX2() &&
+							y < o.getAbsoluteOutline().getY2()
 			)
 				hits.add(o);
 

@@ -44,26 +44,19 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 			val absoluteTranslation = uiobject.absoluteTranslation!!
 			val outline = outline
 
+			val result = Rect()
+
 			if (outline != null) {
-				return Rect(
-					outline.x1 / absoluteTranslation.scaleX + absoluteTranslation.x,
-					outline.y1 / absoluteTranslation.scaleY + absoluteTranslation.y,
-					outline.x2 / absoluteTranslation.scaleX + absoluteTranslation.x,
-					outline.y2 / absoluteTranslation.scaleY + absoluteTranslation.y
-				)
-			} else {
-				return Rect()
+				result.x1 = outline.x1 / absoluteTranslation.scaleX + absoluteTranslation.x
+				result.y1 = outline.y1 / absoluteTranslation.scaleY + absoluteTranslation.y
+				result.x2 = outline.x2 / absoluteTranslation.scaleX + absoluteTranslation.x
+				result.y2 = outline.y2 / absoluteTranslation.scaleY + absoluteTranslation.y
+
+				if (absoluteTranslation.clip != null)
+					result.clip(absoluteTranslation.clip)
 			}
 
-			/*r.x1 =
-			r.y1 =
-			r.x2 =
-			r.y2 = */
-
-			/*if (absoluteTranslation.clip != null)
-				r.clip(absoluteTranslation.clip)*/
-
-			//return r
+			return result
 		}
 
 	init {

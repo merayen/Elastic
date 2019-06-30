@@ -23,17 +23,17 @@ public class TranslationData {
 		if(td.clip != null) {
 			if(clip == null)
 				clip = new Rect(
-					x + td.clip.x1 / scaleX,
-					y + td.clip.y1 / scaleY,
-					x + td.clip.x2 / scaleX,
-					y + td.clip.y2 / scaleY
+					x + td.clip.getX1() / scaleX,
+					y + td.clip.getY1() / scaleY,
+					x + td.clip.getX2() / scaleX,
+					y + td.clip.getY2() / scaleY
 				);
 			else
 				clip.clip(
-					x + td.clip.x1 / scaleX,
-					y + td.clip.y1 / scaleY,
-					x + td.clip.x2 / scaleX,
-					y + td.clip.y2 / scaleY
+					x + td.clip.getX1() / scaleX,
+					y + td.clip.getY1() / scaleY,
+					x + td.clip.getX2() / scaleX,
+					y + td.clip.getY2() / scaleY
 				);
 		}
 
