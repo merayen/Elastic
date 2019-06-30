@@ -25,7 +25,7 @@ class StatisticsView : View() {
 		var _absoluteOutline: Rect? = null
 
 		override fun onDraw(draw: Draw) {
-			draw.disableOutline()
+			//draw.disableOutline()
 			draw.setColor(1f,1f,1f)
 			draw.setStroke(1f)
 			draw.rect(10f, 10f, getWidth() - 20, getHeight() - 20)

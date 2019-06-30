@@ -73,10 +73,14 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		if (skip_outline)
 			return
 
+		var outline = outline
+
 		if (outline == null)
 			outline = Rect(x, y, x + width, y + height)
 		else
-			outline!!.enlarge(x, y, x + width, y + height)
+			outline.enlarge(x, y, x + width, y + height)
+
+		this.outline = outline
 	}
 
 	fun setColor(r: Int, g: Int, b: Int) {

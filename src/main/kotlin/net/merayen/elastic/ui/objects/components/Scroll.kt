@@ -5,7 +5,6 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UIClip
 import net.merayen.elastic.ui.util.Movable
-import kotlin.math.sin
 
 class Scroll(private val uiobject: UIObject) : UIObject() {
 	var layoutWidth = 100f
@@ -119,7 +118,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
 	private fun updateFromBars() {
 		uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth)
-		//uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight)*/
-		uiobject.translation.y = sin((System.currentTimeMillis() % (Math.PI * 2000)) / 1000).toFloat() * 50f - 50
+		uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight)
+		//uiobject.translation.y = sin((System.currentTimeMillis() % (Math.PI * 2000)) / 1000).toFloat() * 50f - 50
 	}
 }

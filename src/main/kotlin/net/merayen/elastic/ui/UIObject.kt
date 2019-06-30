@@ -47,7 +47,7 @@ open class UIObject {
 	// TODO apply absolute clip
 	val deepOutline: Rect?
 		get() {
-			var result: Rect? = absoluteOutline
+			var result: Rect? = absoluteOutline?.copy()
 
 			val absoluteTranslation = absoluteTranslation ?: return null
 
