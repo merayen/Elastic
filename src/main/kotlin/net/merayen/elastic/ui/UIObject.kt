@@ -43,10 +43,12 @@ open class UIObject {
 
 	/**
 	 * Retrieves the deep outline of the object (including the children's outline)
+	 * TODO do clipping?
 	 */
-	// TODO apply absolute clip
 	val deepOutline: Rect?
 		get() {
+			val absoluteOutline = absoluteOutline
+
 			var result: Rect? = absoluteOutline?.copy()
 
 			val absoluteTranslation = absoluteTranslation ?: return null
@@ -62,6 +64,9 @@ open class UIObject {
 
 			if (result == null)
 				return null
+
+			if (absoluteOutline != null)
+				result.clip(absoluteOutline);
 
 			result.x1 -= absoluteTranslation.x
 			result.y1 -= absoluteTranslation.y

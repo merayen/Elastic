@@ -73,6 +73,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		if (skip_outline)
 			return
 
+		if (width < 0 || height < 0)
+			throw RuntimeException("Should not happen")
+
 		var outline = outline
 
 		if (outline == null)
@@ -100,6 +103,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun fillRect(x: Float, y: Float, width: Float, height: Float) {
+		if (width <= 0 || height <= 0)
+			return
+
 		val point = uiobject.getAbsolutePosition(x, y) ?: return
 		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
@@ -107,6 +113,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun rect(x: Float, y: Float, width: Float, height: Float) {
+		if (width <= 0 || height <= 0)
+			return
+
 		val point = uiobject.getAbsolutePosition(x, y) ?: return
 		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
@@ -136,6 +145,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun fillOval(x: Float, y: Float, width: Float, height: Float) {
+		if (width <= 0 || height <= 0)
+			return
+
 		val point = uiobject.getAbsolutePosition(x, y) ?: return
 		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
@@ -143,6 +155,9 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun oval(x: Float, y: Float, width: Float, height: Float) {
+		if (width <= 0 || height <= 0)
+			return
+
 		// TODO implement lineWidth
 		val point = uiobject.getAbsolutePosition(x, y) ?: return
 		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
