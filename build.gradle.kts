@@ -26,6 +26,8 @@ dependencies {
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1")
+
 	// Use the Kotlin test library.
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
 

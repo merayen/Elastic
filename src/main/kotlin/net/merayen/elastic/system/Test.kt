@@ -1,11 +1,10 @@
 package net.merayen.elastic.system
 
-import java.io.File
-
 import net.merayen.elastic.system.actions.LoadProject
 import net.merayen.elastic.system.actions.NewProject
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage
 import net.merayen.elastic.system.intercom.backend.StartBackendMessage
+import java.io.File
 
 class Test private constructor() {
 
