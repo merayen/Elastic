@@ -28,9 +28,11 @@ class StatisticsView : View() {
 			//draw.disableOutline()
 			draw.setColor(1f,1f,1f)
 			draw.setStroke(1f)
-			draw.rect(10f, 10f, getWidth() - 20, getHeight() - 20)
-			_absoluteOutline = draw.absoluteOutline
+			draw.rect(1f, 1f, 249f, 249f)
 		}
+
+		override fun getWidth() = 250f + 11
+		override fun getHeight() = 250f + 11
 	}
 
 	private val scrollContent = ScrollTest()
@@ -75,7 +77,6 @@ class StatisticsView : View() {
 		draw.text("Avg not processing: ${"%.3f".format(notProcessingAvgTime / frameDuration)}ms", 150f, 200f)
 		draw.text("Scroll content width=${"%.3f".format(scrollContent.getWidth())}, height=${"%.3f".format(scrollContent.getHeight())}", 10f, 400f)
 		draw.text("Scroll content outline_abs=${scrollContent.absoluteOutline}", 10f, 450f)
-		draw.text("Scroll content outline_abs=${scrollContent._absoluteOutline}", 10f, 500f)
 	}
 
 	fun handleStatisticsReportMessage(message: StatisticsReportMessage) {

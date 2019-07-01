@@ -30,12 +30,14 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
 			movable.setHandler(object : Movable.IMoveable {
 				override fun onMove() {
+					limitBars()
 					updateFromBars()
 				}
 
 				override fun onGrab() {
 					moving = true
 				}
+
 				override fun onDrop() {
 					moving = false
 				}
@@ -80,17 +82,19 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 		if (uiobject.translation.y > 0f)
 			uiobject.translation.y = 0f
 
-		if (uiobject.translation.x < -(contentWidth - layoutWidth) && contentWidth > layoutWidth)
-			uiobject.translation.x = -(contentWidth - layoutWidth)
+		if (uiobject.translation.x < -(contentWidth - layoutWidth + barWidth) && contentWidth > layoutWidth)
+			uiobject.translation.x = -(contentWidth - layoutWidth + barWidth)
 
-		if (uiobject.translation.y < -(contentHeight - layoutHeight) && contentHeight > layoutHeight)
-			uiobject.translation.y = -(contentHeight - layoutHeight)
+		if (uiobject.translation.y < -(contentHeight - layoutHeight + barWidth) && contentHeight > layoutHeight)
+			uiobject.translation.y = -(contentHeight - layoutHeight + barWidth)
 
 		barX.translation.y = layoutHeight - barWidth
 		barY.translation.x = layoutWidth - barWidth
 
 		if(!moving)
 			updateBars()
+
+		limitBars()
 	}
 
 	private fun updateBars() {
@@ -111,14 +115,16 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 		} else if (barY.parent != null) {
 			remove(barY)
 		}
+	}
 
+	private fun limitBars() {
 		barX.translation.x = Math.max(0f, Math.min(layoutWidth - barWidth, barX.translation.x))
 		barY.translation.y = Math.max(0f, Math.min(layoutHeight - barWidth, barY.translation.y))
 	}
 
 	private fun updateFromBars() {
-		uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth)
-		uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight)
+		uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth + barWidth)
+		uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight + barWidth)
 		//uiobject.translation.y = sin((System.currentTimeMillis() % (Math.PI * 2000)) / 1000).toFloat() * 50f - 50
 	}
 }
