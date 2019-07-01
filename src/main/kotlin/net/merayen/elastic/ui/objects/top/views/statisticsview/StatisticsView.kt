@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.objects.components.Meter
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.top.views.View
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 class StatisticsView : View() {
 	private val bar = StatisticsViewBar()
@@ -27,11 +28,11 @@ class StatisticsView : View() {
 		override fun onDraw(draw: Draw) {
 			draw.setColor(1f,1f,1f)
 			draw.setStroke(1f)
-			draw.rect(1f, 1f, 249f, 249f)
+			draw.rect(1f, 1f, getWidth() - 2, getHeight() - 2)
 		}
 
-		override fun getWidth() = 250f + 1
-		override fun getHeight() = 250f + 1
+		override fun getWidth() = 200f + sin(System.currentTimeMillis() / 1000.0 + Math.PI).toFloat() * 40f
+		override fun getHeight() = 200f + sin(System.currentTimeMillis() / 1000.0).toFloat() * 40f
 	}
 
 	private val scrollContent = ScrollTest()
