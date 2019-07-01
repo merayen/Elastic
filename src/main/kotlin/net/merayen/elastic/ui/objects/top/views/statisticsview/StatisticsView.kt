@@ -25,14 +25,13 @@ class StatisticsView : View() {
 		var _absoluteOutline: Rect? = null
 
 		override fun onDraw(draw: Draw) {
-			//draw.disableOutline()
 			draw.setColor(1f,1f,1f)
 			draw.setStroke(1f)
 			draw.rect(1f, 1f, 249f, 249f)
 		}
 
-		override fun getWidth() = 250f + 11
-		override fun getHeight() = 250f + 11
+		override fun getWidth() = 250f + 1
+		override fun getHeight() = 250f + 1
 	}
 
 	private val scrollContent = ScrollTest()

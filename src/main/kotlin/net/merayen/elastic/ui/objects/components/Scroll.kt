@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.components
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UIClip
@@ -10,6 +11,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 	var layoutWidth = 100f
 	var layoutHeight = 100f
 	var barWidth = 10f
+	var barLength = 20f
 
 	private val clip = UIClip()
 	private val barX = Bar(true)
@@ -19,7 +21,10 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 	private var contentHeight = 0f
 	private var moving = false
 
-	private inner class Bar constructor(private val x: Boolean) : UIObject() {
+	private inner class Bar constructor(private val x: Boolean) : UIObject(), FlexibleDimension {
+		override var layoutWidth = if(x) 20f else 10f
+		override var layoutHeight = if(x) 10f else 20f
+
 		private val movable = Movable(this, this)
 
 		override fun onInit() {
@@ -45,8 +50,8 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 		}
 
 		override fun onDraw(draw: Draw) {
-			draw.setColor(255, 0, 255)
-			draw.fillRect(0f, 0f, barWidth, barWidth)
+			draw.setColor(0.5f, 0.5f, 0.5f)
+			draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 		}
 
 		override fun onEvent(event: UIEvent) {
@@ -62,8 +67,8 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
 	override fun onDraw(draw: Draw) {
 		draw.setColor(50, 50, 50)
-		draw.fillRect(0f, layoutHeight - barWidth, layoutWidth, barWidth)
-		draw.fillRect(layoutWidth - barWidth, 0f, barWidth, layoutHeight)
+		draw.fillRect(0f, layoutHeight - barWidth, layoutWidth - barWidth, barWidth)
+		draw.fillRect(layoutWidth - barWidth, 0f, barWidth, layoutHeight - barWidth)
 	}
 
 	override fun onUpdate() {
@@ -82,11 +87,11 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 		if (uiobject.translation.y > 0f)
 			uiobject.translation.y = 0f
 
-		if (uiobject.translation.x < -(contentWidth - layoutWidth + barWidth) && contentWidth > layoutWidth)
-			uiobject.translation.x = -(contentWidth - layoutWidth + barWidth)
+		if (uiobject.translation.x < -(contentWidth - layoutWidth + barLength) && contentWidth > layoutWidth)
+			uiobject.translation.x = -(contentWidth - layoutWidth + barLength)
 
-		if (uiobject.translation.y < -(contentHeight - layoutHeight + barWidth) && contentHeight > layoutHeight)
-			uiobject.translation.y = -(contentHeight - layoutHeight + barWidth)
+		if (uiobject.translation.y < -(contentHeight - layoutHeight + barLength) && contentHeight > layoutHeight)
+			uiobject.translation.y = -(contentHeight - layoutHeight + barLength)
 
 		barX.translation.y = layoutHeight - barWidth
 		barY.translation.x = layoutWidth - barWidth
@@ -118,13 +123,13 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 	}
 
 	private fun limitBars() {
-		barX.translation.x = Math.max(0f, Math.min(layoutWidth - barWidth, barX.translation.x))
-		barY.translation.y = Math.max(0f, Math.min(layoutHeight - barWidth, barY.translation.y))
+		barX.translation.x = Math.max(0f, Math.min(layoutWidth - barWidth - barLength, barX.translation.x))
+		barY.translation.y = Math.max(0f, Math.min(layoutHeight - barWidth - barLength, barY.translation.y))
 	}
 
 	private fun updateFromBars() {
-		uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth + barWidth)
-		uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight + barWidth)
+		uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth + barLength)
+		uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight + barLength)
 		//uiobject.translation.y = sin((System.currentTimeMillis() % (Math.PI * 2000)) / 1000).toFloat() * 50f - 50
 	}
 }
