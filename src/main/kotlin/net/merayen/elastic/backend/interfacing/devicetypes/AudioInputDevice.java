@@ -16,7 +16,7 @@ public abstract class AudioInputDevice extends AudioDevice {
 		if(!isRunning())
 			throw new RuntimeException("Can not read audio from device: Not running");
 
-		if(configuration == null)
+		if(getConfiguration() == null)
 			throw new RuntimeException("Can not read audio from device: Not configured");
 
 		onRead(audio);

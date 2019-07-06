@@ -12,7 +12,7 @@ public abstract class AudioOutputDevice extends AudioDevice {
 		if(!isRunning())
 			throw new RuntimeException("Can not write audio to device: Not running");
 
-		if(configuration == null)
+		if(getConfiguration() == null)
 			throw new RuntimeException("Can not write audio to device: Not configured");
 
 		onWrite(audio);
@@ -22,7 +22,7 @@ public abstract class AudioOutputDevice extends AudioDevice {
 		if(!isRunning())
 			throw new RuntimeException("Can not write audio to device: Not running");
 
-		if(configuration == null)
+		if(getConfiguration() == null)
 			throw new RuntimeException("Can not write audio to device: Not configured");
 
 		//if(((AudioDevice.Configuration)configuration).channels != audio.length)

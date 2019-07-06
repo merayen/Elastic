@@ -29,8 +29,8 @@ public abstract class AbstractDeviceScanner {
 	}
 
 	protected void addDevice(AbstractDevice device) {
-		if(getDevice(device.id) != null) {
-			System.out.println(String.format("Device already registered: Buggy platform scanner? (%s)", device.id));
+		if(getDevice(device.getId()) != null) {
+			System.out.println(String.format("Device already registered: Buggy platform scanner? (%s)", device.getId()));
 			return;
 		}
 
@@ -58,7 +58,7 @@ public abstract class AbstractDeviceScanner {
 
 	public AbstractDevice getDevice(String id) {
 		for(AbstractDevice ad : devices)
-			if(ad.id.equals(id))
+			if(ad.getId().equals(id))
 				return ad;
 
 		return null;

@@ -1,14 +1,11 @@
 package net.merayen.elastic.ui.objects.top.views.statisticsview
 
+import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsData
 import net.merayen.elastic.system.intercom.StatisticsReportMessage
 import net.merayen.elastic.ui.Draw
-import net.merayen.elastic.ui.Rect
-import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Meter
-import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.top.views.View
 import kotlin.math.roundToInt
-import kotlin.math.sin
 
 class StatisticsView : View() {
 	private val bar = StatisticsViewBar()
@@ -18,51 +15,30 @@ class StatisticsView : View() {
 	private var maxTime = 0.0
 	private var frameDuration = 0.0
 
+	private var availableBeforeAvg = 0.0
+	private var availableBeforeMin = 0.0
+	private var availableAfterAvg = 0.0
+	private var availableAfterMin = 0.0
+
 	private val avgMeter = Meter()
 	private val maxMeter = Meter()
 	private val notProcessingMeter = Meter()
-
-	class ScrollTest : UIObject() {
-		var _absoluteOutline: Rect? = null
-
-		override fun onDraw(draw: Draw) {
-			draw.setColor(1f,1f,1f)
-			draw.setStroke(1f)
-			draw.rect(1f, 1f, getWidth() - 2, getHeight() - 2)
-		}
-
-		override fun getWidth() = 200f + sin(System.currentTimeMillis() / 1000.0 + Math.PI).toFloat() * 40f
-		override fun getHeight() = 200f + sin(System.currentTimeMillis() / 1000.0).toFloat() * 40f
-	}
-
-	private val scrollContent = ScrollTest()
-
-	private val scroll = Scroll(scrollContent)
-
 	override fun cloneView() = StatisticsView()
 
 	override fun onInit() {
 		super.onInit()
 
-		scroll.translation.x = 100f
-		scroll.translation.y = 100f
-		scroll.layoutWidth = 200f
-		scroll.layoutHeight = 200f
-		add(scroll)
+		avgMeter.translation.x = 200f
+		avgMeter.translation.y = 40f
+		add(avgMeter)
 
-		with(avgMeter.translation) {
-			x = 220f
-			y = 50f
-		}
-		scrollContent.add(avgMeter)
+		maxMeter.translation.x = 200f
+		maxMeter.translation.y = 60f
+		add(maxMeter)
 
-		maxMeter.translation.x = 20f
-		maxMeter.translation.y = 80f
-		scrollContent.add(maxMeter)
-
-		notProcessingMeter.translation.x = 20f
-		notProcessingMeter.translation.y = 110f
-		scrollContent.add(notProcessingMeter)
+		notProcessingMeter.translation.x = 200f
+		notProcessingMeter.translation.y = 80f
+		add(notProcessingMeter)
 
 		add(bar)
 	}
@@ -70,13 +46,14 @@ class StatisticsView : View() {
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
 
-		draw.setColor(1f, 0f, 1f)
-		draw.setFont("", 20f)
-		draw.text("Avg: ${"%.3f".format(avgTime / frameDuration)}ms", 150f, 100f)
-		draw.text("Max: ${"%.3f".format(maxTime / frameDuration)}ms", 150f, 150f)
-		draw.text("Avg not processing: ${"%.3f".format(notProcessingAvgTime / frameDuration)}ms", 150f, 200f)
-		draw.text("Scroll content width=${"%.3f".format(scrollContent.getWidth())}, height=${"%.3f".format(scrollContent.getHeight())}", 10f, 400f)
-		draw.text("Scroll content outline_abs=${scrollContent.absoluteOutline}", 10f, 450f)
+		draw.setColor(1f, 1f, 1f)
+		draw.setFont("", 12f)
+		draw.text("Avg: ${"%.3f".format(avgTime / frameDuration)}ms", 10f, 50f)
+		draw.text("Max: ${"%.3f".format(maxTime / frameDuration)}ms", 10f, 70f)
+		draw.text("Avg not processing: ${"%.3f".format(notProcessingAvgTime / frameDuration)}ms", 10f, 90f)
+
+		draw.text("Available before writing: avg=${availableBeforeAvg.toInt()}, min=${availableBeforeMin.toInt()}", 10f, 130f)
+		draw.text("Available after writing: avg=${availableAfterAvg.toInt()}, min=${availableAfterMin.toInt()}", 10f, 150f)
 	}
 
 	fun handleStatisticsReportMessage(message: StatisticsReportMessage) {
@@ -87,14 +64,19 @@ class StatisticsView : View() {
 
 		avgMeter.value = (avgTime / frameDuration).toFloat()
 		avgMeter.content.text = "${(avgMeter.value * 100).roundToInt()}%"
-		avgMeter.direction = Meter.Direction.DOWN
-		avgMeter.layoutWidth = 100f
-		avgMeter.layoutHeight = 100f
 
 		maxMeter.value = (maxTime / frameDuration).toFloat()
 		maxMeter.content.text = "${(maxMeter.value * 100).roundToInt()}%"
 
 		notProcessingMeter.value = (notProcessingAvgTime / frameDuration).toFloat()
 		notProcessingMeter.content.text = "${(notProcessingMeter.value * 100).roundToInt()}%"
+	}
+
+	fun handleOutputNodeStatistics(data: OutputNodeStatisticsData) {
+		// TODO needs to show for each device, now it just mixes them and flickers between them, probably
+		availableBeforeAvg = data.availableBeforeAvg
+		availableBeforeMin = data.availableBeforeMin
+		availableAfterAvg = data.availableAfterAvg
+		availableAfterMin = data.availableAfterMin
 	}
 }

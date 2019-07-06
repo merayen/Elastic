@@ -20,7 +20,9 @@ public abstract class Action {
 		try {
 			while(!func.run()) {
 				system.update();
-				Thread.sleep(1);
+				synchronized (this) {
+					wait(1);
+				}
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();

@@ -118,7 +118,7 @@ public class Test {
 	private String getFirstOutputDevice(Mixer mixer) {
 		for (AbstractDevice ad : mixer.getAvailableDevices()) { // Test the first output device
 			if (ad instanceof AudioOutputDevice) {
-				return ad.getID();
+				return ad.getId();
 			}
 		}
 

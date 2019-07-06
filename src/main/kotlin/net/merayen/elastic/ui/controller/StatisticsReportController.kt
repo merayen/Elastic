@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.controller
 
 import net.merayen.elastic.backend.analyzer.NodeProperties
+import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.StatisticsReportMessage
 import net.merayen.elastic.ui.objects.top.views.statisticsview.StatisticsView
@@ -31,10 +32,12 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 			val nodeId = message.nodeId
 			val node = gate.netlist.getNode(nodeId)
 			if (node != null && nodeProperties.getName(node) == "output") {
-				val statistics = (message.value as Map<String, Any>)["statistics"] as? Map<String, Any>
-
-				if (statistics != null)
-				;//println(statistics["available_before_min"])
+				val value = message.value
+				if (value is OutputNodeStatisticsData) {
+					// Send it to all the Statistics views
+					for(statisticsView in getViews(StatisticsView::class.java))
+						statisticsView.handleOutputNodeStatistics(value)
+				}
 			}
 		}
 	}

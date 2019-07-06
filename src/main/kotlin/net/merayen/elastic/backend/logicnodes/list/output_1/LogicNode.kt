@@ -24,7 +24,7 @@ class LogicNode : BaseLogicNode() {
 			if (ad is AudioDevice)
 				if (ad.isOutput)
 					if (ad.id == "oracle_java:Default Audio Device" ||// Mac OS X 10.9
-							ad.id == "oracle_java:PulseAudio Mixer" || // Ubuntu 16.04
+						ad.id == "oracle_java:PulseAudio Mixer" || // Ubuntu 16.04
 						ad.id == "oracle_java:default [default]"
 					)
 						output_device = ad.id
@@ -88,16 +88,16 @@ class LogicNode : BaseLogicNode() {
 		val statistics = mixer.statistics[output_device]
 
 		if (statistics != null) {
-			val nodeData = HashMap<String, Any>()
-
-			val stats = HashMap<String, Any>()
-			stats["available_before_avg"] = statistics.available_before.avg
-			stats["available_before_min"] = statistics.available_before.min
-			stats["available_after_avg"] = statistics.available_after.avg
-			stats["available_after_min"] = statistics.available_after.min
-			nodeData["statistics"] = stats
-
-			sendMessageToUI(NodeDataMessage(id, nodeData))
+			sendMessageToUI(NodeDataMessage(
+				id,
+				OutputNodeStatisticsData(
+					statistics.id,
+					statistics.available_before.avg,
+					statistics.available_before.min,
+					statistics.available_after.avg,
+					statistics.available_after.min
+				)
+			))
 		}
 	}
 

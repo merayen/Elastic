@@ -1,10 +1,5 @@
 package net.merayen.elastic.backend.mix;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
 import net.merayen.elastic.backend.interfacing.Platform;
@@ -12,6 +7,11 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice;
 import net.merayen.elastic.backend.mix.datatypes.Audio;
 import net.merayen.elastic.backend.mix.datatypes.DataType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Accumulates and mixes outgoing and incoming data.
@@ -40,11 +40,11 @@ public class Mixer { // Rename to e.g "IODispatch"?
 			public void onDeviceRemoved(AbstractDevice device) {
 				if(device.isOutput()) {
 					synchronized (output_buffer) {
-						output_buffer.remove(device.id);
+						output_buffer.remove(device.getId());
 					}
 				} else {
 					synchronized (input_buffer) {
-						input_buffer.remove(device.id);
+						input_buffer.remove(device.getId());
 					}
 				}
 			}
@@ -53,11 +53,11 @@ public class Mixer { // Rename to e.g "IODispatch"?
 			public void onDeviceAdded(AbstractDevice device) {
 				if(device.isOutput()) {
 					synchronized (output_buffer) {
-						output_buffer.put(device.id, new ArrayList<>());
+						output_buffer.put(device.getId(), new ArrayList<>());
 					}
 				} else {
 					synchronized (input_buffer) {
-						input_buffer.remove(device.id);
+						input_buffer.remove(device.getId());
 					}
 				}
 			}
@@ -163,7 +163,7 @@ public class Mixer { // Rename to e.g "IODispatch"?
 
 		for(AbstractDevice ad : device_scanner.getDevices())
 			if(ad.isRunning())
-				result.put(ad.id, ad.statistics);
+				result.put(ad.getId(), ad.getStatistics());
 
 		return result;
 	}

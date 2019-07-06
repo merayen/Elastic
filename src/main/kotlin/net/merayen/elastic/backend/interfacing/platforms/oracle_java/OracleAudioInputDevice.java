@@ -1,18 +1,12 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.TargetDataLine;
-
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioInputDevice;
-import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice.Configuration;
+
+import javax.sound.sampled.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper for Oracle Java implementation of an audio device.
@@ -28,19 +22,19 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 
 	@Override
 	public int available() {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 		return (line.available() - line.getBufferSize()) / c.channels / (c.depth / 8);
 	}
 
 	@Override
 	public int getBufferSampleSize() {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 		return line.getBufferSize() / c.channels / (c.depth / 8);
 	}
 
 	@Override
 	public void spool(int samples) {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 		int to_read = samples * (c.depth / 8) * c.channels;
 		line.read(new byte[to_read], 0, to_read);
 	}
@@ -74,7 +68,7 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 
 	@Override
 	public void onRead(float[] audio) {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 
 		prepareLine();
 
@@ -96,7 +90,7 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 	}
 
 	private void convertToFloat(byte[] in, float[] out) {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 
 		if(c.depth != 16)
 			throw new RuntimeException("Does not support anything else than 16 bit input audio now");
@@ -126,7 +120,7 @@ public class OracleAudioInputDevice extends AudioInputDevice {
 
 	private void prepareLine() {
 		if(!line.isOpen()) {
-			Configuration c = (Configuration)configuration;
+			Configuration c = (Configuration)getConfiguration();
 
 			try {
 				line.open(new AudioFormat(c.sample_rate, c.depth, c.channels, true, true), 512 * (c.depth / 8) * c.channels); // Kind of fixed buffer size, we don't want to miss any samples, therefore huge

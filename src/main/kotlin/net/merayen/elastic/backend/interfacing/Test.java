@@ -27,7 +27,7 @@ public class Test {
 
 		for(AbstractDevice ad : ads.getDevices()) {
 			if(ad instanceof AudioOutputDevice) {
-				System.out.println("OUTPUT: " + ad.getID());
+				System.out.println("OUTPUT: " + ad.getId());
 
 				//for(AbstractDevice.Configuration c : ad.getAvailableConfigurations())
 				//	System.out.println(((AudioDevice.Configuration)c).getDescription());*/
@@ -43,7 +43,7 @@ public class Test {
 				return;
 
 			} else if(ad instanceof AudioInputDevice) {
-				System.out.println("INPUT: " + ad.getID());
+				System.out.println("INPUT: " + ad.getId());
 
 				//for(AbstractDevice.Configuration c : ad.getAvailableConfigurations())
 				//	System.out.println(((AudioDevice.Configuration)c).getDescription());

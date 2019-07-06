@@ -33,7 +33,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	@Override
 	public int available() {
 		if(line.isActive()) {
-			Configuration c = (Configuration)configuration;
+			Configuration c = (Configuration)getConfiguration();
 			return (line.getBufferSize() - line.available()) / c.channels / (c.depth / 8);
 		} else {
 			return 0;
@@ -42,14 +42,14 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public int getBufferSampleSize() {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 		return line.getBufferSize() / c.channels / (c.depth / 8);
 	}
 
 	@Override
 	public void spool(int samples) {
 		System.out.println("Spooling");
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 		int to_write = samples * (c.depth / 8) * c.channels;
 		line.write(new byte[to_write], 0, to_write);
 	}
@@ -83,7 +83,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 	@Override
 	public void onWrite(float[] audio) {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration)getConfiguration();
 
 		if(buffer.length * c.depth / 8 != audio.length)
 			buffer = new byte[audio.length * c.depth / 8];
@@ -92,28 +92,28 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 
 		int available = available();
 		if(available == 0)
-			statistics.hunger++;
+			getStatistics().setHunger(getStatistics().getHunger() + 1);
 
-		statistics.available_before.add(available);
+		getStatistics().getAvailable_before().add(available);
 
 		prepareLine(buffer.length);
 
-		statistics.outside_buffer_time.add((System.currentTimeMillis() - last_write) / 1000f);
+		getStatistics().getOutside_buffer_time().add((System.currentTimeMillis() - last_write) / 1000f);
 		long t = System.currentTimeMillis();
 		line.write(buffer, 0, buffer.length);
 		last_write = System.currentTimeMillis();
-		statistics.buffer_time.add((System.currentTimeMillis() - t) / 1000f);
+		getStatistics().getBuffer_time().add((System.currentTimeMillis() - t) / 1000f);
 
-		statistics.samples_processed.add(audio.length / (c.depth / 8) / c.channels);
+		getStatistics().getSamples_processed().add(audio.length / (c.depth / 8) / c.channels);
 
 		available = available();
-		statistics.available_after.add(available);
+		getStatistics().getAvailable_after().add(available);
 	}
 
 	@Override
 	public void onWrite(float[][] audio) {
-		float[] output = new float[audio[0].length * ((Configuration)configuration).channels];
-		AudioUtil.mergeChannels(audio, output, audio[0].length, ((Configuration)configuration).channels);
+		float[] output = new float[audio[0].length * ((Configuration) getConfiguration()).channels];
+		AudioUtil.mergeChannels(audio, output, audio[0].length, ((Configuration) getConfiguration()).channels);
 		onWrite(output);
 	}
 
@@ -147,7 +147,7 @@ public class OracleAudioOutputDevice extends AudioOutputDevice {
 	}
 
 	private void prepareLine(int buffer_size) {
-		Configuration c = (Configuration)configuration;
+		Configuration c = (Configuration) getConfiguration();
 
 		if(!line.isOpen() || line.getBufferSize() != buffer_size) {
 			try {
