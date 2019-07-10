@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor {
 
@@ -155,7 +154,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

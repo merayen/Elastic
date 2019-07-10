@@ -29,10 +29,10 @@ public class NewProject extends Action {
 	@Override
 	protected void run() {
 		try(
-			Tap<Postmaster.Message> from_backend = system.tapIntoMessagesFromBackend()) {
+			Tap<Object> from_backend = system.tapIntoMessagesFromBackend()) {
 
-			from_backend.set(new TapSpreader.Func<Postmaster.Message>() {
-				public void receive(Postmaster.Message message) {
+			from_backend.set(new TapSpreader.Func<Object>() {
+				public void receive(Object message) {
 					if(message instanceof CreateNodeMessage) {
 						nodes.add((CreateNodeMessage)message);
 					} else if(message instanceof BeginResetNetListMessage) {

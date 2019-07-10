@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
+import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
@@ -36,13 +37,17 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		})
 
 		add(piano)
+		add(notes)
 	}
 
 	override fun onUpdate() {
 		net.layoutWidth = layoutWidth
+
+		notes.layoutWidth = layoutWidth
+		notes.layoutHeight = layoutHeight
 	}
 
-	fun loadMidi(midi: Array<Array<Short>>) {
+	fun loadMidi(midiData: MidiData) {
 
 	}
 

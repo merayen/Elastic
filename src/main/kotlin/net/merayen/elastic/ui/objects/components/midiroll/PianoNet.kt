@@ -1,5 +1,7 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
+import net.merayen.elastic.backend.data.eventdata.MidiData
+import net.merayen.elastic.backend.midi.MidiState
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -9,6 +11,12 @@ import net.merayen.elastic.ui.objects.components.SelectionRectangle
 class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
+
+	private val midiState = object : MidiState() {
+		override fun onKeyDown(tangent: Short, velocity: Float) {
+			TODO()
+		}
+	}
 
 	/**
 	 * Vertical size of 1 octave, in height units
@@ -78,5 +86,13 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 
 	override fun onEvent(event: UIEvent) {
 		selectionRectangle.handle(event)
+	}
+
+	fun loadMidi(midiData: MidiData) {
+		reset()
+	}
+
+	private fun reset() {
+
 	}
 }

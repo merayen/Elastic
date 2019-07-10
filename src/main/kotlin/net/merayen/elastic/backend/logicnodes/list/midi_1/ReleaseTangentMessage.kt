@@ -1,3 +1,5 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
-class ReleaseTangentMessage(val tangent: Short)
+import net.merayen.elastic.system.intercom.NodeDataMessage
+
+class ReleaseTangentMessage(override val nodeId: String, val tangent: Short) : NodeDataMessage

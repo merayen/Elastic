@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.in_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.*;
-import net.merayen.elastic.util.Postmaster.Message;
 
 /**
  * TODO support more than just MIDI. Will probably crash and explode if anything else is given to it.
@@ -24,7 +23,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

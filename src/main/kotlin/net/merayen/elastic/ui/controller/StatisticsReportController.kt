@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.objects.top.views.statisticsview.StatisticsView
 import net.merayen.elastic.util.Postmaster
 
 class StatisticsReportController(gate: Gate) : Controller(gate) {
-	class Hello : Postmaster.Message()
+	class Hello
 
 	private val statisticsViews: List<StatisticsView>
 		get() {
@@ -22,7 +22,7 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 
 	override fun onInit() {}
 
-	override fun onMessageFromBackend(message: Postmaster.Message) {
+	override fun onMessageFromBackend(message: Any) {
 		if (message is StatisticsReportMessage) {
 			for (x in statisticsViews)
 				x.handleStatisticsReportMessage(message)
@@ -32,15 +32,14 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 			val nodeId = message.nodeId
 			val node = gate.netlist.getNode(nodeId)
 			if (node != null && nodeProperties.getName(node) == "output") {
-				val value = message.value
-				if (value is OutputNodeStatisticsData) {
+				if (message is OutputNodeStatisticsData) {
 					// Send it to all the Statistics views
 					for(statisticsView in getViews(StatisticsView::class.java))
-						statisticsView.handleOutputNodeStatistics(value)
+						statisticsView.handleOutputNodeStatistics(message)
 				}
 			}
 		}
 	}
 
-	override fun onMessageFromUI(message: Postmaster.Message) {}
+	override fun onMessageFromUI(message: Any) {}
 }

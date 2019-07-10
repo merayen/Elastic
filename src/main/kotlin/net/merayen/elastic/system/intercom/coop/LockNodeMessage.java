@@ -16,7 +16,6 @@ public class LockNodeMessage extends CoopMessage {
 		this.node_id = node_id;
 	}
 
-	@Override
 	public Map<String, Object> dump() {
 		Map<String, Object> result = new HashMap<>();
 

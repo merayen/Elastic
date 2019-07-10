@@ -34,11 +34,11 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		add(menuBar)
 		midiRoll = MidiRoll(object : MidiRoll.Handler {
 			override fun onUp(tangent_no: Int) {
-				sendData(ReleaseTangentMessage(tangent_no.toShort()))
+				sendData(ReleaseTangentMessage(nodeId, tangent_no.toShort()))
 			}
 
 			override fun onDown(tangent_no: Int) {
-				sendData(PushTangentMessage(tangent_no.toShort()))
+				sendData(PushTangentMessage(nodeId, tangent_no.toShort()))
 			}
 		})
 		midiRoll.translation.scaleX = 0.5f

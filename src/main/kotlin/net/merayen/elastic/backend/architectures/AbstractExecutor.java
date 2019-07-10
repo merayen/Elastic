@@ -9,7 +9,7 @@ public abstract class AbstractExecutor {
 		 * Called when processor sends a message.
 		 * Do not do any time consuming tasks in this callback, rather queue the message and notify someone to react on it.
 		 */
-		void onMessageFromProcessor(Postmaster.Message message);
+		void onMessageFromProcessor(Object message);
 	}
 
 	protected final int sample_rate, sample_buffer_size;
@@ -23,7 +23,7 @@ public abstract class AbstractExecutor {
 
 	final Postmaster to_processing = new Postmaster(); // Messages queued to be read from the processing architecture
 
-	protected abstract void onMessage(Postmaster.Message message);
+	protected abstract void onMessage(Object message);
 
 	/**
 	 * Call this to stop the processing.
@@ -31,7 +31,7 @@ public abstract class AbstractExecutor {
 	 */
 	public abstract void stop();
 
-	protected void sendFromProcessing(Postmaster.Message message) {
+	protected void sendFromProcessing(Object message) {
 		handler.onMessageFromProcessor(message);
 	}
 

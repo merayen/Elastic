@@ -31,12 +31,12 @@ public class BackendContext {
 
 		logicnode_supervisor = new Supervisor(env, new Supervisor.Handler() {
 			@Override
-			public void sendMessageToUI(net.merayen.elastic.util.Postmaster.Message message) { // Message sent from LogicNodes to the UI
+			public void sendMessageToUI(Object message) { // Message sent from LogicNodes to the UI
 				message_handler.handleFromLogicToUI(message);
 			}
 
 			@Override
-			public void sendMessageToProcessor(net.merayen.elastic.util.Postmaster.Message message) { // Messages sent further into the backend, from the LogicNodes
+			public void sendMessageToProcessor(Object message) { // Messages sent further into the backend, from the LogicNodes
 				message_handler.handleFromLogicToProcessor(message);
 			}
 

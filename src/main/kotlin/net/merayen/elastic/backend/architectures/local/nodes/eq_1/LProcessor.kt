@@ -7,6 +7,6 @@ class LProcessor : LocalProcessor() {
 	override fun onInit() {}
 	override fun onPrepare() {}
 	override fun onProcess() {}
-	override fun onMessage(message: Postmaster.Message?) {}
+	override fun onMessage(message: Any?) {}
 	override fun onDestroy() {}
 }

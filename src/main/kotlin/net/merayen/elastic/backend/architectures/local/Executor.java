@@ -19,7 +19,7 @@ public class Executor extends AbstractExecutor {
 	private Supervisor supervisor;
 
 	@Override
-	protected void onMessage(Postmaster.Message message) {
+	protected void onMessage(Object message) {
 		if(message instanceof ProcessMessage) {
 			applyNetList();
 

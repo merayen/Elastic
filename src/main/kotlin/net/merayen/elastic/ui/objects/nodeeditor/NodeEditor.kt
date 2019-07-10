@@ -13,7 +13,7 @@ abstract class NodeEditor(val nodeId: String) : UIObject(), FlexibleDimension {
 	//override fun getWidth() = layoutWidth
 	//override fun getHeight() = layoutHeight
 
-	protected fun sendData(value: Any) {
-		sendMessage(NodeDataMessage(nodeId, value))
+	protected fun sendData(message: NodeDataMessage) {
+		sendMessage(message)
 	}
 }

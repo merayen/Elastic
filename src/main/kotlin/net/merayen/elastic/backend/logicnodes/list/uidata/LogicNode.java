@@ -3,6 +3,7 @@ package net.merayen.elastic.backend.logicnodes.list.uidata;
 import java.util.Map;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.system.intercom.OutputFrameData;
 
 /**
  * Generic data storage for the user interface. Really? It will be stored in the revision history, which is something we do not want?
@@ -34,7 +35,7 @@ public class LogicNode extends BaseLogicNode {
 	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onFinishFrame(Map<String, Object> data) {}
+	protected void onFinishFrame(OutputFrameData data) {}
 
 	@Override
 	protected void onData(Object data) {}

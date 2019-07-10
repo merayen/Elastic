@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.system.intercom.OutputFrameData;
 
 public class LogicNode extends BaseLogicNode {
 	@Override
@@ -39,7 +40,7 @@ public class LogicNode extends BaseLogicNode {
 	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
-	protected void onFinishFrame(Map<String, Object> data) {}
+	protected void onFinishFrame(OutputFrameData data) {}
 
 	@Override
 	protected void onRemove() {}

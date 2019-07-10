@@ -76,11 +76,11 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		sendMessage(NodeParameterMessage(nodeId, key, value))
 	}
 
-	fun sendData(value: Map<String, Any>) {
-		sendMessage(NodeDataMessage(nodeId, value))
+	fun sendData(value: NodeDataMessage) {
+		sendMessage(value)
 	}
 
-	fun executeMessage(message: Postmaster.Message) {
+	fun executeMessage(message: Any) {
 		if (message is NodeParameterMessage) {
 
 			if (message.key == "ui.java.translation.x" && !titlebar.isDragging)

@@ -58,7 +58,7 @@ class Top(private val surfacehandler: SurfaceHandler) : UIObject() {
 		add(w)
 	}
 
-	override fun sendMessage(message: Postmaster.Message) {
+	override fun sendMessage(message: Any) {
 		ui_gate!!.send(message)
 	}
 }

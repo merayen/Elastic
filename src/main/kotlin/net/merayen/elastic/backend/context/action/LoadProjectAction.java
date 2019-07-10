@@ -19,7 +19,7 @@ public class LoadProjectAction extends Action {
 		if(!new File(env.project.path).isDirectory())
 			throw new RuntimeException("Project not found. Should not happen as it should have been created or already exist");
 
-		List<Postmaster.Message> messages = new ArrayList<>();
+		List<Object> messages = new ArrayList<>();
 
 		messages.add(new BeginResetNetListMessage());
 		messages.addAll(NetListMessages.INSTANCE.disassemble(env.project.data.getRawNetList()));

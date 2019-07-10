@@ -4,7 +4,6 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
 import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
-import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.buttons.Button
@@ -98,11 +97,11 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			override fun onEventSelect() = handler?.onEventSelect() ?: Unit
 
 			override fun onCreateEvent(id: String, start: Float, length: Float) {
-				arrangement.sendMessage(NodeDataMessage(nodeId, AddEventZoneMessage(id, start, length)))
+				arrangement.sendMessage(AddEventZoneMessage(nodeId, id, start, length))
 			}
 
 			override fun onRemoveEvent(id: String) {
-				arrangement.sendMessage(NodeDataMessage(nodeId, RemoveEventZoneMessage(id)))
+				arrangement.sendMessage(RemoveEventZoneMessage(nodeId, id))
 			}
 
 			override fun onRepeatEvent(id: String, count: Int) {
@@ -110,13 +109,11 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				if (event != null) {
 					for (i in 0 until count) {
 						arrangement.sendMessage(
-								NodeDataMessage(
+								AddEventZoneMessage(
 										nodeId,
-										AddEventZoneMessage(
-												UniqueID.create(),
-												event.start + event.length + event.length * i,
-												event.length
-										)
+										UniqueID.create(),
+										event.start + event.length + event.length * i,
+										event.length
 								)
 						)
 					}
@@ -124,7 +121,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			}
 
 			override fun onChangeEvent(eventId: String, position: Float, length: Float) {
-				arrangement.sendMessage(NodeDataMessage(nodeId, ChangeEventZoneMessage(eventId, position, length)))
+				arrangement.sendMessage(ChangeEventZoneMessage(nodeId, eventId, position, length))
 			}
 
 			override fun onEditEvent(id: String) {
@@ -142,6 +139,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			}
 		}
 	}
+
 	override fun onParameter(key: String, value: Any) {
 		when (key) {
 			"mute" -> muteButton.value = value as Boolean
@@ -149,7 +147,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			"record" -> recordButton.value = value as Boolean
 			"trackName" -> trackName.value = value as String
 			"eventZones" -> {
-				eventTimeLine.loadEventZones((value as List<HashMap<String,Any>>).map { Parameters.EventZone(it) })
+				eventTimeLine.loadEventZones((value as List<HashMap<String, Any>>).map { Parameters.EventZone(it) })
 
 				// Exit edit mode if we get updates on events and the event has disappeared
 				val editEventZone = midiEditPane.eventZone

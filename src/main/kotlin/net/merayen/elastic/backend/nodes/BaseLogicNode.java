@@ -9,7 +9,6 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
-import net.merayen.elastic.util.Postmaster;
 
 public abstract class BaseLogicNode {
 	/**
@@ -87,7 +86,7 @@ public abstract class BaseLogicNode {
 	 * Called when the processor has processed.
 	 * The result data is put into the data argument.
 	 */
-	protected abstract void onFinishFrame(Map<String, Object> data);
+	protected abstract void onFinishFrame(OutputFrameData data);
 
 	/**
 	 * Call this to create a port.
@@ -107,7 +106,7 @@ public abstract class BaseLogicNode {
 			throw new RuntimeException("Input-ports can not have a format set, as it will depend on the output-port it is connected to");
 
 		// Everything OK
-		Postmaster.Message message = new CreateNodePortMessage(id, def.name, def.output, def.format); // TODO rename to chain_ident
+		Object message = new CreateNodePortMessage(id, def.name, def.output, def.format); // TODO rename to chain_ident
 
 		NetListMessages.INSTANCE.apply(netlist, message); // Apply the port to the NetList
 
@@ -132,12 +131,8 @@ public abstract class BaseLogicNode {
 		return np.parameters.get(node, key);
 	}
 
-	protected void sendDataToUI(Map<String, Object> data) {
-		sendMessageToUI(new NodeDataMessage(id, data));
-	}
-
-	protected void sendDataToProcessor(String key, Map<String, Object> data) {
-		sendMessageToProcessor(new NodeDataMessage(id, data));
+	protected void sendDataToUI(NodeDataMessage data) {
+		sendMessageToUI(data);
 	}
 
 	protected boolean isConnected(String port) {
@@ -204,14 +199,14 @@ public abstract class BaseLogicNode {
 	 * Send message to UI (frontend).
 	 * 
 	 */
-	protected void sendMessageToUI(Postmaster.Message message) {
+	protected void sendMessageToUI(Object message) {
 		supervisor.sendMessageToUI(message);
 	}
 
 	/**
 	 * Send message to processor.
 	 */
-	protected void sendMessageToProcessor(Postmaster.Message message) {
+	protected void sendMessageToProcessor(Object message) {
 		supervisor.sendMessageToProcessor(message);
 	}
 

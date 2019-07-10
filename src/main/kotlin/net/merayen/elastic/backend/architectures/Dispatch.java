@@ -1,8 +1,6 @@
 package net.merayen.elastic.backend.architectures;
 
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
-import net.merayen.elastic.util.Postmaster;
-import net.merayen.elastic.util.Postmaster.Message;
 
 /**
  * Used by the backend to communicate with the processor
@@ -12,7 +10,7 @@ public class Dispatch {
 		/**
 		 * Message received from the backend.
 		 */
-		void onMessageFromProcessor(Postmaster.Message message);
+		void onMessageFromProcessor(Object message);
 	}
 
 	class Runner extends Thread {
@@ -36,7 +34,7 @@ public class Dispatch {
 				}
 
 				synchronized (this) {
-					Postmaster.Message message;
+					Object message;
 					while ((message = executor.to_processing.receive()) != null)
 						executor.onMessage(message);
 				}
@@ -54,7 +52,7 @@ public class Dispatch {
 		this.handler = handler;
 	}
 
-	public void executeMessage(Postmaster.Message message) {
+	public void executeMessage(Object message) {
 		synchronized (runner) {
 			executor.to_processing.send(message);
 			runner.notifyAll();

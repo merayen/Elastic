@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 
-class PianoNotes(private val octaveCount: Int) : UIObject() {
+class PianoNotes(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	class Note : UIObject(), FlexibleDimension {
 		override var layoutWidth = 0f
 		override var layoutHeight = 0f
@@ -20,6 +20,9 @@ class PianoNotes(private val octaveCount: Int) : UIObject() {
 			draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 		}
 	}
+
+	override var layoutWidth = 0f
+	override var layoutHeight = 0f
 
 	private val noteContainer = UIObject()
 

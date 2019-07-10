@@ -60,7 +60,7 @@ class Arrangement : UIObject() {
 			track.eventPane.layoutHeight = track.trackPane.layoutHeight
 	}
 
-	fun handleMessage(message: Postmaster.Message) {
+	fun handleMessage(message: Any) {
 		when (message) {
 			is BeginResetNetListMessage -> {
 				ArrayList(tracks).forEach { removeTrack(it) }

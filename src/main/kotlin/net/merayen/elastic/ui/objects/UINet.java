@@ -172,7 +172,7 @@ public class UINet extends UIObject {
 				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().getNodeId(), c.a.name, c.b.getNode().getNodeId(), c.b.name));
 	}
 
-	public void handleMessage(Postmaster.Message message) {
+	public void handleMessage(Object message) {
 		if(message instanceof NodeConnectMessage)
 			internalConnect((NodeConnectMessage)message);
 

@@ -22,8 +22,8 @@ import net.merayen.elastic.util.Postmaster;
  */
 public class Supervisor {
 	public interface Handler {
-		void sendMessageToUI(Postmaster.Message message);
-		void sendMessageToProcessor(Postmaster.Message message);
+		void sendMessageToUI(Object message);
+		void sendMessageToProcessor(Object message);
 
 		/**
 		 * Called when processing a frame has been finished.
@@ -65,7 +65,7 @@ public class Supervisor {
 		logicnode_list.createLogicNode(node);
 	}
 
-	public synchronized void handleMessageFromUI(Postmaster.Message message) {
+	public synchronized void handleMessageFromUI(Object message) {
 		if(is_processing) {
 			while_processing_queue.send(message);
 		} else {
@@ -73,7 +73,7 @@ public class Supervisor {
 		}
 	}
 
-	private synchronized void executeMessageFromUI(Postmaster.Message message) {
+	private synchronized void executeMessageFromUI(Object message) {
 		NetList netlist = ((Environment)env).project.getNetList();
 
 		if(message instanceof CreateNodeMessage) {
@@ -88,7 +88,7 @@ public class Supervisor {
 
 		} else if (message instanceof NodeDataMessage) {
 			NodeDataMessage m = (NodeDataMessage) message;
-			logicnode_list.get(m.nodeId).processData(m.value);
+			logicnode_list.get(m.getNodeId()).processData(message);
 
 		} else if(message instanceof NodeConnectMessage) { // Notifies LogicNodes about changing of connections
 			NodeConnectMessage m = (NodeConnectMessage)message;
@@ -180,14 +180,14 @@ public class Supervisor {
 	/**
 	 * Used by BaseLogicNode to send messages. 
 	 */
-	void sendMessageToUI(Postmaster.Message message) {
+	void sendMessageToUI(Object message) {
 		handler.sendMessageToUI(message);
 	}
 
 	/**
 	 * Used by BaseLogicNode to send messages.
 	 */
-	void sendMessageToProcessor(Postmaster.Message message) {
+	void sendMessageToProcessor(Object message) {
 		handler.sendMessageToProcessor(message);
 	}
 
@@ -203,14 +203,14 @@ public class Supervisor {
 		// Call all LogicNodes to work on the frame
 		for(Node node : netlist.getNodes()) {
 			BaseLogicNode bln = logicnode_list.get(node.getID());
-			bln.onFinishFrame(message.data.get(node.getID()));
+			bln.onFinishFrame(new OutputFrameData(node.getID(), message.data.get(node.getID())));
 		}
 
 		handler.onProcessDone();
 
 		// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
 		is_processing = false;
-		Postmaster.Message m;
+		Object m;
 		while((m = while_processing_queue.receive()) != null)
 			handleMessageFromUI(m);
 
@@ -234,7 +234,7 @@ public class Supervisor {
 		netlist.removePort(logic_node.node, name);
 
 		// Notify both ways
-		Postmaster.Message message = new RemoveNodePortMessage(logic_node.getID(), name);
+		Object message = new RemoveNodePortMessage(logic_node.getID(), name);
 		sendMessageToUI(message);
 		sendMessageToProcessor(message);
 	}

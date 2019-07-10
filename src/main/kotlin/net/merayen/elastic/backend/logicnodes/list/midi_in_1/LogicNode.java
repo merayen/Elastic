@@ -5,6 +5,7 @@ import net.merayen.elastic.backend.interfacing.devicetypes.MidiInputDevice;
 import net.merayen.elastic.backend.interfacing.types.MidiPacket;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.system.intercom.OutputFrameData;
 
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onFinishFrame(Map<String, Object> data) {}
+	protected void onFinishFrame(OutputFrameData data) {}
 
 	@Override
 	protected void onData(Object data) {}

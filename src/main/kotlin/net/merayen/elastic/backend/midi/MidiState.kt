@@ -1,9 +1,11 @@
 package net.merayen.elastic.backend.midi
 
+import net.merayen.elastic.backend.data.eventdata.MidiData
 import kotlin.experimental.and
 
 /**
- * Feed me midi-packets, and I will pick up configuration and such
+ * Feed me midi-packets, and I will pick up configuration and such.
+ * Also handles MidiData.MidiPacket, that makes this class aware of time.
  */
 abstract class MidiState {
 
@@ -40,6 +42,13 @@ abstract class MidiState {
 	protected fun onError() {}
 
 	// Public states that can be read
+
+	/**
+	 * Time in beats. Only used if handle() is used with MidiData.MidiPacket
+	 */
+	var time = 0f
+		private set
+
 	/**
 	 * In semitones. Range of pitch bending.
 	 */
@@ -65,19 +74,19 @@ abstract class MidiState {
 		currentMidiPacket = midiPacket
 
 		val status = midiPacket[0] and 0b11110000
-		if (status == MidiStatuses.KEY_DOWN && midiPacket[2] > 0) {
-			velocity = midiPacket[2] / 127f
-			onKeyDown(midiPacket[1], midiPacket[2] / 127f)
+		when {
+			status == MidiStatuses.KEY_DOWN && midiPacket[2] > 0 -> {
+				velocity = midiPacket[2] / 127f
+				onKeyDown(midiPacket[1], midiPacket[2] / 127f)
 
-		} else if (status == MidiStatuses.KEY_UP || (status == MidiStatuses.KEY_DOWN && midiPacket[2] == 0.toShort())) {
-			onKeyUp(midiPacket[1])
+			}
+			status == MidiStatuses.KEY_UP || status == MidiStatuses.KEY_DOWN && midiPacket[2] == 0.toShort() -> onKeyUp(midiPacket[1])
+			status == MidiStatuses.PITCH_CHANGE -> {
+				pitch = MidiUtils.midiPitchToFloat(midiPacket) * bendRange / 2
+				onPitchChange(pitch)
 
-		} else if(status == MidiStatuses.PITCH_CHANGE) {
-			pitch = MidiUtils.midiPitchToFloat(midiPacket) * bendRange / 2
-			onPitchChange(pitch)
-
-		} else if (midiPacket[0] == MidiStatuses.MOD_CHANGE) {
-			when {
+			}
+			midiPacket[0] == MidiStatuses.MOD_CHANGE -> when {
 				midiPacket[1] == MidiControllers.DATA_ENTRY_MSB -> {
 					data_entry_msb = midiPacket[2]
 					dataEntryUpdate()
@@ -103,6 +112,11 @@ abstract class MidiState {
 		}
 
 		onMidi(midiPacket)
+	}
+
+	fun handle(midiPacket: MidiData.MidiPacket) {
+		time = midiPacket.start
+		handle(midiPacket.midi)
 	}
 
 	private fun dataEntryUpdate() {

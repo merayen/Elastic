@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.midi.MidiMessagesCreator;
 import net.merayen.elastic.backend.midi.MidiState;
-import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor {
 	private MidiInlet input;
@@ -102,7 +101,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

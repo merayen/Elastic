@@ -7,7 +7,6 @@ import net.merayen.elastic.backend.architectures.local.lets.*;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.PolySessions.Session;
 import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.util.Postmaster.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +157,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

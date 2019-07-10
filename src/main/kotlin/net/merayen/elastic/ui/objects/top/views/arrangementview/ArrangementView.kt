@@ -31,5 +31,5 @@ class ArrangementView : View() {
 		return ArrangementView()
 	}
 
-	fun handleMessage(message: Postmaster.Message) = arrangement.handleMessage(message)
+	fun handleMessage(message: Any) = arrangement.handleMessage(message)
 }

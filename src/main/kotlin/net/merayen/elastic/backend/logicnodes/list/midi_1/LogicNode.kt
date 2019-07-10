@@ -5,6 +5,7 @@ import java.util.ArrayList
 import net.merayen.elastic.backend.interfacing.types.MidiPacket
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	internal var buffer: MutableList<MidiPacket> = ArrayList()
@@ -56,7 +57,7 @@ class LogicNode : BaseLogicNode() {
 		data["midi"] = midi
 	}
 
-	override fun onFinishFrame(data: Map<String, Any>) {}
+	override fun onFinishFrame(data: OutputFrameData) {}
 
 	override fun onData(data: Any) {
 		when (data) {

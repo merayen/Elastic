@@ -4,8 +4,7 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
 import net.merayen.elastic.backend.logicnodes.Environment
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
-import net.merayen.elastic.system.intercom.NodeDataMessage
-import java.util.*
+import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	private var output_device: String? = null
@@ -40,8 +39,8 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onPrepareFrame(data: Map<String, Any>) {}
 
-	override fun onFinishFrame(data: Map<String, Any>) {
-		val fa = data["audio"] as Array<FloatArray>
+	override fun onFinishFrame(data: OutputFrameData) {
+		val fa = data.data["audio"] as Array<FloatArray>
 
 		// Count max channels
 		val channel_count = fa.size
@@ -65,7 +64,7 @@ class LogicNode : BaseLogicNode() {
 			i++
 		}
 
-		val vuLeft = data["vuLeft"]
+		/*val vuLeft = data["vuLeft"]
 		if (vuLeft != null)
 			sendDataToUI(object : HashMap<String, Any>() {
 				init {
@@ -79,7 +78,7 @@ class LogicNode : BaseLogicNode() {
 				init {
 					put("offset", offset)
 				}
-			})
+			})*/
 
 		val mixer = (env as Environment).mixer
 
@@ -88,16 +87,16 @@ class LogicNode : BaseLogicNode() {
 		val statistics = mixer.statistics[output_device]
 
 		if (statistics != null) {
-			sendMessageToUI(NodeDataMessage(
-				id,
+			sendMessageToUI(
 				OutputNodeStatisticsData(
+					id,
 					statistics.id,
 					statistics.available_before.avg,
 					statistics.available_before.min,
 					statistics.available_after.avg,
 					statistics.available_after.min
 				)
-			))
+			)
 		}
 	}
 

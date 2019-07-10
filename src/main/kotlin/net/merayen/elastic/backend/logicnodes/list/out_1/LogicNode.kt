@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.logicnodes.list.out_1
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	override fun onCreate() {
@@ -14,5 +15,5 @@ class LogicNode : BaseLogicNode() {
 	override fun onDisconnect(port: String) {}
 	override fun onRemove() {}
 	override fun onPrepareFrame(data: Map<String, Any>) {}
-	override fun onFinishFrame(data: Map<String, Any>) {}
+	override fun onFinishFrame(data: OutputFrameData) {}
 }

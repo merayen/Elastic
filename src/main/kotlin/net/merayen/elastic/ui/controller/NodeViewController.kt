@@ -8,8 +8,6 @@ import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage
 import net.merayen.elastic.system.intercom.backend.ImportFileIntoNodeGroupMessage
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.util.NetListMessages
-import net.merayen.elastic.util.Postmaster
-import net.merayen.elastic.util.Postmaster.Message
 
 /**
  * Handles messages sent and received by nodes.
@@ -38,11 +36,11 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 	 * NodeViews send this message when they are created.
 	 * These messages get picked up by us and we register them.
 	 */
-	class Hello : Message()
+	class Hello
 
 	override fun onInit() {}
 
-	override fun onMessageFromBackend(message: Message) {
+	override fun onMessageFromBackend(message: Any) {
 		val netListUtil = NetListUtil(gate.netlist)
 
 		// Forward message regarding the net, from backend to the UINet, to all NodeViews
@@ -111,7 +109,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 		}
 	}
 
-	override fun onMessageFromUI(message: Message) {
+	override fun onMessageFromUI(message: Any) {
 		if (message is Hello) {  // Set us on the NodeViews, so that they can call us
 			val netListUtil = NetListUtil(gate.netlist)
 
@@ -146,7 +144,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 
 		} else if (message is NetListRefreshRequestMessage) { // Move it out to a separate controller, with only purpose to accumulate the netlist and resend it?
 
-			val messages = ArrayList<Message>()
+			val messages = ArrayList<Any>()
 			messages.add(BeginResetNetListMessage())
 			messages.addAll(NetListMessages.disassemble(gate.netlist))
 			messages.add(FinishResetNetListMessage())

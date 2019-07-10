@@ -8,7 +8,6 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor {
 	private MidiOutlet output;
@@ -120,7 +119,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

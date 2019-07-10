@@ -24,27 +24,27 @@ class MessageHandler internal constructor(private val backendContext: BackendCon
     /**
      * Messages sent from LogicNode further into backend is handled here.
      */
-    fun handleFromLogicToProcessor(message: Postmaster.Message) {
+    fun handleFromLogicToProcessor(message: Any) {
         backendContext.dispatch.executeMessage(message)
     }
 
-    fun handleFromLogicToUI(message: Postmaster.Message) {
+    fun handleFromLogicToUI(message: Any) {
         to_ui.send(message)
     }
 
     /**
      * Handles messages to backend.
      */
-    fun sendToBackend(message: Postmaster.Message) {
+    fun sendToBackend(message: Any) {
         to_backend.send(message)
     }
 
-    fun sendToBackend(messages: List<Postmaster.Message>) {
+    fun sendToBackend(messages: List<Any>) {
         to_backend.send(messages)
     }
 
     fun executeMessagesToBackend() {
-        var message: Postmaster.Message?
+        var message: Any?
         while (true) {
             message = to_backend.receive() ?: return
 
@@ -52,7 +52,7 @@ class MessageHandler internal constructor(private val backendContext: BackendCon
                 is NetListRefreshRequestMessage -> {
                     val m = message as NetListRefreshRequestMessage?
 
-                    val refresh_messages = ArrayList<Postmaster.Message>()
+                    val refresh_messages = ArrayList<Any>()
                     refresh_messages.add(BeginResetNetListMessage(m!!.group_id)) // This will clear the receiver's NetList
                     refresh_messages.addAll(NetListMessages.disassemble(backendContext.env.project.netList, m.group_id!!)) // All these messages will rebuild the receiver's NetList
                     refresh_messages.add(FinishResetNetListMessage())
@@ -70,16 +70,16 @@ class MessageHandler internal constructor(private val backendContext: BackendCon
         }
     }
 
-    fun receiveMessagesFromBackend(): Array<Postmaster.Message> {
+    fun receiveMessagesFromBackend(): Array<Any> {
         return to_ui.receiveAll()
     }
 
-    fun queueFromProcessor(message: Postmaster.Message) {
+    fun queueFromProcessor(message: Any) {
         from_processor.send(message)
     }
 
     fun executeMessagesFromProcessor() {
-        var message: Postmaster.Message?
+        var message: Any?
         while (true) {
             message = from_processor.receive() ?: return
 

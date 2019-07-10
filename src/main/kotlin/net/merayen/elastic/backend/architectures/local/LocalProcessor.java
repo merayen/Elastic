@@ -58,7 +58,7 @@ public abstract class LocalProcessor {
 	 */
 	protected abstract void onProcess();
 
-	protected abstract void onMessage(Postmaster.Message message); // For NodeParameterChange() Really? Shouldn't it be interpreted by the LocalNode instead?
+	protected abstract void onMessage(Object message); // For NodeParameterChange() Really? Shouldn't it be interpreted by the LocalNode instead?
 
 	protected abstract void onDestroy();
 

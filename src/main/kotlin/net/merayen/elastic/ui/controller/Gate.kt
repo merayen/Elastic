@@ -30,7 +30,7 @@ class Gate(val top: Top, private val handler: Handler) {
 		/**
 		 * Send message to backend, via the Controllers
 		 */
-		fun send(message: Postmaster.Message) {
+		fun send(message: Any) {
 			fromUI.send(message)
 		}
 
@@ -45,8 +45,8 @@ class Gate(val top: Top, private val handler: Handler) {
 				init()
 
 			// Sending of messages to UI
-			while(!fromBackend.isEmpty) {
-				val message = fromBackend.receive()
+			while(true) {
+				val message = fromBackend.receive() ?: break
 
 				if(message is BeginResetNetListMessage)
 					netlist.clear()
@@ -59,8 +59,8 @@ class Gate(val top: Top, private val handler: Handler) {
 			}
 
 			// Sending of messages to backend
-			while(!fromUI.isEmpty) {
-				val message = fromUI.receive()
+			while(true) {
+				val message = fromUI.receive() ?: break
 
 				for (c in controllers)
 					c.onMessageFromUI(message)
@@ -77,13 +77,13 @@ class Gate(val top: Top, private val handler: Handler) {
 		/**
 		 * Send message to UI, via the Controllers
 		 */
-		fun send(message: Postmaster.Message) {
+		fun send(message: Any) {
 			fromBackend.send(message)
 		}
 	}
 
 	interface Handler {
-		fun onMessageToBackend(message: Postmaster.Message)
+		fun onMessageToBackend(message: Any)
 	}
 
 	init {
@@ -105,7 +105,7 @@ class Gate(val top: Top, private val handler: Handler) {
 		inited = true
 	}
 
-	fun sendMessageToBackend(message: Postmaster.Message) {
+	fun sendMessageToBackend(message: Any) {
 		handler.onMessageToBackend(message)
 	}
 }

@@ -16,14 +16,14 @@ abstract class Controller(protected val gate: Gate) {
 	/**
 	 * Message received from the backend.
 	 */
-	abstract fun onMessageFromBackend(message: Postmaster.Message)
+	abstract fun onMessageFromBackend(message: Any)
 
 	/**
 	 * Message sent from the UI.
 	 */
-	abstract fun onMessageFromUI(message: Postmaster.Message)
+	abstract fun onMessageFromUI(message: Any)
 
-	fun sendToBackend(message: Postmaster.Message) {
+	fun sendToBackend(message: Any) {
 		gate.sendMessageToBackend(message)
 	}
 

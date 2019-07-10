@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.compressor_1
 
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	override fun onInit() {}
@@ -11,7 +12,7 @@ class LogicNode : BaseLogicNode() {
 	override fun onRemove() {}
 	override fun onPrepareFrame(data: MutableMap<String, Any>?) {}
 
-	override fun onFinishFrame(data: MutableMap<String, Any>?) {
+	override fun onFinishFrame(data: OutputFrameData) {
 		sendDataToUI(data)
 	}
 

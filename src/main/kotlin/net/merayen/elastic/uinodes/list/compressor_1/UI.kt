@@ -148,8 +148,8 @@ class UI : UINode() {
 	override fun onMessage(message: NodeParameterMessage) {}
 
 	override fun onData(message: NodeDataMessage) {
-		if((message.value as Map<String, Object>)["amplitude"] != null)
-			compressionValue = 1 - log(1 / max(0.0001f, message.value["amplitude"] as Float), 10f) / 3f
+		//if((message.value as Map<String, Object>)["amplitude"] != null)
+		//	compressionValue = 1 - log(1 / max(0.0001f, message.value["amplitude"] as Float), 10f) / 3f
 	}
 
 	override fun onParameter(key: String, value: Any) {

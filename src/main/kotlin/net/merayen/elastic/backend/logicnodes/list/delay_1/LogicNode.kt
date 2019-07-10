@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.delay_1
 
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
     override fun onCreate() {
@@ -23,5 +24,5 @@ class LogicNode : BaseLogicNode() {
 
     override fun onPrepareFrame(data: Map<String, Any>) {}
 
-    override fun onFinishFrame(data: Map<String, Any>) {}
+    override fun onFinishFrame(data: OutputFrameData) {}
 }

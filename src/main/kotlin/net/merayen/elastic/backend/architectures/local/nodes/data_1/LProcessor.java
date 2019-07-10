@@ -14,7 +14,7 @@ public class LProcessor extends LocalProcessor {
 	protected void onProcess() {}
 
 	@Override
-	protected void onMessage(Postmaster.Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

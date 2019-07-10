@@ -71,7 +71,6 @@ public class ResourceListMessage extends CoopMessage {
 			resourcelist.add(new ResourceItem((Map<String, Object>)o));
 	}
 
-	@Override
 	public Map<String, Object> dump() {
 		Map<String, Object> result = new HashMap<>();
 

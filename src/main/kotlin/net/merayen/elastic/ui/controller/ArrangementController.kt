@@ -13,18 +13,18 @@ class ArrangementController internal constructor(gate: Gate) : Controller(gate) 
 	 * ArrangementView send this message when they are created.
 	 * These messages get picked up by us and we register them.
 	 */
-	class Hello : Postmaster.Message()
+	class Hello
 
 	override fun onInit() {}
 
-	override fun onMessageFromBackend(message: Postmaster.Message) {
+	override fun onMessageFromBackend(message: Any) {
 		for (view in getViews(ArrangementView::class.java))
 			view.handleMessage(message)
 	}
 
-	override fun onMessageFromUI(message: Postmaster.Message) {
+	override fun onMessageFromUI(message: Any) {
 		if (message is NetListRefreshRequestMessage) { // Replay whole NetList for the arrangement view
-			val messages = ArrayList<Postmaster.Message>()
+			val messages = ArrayList<Any>()
 			messages.add(BeginResetNetListMessage())
 			messages.addAll(NetListMessages.disassemble(gate.netlist))
 			messages.add(FinishResetNetListMessage())

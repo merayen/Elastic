@@ -23,7 +23,7 @@ class Supervisor(private val handler: Handler) {
 		 * It will hang the UI.
 		 * Rather, queue the message and notify() whatever needs to react on the message.
 		 */
-		fun onMessageToBackend(message: Postmaster.Message)
+		fun onMessageToBackend(message: Any)
 
 		/**
 		 * Called by the UI-thread when ready to receive message.
@@ -37,7 +37,7 @@ class Supervisor(private val handler: Handler) {
 
 		val self = this
 		gate = Gate(top, object: Gate.Handler {
-			override fun onMessageToBackend(message: Postmaster.Message) {
+			override fun onMessageToBackend(message: Any) {
 				self.handler.onMessageToBackend(message)
 			}
 		})
@@ -105,7 +105,7 @@ class Supervisor(private val handler: Handler) {
 		handler.onReadyForMessages()
 	}
 
-	fun sendMessageToUI(message: Postmaster.Message) {
+	fun sendMessageToUI(message: Any) {
 		backend_gate.send(message)
 	}
 

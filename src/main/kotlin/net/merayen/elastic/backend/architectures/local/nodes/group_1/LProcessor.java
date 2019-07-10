@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.group_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
-import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor {
 	int session_id = -1;
@@ -25,7 +24,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

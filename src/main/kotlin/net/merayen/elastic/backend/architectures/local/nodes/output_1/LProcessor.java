@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
-import net.merayen.elastic.util.Postmaster.Message;
 
 /**
  * Processor for outputting audio.
@@ -48,7 +47,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {

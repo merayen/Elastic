@@ -14,7 +14,6 @@ import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.backend.midi.MidiState;
-import net.merayen.elastic.util.Postmaster.Message;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private enum Mode {
@@ -235,7 +234,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	@Override
-	protected void onMessage(Message message) {}
+	protected void onMessage(Object message) {}
 
 	@Override
 	protected void onDestroy() {}

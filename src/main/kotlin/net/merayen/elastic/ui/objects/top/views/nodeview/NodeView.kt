@@ -124,7 +124,7 @@ class NodeView : View() {
 		return null
 	}
 
-	fun messageNode(node_id: String, message: Postmaster.Message) {
+	fun messageNode(node_id: String, message: Any) {
 		val node = getNode(node_id)
 
 		if (node == null) {

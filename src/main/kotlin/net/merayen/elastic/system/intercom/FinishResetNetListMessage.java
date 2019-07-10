@@ -11,7 +11,7 @@ import net.merayen.elastic.util.Postmaster;
  * Indicates that the NetList is finished restoring.
  * Used to disable events that shouldn't fire.
  */
-public class FinishResetNetListMessage extends Postmaster.Message {
+public class FinishResetNetListMessage {
 	public final String group_id; // Which group to reset. null if everything
 
 	/**

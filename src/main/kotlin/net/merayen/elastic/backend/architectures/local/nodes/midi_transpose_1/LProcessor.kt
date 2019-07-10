@@ -87,6 +87,6 @@ class LProcessor : LocalProcessor() {
 
 	private fun transposeKey(key: Short) = (key + transpose).toShort()
 
-	override fun onMessage(message: Postmaster.Message?) {}
+	override fun onMessage(message: Any?) {}
 	override fun onDestroy() {}
 }

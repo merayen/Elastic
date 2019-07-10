@@ -106,7 +106,7 @@ class Supervisor {
 		}
 	}
 
-	public void handleMessage(Postmaster.Message message) {
+	public void handleMessage(Object message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			LocalNode localnode = local_properties.getLocalNode(netlist.getNode(m.node_id));

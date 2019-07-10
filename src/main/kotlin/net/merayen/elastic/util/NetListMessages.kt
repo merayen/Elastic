@@ -7,7 +7,7 @@ import java.util.*
 
 /**
  * Helper class to restore NetList into either UI or backend.
- * Iterates through the NetList and generates Postmaster.Message()s that can be consumed by the UI or backend so they can generate their own NetList.
+ * Iterates through the NetList and generates messages that can be consumed by the UI or backend so they can generate their own NetList.
  *
  * TODO support restoring from just one certain owner, so that we don't generate messages for all groups etc too, if not really wanted. Hmm...
  */
@@ -16,8 +16,8 @@ object NetListMessages { // TODO silly name, fix
 	 * Creates messages for the whole NetList, including groups, subgroups etc.
 	 * Returned messages will need to be executed in the order returned.
 	 */
-	fun disassemble(netlist: NetList): List<Postmaster.Message> {
-		val result = ArrayList<Postmaster.Message>()
+	fun disassemble(netlist: NetList): List<Any> {
+		val result = ArrayList<Any>()
 		val np = NodeProperties(netlist)
 
 		// Restore the nodes
@@ -55,7 +55,7 @@ object NetListMessages { // TODO silly name, fix
 	 * Restore from NetList, but filter by a certain group.
 	 * Delete?
 	 */
-	fun disassemble(netlist: NetList, parent_node_id: String): List<Postmaster.Message> {
+	fun disassemble(netlist: NetList, parent_node_id: String): List<Any> {
 		val filtered = netlist.copy()
 		val np = NodeProperties(filtered)
 
@@ -71,7 +71,7 @@ object NetListMessages { // TODO silly name, fix
 	 * Change a NetList by a message.
 	 * All messages should be sent in correct order, with no loss, or we may have synchronization issues.
 	 */
-	fun apply(netlist: NetList, message: Postmaster.Message) {
+	fun apply(netlist: NetList, message: Any) {
 		val np = NodeProperties(netlist)
 
 		if (message is CreateNodeMessage) {

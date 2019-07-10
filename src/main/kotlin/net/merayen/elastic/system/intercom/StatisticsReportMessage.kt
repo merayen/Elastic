@@ -6,7 +6,7 @@ class StatisticsReportMessage(
 		val notProcessingFrameTimeAvg: Double,
 		val nodeStats: Map<String, NodeStats>,
 		val frameDuration: Double // In seconds
-) : Message() {
+) {
 	class NodeStats(
 			val nodeClassPath: String,
 
@@ -25,8 +25,4 @@ class StatisticsReportMessage(
 			 */
 			val processCount: Int
 	)
-
-	override fun dump(): MutableMap<String, Any> {
-		TODO("not implemented")
-	}
 }

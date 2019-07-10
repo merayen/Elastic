@@ -5,7 +5,6 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
-import net.merayen.elastic.util.Postmaster.Message;
 
 public class Test {
 	public static void test() {
@@ -22,7 +21,7 @@ public class Test {
 
 		dispatch.launch(new InitBackendMessage(44100, 16, 1024, ""));
 
-		for(Postmaster.Message m : NetListMessages.INSTANCE.disassemble(netlist))
+		for(Object m : NetListMessages.INSTANCE.disassemble(netlist))
 			dispatch.executeMessage(m);
 
 		long t = System.currentTimeMillis() + 3000;

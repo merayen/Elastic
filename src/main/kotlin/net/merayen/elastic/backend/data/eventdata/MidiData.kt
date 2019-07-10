@@ -11,7 +11,7 @@ class MidiData(val midi: List<MidiPacket> = ArrayList()) : Cloneable {
 	class MidiPacket(
 			val id: String,
 			val start: Float,
-			val midi: Array<Short>
+			val midi: ShortArray
 	) : Cloneable {
 		public override fun clone(): MidiPacket {
 			return MidiPacket(id, start, midi.copyOf())

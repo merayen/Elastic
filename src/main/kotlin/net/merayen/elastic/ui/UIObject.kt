@@ -226,7 +226,7 @@ open class UIObject {
 		return if (outline == null) null else Rect(outline!!)
 	}
 
-	open fun sendMessage(message: Postmaster.Message) {
+	open fun sendMessage(message: Any) {
 		val top = UINodeUtil.getTop(this)
 		top?.sendMessage(message)
 				?: System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", javaClass.name)
