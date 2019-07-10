@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
 /**
- * Remove a note in an event zone.
+ * Remove a midi packet in an event zone.
  */
-class RemoveNoteMessage(val noteId: String, val eventZoneId: String)
+class RemoveMidiMessage(val id: String, val eventZoneId: String)

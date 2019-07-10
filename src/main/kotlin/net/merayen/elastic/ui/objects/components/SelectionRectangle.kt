@@ -38,8 +38,8 @@ class SelectionRectangle(private val trigger: UIObject? = null) : UIObject(), Fl
 					val startPosition = startPosition ?: position
 					this.startPosition = startPosition
 
-					val x = if (offset.x >= 0) /*pos.x + */startPosition.x else startPosition.x /*+ pos.x*/ + offset.x
-					val y = if (offset.y >= 0) /*pos.y + */startPosition.y else startPosition.y /*+ pos.y*/ + offset.y
+					val x = if (offset.x >= 0) startPosition.x else startPosition.x + offset.x
+					val y = if (offset.y >= 0) startPosition.y else startPosition.y + offset.y
 					val width = if (offset.x >= 0) offset.x else -offset.x
 					val height = if (offset.y >= 0) offset.y else -offset.y
 

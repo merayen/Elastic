@@ -6,25 +6,12 @@ import org.json.simple.JSONObject
 /**
  * Common data class that is used several places.
  */
-class MidiEventData : EventData() {
-	class Zone : EventData.Zone() {
-		/**
-		 * All the midi packets in the zone
-		 */
-		var midi = ArrayList<MidiPacket>()
+class MidiEventData : EventData(), Cloneable {
+	class Zone(val midiData: MidiData = MidiData()) : EventData.Zone(), Cloneable {
+		public override fun clone(): Zone {
+			return Zone(midiData.clone())
+		}
 	}
-
-	class MidiPacket(
-			/**
-			 * Offset into the zone this MidiPacket is fired
-			 */
-			var start: Float,
-
-			/**
-			 * The midi
-			 */
-			var midi: Array<Array<Short>>
-	)
 
 	val zones = ArrayList<Zone>()
 
@@ -38,7 +25,7 @@ class MidiEventData : EventData() {
 
 			zoneObject["start"] = zone.start
 			zoneObject["length"] = zone.length
-			zoneObject["midi"] = zone.midi
+			zoneObject["midi"] = zone.midiData
 
 			zonesArray.add(zoneObject)
 		}
@@ -48,5 +35,11 @@ class MidiEventData : EventData() {
 
 	override fun restore(json: JSONObject) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	}
+
+	public override fun clone(): MidiEventData {
+		val result = MidiEventData()
+		result.zones.addAll(zones.map { it.clone() })
+		return result
 	}
 }
