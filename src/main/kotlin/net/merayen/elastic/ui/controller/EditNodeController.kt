@@ -33,6 +33,4 @@ class EditNodeController(gate: Gate) : Controller(gate) {
 	fun getMessages(nodeId: String): Stream<Any> = NetListMessages.disassemble(gate.netlist).stream().filter {
 		it is NodeMessage && it.nodeId == nodeId
 	}
-
-	fun getNodeProperties(nodeId: String) = gate.netlist.getNode(nodeId)?.properties
 }

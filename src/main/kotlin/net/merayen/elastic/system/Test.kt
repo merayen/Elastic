@@ -14,7 +14,7 @@ class Test private constructor() {
 	internal var start = System.currentTimeMillis()
 	internal var ispinne: Long = 0
 
-	internal inner class roflmao {
+	internal inner class Roflmao {
 		var t: Long = 0
 	}
 
@@ -43,7 +43,7 @@ class Test private constructor() {
 			system.runAction(NewProject(PROJECT_PATH))
 		}
 
-		val roflmao = roflmao()
+		val roflmao = Roflmao()
 
 		system.sendMessageToBackend(StartBackendMessage())
 
