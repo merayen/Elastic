@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.compressor_1
 
+import net.merayen.elastic.backend.logicnodes.list.compressor_1.CompressorNodeOutputFrameData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.CircularSlider
@@ -148,8 +149,8 @@ class UI : UINode() {
 	override fun onMessage(message: NodeParameterMessage) {}
 
 	override fun onData(message: NodeDataMessage) {
-		//if((message.value as Map<String, Object>)["amplitude"] != null)
-		//	compressionValue = 1 - log(1 / max(0.0001f, message.value["amplitude"] as Float), 10f) / 3f
+		if (message is CompressorNodeOutputFrameData)
+			compressionValue = 1 - log(1 / max(0.0001f, message.amplitude), 10f) / 3f
 	}
 
 	override fun onParameter(key: String, value: Any) {
