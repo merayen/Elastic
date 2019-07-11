@@ -10,7 +10,6 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.AverageStat;
-import net.merayen.elastic.util.Postmaster;
 
 /**
  * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
@@ -192,7 +191,7 @@ class Supervisor {
 
 	/**
 	 * Process a frame.
-	 * Calls onProcess() on all processors until everyone is satisfied.
+	 * Calls process() on all processors until everyone is satisfied.
 	 * Returns a new ProcessMessage() with the output data.
 	 */
 	public synchronized ProcessMessage process(ProcessMessage message) {
@@ -213,7 +212,7 @@ class Supervisor {
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for (Node node : netlist.getNodes()) {
 			LocalNode ln = local_properties.getLocalNode(node);
-			ln.onProcess(message.data.get(node.getID()));
+			ln.process(message.getInput().get(node.getID()));
 		}
 
 		for (LocalProcessor lp : processor_list) {
@@ -253,7 +252,7 @@ class Supervisor {
 
 			ln.finishFrame();
 
-			response.data.put(node.getID(), ln.outgoing);
+			response.getOutput().put(ln.getID(), ln.outgoing);
 		}
 
 		killSessions();
@@ -276,7 +275,7 @@ class Supervisor {
 				nodeStats.put(ln.getID(), new StatisticsReportMessage.NodeStats(ln.getClass().getName(), 0f, (float)ln.getStatisticsAvg(), (float)ln.getStatisticsMax(), 0, ln.getStatisticsProcessCount()));
 			}
 
-			response.statisticsReportMessage = new StatisticsReportMessage(process_time.getAvg() / 1E9, process_time.getMax() / 1E9, not_processing_time.getAvg() / 1E9, nodeStats, buffer_size / (double)sample_rate);
+			response.setStatisticsReportMessage(new StatisticsReportMessage(process_time.getAvg() / 1E9, process_time.getMax() / 1E9, not_processing_time.getAvg() / 1E9, nodeStats, buffer_size / (double) sample_rate));
 		}
 
 		not_processing_time_last = System.nanoTime();

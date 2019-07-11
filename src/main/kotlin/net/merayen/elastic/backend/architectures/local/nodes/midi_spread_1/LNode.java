@@ -2,11 +2,11 @@ package net.merayen.elastic.backend.architectures.local.nodes.midi_spread_1;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
 	private float width = 0f;
@@ -56,7 +56,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onParameter(String key, Object value) {

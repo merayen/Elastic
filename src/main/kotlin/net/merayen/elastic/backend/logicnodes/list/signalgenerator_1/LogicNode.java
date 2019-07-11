@@ -1,9 +1,8 @@
 package net.merayen.elastic.backend.logicnodes.list.signalgenerator_1;
 
-import java.util.Map;
-
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.OutputFrameData;
 
 public class LogicNode extends BaseLogicNode {
@@ -35,9 +34,6 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onDisconnect(String port) {}
-
-	@Override
-	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
 	protected void onFinishFrame(OutputFrameData data) {}

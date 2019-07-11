@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.Map;
-
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
@@ -78,9 +76,12 @@ public abstract class BaseLogicNode {
 
 	/**
 	 * Called when a ProcessMessage()-request has been received. All LogicNodes must prepare data to be sent to processor.
-	 * Change the data-argument directly. 
+	 * Change the data-argument directly.
+	 * @return
 	 */
-	protected abstract void onPrepareFrame(Map<String, Object> data);
+	protected InputFrameData onPrepareFrame() {
+		return new InputFrameData(id);
+	}
 
 	/**
 	 * Called when the processor has processed.
@@ -164,7 +165,7 @@ public abstract class BaseLogicNode {
 	}
 
 	/**
-	 * Only used by the 
+	 * Only used by the
 	 */
 	void setInfo(String id, Supervisor supervisor, Node node) {
 		this.id = id;
@@ -197,7 +198,7 @@ public abstract class BaseLogicNode {
 
 	/**
 	 * Send message to UI (frontend).
-	 * 
+	 *
 	 */
 	protected void sendMessageToUI(Object message) {
 		supervisor.sendMessageToUI(message);

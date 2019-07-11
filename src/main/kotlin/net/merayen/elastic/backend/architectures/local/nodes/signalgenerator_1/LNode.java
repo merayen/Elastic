@@ -2,11 +2,11 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * TODO change mode when frequency-port is connected/disconnected
@@ -33,7 +33,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {
+	protected void onProcess(InputFrameData data) {
 		for(LocalProcessor lp : getProcessors())
 			lp.schedule();
 	}

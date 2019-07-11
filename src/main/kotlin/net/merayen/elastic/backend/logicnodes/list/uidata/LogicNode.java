@@ -1,8 +1,7 @@
 package net.merayen.elastic.backend.logicnodes.list.uidata;
 
-import java.util.Map;
-
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.OutputFrameData;
 
 /**
@@ -30,9 +29,6 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onRemove() {}
-
-	@Override
-	protected void onPrepareFrame(Map<String, Object> data) {}
 
 	@Override
 	protected void onFinishFrame(OutputFrameData data) {}

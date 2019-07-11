@@ -8,14 +8,16 @@ import java.util.Map;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.NodeStatusMessage;
+import net.merayen.elastic.system.intercom.OutputFrameData;
 
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
  * All nodes must implement this.
  * Its processors are the ones actually performing the work.
  * LocalNodes receives parameter changes and behaves after that.
- * 
+ * <p>
  * TODO implement ingoing data
  */
 public abstract class LocalNode {
@@ -28,7 +30,12 @@ public abstract class LocalNode {
 	private NodeProperties properties;
 
 	public Map<String, Object> ingoing = new HashMap<>(); // Data sent to this node from LogicNodes
-	public final Map<String, Object> outgoing = new HashMap<>(); // Data that is the result from the processing (read from the outside)
+
+	/**
+	 * Data that is the result from the processing (read from the outside).
+	 * Either set by yourself with a subclass of OutputFrameData, or don't. Will automatically set OutputFrameData.
+	 */
+	public OutputFrameData outgoing;
 
 	private long lastNodeStats = System.currentTimeMillis();
 
@@ -46,8 +53,9 @@ public abstract class LocalNode {
 
 	/**
 	 * Gets called on the beginning of processing a frame.
+	 * @param data
 	 */
-	protected abstract void onProcess(Map<String, Object> data);
+	protected abstract void onProcess(InputFrameData data);
 
 	protected abstract void onParameter(String key, Object value);
 
@@ -78,8 +86,12 @@ public abstract class LocalNode {
 
 	void finishFrame() {
 		onFinishFrame();
-		if(lastNodeStats + 1000 < System.currentTimeMillis()) {
-			outgoing.put("node_stats", new NodeStatusMessage(node.getID(), (float)getStatisticsMax(), 0, getStatisticsProcessCount()));
+
+		if (outgoing == null)
+			outgoing = new OutputFrameData(getID(), null);
+
+		if (lastNodeStats + 1000 < System.currentTimeMillis()) {
+			outgoing.setNodeStats(new NodeStatusMessage(node.getID(), (float) getStatisticsMax(), 0, getStatisticsProcessCount()));
 			lastNodeStats = System.currentTimeMillis();
 		}
 	}
@@ -110,7 +122,7 @@ public abstract class LocalNode {
 	 */
 	public List<LocalNode> getChildrenNodes() {
 		List<LocalNode> result = new ArrayList<>();
-		for(Node ln : supervisor.netlist_util.getChildren(node))
+		for (Node ln : supervisor.netlist_util.getChildren(node))
 			result.add(supervisor.local_properties.getLocalNode(ln));
 
 		return result;
@@ -118,7 +130,7 @@ public abstract class LocalNode {
 
 	protected LocalNode getParent() {
 		Node parent = supervisor.netlist_util.getParent(node);
-		if(parent == null)
+		if (parent == null)
 			return null;
 
 		return supervisor.local_properties.getLocalNode(parent);
@@ -142,22 +154,27 @@ public abstract class LocalNode {
 
 	double getStatisticsAvg() {
 		double result = 0;
-		for(LocalProcessor lp : getProcessors())
+		for (LocalProcessor lp : getProcessors())
 			result += lp.process_times.getAvg();
 		return result;
 	}
 
 	double getStatisticsMax() {
 		double result = 0;
-		for(LocalProcessor lp : getProcessors())
+		for (LocalProcessor lp : getProcessors())
 			result += lp.process_times.getMax();
 		return result;
 	}
 
 	int getStatisticsProcessCount() {
 		int result = 0;
-		for(LocalProcessor lp : getProcessors())
+		for (LocalProcessor lp : getProcessors())
 			result += lp.process_count;
 		return result;
+	}
+
+	void process(InputFrameData data) {
+		outgoing = null;
+		onProcess(data);
 	}
 }

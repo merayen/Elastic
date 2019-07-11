@@ -17,7 +17,7 @@ import net.merayen.elastic.util.Postmaster;
 /**
  * This is the "central control". All node-related messages from UI and processor is sent into this class.
  * The LogicNodes then validates and forwards messages to the processor.
- * 
+ *
  * Message-wise, we stand in between the UI (frontend) and the processor.
  */
 public class Supervisor {
@@ -178,7 +178,7 @@ public class Supervisor {
 	}
 
 	/**
-	 * Used by BaseLogicNode to send messages. 
+	 * Used by BaseLogicNode to send messages.
 	 */
 	void sendMessageToUI(Object message) {
 		handler.sendMessageToUI(message);
@@ -203,7 +203,7 @@ public class Supervisor {
 		// Call all LogicNodes to work on the frame
 		for(Node node : netlist.getNodes()) {
 			BaseLogicNode bln = logicnode_list.get(node.getID());
-			bln.onFinishFrame(new OutputFrameData(node.getID(), message.data.get(node.getID())));
+			bln.onFinishFrame(message.getOutput().get(node.getID()));
 		}
 
 		handler.onProcessDone();
@@ -215,8 +215,8 @@ public class Supervisor {
 			handleMessageFromUI(m);
 
 		// Send any statistics report to UI if available
-		if (message.statisticsReportMessage != null)
-			sendMessageToUI(message.statisticsReportMessage);
+		if (message.getStatisticsReportMessage() != null)
+			sendMessageToUI(message.getStatisticsReportMessage());
 	}
 
 	void removePort(BaseLogicNode logic_node, String name) {
@@ -252,16 +252,12 @@ public class Supervisor {
 		for(Node n : netlist.getNodes()) {
 			BaseLogicNode bln = logicnode_list.get(n.getID());
 
-			Map<String, Object> p = new HashMap<>();
-
 			if(!bln.inited) {
 				bln.inited = true;
 				bln.onInit();
 			}
 
-			bln.onPrepareFrame(p);
-
-			m.data.put(n.getID(), p);
+			m.getInput().put(n.getID(), bln.onPrepareFrame());
 		}
 
 		handler.sendMessageToProcessor(m); // Forward process message to processor

@@ -14,6 +14,7 @@ import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 
 /**
@@ -41,7 +42,7 @@ public class Test {
 		NodeProperties properties = new NodeProperties(netlist);
 		LocalNodeProperties local_properties = new LocalNodeProperties();
 		Port port;
-		
+
 		// Top node
 		Node top = netlist.createNode();
 		local_properties.setLocalNode(top, new TopNode());
@@ -116,7 +117,7 @@ public class Test {
 		// Check that the output data is good
 		float[] expected = new float[] {0,1,2,3,4,10,12,14,16,18};
 		int i = 0;
-		for(Object x : response.data.values()) {
+		for(Object x : response.getInput().values()) {
 			float[][] data = (float[][])((Map)x).get("output");
 			if(data != null) {
 				for(float s : expected)
@@ -154,7 +155,7 @@ class TopNode extends LocalNode { // The topmost group that spawns children
 	protected void onSpawnProcessor(LocalProcessor lp) {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onParameter(String key, Object value) {}
@@ -201,7 +202,7 @@ class GeneratorNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -259,7 +260,7 @@ class MiddleNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -274,7 +275,7 @@ class MiddleNode extends LocalNode {
 	protected void onFinishFrame() {}
 
 	void gotOutputData() {
-		
+
 	}
 }
 
@@ -301,7 +302,7 @@ class MiddleProcessor extends LocalProcessor {
 			} catch (SpawnLimitException e) {
 				Test.no();
 			}
-			
+
 		}
 
 		int avail = input.available();
@@ -367,7 +368,7 @@ class DispatchNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -404,7 +405,7 @@ class DispatchProcessor extends LocalProcessor {
 			((MiddleProcessor)getParent()).gotOutputData(this);
 			input.read = input.outlet.written;
 		} else {
-			
+
 		}
 	}
 
@@ -442,7 +443,7 @@ class ConsumerNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -471,7 +472,7 @@ class ConsumerProcessor extends LocalProcessor {
 			int avail = input.available();
 			if(avail == buffer_size) {
 				System.out.printf("Consumer %d session %d: Got %d samples (%s)\n", ((ConsumerNode)localnode).number, session_id, avail, this);
-				localnode.outgoing.put("output", input.outlet.audio);
+				//localnode.outgoing.put("output", input.outlet.audio);
 				input.read += avail;
 			}
 		}

@@ -1,9 +1,8 @@
 package net.merayen.elastic.backend.architectures.local.nodes.poly_1;
 
-import java.util.Map;
-
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
 	int unison = 1;
@@ -19,7 +18,7 @@ public class LNode extends LocalNode {
 	protected void onSpawnProcessor(LocalProcessor lp) {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onParameter(String key, Object value) {

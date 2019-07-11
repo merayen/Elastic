@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.midi_spread_1
 
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
@@ -35,8 +36,6 @@ class LogicNode : BaseLogicNode() {
 	override fun onDisconnect(port: String) {}
 
 	override fun onRemove() {}
-
-	override fun onPrepareFrame(data: Map<String, Any>) {}
 
 	override fun onFinishFrame(data: OutputFrameData) {}
 }

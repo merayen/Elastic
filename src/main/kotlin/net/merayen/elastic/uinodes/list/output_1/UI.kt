@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.output_1
 
+import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.node.UINode
@@ -40,12 +41,12 @@ class UI : UINode() {
 	override fun onMessage(message: NodeParameterMessage) {}
 
 	override fun onData(message: NodeDataMessage) {
-		/*if ((message.value as Map<String, Any>).containsKey("vuLeft"))
-			vu.updateVU(message.value["vuLeft"] as FloatArray)
-
-		else if (message.value.containsKey("offset"))
-			vu.updateOffset(message.value["offset"] as FloatArray)*/
+		if (message is OutputNodeStatisticsMessage) {
+			vu.updateVU(message.amplitudes)
+			vu.updateOffset(message.offsets)
+		}
 	}
+
 
 	override fun onParameter(key: String, value: Any) {}
 }

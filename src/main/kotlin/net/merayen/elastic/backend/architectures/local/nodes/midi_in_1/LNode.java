@@ -3,10 +3,11 @@ package net.merayen.elastic.backend.architectures.local.nodes.midi_in_1;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
 	List<short[]> buffer = new ArrayList<>();
@@ -24,10 +25,11 @@ public class LNode extends LocalNode {
 	protected void onSpawnProcessor(LocalProcessor lp) {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {
-		if(data.containsKey("midi")) {
-			buffer.addAll(Arrays.asList((short[][]) data.get("midi")));
-		}
+	protected void onProcess(InputFrameData data) {
+		//if(data.containsKey("midi")) {
+		//	buffer.addAll(Arrays.asList((short[][]) data.get("midi")));
+		//}
+		throw new NotImplementedError("Implementer dette igjen. Hadde ikke midi-keyboard tilgjengelig her");
 	}
 
 	@Override

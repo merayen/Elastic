@@ -23,8 +23,8 @@ class LogicNode : BaseLogicNode() {
 			if (ad is AudioDevice)
 				if (ad.isOutput)
 					if (ad.id == "oracle_java:Default Audio Device" ||// Mac OS X 10.9
-						ad.id == "oracle_java:PulseAudio Mixer" || // Ubuntu 16.04
-						ad.id == "oracle_java:default [default]"
+							ad.id == "oracle_java:PulseAudio Mixer" || // Ubuntu 16.04
+							ad.id == "oracle_java:default [default]"
 					)
 						output_device = ad.id
 	}
@@ -37,13 +37,11 @@ class LogicNode : BaseLogicNode() {
 		set(key, value)
 	}
 
-	override fun onPrepareFrame(data: Map<String, Any>) {}
-
 	override fun onFinishFrame(data: OutputFrameData) {
-		val fa = data.data["audio"] as Array<FloatArray>
+		val output = data as OutputNodeOutputData
 
 		// Count max channels
-		val channel_count = fa.size
+		val channel_count = output.audio.size
 
 		if (channel_count == 0)
 			return  // Don't bother
@@ -54,7 +52,7 @@ class LogicNode : BaseLogicNode() {
 
 		var i = 0
 		for (channel_no in 0 until channel_count) {
-			val channel = fa[channel_no]
+			val channel = data.audio[channel_no]
 
 			if (channel != null)
 				out[i] = channel
@@ -64,21 +62,13 @@ class LogicNode : BaseLogicNode() {
 			i++
 		}
 
-		/*val vuLeft = data["vuLeft"]
-		if (vuLeft != null)
-			sendDataToUI(object : HashMap<String, Any>() {
-				init {
-					put("vuLeft", vuLeft)
-				}
-			})
-
-		val offset = data["offset"]
-		if (offset != null)
-			sendDataToUI(object : HashMap<String, Any>() {
-				init {
-					put("offset", offset)
-				}
-			})*/
+		sendDataToUI(
+				OutputNodeStatisticsMessage(
+						id,
+						data.amplitudes,
+						data.offsets
+				)
+		)
 
 		val mixer = (env as Environment).mixer
 
@@ -88,14 +78,14 @@ class LogicNode : BaseLogicNode() {
 
 		if (statistics != null) {
 			sendMessageToUI(
-				OutputNodeStatisticsData(
-					id,
-					statistics.id,
-					statistics.available_before.avg,
-					statistics.available_before.min,
-					statistics.available_after.avg,
-					statistics.available_after.min
-				)
+					OutputNodeStatisticsData(
+							id,
+							statistics.id,
+							statistics.available_before.avg,
+							statistics.available_before.min,
+							statistics.available_after.avg,
+							statistics.available_after.min
+					)
 			)
 		}
 	}

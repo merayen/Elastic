@@ -2,10 +2,11 @@ package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeOutputData;
+import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
 	public LNode() {
@@ -20,7 +21,7 @@ public class LNode extends LocalNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onParameter(String key, Object value) {}
@@ -56,14 +57,14 @@ public class LNode extends LocalNode {
 		for(int voice_no = 0; voice_no < output.length; voice_no++) {
 			if(output[voice_no] != null) {
 				for(int channel_no = 0; channel_no < channel_count; channel_no++) {
-	
+
 					float[] in = output[voice_no][channel_no];
 					float[] out = channels[channel_no];
 					float voice_amplitude = 0;
 
 					for(int i = 0; i < buffer_size; i++)
 						out[i] += in[i];
-	
+
 					// Measure max amplitude
 					for(float v : output[voice_no][channel_no]) {
 						if(Math.abs(voice_amplitude) < v)
@@ -77,12 +78,7 @@ public class LNode extends LocalNode {
 			}
 		}
 
-		outgoing.put("audio", channels);
-
-		if(channel_count > 0) {
-			outgoing.put("vuLeft", amplitude);
-			outgoing.put("offset", offset);
-		}
+		outgoing = new OutputNodeOutputData(getID(), channels, amplitude, offset.clone());
 	}
 
 	private int countChannels() {

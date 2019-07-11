@@ -1,11 +1,14 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
+import net.merayen.elastic.backend.data.eventdata.MidiData
 import java.util.ArrayList
 
 import net.merayen.elastic.backend.interfacing.types.MidiPacket
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.OutputFrameData
+import net.merayen.elastic.util.UniqueID
 
 class LogicNode : BaseLogicNode() {
 	internal var buffer: MutableList<MidiPacket> = ArrayList()
@@ -45,16 +48,17 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onRemove() {}
 
-	override fun onPrepareFrame(data: MutableMap<String, Any>) {
-		val midi = arrayOfNulls<ShortArray>(buffer.size)
+	override fun onPrepareFrame(): InputFrameData {
+		val midiData = MidiData()
 
 		var i = 0
 		for (mp in buffer)
-			midi[i++] = mp.midi
+			midiData.midi.add(MidiData.MidiPacket(UniqueID.create(), 0f, mp.midi)) // TODO fix timing
 
 		buffer.clear()
 
-		data["midi"] = midi
+		// TODO Don't send the whole midi everytime. Only if changed
+		return MidiNodeInputFrameData(id, MidiDataMessage(id, midiData))
 	}
 
 	override fun onFinishFrame(data: OutputFrameData) {}

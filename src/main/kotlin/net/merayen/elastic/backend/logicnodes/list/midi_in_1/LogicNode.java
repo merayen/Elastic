@@ -1,13 +1,13 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_in_1;
 
+import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.MidiInputDevice;
 import net.merayen.elastic.backend.interfacing.types.MidiPacket;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.OutputFrameData;
-
-import java.util.Map;
 
 public class LogicNode extends BaseLogicNode {
 	MidiInputDevice device;
@@ -42,8 +42,8 @@ public class LogicNode extends BaseLogicNode {
 	protected void onRemove() {}
 
 	@Override
-	protected void onPrepareFrame(Map<String, Object> data) {
-		if(device != null) {
+	protected InputFrameData onPrepareFrame() {
+		/*if(device != null) {
 			MidiPacket[] midi_packets = device.read(getEnv().buffer_size);
 
 			short[][] midi = new short[midi_packets.length][];
@@ -53,7 +53,8 @@ public class LogicNode extends BaseLogicNode {
 				midi[i++] = mp.midi; // TODO FIXME FUCKTHIS Nullpointer exception
 
 			data.put("midi", midi);
-		}
+		}*/
+		throw new NotImplementedError("Fiks");
 	}
 
 	@Override

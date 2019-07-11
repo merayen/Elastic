@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.data.eventdata
 
-class MidiData(val midi: List<MidiPacket> = ArrayList()) : Cloneable {
+class MidiData(val midi: MutableList<MidiPacket> = ArrayList()) : Cloneable {
 
 	/**
 	 * A midi packet.
@@ -19,6 +19,10 @@ class MidiData(val midi: List<MidiPacket> = ArrayList()) : Cloneable {
 	}
 
 	public override fun clone(): MidiData {
-		return MidiData(midi.map { it.clone() })
+		return MidiData(midi.map { it.clone() } as MutableList<MidiPacket>)
+	}
+
+	fun slice(from: Float = 0f, to: Float = Float.MAX_VALUE): MidiData {
+		TODO()
 	}
 }

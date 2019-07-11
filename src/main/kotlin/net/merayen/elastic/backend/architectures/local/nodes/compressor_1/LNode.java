@@ -2,8 +2,8 @@ package net.merayen.elastic.backend.architectures.local.nodes.compressor_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-
-import java.util.Map;
+import net.merayen.elastic.backend.logicnodes.list.compressor_1.CompressorNodeOutputFrameData;
+import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
 	public LNode() {
@@ -27,7 +27,7 @@ public class LNode extends LocalNode {
 	protected void onSpawnProcessor(LocalProcessor lp) {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {}
+	protected void onProcess(InputFrameData data) {}
 
 	@Override
 	protected void onParameter(String key, Object value) {
@@ -65,7 +65,7 @@ public class LNode extends LocalNode {
 			for(LocalProcessor lp : getProcessors())
 				minAmplitude = Math.min((float)((LProcessor)lp).amplitude, minAmplitude);
 
-			outgoing.put("amplitude", minAmplitude);
+			outgoing = new CompressorNodeOutputFrameData(getID(), minAmplitude);
 		}
 	}
 

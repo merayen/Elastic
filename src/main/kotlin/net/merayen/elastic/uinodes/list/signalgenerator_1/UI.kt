@@ -31,7 +31,9 @@ class UI : UINode(), INodeEditable {
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
 
-		getPort("output")!!.translation.x = layoutWidth
+		val port = getPort("output")
+		if (port != null)
+			port.translation.x = layoutWidth
 	}
 
 	override fun onMessage(message: NodeParameterMessage) {
@@ -85,7 +87,7 @@ class UI : UINode(), INodeEditable {
 		curve = bwb
 
 		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
-			internal var i: Int = 0
+			var i: Int = 0
 			override fun onChange() {
 				sendParameter("data.curve", bwb.bezier.floats)
 			}

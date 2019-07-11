@@ -2,15 +2,13 @@ package net.merayen.elastic.backend.architectures.local.nodes.midi_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import net.merayen.elastic.backend.data.eventdata.MidiData;
+import net.merayen.elastic.backend.logicnodes.list.midi_1.MidiNodeInputFrameData;
+import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
 
-	final List<short[]> midi_from_ui = new ArrayList<>();
+	MidiData inputMidi;
 
 	public LNode() {
 		super(LProcessor.class);
@@ -23,9 +21,9 @@ public class LNode extends LocalNode {
 	protected void onSpawnProcessor(LocalProcessor lp) {}
 
 	@Override
-	protected void onProcess(Map<String, Object> data) {
-		if(data.containsKey("midi"))
-			midi_from_ui.addAll(Arrays.asList((short[][]) data.get("midi")));
+	protected void onProcess(InputFrameData data) {
+		MidiNodeInputFrameData input = (MidiNodeInputFrameData)data;
+		inputMidi = input.getMidiDataMessage().getMidiData();
 	}
 
 	@Override
@@ -33,7 +31,7 @@ public class LNode extends LocalNode {
 
 	@Override
 	protected void onFinishFrame() {
-		midi_from_ui.clear();
+		inputMidi = null;
 	}
 
 	@Override
