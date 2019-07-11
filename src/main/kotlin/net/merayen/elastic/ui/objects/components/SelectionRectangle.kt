@@ -78,4 +78,11 @@ class SelectionRectangle(private val trigger: UIObject? = null) : UIObject(), Fl
 	fun handle(event: UIEvent) {
 		mouseHandler?.handle(event)
 	}
+
+	/**
+	 * Cancels any ongoing selection rectangle.
+	 */
+	fun cancel() {
+		shown = false
+	}
 }

@@ -5,12 +5,47 @@ import net.merayen.elastic.backend.midi.MidiState
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
+import net.merayen.elastic.ui.util.MouseHandler
+import net.merayen.elastic.util.Point
 
 class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
+	interface Handler {
+		/**
+		 * Called when a ghost note is moved over the piano net.
+		 * This should mark the piano tangent that correspond to the tangent argument.
+		 */
+		fun onGhostNote(tangent: Int)
+
+		/**
+		 * Ghost note disappears. Piano should remove the mark.
+		 */
+		fun onGhostNoteOff()
+	}
+
+	private enum class ToolModes {
+		Drag, Select, Create, Line
+	}
+
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
+
+	var handler: Handler? = null
+
+	private var toolMode = ToolModes.Drag
+
+	private val mouseHandler = MouseHandler(this)
+	private val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
+	private val contextMenuItemCreateNote = TextContextMenuItem("Create note here")
+	private val contextMenuItemSelectionRectangle = TextContextMenuItem("Select tool")
+	private val contextMenuItemDrag = TextContextMenuItem("Drag tool")
+	private val contextMenuItemLine = TextContextMenuItem("Line tool")
 
 	private val midiState = object : MidiState() {
 		override fun onKeyDown(tangent: Short, velocity: Float) {
@@ -21,16 +56,25 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	/**
 	 * Vertical size of 1 octave, in height units
 	 */
-	var octaveWidth = (5 * 7).toFloat()
+	var octaveWidth = 5f * 7f
 
 	/**
 	 * How many width units one beat is
 	 */
 	var beatWidth = 10f
 
+	/**
+	 * How notes should snap.
+	 * 1 == snap to each beat.
+	 * 4f == snap to each bar, if 4 beats per bar
+	 */
+	var snapQuantization = 1f
+
 	private val selectionRectangle = SelectionRectangle(this)
 
 	private val BLACK_TANGENTS = arrayOf(false, true, false, true, false, true, false, false, true, false, true, false)
+
+	private val notes = PianoNetNotes(octaveCount)
 
 	override fun onInit() {
 		selectionRectangle.handler = object : SelectionRectangle.Handler {
@@ -43,15 +87,80 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 			}
 		}
 		add(selectionRectangle)
+
+		contextMenu.addMenuItem(contextMenuItemCreateNote)
+		contextMenu.addMenuItem(contextMenuItemSelectionRectangle)
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(contextMenuItemDrag)
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(contextMenuItemLine)
+
+		contextMenu.handler = object : ContextMenu.Handler {
+			override fun onSelect(item: ContextMenuItem?, position: Point) {
+				when (item) {
+					contextMenuItemCreateNote -> {
+						toolMode = ToolModes.Create
+					}
+					contextMenuItemSelectionRectangle -> {
+						toolMode = ToolModes.Select
+					}
+					contextMenuItemDrag -> {
+						toolMode = ToolModes.Drag
+					}
+					contextMenuItemLine -> {
+						toolMode = ToolModes.Line
+					}
+				}
+			}
+
+			override fun onMouseDown(position: Point) {
+				selectionRectangle.cancel()
+			}
+		}
+
+		mouseHandler.setHandler(object : MouseHandler.Handler() {
+			private val ghostNote = notes.Note("ghostNote", 0f, 0f, 0, 1f)
+
+			override fun onMouseMove(position: Point) {
+				if (toolMode == ToolModes.Create) {
+					if (ghostNote.parent == null)
+						notes.add(ghostNote)
+
+					ghostNote.alpha = 0.5f
+					ghostNote.start = ((position.x / beatWidth) / snapQuantization).toInt() * snapQuantization
+					ghostNote.length = 1f
+					ghostNote.tangent = ((octaveCount * octaveWidth - (position.y - octaveWidth / 12f)) / (octaveWidth / 12f)).toInt()
+
+					handler?.onGhostNote(ghostNote.tangent)
+				}
+			}
+
+			override fun onMouseOut() {
+				if (ghostNote.parent != null)
+					notes.remove(ghostNote)
+
+				handler?.onGhostNoteOff()
+			}
+		})
+
+		add(notes)
+	}
+
+	override fun onUpdate() {
+		notes.layoutWidth = layoutWidth
+		notes.layoutHeight = layoutHeight
+
+		notes.octaveWidth = octaveWidth
+		notes.beatWidth = beatWidth
 	}
 
 	override fun onDraw(draw: Draw) {
-		drawBars(draw)
 		drawLines(draw)
+		drawBars(draw)
 	}
 
 	private fun drawLines(draw: Draw) {
-		var y = octaveWidth / 12f / 2f
+		var y = 0f
 
 		draw.setStroke(0.5f)
 
@@ -60,11 +169,11 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 			val b = BLACK_TANGENTS[pos]
 
 			if (b)
-				draw.setColor(0.1f, 0.1f, 0.1f)
+				draw.setColor(0.2f, 0.2f, 0.2f)
 			else
-				draw.setColor(0.5f, 0.5f, 0.5f)
+				draw.setColor(0.3f, 0.3f, 0.3f)
 
-			draw.line(0f, y, layoutWidth, y)
+			draw.fillRect(0f, y, layoutWidth, y + octaveWidth / 24)
 
 			y += octaveWidth / 12
 			pos++
@@ -85,7 +194,12 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	}
 
 	override fun onEvent(event: UIEvent) {
-		selectionRectangle.handle(event)
+		if (toolMode == ToolModes.Select)
+			selectionRectangle.handle(event)
+
+		mouseHandler.handle(event)
+
+		contextMenu.handle(event)
 	}
 
 	fun loadMidi(midiData: MidiData) {

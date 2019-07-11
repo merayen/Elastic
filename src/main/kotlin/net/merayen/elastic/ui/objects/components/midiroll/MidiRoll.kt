@@ -24,6 +24,16 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 	override fun onInit() {
 		net = PianoNet(OCTAVE_COUNT)
+		net.handler = object : PianoNet.Handler {
+			override fun onGhostNote(tangent: Int) {
+				piano.unmarkAllTangents()
+				piano.markTangent(tangent)
+			}
+
+			override fun onGhostNoteOff() {
+				piano.unmarkAllTangents()
+			}
+		}
 		add(net)
 
 		piano = Piano(OCTAVE_COUNT, object : Piano.Handler {
@@ -45,6 +55,9 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 		notes.layoutWidth = layoutWidth
 		notes.layoutHeight = layoutHeight
+
+		net.translation.x = piano.pianoDepth
+		net.layoutWidth = layoutWidth - piano.pianoDepth
 	}
 
 	fun loadMidi(midiData: MidiData) {

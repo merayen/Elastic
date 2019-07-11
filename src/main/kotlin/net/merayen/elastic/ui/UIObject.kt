@@ -108,7 +108,7 @@ open class UIObject {
 		return this.children
 	}
 
-	fun add(uiobject: UIObject) {
+	open fun add(uiobject: UIObject) {
 		add(uiobject, children.size)
 	}
 

@@ -13,6 +13,9 @@ class Tangent extends UIObject {
 	}
 
 	public float width, height;
+
+	public boolean marked;
+
 	private final Handler handler;
 	private final boolean black;
 	private MouseHandler mouse_handler;
@@ -71,6 +74,12 @@ class Tangent extends UIObject {
 			draw.setColor(255, 255, 255);
 
 		draw.fillRect(0, 0, width, height);
+
+		if (marked) {
+			draw.setColor(150, 150, 150);
+			draw.setStroke(1f);
+			draw.line(0, height / 2, width, height / 2);
+		}
 	}
 
 	@Override
@@ -78,7 +87,7 @@ class Tangent extends UIObject {
 		mouse_handler.handle(event);
 	}
 
-	void goStandby() {
+	public void goStandby() {
 		standby = true;
 	}
 }
