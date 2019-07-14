@@ -44,12 +44,12 @@ public class LogicNode extends BaseLogicNode {
 	@Override
 	protected InputFrameData onPrepareFrame() {
 		/*if(device != null) {
-			MidiPacket[] midi_packets = device.read(getEnv().buffer_size);
+			MidiChunk[] midi_packets = device.read(getEnv().buffer_size);
 
 			short[][] midi = new short[midi_packets.length][];
 
 			int i = 0;
-			for(MidiPacket mp : midi_packets)
+			for(MidiChunk mp : midi_packets)
 				midi[i++] = mp.midi; // TODO FIXME FUCKTHIS Nullpointer exception
 
 			data.put("midi", midi);

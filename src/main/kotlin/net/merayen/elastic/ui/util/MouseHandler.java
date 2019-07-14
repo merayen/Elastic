@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.event.MouseEvent;
 /**
  * Helper class to make an UIObject moveable.
  * Tightly coupled to UIObjects.
- * 
+ *
  */
 public class MouseHandler {
 	public static abstract class Handler {
@@ -81,7 +81,7 @@ public class MouseHandler {
 			else if(e.action == MouseEvent.Action.UP) {
 				if(mouse_dragging && mouse_down) {
 					mouse_dragging = false;
-					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.util.Point(p_relative.x - drag_start.x, p_relative.y - drag_start.y));
+					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.util.Point(p_relative.getX() - drag_start.getX(), p_relative.getY() - drag_start.getY()));
 				}
 
 				if(hit) {
@@ -97,23 +97,23 @@ public class MouseHandler {
 			else if(e.action == MouseEvent.Action.MOVE) {
 				if(hit) {
 					handler_class.onMouseMove(p_relative);
-	
+
 					if(!mouse_over) {
 						mouse_over = true;
 						handler_class.onMouseOver();
 					}
 				}
-	
+
 				handler_class.onGlobalMouseMove(p_absolute);
-	
+
 				if(!hit && mouse_over) {
 					mouse_over = false;
 					handler_class.onMouseOut();
 				}
-	
+
 				if(mouse_down) {
 					mouse_dragging = true;
-					handler_class.onMouseDrag(p_relative, new net.merayen.elastic.util.Point(p_relative.x - drag_start.x, p_relative.y - drag_start.y));
+					handler_class.onMouseDrag(p_relative, new net.merayen.elastic.util.Point(p_relative.getX() - drag_start.getX(), p_relative.getY() - drag_start.getY()));
 				}
 			}
 		}

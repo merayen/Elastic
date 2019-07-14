@@ -9,11 +9,11 @@ public class SignalBezierCurve {
 	private SignalBezierCurve() {} // Just a utility class for now
 
 	/**
-	 * Calculates the values 
+	 * Calculates the values
 	 * @return
 	 */
 	/*public static float[] getValues(Point[] points) {
-		
+
 	}*/
 
 	private static void no() {
@@ -29,10 +29,10 @@ public class SignalBezierCurve {
 			throw new RuntimeException("There has to be minimum 2 dots");
 
 		for(int i = 0; i < dots.length - 1; i++) {
-			float length = dots[i+1].position.x - dots[i].position.x;
+			float length = dots[i + 1].position.getX() - dots[i].position.getX();
 			int length_samples = (int)(length * result.length);
 			if(length_samples > 0)
-				getValuesFromSegment2(dots[i], dots[i+1], result, (int)(dots[i].position.x * result.length), length_samples);
+				getValuesFromSegment2(dots[i], dots[i+1], result, (int)(dots[i].position.getX() * result.length), length_samples);
 		}
 	}
 
@@ -45,20 +45,20 @@ public class SignalBezierCurve {
 
 			float x = getAxis(
 				new float[]{
-					dot0.position.x,
-					dot0.right.x,
-					dot1.left.x,
-					dot1.position.x
+						dot0.position.getX(),
+						dot0.right.getX(),
+						dot1.left.getX(),
+						dot1.position.getX()
 				},
 				v
 			);
 
 			float y = getAxis(
 				new float[]{
-					dot0.position.y,
-					dot0.right.y,
-					dot1.left.y,
-					dot1.position.y
+						dot0.position.getY(),
+						dot0.right.getY(),
+						dot1.left.getY(),
+						dot1.position.getY()
 				},
 				v
 			);
@@ -94,20 +94,20 @@ public class SignalBezierCurve {
 		float last_value = 0;
 
 		// Normalizing X-axis
-		float x_distance = (dot1.position.x - dot0.position.x);
+		float x_distance = (dot1.position.getX() - dot0.position.getX());
 
 		float[] x_axis = new float[]{
 			0,//dot0.position.x,
-			(dot0.right.x - dot0.position.x) / x_distance,
-			(dot1.left.x - dot0.position.x) / x_distance,
+			(dot0.right.getX() - dot0.position.getX()) / x_distance,
+			(dot1.left.getX() - dot0.position.getX()) / x_distance,
 			1//dot1.position.x
 		};
 
 		float[] y_axis = new float[]{
-			dot0.position.y,
-			dot0.right.y,
-			dot1.left.y,
-			dot1.position.y
+				dot0.position.getY(),
+				dot0.right.getY(),
+				dot1.left.getY(),
+				dot1.position.getY()
 		};
 
 		int i = 0, pos = 0, pos_index = 0, protection = 0;
@@ -169,15 +169,15 @@ public class SignalBezierCurve {
 		Dot dot0 = new Dot();
 		Dot dot1 = new Dot();
 
-		dot0.position.x = 0;
-		dot0.position.y = 0.5f;
-		dot0.right.x = 0.5f;
-		dot0.right.y = 0;
+		dot0.position.setX(0);
+		dot0.position.setY(0.5f);
+		dot0.right.setX(0.5f);
+		dot0.right.setY(0);
 
-		dot1.position.x = 1;
-		dot1.position.y = 0.5f;
-		dot1.left.x = 0.5f;
-		dot1.left.y = 1;
+		dot1.position.setX(1);
+		dot1.position.setY(0.5f);
+		dot1.left.setX(0.5f);
+		dot1.left.setY(1);
 
 		final int ITERATIONS = 100;
 		float[] result = new float[ITERATIONS];

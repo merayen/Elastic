@@ -5,11 +5,11 @@ import net.merayen.elastic.util.Point;
 
 public class HitTester {
 	public static boolean inside(Point point, Rect rect) {
-		return inside(point.x, point.y, rect.getX1(), rect.getY1(), rect.getX2(), rect.getY2());
+		return inside(point.getX(), point.getY(), rect.getX1(), rect.getY1(), rect.getX2(), rect.getY2());
 	}
 
 	public static boolean inside(float px, float py, float x1, float y1, float x2, float y2) {
-		return 
+		return
 			px >= x1 && py >= y1 &&
 			px < x2  && py < y2;
 	}

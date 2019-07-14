@@ -39,7 +39,7 @@ public class LProcessor extends LocalProcessor {
 
 		@Override
 		protected void onPitchBendSensitivityChange(float semitones) {
-			output.putMidi(midiFrame.framePosition, MidiMessagesCreator.changePitchBendRange(semitones * 2));
+			output.putMidi(midiFrame.framePosition, MidiMessagesCreator.INSTANCE.changePitchBendRange(semitones * 2));
 			midiHandled = true;
 		}
 
@@ -93,7 +93,7 @@ public class LProcessor extends LocalProcessor {
 		float newPitch = (basePitch + midiPitch) / (midiState.getBendRange() * 2);
 		if(currentPitch != newPitch) { // Pitch offset has been updated. We need to send a new basePitch now.
 			currentPitch = newPitch;
-			output.putMidi(stop - 1, MidiMessagesCreator.changePitch(newPitch));
+			output.putMidi(stop - 1, MidiMessagesCreator.INSTANCE.changePitch(newPitch));
 		}
 
 		output.written += avail;
@@ -108,6 +108,6 @@ public class LProcessor extends LocalProcessor {
 
 	private void sendInitialMidi() {
 		// Make the basePitch bend range bigger to
-		output.putMidi(0, MidiMessagesCreator.changePitchBendRange(4));
+		output.putMidi(0, MidiMessagesCreator.INSTANCE.changePitchBendRange(4));
 	}
 }

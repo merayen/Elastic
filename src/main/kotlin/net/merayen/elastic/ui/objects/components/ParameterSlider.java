@@ -57,7 +57,7 @@ public class ParameterSlider extends UIObject {
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(Point start_point, Point offset) {
-				setValue(drag_value + (offset.x / width) * scale);
+				setValue(drag_value + (offset.getX() / width) * scale);
 				if(handler != null) {
 					handler.onChange(value, false);
 					label = handler.onLabelUpdate(value);

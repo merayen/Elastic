@@ -7,8 +7,9 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.MidiNodeInputFrameData
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
+	short[][] inputMidi;
 
-	MidiData inputMidi;
+	MidiData midiData;
 
 	public LNode() {
 		super(LProcessor.class);
@@ -23,7 +24,11 @@ public class LNode extends LocalNode {
 	@Override
 	protected void onProcess(InputFrameData data) {
 		MidiNodeInputFrameData input = (MidiNodeInputFrameData)data;
-		inputMidi = input.getMidiDataMessage().getMidiData();
+		if (input.getMidiDataMessage() != null)
+			midiData = input.getMidiDataMessage().getMidiData();
+
+		if (input.getTemporaryMidi() != null)
+			inputMidi = input.getTemporaryMidi();
 	}
 
 	@Override

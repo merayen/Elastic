@@ -42,7 +42,7 @@ public class UIPortTemporary extends UIPort {
 
 			@Override
 			public void onGlobalMouseMove(Point position) {
-				moveTempPort(source_port.getRelativeFromAbsolute(position.x, position.y));
+				moveTempPort(source_port.getRelativeFromAbsolute(position.getX(), position.getY()));
 			}
 		});
 	}
@@ -54,8 +54,8 @@ public class UIPortTemporary extends UIPort {
 	}
 
 	private void moveTempPort(Point position) { // Relative coordinates
-		getTranslation().x = position.x;// - original.x;
-		getTranslation().y = position.y;// - original.y;
+		getTranslation().x = position.getX();// - original.x;
+		getTranslation().y = position.getY();// - original.y;
 	}
 
 	@Override
@@ -74,8 +74,8 @@ public class UIPortTemporary extends UIPort {
 		// Sets the initial offset
 		if(destination_port != null) {
 			Point pos = getRelativePosition(destination_port);
-			getTranslation().x = pos.x;
-			getTranslation().y = pos.y;
+			getTranslation().x = pos.getX();
+			getTranslation().y = pos.getY();
 			destination_port = null;
 		}
 	}

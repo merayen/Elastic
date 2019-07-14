@@ -1,7 +1,10 @@
 package net.merayen.elastic.uinodes.list.midi_1.editor
 
+import net.merayen.elastic.backend.data.eventdata.MidiData
+import net.merayen.elastic.backend.logicnodes.list.midi_1.AddMidiMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.PushTangentMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ReleaseTangentMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveMidiMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
@@ -33,6 +36,18 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		menuBar.layoutHeight = 40f
 		add(menuBar)
 		midiRoll = MidiRoll(object : MidiRoll.Handler {
+			override fun onAddMidi(midiData: MidiData) {
+				sendData(AddMidiMessage(nodeId, midiData))
+			}
+
+			override fun onChangeNote(id: String, tangent: Int, start: Float, length: Float, weight: Float) {
+				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+			}
+
+			override fun onRemoveMidi(midiId: String) {
+				sendData(RemoveMidiMessage(nodeId, midiId))
+			}
+
 			override fun onUp(tangent_no: Int) {
 				sendData(ReleaseTangentMessage(nodeId, tangent_no.toShort()))
 			}

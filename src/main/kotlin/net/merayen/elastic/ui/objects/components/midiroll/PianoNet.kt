@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
+import net.merayen.elastic.backend.midi.MidiMessagesCreator
 import net.merayen.elastic.backend.midi.MidiState
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
@@ -14,6 +15,7 @@ import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.UniqueID
 
 class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -21,12 +23,19 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		 * Called when a ghost note is moved over the piano net.
 		 * This should mark the piano tangent that correspond to the tangent argument.
 		 */
-		fun onGhostNote(tangent: Int)
+		fun onGhostNote(tangent: Short)
 
 		/**
 		 * Ghost note disappears. Piano should remove the mark.
 		 */
 		fun onGhostNoteOff()
+
+		/**
+		 * User has added a note to the sheet.
+		 */
+		fun onAddMidi(midiData: MidiData)
+
+		fun onRemoveMidi(id: String)
 	}
 
 	private enum class ToolModes {
@@ -68,7 +77,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	 * 1 == snap to each beat.
 	 * 4f == snap to each bar, if 4 beats per bar
 	 */
-	var snapQuantization = 1f
+	var snapQuantization = 1.0
 
 	private val selectionRectangle = SelectionRectangle(this)
 
@@ -119,7 +128,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		}
 
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
-			private val ghostNote = notes.Note("ghostNote", 0f, 0f, 0, 1f)
+			private val ghostNote = notes.Note("ghostNote", 0.0, 0.0, 0, 1f)
 
 			override fun onMouseMove(position: Point) {
 				if (toolMode == ToolModes.Create) {
@@ -128,8 +137,8 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 
 					ghostNote.alpha = 0.5f
 					ghostNote.start = ((position.x / beatWidth) / snapQuantization).toInt() * snapQuantization
-					ghostNote.length = 1f
-					ghostNote.tangent = ((octaveCount * octaveWidth - (position.y - octaveWidth / 12f)) / (octaveWidth / 12f)).toInt()
+					ghostNote.length = 1.0
+					ghostNote.tangent = ((octaveCount * octaveWidth - (position.y - octaveWidth / 12f)) / (octaveWidth / 12f)).toShort()
 
 					handler?.onGhostNote(ghostNote.tangent)
 				}
@@ -141,8 +150,28 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 
 				handler?.onGhostNoteOff()
 			}
-		})
 
+			override fun onMouseClick(position: Point?) {
+				if (ghostNote.parent != null) {
+					notes.remove(ghostNote)
+					if (toolMode == ToolModes.Create) {
+						val midiData = MidiData()
+						midiData.add(MidiData.MidiChunk(
+								UniqueID.create(),
+								ghostNote.start,
+								arrayOf(MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f))
+						))
+						midiData.add(MidiData.MidiChunk(
+								UniqueID.create(),
+								ghostNote.start + ghostNote.length,
+								arrayOf(MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f))
+						))
+						handler?.onAddMidi(midiData)
+					}
+					handler?.onGhostNoteOff()
+				}
+			}
+		})
 		add(notes)
 	}
 
@@ -202,11 +231,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		contextMenu.handle(event)
 	}
 
-	fun loadMidi(midiData: MidiData) {
-		reset()
-	}
-
-	private fun reset() {
+	fun loadMidi(midiChunk: MidiData.MidiChunk) {
 
 	}
 }

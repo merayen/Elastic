@@ -27,7 +27,7 @@ import java.util.List;
 public class UINet extends UIObject {
 
 	/**
-	 * Class keeps all the connections in the UI. Gets gradually build from the messages sent from backend. 
+	 * Class keeps all the connections in the UI. Gets gradually build from the messages sent from backend.
 	 */
 	private class Connection {
 		public UIPort a, b;
@@ -59,11 +59,11 @@ public class UINet extends UIObject {
 
 				draw.setColor(150, 150, 150);
 				draw.setStroke(5f);
-				draw.line(p1.x, p1.y, p2.x, p2.y);
+				draw.line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 
 				draw.setColor(200, 200, 200);
 				draw.setStroke(3f);
-				draw.line(p1.x, p1.y, p2.x, p2.y);
+				draw.line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 
 				if (c.a instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
 					window.getDebug().set("UINet UITemporaryPort: %s\n", p1);

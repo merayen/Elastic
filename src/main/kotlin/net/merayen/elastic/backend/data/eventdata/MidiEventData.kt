@@ -7,9 +7,12 @@ import org.json.simple.JSONObject
  * Common data class that is used several places.
  */
 class MidiEventData : EventData(), Cloneable {
-	class Zone(val midiData: MidiData = MidiData()) : EventData.Zone(), Cloneable {
+	class Zone(
+			val midiData: MidiData = MidiData(),
+			val curveData: CurveData = CurveData()
+	) : EventData.Zone(), Cloneable {
 		public override fun clone(): Zone {
-			return Zone(midiData.clone())
+			return Zone(midiData.clone(), curveData.clone())
 		}
 	}
 

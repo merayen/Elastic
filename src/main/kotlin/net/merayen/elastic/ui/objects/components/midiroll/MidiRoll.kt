@@ -6,26 +6,41 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
 
 class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
+	interface Handler {
+		fun onDown(tangent_no: Int)
+		fun onUp(tangent_no: Int)
+
+		fun onAddMidi(midiData: MidiData)
+		fun onChangeNote(id: String, tangent: Int, start: Float, length: Float, weight: Float)
+		fun onRemoveMidi(id: String)
+	}
+
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
 	private val OCTAVE_COUNT = 8
 	private lateinit var piano: Piano
+
 	private lateinit var net: PianoNet
+
+	private var tangentDown = -1
 
 	private val notes = PianoNotes(OCTAVE_COUNT)
 
 	private val selectionReadable = SelectionRectangle()
 
-	interface Handler {
-		fun onDown(tangent_no: Int)
-		fun onUp(tangent_no: Int)
-	}
-
 	override fun onInit() {
 		net = PianoNet(OCTAVE_COUNT)
 		net.handler = object : PianoNet.Handler {
-			override fun onGhostNote(tangent: Int) {
+			override fun onRemoveMidi(id: String) {
+				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+			}
+
+			override fun onAddMidi(midiData: MidiData) {
+				handler.onAddMidi(midiData)
+			}
+
+			override fun onGhostNote(tangent: Short) {
 				piano.unmarkAllTangents()
 				piano.markTangent(tangent)
 			}
@@ -58,10 +73,15 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 		net.translation.x = piano.pianoDepth
 		net.layoutWidth = layoutWidth - piano.pianoDepth
+
+		if (tangentDown != -1) {
+			handler.onUp(tangentDown)
+			tangentDown = -1
+		}
 	}
 
-	fun loadMidi(midiData: MidiData) {
-
+	fun loadMidi(midiChunk: MidiData.MidiChunk) {
+		net.loadMidi(midiChunk)
 	}
 
 	fun retrieveMidi(): Array<Array<Short>> {

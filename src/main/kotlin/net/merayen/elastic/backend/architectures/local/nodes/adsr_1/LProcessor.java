@@ -27,7 +27,7 @@ public class LProcessor extends LocalProcessor {
 			current_tangent_up = null;
 			current_tangent_down = getCurrentMidiPacket();
 			output.putMidi(midiFrame.framePosition, getCurrentMidiPacket());
-			output.putMidi(midiFrame.framePosition, new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.VOLUME, 0}); // Only if attack is more than 0?
+			output.putMidi(midiFrame.framePosition, new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, 0}); // Only if attack is more than 0?
 			getADSR().push(position + midiFrame.framePosition, 1);
 			keys_down.add(getCurrentMidiPacket()[1]);
 			handledMidiPacket = true;
@@ -100,7 +100,7 @@ public class LProcessor extends LocalProcessor {
 			}
 
 			for(ADSR.Entry entry : getADSR().process(input.available()))
-				output.putMidi((int) (entry.position - position), new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.VOLUME, (short) (entry.state * input_volume)}); // FIXME set the correct position
+				output.putMidi((int) (entry.position - position), new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, (short) (entry.state * input_volume)}); // FIXME set the correct position
 
 			if(current_tangent_up != null && getADSR().isNeutral()) {
 				output.putMidi(buffer_size - 1, new short[]{MidiStatuses.KEY_UP, current_tangent_up[1], 0});

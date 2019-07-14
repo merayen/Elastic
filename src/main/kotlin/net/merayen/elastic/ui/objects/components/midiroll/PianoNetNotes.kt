@@ -47,7 +47,7 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 	 * @param tangent Which tangent on the piano
 	 * @param weight How much weight
 	 */
-	inner class Note(val id: String, var start: Float, var length: Float, var tangent: Int, var weight: Float) : UIObject(), FlexibleDimension {
+	inner class Note(val id: String, var start: Double, var length: Double, var tangent: Short, var weight: Float) : UIObject(), FlexibleDimension {
 		override var layoutWidth = 0f
 		override var layoutHeight = 0f
 
@@ -104,10 +104,10 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 	fun rearrangeNotes() {
 		for (obj in children) {
 			if (obj is Note) {
-				obj.translation.x = obj.start * beatWidth
+				obj.translation.x = (obj.start * beatWidth).toFloat()
 				obj.translation.y = (octaveCount * 12 - obj.tangent) * (octaveWidth / 12f)
 
-				obj.layoutWidth = obj.length * beatWidth
+				obj.layoutWidth = (obj.length * beatWidth).toFloat()
 				obj.layoutHeight = octaveWidth / 12f
 			}
 		}

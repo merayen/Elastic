@@ -31,28 +31,28 @@ public class ViewportDrag extends UIObject {
 			@Override
 			public void onMouseDrag(Point start, Point offset) {
 				if(!drag_x && !drag_y) {
-					if(offset.x <= -10) {
+					if(offset.getX() <= -10) {
 						drag_x = true;
-						handler.onStartDrag(offset.x, true);
-					} else if(offset.y <= -10) {
+						handler.onStartDrag(offset.getX(), true);
+					} else if(offset.getY() <= -10) {
 						drag_y = true;
-						handler.onStartDrag(offset.y, false);
+						handler.onStartDrag(offset.getY(), false);
 					}
 
 				} else if(drag_x) {
-					if(offset.x > -10) {
+					if(offset.getX() > -10) {
 						//drag_x = false;
 						handler.onDrag(0, true);
 					} else {
-						handler.onDrag(offset.x, true);
+						handler.onDrag(offset.getX(), true);
 					}
 
 				} else if(drag_y) {
-					if(offset.y > -10) {
+					if(offset.getY() > -10) {
 						//drag_y = false;
 						handler.onDrag(0, false);
 					} else {
-						handler.onDrag(offset.y, false);
+						handler.onDrag(offset.getY(), false);
 					}
 				}
 			}
@@ -60,9 +60,9 @@ public class ViewportDrag extends UIObject {
 			@Override
 			public void onMouseDrop(Point start, Point offset) {
 				if(drag_x)
-					handler.onDrop(offset.x, true);
+					handler.onDrop(offset.getX(), true);
 				else if(drag_y)
-					handler.onDrop(offset.y, false);
+					handler.onDrop(offset.getY(), false);
 
 				drag_x = false;
 				drag_y = false;

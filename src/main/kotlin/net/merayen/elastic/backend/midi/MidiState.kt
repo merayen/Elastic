@@ -5,7 +5,7 @@ import kotlin.experimental.and
 
 /**
  * Feed me midi-packets, and I will pick up configuration and such.
- * Also handles MidiData.MidiPacket, that makes this class aware of time.
+ * Also handles MidiData.MidiChunk, that makes this class aware of time.
  */
 abstract class MidiState {
 
@@ -44,9 +44,9 @@ abstract class MidiState {
 	// Public states that can be read
 
 	/**
-	 * Time in beats. Only used if handle() is used with MidiData.MidiPacket
+	 * Time in beats. Only used if handle() is used with MidiData.MidiChunk
 	 */
-	var time = 0f
+	var time = 0.0
 		private set
 
 	/**
@@ -104,7 +104,7 @@ abstract class MidiState {
 					onSustain(sustain)
 
 				}
-				midiPacket[1] == MidiControllers.VOLUME -> {
+				midiPacket[1] == MidiControllers.CHANNEL_VOLUME_MSB -> {
 					volume = midiPacket[2] / 127f
 					onVolumeChange(volume)
 				}
@@ -114,9 +114,10 @@ abstract class MidiState {
 		onMidi(midiPacket)
 	}
 
-	fun handle(midiPacket: MidiData.MidiPacket) {
-		time = midiPacket.start
-		handle(midiPacket.midi)
+	fun handle(midiChunk: MidiData.MidiChunk) {
+		time = midiChunk.start
+		for (midi in midiChunk.midi)
+			handle(midi)
 	}
 
 	private fun dataEntryUpdate() {

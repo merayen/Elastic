@@ -36,14 +36,14 @@ public class BezierCurve {
 		for(int i = 0; i < result.length; i++) {
 			Dot dot = result[i] = new BezierCurve.Dot();
 
-			dot.left.x = points.get(p++).floatValue();
-			dot.left.y = points.get(p++).floatValue();
+			dot.left.setX(points.get(p++).floatValue());
+			dot.left.setY(points.get(p++).floatValue());
 
-			dot.position.x = points.get(p++).floatValue();
-			dot.position.y = points.get(p++).floatValue();
+			dot.position.setX(points.get(p++).floatValue());
+			dot.position.setY(points.get(p++).floatValue());
 
-			dot.right.x = points.get(p++).floatValue();
-			dot.right.y = points.get(p++).floatValue();
+			dot.right.setX(points.get(p++).floatValue());
+			dot.right.setY(points.get(p++).floatValue());
 		}
 
 		return result;

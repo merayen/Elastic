@@ -51,9 +51,9 @@ class NodeViewContextMenu extends UIObject {
 		String name = path[path.length - 2];
 
 		String node_id = NodeUtil.createID();
-		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), this.node_id)); // TODO group shall not be null, but 
-		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.x", position.x));
-		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.y", position.y));
+		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), this.node_id)); // TODO group shall not be null, but
+		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.x", position.getX()));
+		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.y", position.getY()));
 		// TODO also send parameter for X and Y translation?
 	}
 

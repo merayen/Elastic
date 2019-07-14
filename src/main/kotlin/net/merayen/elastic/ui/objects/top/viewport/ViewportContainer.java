@@ -108,9 +108,9 @@ public class ViewportContainer extends UIObject {
 					return;
 
 				if(vertical) {
-					layout.resizeWidth(moving, (position.x - moving.getTranslation().x) / width);
+					layout.resizeWidth(moving, (position.getX() - moving.getTranslation().x) / width);
 				} else {
-					layout.resizeHeight(moving, (position.y - moving.getTranslation().y) / height);
+					layout.resizeHeight(moving, (position.getY() - moving.getTranslation().y) / height);
 				}
 			}
 
@@ -208,7 +208,7 @@ public class ViewportContainer extends UIObject {
 				if(width == 0 || height == 0)
 					return;
 
-				// TODO refuse smaller than a certain value 
+				// TODO refuse smaller than a certain value
 				if(vertical)
 					layout.resizeWidth(m.get("viewport"), new_size / width);
 				else

@@ -11,9 +11,25 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 import net.merayen.elastic.util.UniqueID
 
 class LogicNode : BaseLogicNode() {
-	internal var buffer: MutableList<MidiPacket> = ArrayList()
+	/**
+	 * Midi buffer, with midi data made by the user, e.g when clicking the piano roll or doing something that should
+	 * give immediate feedback.
+	 */
+	internal var buffer: ArrayList<ShortArray> = ArrayList()
 
 	private val parameters = Parameters(this)
+
+	/**
+	 * This is the midi for the midi_1 node that gets played when user clicks "play"
+	 * TODO store this
+	 */
+	private val midiData = MidiData()
+
+	/**
+	 * Set to true whenever we should pdate the processing backend and UI with new data.
+	 * This happens on first process frame / load or if user has changed any midi.
+	 */
+	private var dirty = true
 
 	override fun onCreate() {
 		createPort(object : BaseLogicNode.PortDefinition() {
@@ -49,16 +65,29 @@ class LogicNode : BaseLogicNode() {
 	override fun onRemove() {}
 
 	override fun onPrepareFrame(): InputFrameData {
-		val midiData = MidiData()
+		if (dirty || buffer.size > 0) {
+			return MidiNodeInputFrameData(
+					id,
 
-		var i = 0
-		for (mp in buffer)
-			midiData.midi.add(MidiData.MidiPacket(UniqueID.create(), 0f, mp.midi)) // TODO fix timing
+					if (dirty) {
+						dirty = false
+						MidiDataMessage(id, midiData.clone())
+					} else {
+						null
+					},
 
-		buffer.clear()
+					if (buffer.size > 0) {
+						// TODO remove cancellations?
+						val r = buffer.toTypedArray();
+						buffer.clear();
+						r
+					} else {
+						null
+					}
+			)
+		}
 
-		// TODO Don't send the whole midi everytime. Only if changed
-		return MidiNodeInputFrameData(id, MidiDataMessage(id, midiData))
+		return MidiNodeInputFrameData(id)
 	}
 
 	override fun onFinishFrame(data: OutputFrameData) {}
@@ -66,10 +95,10 @@ class LogicNode : BaseLogicNode() {
 	override fun onData(data: Any) {
 		when (data) {
 			is PushTangentMessage -> {
-				buffer.add(MidiPacket(shortArrayOf(144.toShort(), data.tangent, 64), 0))
+				buffer.add(shortArrayOf(144.toShort(), data.tangent, 64))
 			}
 			is ReleaseTangentMessage -> {
-				buffer.add(MidiPacket(shortArrayOf(128.toShort(), data.tangent, 64), 0))
+				buffer.add(shortArrayOf(128.toShort(), data.tangent, 64))
 			}
 			is AddEventZoneMessage -> {
 				println("Adding EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
