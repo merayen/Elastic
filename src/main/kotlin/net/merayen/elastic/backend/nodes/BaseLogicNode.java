@@ -64,7 +64,7 @@ public abstract class BaseLogicNode {
 	/**
 	 * Data received from UI.
 	 */
-	protected abstract void onData(Object data);
+	protected abstract void onData(NodeDataMessage data);
 
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
@@ -157,7 +157,7 @@ public abstract class BaseLogicNode {
 			onCreate();
 	}
 
-	void processData(Object data) {
+	void processData(NodeDataMessage data) {
 		onData(data);
 
 		//if(data.containsKey("node_stats"))

@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.logicnodes.list.group_1
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 /**
@@ -13,6 +14,8 @@ class LogicNode : BaseLogicNode() {
 	override fun onDisconnect(port: String) {}
 	override fun onRemove() {}
 	override fun onFinishFrame(data: OutputFrameData) {}
-	override fun onData(data: Any) {}
+	override fun onData(data: NodeDataMessage) {
+
+	}
 	override fun onParameterChange(key: String, value: Any) = set(key, value)
 }

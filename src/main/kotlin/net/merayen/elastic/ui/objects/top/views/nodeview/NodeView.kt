@@ -32,7 +32,7 @@ class NodeView : View() {
 	val uiNet: UINet
 	private val movable: Movable
 	private val nodes = ArrayList<UINode>()
-	private val nodeViewBar = NodeViewBar()
+	private val nodeViewBar = NodeViewBar(this)
 	var nodeViewController: NodeViewController? = null // Automatically set by NodeViewController
 
 	private var contextMenu: NodeViewContextMenu? = null
@@ -77,11 +77,6 @@ class NodeView : View() {
 		}
 
 		draw.fillRect(2f, 2f, getWidth() - 4, getHeight() - 4)
-
-
-		// Silly, stupid grid because why not
-		draw.setStroke(1f)
-		draw.setColor(100, 100, 100)
 
 		nodeViewBar.layoutWidth = getWidth()
 	}

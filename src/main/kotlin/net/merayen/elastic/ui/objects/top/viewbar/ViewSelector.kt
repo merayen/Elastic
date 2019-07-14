@@ -52,4 +52,7 @@ internal class ViewSelector(handler: Handler) : UIObject() {
 	fun setViewClass(cls: KClass<out View>) {
 		dropDown.setViewItem(views.first { it.cls === cls })
 	}
+
+	override fun getWidth() = dropDown.getWidth()
+	override fun getHeight() = dropDown.getHeight()
 }

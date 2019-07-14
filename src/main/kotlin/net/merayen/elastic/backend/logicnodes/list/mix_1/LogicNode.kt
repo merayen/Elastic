@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.mix_1
 
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
@@ -27,5 +28,5 @@ class LogicNode : BaseLogicNode() {
 
     override fun onRemove() {}
 
-    override fun onData(data: Any) {}
+    override fun onData(data: NodeDataMessage) {}
 }

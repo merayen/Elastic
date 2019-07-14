@@ -7,9 +7,9 @@ class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObj
 	var fontSize = 10f
 	var font_name = "Geneva"
 	var align: Align? = null
-	var labelWidth: Float = 0.toFloat()
+	var labelWidth: Float = 0f
 		private set
-	
+
 	enum class Align {
 		LEFT, CENTER, RIGHT
 	}
@@ -35,4 +35,7 @@ class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObj
 		draw.setColor(200, 200, 200)
 		draw.text(text, x_offset, fontSize)
 	}
+
+	override fun getWidth() = labelWidth
+	override fun getHeight() = fontSize
 }

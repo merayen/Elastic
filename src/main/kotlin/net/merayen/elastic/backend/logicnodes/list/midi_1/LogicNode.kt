@@ -7,6 +7,7 @@ import net.merayen.elastic.backend.interfacing.types.MidiPacket
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.system.intercom.InputFrameData
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 import net.merayen.elastic.util.UniqueID
 
@@ -92,7 +93,7 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onFinishFrame(data: OutputFrameData) {}
 
-	override fun onData(data: Any) {
+	override fun onData(data: NodeDataMessage) {
 		when (data) {
 			is PushTangentMessage -> {
 				buffer.add(shortArrayOf(144.toShort(), data.tangent, 64))

@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.uidata;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.system.intercom.InputFrameData;
+import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.OutputFrameData;
 
 /**
@@ -34,6 +35,6 @@ public class LogicNode extends BaseLogicNode {
 	protected void onFinishFrame(OutputFrameData data) {}
 
 	@Override
-	protected void onData(Object data) {}
+	protected void onData(NodeDataMessage data) {}
 
 }

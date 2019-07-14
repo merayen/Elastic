@@ -7,6 +7,7 @@ import net.merayen.elastic.backend.interfacing.types.MidiPacket;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.system.intercom.InputFrameData;
+import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.OutputFrameData;
 
 public class LogicNode extends BaseLogicNode {
@@ -61,5 +62,5 @@ public class LogicNode extends BaseLogicNode {
 	protected void onFinishFrame(OutputFrameData data) {}
 
 	@Override
-	protected void onData(Object data) {}
+	protected void onData(NodeDataMessage data) {}
 }

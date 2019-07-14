@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
 import net.merayen.elastic.backend.logicnodes.Environment
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
@@ -92,5 +93,5 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onRemove() {}
 
-	override fun onData(data: Any) {}
+	override fun onData(data: NodeDataMessage) {}
 }
