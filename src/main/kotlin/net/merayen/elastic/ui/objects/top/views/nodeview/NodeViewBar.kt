@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
+import net.merayen.elastic.backend.logicnodes.list.group_1.SetBPMMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.top.viewbar.ViewBar
 import kotlin.math.log
@@ -15,6 +16,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 
 		bpmSlider.setHandler(object : ParameterSlider.IHandler {
 			private var bpm = 120
+			private var bpmSet = -1
 			private val MIN = 30
 			private val MAX = 300
 
@@ -25,6 +27,11 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 
 			override fun onChange(value: Double, programatic: Boolean) {
 				bpm = (MIN+(MAX-MIN) * value).toInt()
+				val nodeId = nodeView.currentNodeId
+				if (nodeId != null && bpmSet != bpm) {
+					sendMessage(SetBPMMessage(nodeId, bpm))
+					bpmSet = bpm
+				}
 			}
 
 			override fun onButton(offset: Int) {

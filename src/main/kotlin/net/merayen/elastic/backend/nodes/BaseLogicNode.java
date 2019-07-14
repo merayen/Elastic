@@ -8,6 +8,9 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class BaseLogicNode {
 	/**
 	 * Instantiate, edit and pass into createPort() to create ports.
@@ -209,6 +212,10 @@ public abstract class BaseLogicNode {
 	 */
 	protected void sendMessageToProcessor(Object message) {
 		supervisor.sendMessageToProcessor(message);
+	}
+
+	public Map<String,Class<?>> getParameterRegistry() {
+		return null;
 	}
 
 	// TODO implement functions for introspection into NetList
