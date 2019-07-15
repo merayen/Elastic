@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.nodes;
 
+import kotlin.NotImplementedError;
+import kotlin.reflect.KClass;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
@@ -7,6 +9,7 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.NetListMessages;
+import net.merayen.elastic.util.treesettings.InheritanceTree;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +23,19 @@ public abstract class BaseLogicNode {
 		public boolean output; // If port is output or not
 		public Format format; // Format the port uses. Only for output-ports
 
-		public PortDefinition() {}
+		public PortDefinition() {
+		}
 
-		/** Define a input port **/
+		/**
+		 * Define an input port
+		 **/
 		public PortDefinition(String name) {
 			this.name = name;
 		}
 
-		/** Define an output port with format **/
+		/**
+		 * Define an output port with format
+		 **/
 		public PortDefinition(String name, Format format) {
 			this.name = name;
 			this.format = format;
@@ -44,6 +52,8 @@ public abstract class BaseLogicNode {
 	private LogicNodeList logicnode_list; // Only used for look-up needs
 	boolean inited;
 	private NodeProperties np;
+
+	private InheritanceTree parameters;
 
 	/**
 	 * Called when this node is created for the first time.
@@ -70,6 +80,7 @@ public abstract class BaseLogicNode {
 	protected abstract void onData(NodeDataMessage data);
 
 	protected abstract void onConnect(String port); // Port is not connected, but is now connected
+
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
 
 	/**
@@ -80,6 +91,7 @@ public abstract class BaseLogicNode {
 	/**
 	 * Called when a ProcessMessage()-request has been received. All LogicNodes must prepare data to be sent to processor.
 	 * Change the data-argument directly.
+	 *
 	 * @return
 	 */
 	protected InputFrameData onPrepareFrame() {
@@ -97,16 +109,16 @@ public abstract class BaseLogicNode {
 	 * All LogicNodes needs to this on creation. This will add the ports in the UI and the processor.
 	 */
 	protected void createPort(PortDefinition def) {
-		if(def.name == null || def.name.length() == 0)
+		if (def.name == null || def.name.length() == 0)
 			throw new RuntimeException("Invalid port name");
 
-		if(netlist.getPort(node, def.name) != null)
+		if (netlist.getPort(node, def.name) != null)
 			throw new RuntimeException(String.format("Port %s already exist on node", def.name));
 
-		if(def.output && def.format == null)
+		if (def.output && def.format == null)
 			throw new RuntimeException("Output-ports must have a format");
 
-		if(!def.output && def.format != null)
+		if (!def.output && def.format != null)
 			throw new RuntimeException("Input-ports can not have a format set, as it will depend on the output-port it is connected to");
 
 		// Everything OK
@@ -156,7 +168,7 @@ public abstract class BaseLogicNode {
 		supervisor.sendMessageToUI(m); // Acknowledges creation of Node to the UI
 		supervisor.sendMessageToProcessor(m); // Notify the backend too
 
-		if(!supervisor.restoring)
+		if (!supervisor.restoring)
 			onCreate();
 	}
 
@@ -177,7 +189,7 @@ public abstract class BaseLogicNode {
 
 		env = supervisor.env;
 		logicnode_list = supervisor.logicnode_list;
-		netlist = ((Environment)supervisor.env).project.getNetList();
+		netlist = ((Environment) supervisor.env).project.getNetList();
 		np = new NodeProperties(netlist);
 	}
 
@@ -201,7 +213,6 @@ public abstract class BaseLogicNode {
 
 	/**
 	 * Send message to UI (frontend).
-	 *
 	 */
 	protected void sendMessageToUI(Object message) {
 		supervisor.sendMessageToUI(message);
@@ -214,9 +225,30 @@ public abstract class BaseLogicNode {
 		supervisor.sendMessageToProcessor(message);
 	}
 
-	public Map<String,Class<?>> getParameterRegistry() {
+	public Map<String, Class<?>> getParameterRegistry() {
 		return null;
 	}
 
 	// TODO implement functions for introspection into NetList
+
+	protected Object getParameter(KClass<?> klass) {
+		if (parameters == null) {
+			parameters = new InheritanceTree();
+			BaseLogicNode parent = getParent();
+			if (parent != null) {
+				throw new NotImplementedError();
+				//parent.getParameter(Object.class); // Just to load
+			}
+		}
+
+		return parameters.get(klass);
+	}
+
+	private BaseLogicNode getParent() {
+		String parentId = np.getParent(node);
+		if (parentId != null)
+			return supervisor.logicnode_list.get(parentId);
+
+		return null;
+	}
 }

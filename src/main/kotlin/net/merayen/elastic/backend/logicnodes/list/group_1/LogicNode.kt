@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.group_1
 
+import net.merayen.elastic.backend.nodes.GroupLogicNode
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
@@ -7,7 +8,7 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 /**
  * Doesn't do anything, other than having children.
  */
-class LogicNode : BaseLogicNode() {
+class LogicNode : BaseLogicNode(), GroupLogicNode {
 	override fun getParameterRegistry() = mapOf<String,Class<*>>(
 			"bpm" to Number::class.java
 	)

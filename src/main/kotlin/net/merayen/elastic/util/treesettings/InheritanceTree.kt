@@ -7,7 +7,6 @@ import kotlin.reflect.KClass
  */
 class InheritanceTree {
 	class AlreadyInTreeException : RuntimeException()
-	//class ItemHasAParentException : RuntimeException()
 	class ItemCanNotBeItsOwnParent : RuntimeException()
 
 	var parent: InheritanceTree? = null
