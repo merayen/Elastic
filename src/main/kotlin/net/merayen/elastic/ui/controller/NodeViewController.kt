@@ -64,7 +64,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 					nv.reset()
 
 			is NodeMessage -> for (nv in nodeViews)
-				nv.getNode(message.nodeId)?.executeMessage(message)
+				nv.messageNode(message.nodeId, message)
 		}
 
 		// UINet

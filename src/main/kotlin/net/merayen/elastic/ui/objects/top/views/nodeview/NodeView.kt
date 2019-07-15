@@ -1,6 +1,8 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
+import net.merayen.elastic.system.intercom.NodeMessage
+import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.controller.NodeViewController
 import net.merayen.elastic.ui.event.MouseEvent
@@ -119,12 +121,21 @@ class NodeView : View() {
 		return null
 	}
 
-	fun messageNode(node_id: String, message: Any) {
+	fun messageNode(node_id: String, message: NodeMessage) {
 		val node = getNode(node_id)
 
 		if (node == null) {
 			System.out.printf("WARNING: Node with id %s not found in this NodeView. Out of sync?\n", node_id)
 			return
+		}
+
+		// We listen to messages
+		if (message.nodeId == currentNodeId) {
+			if (message is NodeParameterMessage) {
+				if (message.key == "bpm") {
+					nodeViewBar.bpmSlider.setBPM((message.value as Number).toInt())
+				}
+			}
 		}
 
 		node.executeMessage(message)

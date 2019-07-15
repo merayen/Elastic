@@ -34,9 +34,15 @@ dependencies {
 	// Use the Kotlin JUnit integration.
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
+	testImplementation("org.junit.jupiter:junit-jupiter:5.5.0")
+
 	implementation("com.googlecode.json-simple:json-simple:1.1.1")
 
 	implementation("com.google.code.gson:gson:2.8.5")
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
 
 application {

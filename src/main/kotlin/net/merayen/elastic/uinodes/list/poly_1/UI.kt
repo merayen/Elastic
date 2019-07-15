@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
+import kotlin.math.roundToLong
 
 class UI : UINode() {
 	private val unison: ParameterSlider
@@ -32,7 +33,7 @@ class UI : UINode() {
 		unison.setHandler(object : ParameterSlider.IHandler {
 			override fun onLabelUpdate(value: Double) = String.format("%d", Math.round(value * 31) + 1)
 
-			override fun onChange(value: Double, programatic: Boolean) = sendParameter("unison", Math.round(value * 31) + 1)
+			override fun onChange(value: Double, programatic: Boolean) = sendParameter("unison", (value * 31).roundToLong() + 1)
 
 			override fun onButton(offset: Int) {
 				unison.value = unison.value + offset / 31.0
