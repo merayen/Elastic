@@ -1,5 +1,6 @@
 package net.merayen.elastic.util
 
+import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.junit.jupiter.api.Test
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.jvmErasure
 
 internal class JSONObjectMapperTest {
 	data class Man(
@@ -106,6 +108,17 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun testArrays() {
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(Man::class) { name, value ->
+			when (name) {
+				"reads" -> (value as JSONArray).map {
+					mapper.toObject(it as JSONObject)
+				} as List<Book>
+				else -> null
+			}
+		}
+		mapper.registerClass(Book::class)
+
 		val json = JSONParser().parse("""
 			{
 				"${"$"}className$": "Man",
@@ -117,27 +130,60 @@ internal class JSONObjectMapperTest {
 			}
 		""".trimIndent()) as JSONObject
 
-		assertThrows(NotImplementedError::class.java) {
-			mapper.toObject(json) // Not implemented yet
-		}
+		assertEquals(
+				Man(
+						"The Man",
+						reads = listOf(
+								Book("How to be a Man", "Understand your gender roles"),
+								Book("How to treat wife", "Learn how to treat your wife")
+						)
+				),
+				mapper.toObject(json)
+		)
 	}
 
 	@Test
-	fun argConvert() {
+	fun testConvertingNumbers() {
 		data class Test(val p0: Double, val p1: Float, val p2: Long, val p3: Int, val p4: Short, val p5: Byte, val p6: Char)
 
 		val number = JSONParser().parse("37.5")
 
 		// Check if all types are supported for conversion
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[0].type), 37.5)
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[1].type), 37.5f)
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[2].type), 37L)
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[3].type), 37)
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[4].type), 37.toShort())
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[5].type), 37.toByte())
-		assertEquals(JSONObjectMapper().argConvert(number, Test::class.primaryConstructor!!.parameters[6].type), 37.toChar())
+		assertEquals(37.5, mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[0].type.jvmErasure))
+		assertEquals(37.5f, mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[1].type.jvmErasure))
+		assertEquals(37L, mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[2].type.jvmErasure))
+		assertEquals(37, mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[3].type.jvmErasure))
+		assertEquals(37.toShort(), mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[4].type.jvmErasure))
+		assertEquals(37.toByte(), mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[5].type.jvmErasure))
+		assertEquals(37.toChar(), mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[6].type.jvmErasure))
 	}
 
+	@Test
+	fun testConvertingStrings() {
+		data class Test(val p0: String, val p1: String?)
+
+		val text = JSONParser().parse("\"Test\"")
+		val nullText = JSONParser().parse("null")
+
+		assertEquals("Test", mapper.argConvert(text, Test::class.primaryConstructor!!.parameters[0].type.jvmErasure))
+		assertEquals(null, mapper.argConvert(nullText, Test::class.primaryConstructor!!.parameters[1].type.jvmErasure))
+	}
+
+	@Test
+	fun testTranslating() {
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(Man::class) { name, value ->
+			when (name) {
+				"reads" -> {
+					val result = ArrayList<Book>()
+					for (book in value as JSONArray)
+						result.add(mapper.argConvert(book, Book::class) as Book);
+					 result
+				}
+				else -> value
+			}
+		}
+	}
 
 	@Test
 	fun testDumpSingleObject() {
@@ -151,5 +197,13 @@ internal class JSONObjectMapperTest {
 	fun testDumpDeepObject() {
 		val result = mapper.toJson(Man("John")).toJSONString()
 		assertEquals("""{"wife":{"sexy":true,"${"$"}className$":"Wife","nickname":"My default wife","weight":45.0,"hysterical":true,"age":18,"height":1.7},"${"$"}className$":"Man","name":"John","reads":null}""", result)
+	}
+
+	@Test
+	fun testDumpUnknownClass() {
+		data class NonregisteredClass(val blabla: String)
+		assertThrows(JSONObjectMapper.ClassNotRegistered::class.java) {
+			mapper.toJson(NonregisteredClass("Hohoho"))
+		}
 	}
 }
