@@ -2,28 +2,25 @@ package net.merayen.elastic.util
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
-import kotlin.reflect.KType
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.jvmName
 
 /**
  * Converts JSONObject to POJOs.
  * Hardcoded for org.simple.json, because it seems we will stick with it for a while.
- * DOES NOT SUPPORT ARRAYS. Seems like they will need to be List<Any> if we are going to support this? :(
+ * DOES NOT SUPPORT ARRAYS WITH GENERICS OTHER THAN OBJECTS (JSONObject). Seems like they will need to be in a List<Any> if we are going to support this? :(
  */
 class JSONObjectMapper {
 	class AnonymousClassesNotSupportedException : RuntimeException()
-	class CanNotConvertType(val inType: String, val outType: String) : RuntimeException("'$inType' can not be converted to '$outType'")
 	class JsonMissingKey(val key: String, val className: String) : RuntimeException("JSON missing key '$key' for class '$className'")
 	class ClassNotRegistered(val className: String) : RuntimeException("Class '$className' not registered")
 	class ClassAlreadyRegistered(val className: String) : RuntimeException(className)
+	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject is supported in List<>s")
 
 	private val registry = HashMap<String, KClass<out Any>>()
 	private val translatorRegistry = HashMap<String,((name: String, value: Any?) -> Any?)?>()
@@ -51,10 +48,9 @@ class JSONObjectMapper {
 			val name = parameter.name ?: continue // Unnamed constructor parameters (varargs? Not supporting that...)
 
 			val subItem = jsonobject[name]
-			var translatedSubItem: Any? = NOT_SET
 
 			if (translator != null) {
-				translatedSubItem = translator(name, subItem)
+				val translatedSubItem = translator(name, subItem)
 
 				if (translatedSubItem != null)
 					args[parameter] = translatedSubItem
@@ -66,7 +62,12 @@ class JSONObjectMapper {
 					if (sub != null) // It was possible to convert
 						args[parameter] = sub
 				} else if (subItem is JSONArray) {
-					// We don't deal with array
+					args[parameter] = subItem.map {
+						if (it is JSONObject)
+							toObject(it)
+						else
+							throw GenericListsLimitedSupport()
+					}
 				} else if (subItem != null) {
 					args[parameter] = argConvert(jsonobject[name], parameter.type.jvmErasure)
 				}
@@ -91,13 +92,9 @@ class JSONObjectMapper {
 		for (parameter in primaryConstructor.parameters) {
 			val name = parameter.name ?: continue // Unnamed constructor parameters (varargs? Not supporting that...)
 
-			for (property in obj::class.memberProperties) {
-				if (property.name == name && property.visibility == KVisibility.PUBLIC) {
-					val value = property.getter.call(obj)
-
-					result[name] = valueToJSON(value)
-				}
-			}
+			for (property in obj::class.memberProperties)
+				if (property.name == name && property.visibility == KVisibility.PUBLIC)
+					result[name] = valueToJSON(property.getter.call(obj))
 		}
 
 		result["${"$"}className$"] = className
@@ -136,9 +133,5 @@ class JSONObjectMapper {
 		}
 
 		return to.cast(obj)
-	}
-
-	fun <T : KClass<out Any>>argConvert(obj: Any?, to: T): T {
-		return argConvert(obj, to) as T
 	}
 }
