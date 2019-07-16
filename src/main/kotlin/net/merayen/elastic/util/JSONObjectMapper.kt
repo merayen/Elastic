@@ -76,12 +76,7 @@ class JSONObjectMapper {
 				throw JsonMissingKey(name, className)
 		}
 
-		try {
-			return primaryConstructor.callBy(args)
-		} catch (e: IllegalArgumentException) {
-			println("nei")
-			throw e
-		}
+		return primaryConstructor.callBy(args)
 	}
 
 	fun toJson(obj: Any): JSONObject {
@@ -100,13 +95,7 @@ class JSONObjectMapper {
 				if (property.name == name && property.visibility == KVisibility.PUBLIC) {
 					val value = property.getter.call(obj)
 
-					if (value == null) {
-						result[name] = null
-					} else if (value is Number || value is Boolean || value is String) {
-						result[name] = value
-					} else {
-						result[name] = toJson(value)
-					}
+					result[name] = valueToJSON(value)
 				}
 			}
 		}
@@ -114,6 +103,18 @@ class JSONObjectMapper {
 		result["${"$"}className$"] = className
 
 		return result
+	}
+
+	private fun valueToJSON(value: Any?): Any? {
+		if (value == null || value is Number || value is Boolean || value is String) {
+			return value
+		} else if (value is List<*>) {
+			val arr = JSONArray()
+			arr.addAll(value.map { valueToJSON(it) })
+			return arr
+		} else {
+			return toJson(value)
+		}
 	}
 
 	/**

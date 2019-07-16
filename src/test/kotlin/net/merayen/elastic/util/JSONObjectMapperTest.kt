@@ -107,13 +107,13 @@ internal class JSONObjectMapperTest {
 	}
 
 	@Test
-	fun testArrays() {
+	fun testJSONArrayToObject() {
 		val mapper = JSONObjectMapper()
 		mapper.registerClass(Man::class) { name, value ->
 			when (name) {
 				"reads" -> (value as JSONArray).map {
 					mapper.toObject(it as JSONObject)
-				} as List<Book>
+				}
 				else -> null
 			}
 		}
@@ -205,5 +205,18 @@ internal class JSONObjectMapperTest {
 		assertThrows(JSONObjectMapper.ClassNotRegistered::class.java) {
 			mapper.toJson(NonregisteredClass("Hohoho"))
 		}
+	}
+
+	@Test
+	fun testDumpObjectWithArray() {
+		mapper.toJson(
+				Man(
+						"The Guy",
+						reads = arrayListOf(
+								Book("Food", "How men should make food"),
+								Book("Cars", "How men should fix cars")
+						)
+				)
+		)
 	}
 }
