@@ -87,21 +87,6 @@ public class Supervisor {
 			NetListMessages.INSTANCE.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
 
 			BaseLogicNode logicNode = logicnode_list.get(m.node_id);
-			Map<String, Class<?>> parameterRegistry = logicNode.getParameterRegistry();
-
-			if (parameterRegistry != null) {
-				Class<?> klass = parameterRegistry.get(m.key);
-				if (klass != null) {
-					//if (!m.value.getClass().isAssignableFrom(klass)) {
-					if (!klass.isAssignableFrom(m.value.getClass())) {
-						System.out.printf("Skipped invalid parameter %s for node %s (%s) due to invalid type. (Expected %s, got %s)\n", m.key, m.node_id, logicNode.getClass().getName(), klass.getSimpleName(), m.value.getClass().getSimpleName());
-						return;
-					}
-				} else {
-					System.out.printf("Skipped invalid parameter %s for node %s (%s) as it isn't registered.\n", m.key, m.node_id, logicNode.getClass().getSimpleName());
-					return;
-				}
-			}
 
 			logicNode.onParameterChange(m.key, m.value);
 

@@ -53,7 +53,9 @@ public abstract class BaseLogicNode {
 	boolean inited;
 	private NodeProperties np;
 
-	private InheritanceTree parameters;
+	//private InheritanceTree parameters;
+
+	public BaseNodeData data;
 
 	/**
 	 * Called when this node is created for the first time.
@@ -223,25 +225,6 @@ public abstract class BaseLogicNode {
 	 */
 	protected void sendMessageToProcessor(Object message) {
 		supervisor.sendMessageToProcessor(message);
-	}
-
-	public Map<String, Class<?>> getParameterRegistry() {
-		return null;
-	}
-
-	// TODO implement functions for introspection into NetList
-
-	protected Object getParameter(KClass<?> klass) {
-		if (parameters == null) {
-			parameters = new InheritanceTree();
-			BaseLogicNode parent = getParent();
-			if (parent != null) {
-				throw new NotImplementedError();
-				//parent.getParameter(Object.class); // Just to load
-			}
-		}
-
-		return parameters.get(klass);
 	}
 
 	private BaseLogicNode getParent() {

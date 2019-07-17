@@ -9,10 +9,6 @@ import net.merayen.elastic.system.intercom.OutputFrameData
  * Doesn't do anything, other than having children.
  */
 class LogicNode : BaseLogicNode(), GroupLogicNode {
-	override fun getParameterRegistry() = mapOf<String,Class<*>>(
-			"bpm" to Number::class.java
-	)
-
 	override fun onCreate() {}
 	override fun onInit() {}
 	override fun onConnect(port: String) {}

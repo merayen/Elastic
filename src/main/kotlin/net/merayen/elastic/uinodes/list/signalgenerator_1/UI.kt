@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1
 
+import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
@@ -89,7 +90,8 @@ class UI : UINode(), INodeEditable {
 		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() {
-				sendParameter("data.curve", bwb.bezier.floats)
+				//sendParameter(Data())
+				//sendParameter("data.curve", bwb.bezier.floats)
 			}
 
 			override fun onMove() {

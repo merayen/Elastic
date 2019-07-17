@@ -72,8 +72,9 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		return null
 	}
 
-	fun sendParameter(key: String, value: Any) {
-		sendMessage(NodeParameterMessage(nodeId, key, value))
+	fun sendParameter(key: String , data: Any) {
+		TODO()
+		//sendMessage(NodeParameterMessage(nodeId, key, value))
 	}
 
 	fun sendData(value: NodeDataMessage) {
