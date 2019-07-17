@@ -20,10 +20,12 @@ class JSONObjectMapper {
 	class JsonMissingKey(val key: String, val className: String) : RuntimeException("JSON missing key '$key' for class '$className'")
 	class ClassNotRegistered(val className: String) : RuntimeException("Class '$className' not registered")
 	class ClassAlreadyRegistered(val className: String) : RuntimeException(className)
-	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject is supported in List<>s")
+	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
 
 	private val registry = HashMap<String, KClass<out Any>>()
 	private val translatorRegistry = HashMap<String,((name: String, value: Any?) -> Any?)?>()
+
+	private val CLASSNAME_IDENTIFIER = "&className&"
 
 	fun registerClass(klass: KClass<out Any>, translator: ((name: String, value: Any?) -> Any?)? = null) {
 		val className = klass.simpleName ?: throw AnonymousClassesNotSupportedException()
@@ -38,7 +40,7 @@ class JSONObjectMapper {
 	private val NOT_SET = Any()
 
 	fun toObject(jsonobject: JSONObject): Any? {
-		val className = (jsonobject.get("\$className$") ?: return null) as String
+		val className = (jsonobject.get(CLASSNAME_IDENTIFIER) ?: return null) as String
 		val klass = registry[className] ?: return null
 		val primaryConstructor = klass.primaryConstructor ?: return null
 		val translator = translatorRegistry[className]
@@ -65,6 +67,8 @@ class JSONObjectMapper {
 					args[parameter] = subItem.map {
 						if (it is JSONObject)
 							toObject(it)
+						else if (it is Number || it is String || it is Boolean)
+							it
 						else
 							throw GenericListsLimitedSupport()
 					}
@@ -97,7 +101,7 @@ class JSONObjectMapper {
 					result[name] = valueToJSON(property.getter.call(obj))
 		}
 
-		result["${"$"}className$"] = className
+		result[CLASSNAME_IDENTIFIER] = className
 
 		return result
 	}

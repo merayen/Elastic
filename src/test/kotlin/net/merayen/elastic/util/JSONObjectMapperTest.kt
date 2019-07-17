@@ -67,13 +67,13 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun convert() {
-		val json = JSONParser().parse("""{"${"$"}className$": "Man", "name": "Thim"}""") as JSONObject
+		val json = JSONParser().parse("""{"&className&": "Man", "name": "Thim"}""") as JSONObject
 		assertEquals(mapper.toObject(json), Man("Thim"))
 	}
 
 	@Test
 	fun testNonExistingClass() {
-		val json = JSONParser().parse("""{"${"$"}className$": "Nonexistingclass", "name": "Thim"}""") as JSONObject
+		val json = JSONParser().parse("""{"&className&": "Nonexistingclass", "name": "Thim"}""") as JSONObject
 		assertNull(mapper.toObject(json))
 	}
 
@@ -82,8 +82,8 @@ internal class JSONObjectMapperTest {
 		val toTest = JSONParser().parse(
 				"""
 					{
-						"${"$"}className$": "Man", "name": "The Man", "wife": {
-							"${"$"}className$": "Wife", "nickname": "Darling", "sexy": true, "age": 40, "weight": 124, "height": 1.52, "hysterical": false
+						"&className&": "Man", "name": "The Man", "wife": {
+							"&className&": "Wife", "nickname": "Darling", "sexy": true, "age": 40, "weight": 124, "height": 1.52, "hysterical": false
 						}
 					}""".trimMargin()
 		) as JSONObject
@@ -97,7 +97,7 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun testDefaultValues() {
-		val json = JSONParser().parse("""{"${"$"}className$": "Book"}""") as JSONObject
+		val json = JSONParser().parse("""{"&className&": "Book"}""") as JSONObject
 
 		val exception = assertThrows(JSONObjectMapper.JsonMissingKey::class.java) {
 			mapper.toObject(json)
@@ -114,11 +114,11 @@ internal class JSONObjectMapperTest {
 
 		val json = JSONParser().parse("""
 			{
-				"${"$"}className$": "Man",
+				"&className&": "Man",
 				"name": "The Man"
 				"reads": [
-					{"${"$"}className$": "Book", "name": "How to be a Man", "description": "Understand your gender roles"},
-					{"${"$"}className$": "Book", "name": "How to treat wife", "description": "Learn how to treat your wife"}
+					{"&className&": "Book", "name": "How to be a Man", "description": "Understand your gender roles"},
+					{"&className&": "Book", "name": "How to treat wife", "description": "Learn how to treat your wife"}
 				]
 			}
 		""".trimIndent()) as JSONObject
@@ -179,17 +179,35 @@ internal class JSONObjectMapperTest {
 	}
 
 	@Test
+	fun testPrimitiveValuesInArray() {
+		data class Entry(val array: List<Int>)
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(Entry::class)
+
+		val obj = mapper.toObject(JSONParser().parse("""{"&className&": "Entry", "array": ["du",2,3.6,4,5,6,7,8,9,true,false]}""") as JSONObject) as Entry
+
+		assertEquals("""{"array":["du",2,3.6,4,5,6,7,8,9,true,false],"&className&":"Entry"}""", mapper.toJson(obj).toJSONString())
+
+		assertEquals(3, obj.array[2])
+
+		assertThrows(ClassCastException::class.java) {
+			obj.array[0] as Number
+		}
+	}
+
+	@Test
 	fun testDumpSingleObject() {
 		val result = mapper.toJson(Book("Bible", "Contains Jesus")).toJSONString()
 		assertEquals("""
-			{"${"$"}className$":"Book","name":"Bible","description":"Contains Jesus"}
+			{"&className&":"Book","name":"Bible","description":"Contains Jesus"}
 		""".trimIndent(), result)
 	}
 
 	@Test
 	fun testDumpDeepObject() {
 		val result = mapper.toJson(Man("John")).toJSONString()
-		assertEquals("""{"wife":{"sexy":true,"${"$"}className$":"Wife","nickname":"My default wife","weight":45.0,"hysterical":true,"age":18,"height":1.7},"${"$"}className$":"Man","name":"John","reads":null}""", result)
+		assertEquals("""{"&className&":"Man","wife":{"&className&":"Wife","sexy":true,"nickname":"My default wife","weight":45.0,"hysterical":true,"age":18,"height":1.7},"name":"John","reads":null}""", result)
 	}
 
 	@Test
