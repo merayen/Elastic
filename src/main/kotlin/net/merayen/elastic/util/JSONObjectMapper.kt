@@ -67,7 +67,7 @@ class JSONObjectMapper {
 					args[parameter] = subItem.map {
 						if (it is JSONObject)
 							toObject(it)
-						else if (it is Number || it is String || it is Boolean)
+						else if (it == null || it is Number || it is String || it is Boolean)
 							it
 						else
 							throw GenericListsLimitedSupport()

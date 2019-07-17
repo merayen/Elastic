@@ -185,9 +185,9 @@ internal class JSONObjectMapperTest {
 		val mapper = JSONObjectMapper()
 		mapper.registerClass(Entry::class)
 
-		val obj = mapper.toObject(JSONParser().parse("""{"&className&": "Entry", "array": ["du",2,3.6,4,5,6,7,8,9,true,false]}""") as JSONObject) as Entry
+		val obj = mapper.toObject(JSONParser().parse("""{"&className&": "Entry", "array": ["du",2,3.6,4,5,6,7,8,9,true,false,null]}""") as JSONObject) as Entry
 
-		assertEquals("""{"array":["du",2,3.6,4,5,6,7,8,9,true,false],"&className&":"Entry"}""", mapper.toJson(obj).toJSONString())
+		assertEquals("""{"array":["du",2,3.6,4,5,6,7,8,9,true,false,null],"&className&":"Entry"}""", mapper.toJson(obj).toJSONString())
 
 		assertEquals(3, obj.array[2])
 
