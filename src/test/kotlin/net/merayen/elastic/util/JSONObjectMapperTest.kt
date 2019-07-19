@@ -263,7 +263,14 @@ internal class JSONObjectMapperTest {
 		assertEquals("Smith John", result.name)
 		assertEquals(59, result.age)
 
-		assertEquals("", JSONObject.toJSONString(mapper.toMap(result)))
+		assertEquals("""{"&className&":"DaClass","name":"Smith John","age":59}""", JSONObject.toJSONString(mapper.toMap(result)))
+	}
+
+	@Test
+	fun testNotSupportingAnonymousClasses() {
+		assertThrows(JSONObjectMapper.AnonymousClassesNotSupportedException::class.java) {
+			JSONObjectMapper().registerClass(object {}::class)
+		}
 	}
 
 	@Test

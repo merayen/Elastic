@@ -55,9 +55,8 @@ class JSONObjectMapper {
 		val args = HashMap<KMutableProperty<*>, Any?>()
 		val memberProperties = klass.memberProperties.filter { !it.isConst && it.visibility == KVisibility.PUBLIC }
 		for (member in memberProperties) {
+			val name = member.name
 			if (member is KMutableProperty<*>) {
-				val name = member.name
-
 				val subItem = jsonobject[name]
 
 				if (translator != null) {
@@ -85,11 +84,8 @@ class JSONObjectMapper {
 						args[member] = argConvert(jsonobject[name], member.setter.parameters[1].type.jvmErasure)
 					}
 				}
-
-				//if (parameter !in args)
-				//	throw JsonMissingKey(name, className)
-			} else {
-				throw ClassMemberIsReadOnly(className, member.name)
+			} else if (name in jsonobject) {
+				throw ClassMemberIsReadOnly(className, name)
 			}
 		}
 
@@ -102,7 +98,7 @@ class JSONObjectMapper {
 
 
 		// Then apply all the values afterwards
-		for ((property,value) in args) {
+		for ((property, value) in args) {
 			if (property.name in jsonobject)
 				property.setter.call(result, value)
 		}
@@ -122,20 +118,13 @@ class JSONObjectMapper {
 
 	fun toMap(obj: Any): Map<String, Any?> {
 		val className = obj::class.simpleName ?: throw AnonymousClassesNotSupportedException()
-		val klass = registry[className] ?: throw ClassNotRegistered(className)
-
-		val primaryConstructor = klass.primaryConstructor
-				?: throw RuntimeException("Class to serialize must have a primary constructor")
+		registry[className] ?: throw ClassNotRegistered(className)
 
 		val result = HashMap<String, Any?>()
 
-		for (parameter in primaryConstructor.parameters) {
-			val name = parameter.name ?: continue // Unnamed constructor parameters (varargs? Not supporting that...)
-
-			for (property in obj::class.memberProperties)
-				if (property.name == name && property.visibility == KVisibility.PUBLIC)
-					result[name] = valueToJSON(property.getter.call(obj))
-		}
+		for (property in obj::class.memberProperties)
+			if (property.visibility == KVisibility.PUBLIC && !property.isConst)
+				result[property.name] = valueToJSON(property.getter.call(obj))
 
 		result[CLASSNAME_IDENTIFIER] = className
 
