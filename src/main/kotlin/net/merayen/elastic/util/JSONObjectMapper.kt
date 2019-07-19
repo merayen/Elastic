@@ -25,20 +25,18 @@ class JSONObjectMapper {
 	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class constructor missing default value")
 
 	private val registry = HashMap<String, KClass<out Any>>()
-	private val translatorRegistry = HashMap<String, ((name: String, value: Any?) -> Any?)?>()
 
 	companion object {
 		val CLASSNAME_IDENTIFIER = "&className&"
 	}
 
-	fun registerClass(klass: KClass<*>, translator: ((name: String, value: Any?) -> Any?)? = null) {
+	fun registerClass(klass: KClass<*>) {
 		val className = klass.simpleName ?: throw AnonymousClassesNotSupportedException()
 
 		if (className in registry)
 			throw ClassAlreadyRegistered(className)
 
 		registry[className] = klass
-		translatorRegistry[className] = translator
 	}
 
 	private val NOT_SET = Any()
@@ -47,7 +45,6 @@ class JSONObjectMapper {
 		val className = (jsonobject.get(CLASSNAME_IDENTIFIER) ?: throw MissingClassNameDefinitionInObject()) as String
 		val klass = registry[className] ?: throw ClassNotRegistered(className)
 		val primaryConstructor = klass.primaryConstructor ?: return null
-		val translator = translatorRegistry[className]
 
 		verifyConstructor(className, primaryConstructor)
 
@@ -58,13 +55,6 @@ class JSONObjectMapper {
 			val name = member.name
 			if (member is KMutableProperty<*>) {
 				val subItem = jsonobject[name]
-
-				if (translator != null) {
-					val translatedSubItem = translator(name, subItem)
-
-					if (translatedSubItem != null)
-						args[member] = translatedSubItem
-				}
 
 				if (member !in args) {
 					if (subItem is Map<*, *>) {
@@ -90,12 +80,7 @@ class JSONObjectMapper {
 		}
 
 		// Create instance with just nulls
-		val nullArgs = HashMap<KParameter, Any?>()
-		//for (parameter in primaryConstructor.parameters)
-		//	nullArgs[parameter] = null
-
-		val result = primaryConstructor.callBy(nullArgs)
-
+		val result = primaryConstructor.callBy(HashMap())
 
 		// Then apply all the values afterwards
 		for ((property, value) in args) {

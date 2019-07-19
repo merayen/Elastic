@@ -202,22 +202,6 @@ internal class JSONObjectMapperTest {
 	}
 
 	@Test
-	fun testTranslating() {
-		val mapper = JSONObjectMapper()
-		mapper.registerClass(Man::class) { name, value ->
-			when (name) {
-				"reads" -> {
-					val result = ArrayList<Book>()
-					for (book in value as JSONArray)
-						result.add(mapper.argConvert(book, Book::class) as Book);
-					 result
-				}
-				else -> value
-			}
-		}
-	}
-
-	@Test
 	fun testPrimitiveValuesInArray() {
 		data class Entry(var array: List<Int>? = null)
 
