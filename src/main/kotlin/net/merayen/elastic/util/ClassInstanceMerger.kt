@@ -5,7 +5,7 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
 
 /**
- * Merges one instance of a class into another one.
+ * Merges one instance of a class into another one of the same type.
  */
 class ClassInstanceMerger {
 	class MustBeTheSameClass(sourceClass: String, destinationClass: String) : RuntimeException("sourceInstance is '$sourceClass' while destinationClass is '$destinationClass'")

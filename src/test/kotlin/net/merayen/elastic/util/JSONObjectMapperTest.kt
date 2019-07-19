@@ -12,44 +12,44 @@ import kotlin.reflect.jvm.jvmErasure
 
 internal class JSONObjectMapperTest {
 	data class Man(
-			val name: String,
-			val wife: Wife = Wife("My default wife",
+			var name: String? = null,
+			var wife: Wife? = Wife("My default wife",
 					true,
 					true,
 					18,
 					45f,
 					1.7),
-			val reads: List<Book>? = null
+			var reads: List<Book>? = null
 	)
 
 	data class Wife(
-			val nickname: String,
-			val sexy: Boolean,
-			val hysterical: Boolean,
-			val age: Int?,
-			val weight: Float?,
-			val height: Double?
+			var nickname: String? = null,
+			var sexy: Boolean? = null,
+			var hysterical: Boolean? = null,
+			var age: Int? = null,
+			var weight: Float? = null,
+			var height: Double? = null
 	)
 
 	data class Book(
-			val name: String,
-			val description: String = "No description")
+			var name: String? = null,
+			var description: String? = "No description")
 
 	data class Health(
-			val issues: List<HealthIssue>
+			var issues: List<HealthIssue>? = null
 	)
 
 	interface HealthIssue {
-		val painPercentage: Int
+		var painPercentage: Int?
 	}
 
 	data class BigToeHurts(
-			override val painPercentage: Int
+			override var painPercentage: Int? = null
 	) : HealthIssue
 
 	data class Nausea(
-			override val painPercentage: Int,
-			val vomitsPerDay: Int
+			override var painPercentage: Int? = null,
+			val vomitsPerDay: Int? = null
 	) : HealthIssue
 
 	private lateinit var mapper: JSONObjectMapper
@@ -74,7 +74,9 @@ internal class JSONObjectMapperTest {
 	@Test
 	fun testNonExistingClass() {
 		val json = JSONParser().parse("""{"&className&": "Nonexistingclass", "name": "Thim"}""") as JSONObject
-		assertNull(mapper.toObject(json))
+		assertThrows(JSONObjectMapper.ClassNotRegistered::class.java) {
+			mapper.toObject(json)
+		}
 	}
 
 	@Test
@@ -99,11 +101,49 @@ internal class JSONObjectMapperTest {
 	fun testDefaultValues() {
 		val json = JSONParser().parse("""{"&className&": "Book"}""") as JSONObject
 
-		val exception = assertThrows(JSONObjectMapper.JsonMissingKey::class.java) {
+		/*val exception = assertThrows(JSONObjectMapper.JsonMissingKey::class.java) {
 			mapper.toObject(json)
+		}*/
+
+		val result = mapper.toObject(json) as Book
+
+		assertEquals(null, result.name)
+		assertEquals("No description", result.description)
+	}
+
+	@Test
+	fun testInvalidDataClasses() {
+		data class InvalidClass(val name: String? = null)
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(InvalidClass::class)
+		val exception = assertThrows(JSONObjectMapper.ClassMemberIsReadOnly::class.java) {
+			mapper.toObject(JSONParser().parse("""{"&className&": "InvalidClass", "name": "Can not be set"}""") as JSONObject) as InvalidClass
 		}
 
-		assertEquals("name", exception.key)
+		assertEquals("InvalidClass", exception.className)
+		assertEquals("name", exception.member)
+	}
+
+	@Test
+	fun testConstructorMissingDefault() {
+		data class InvalidClass(var name: String)
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(InvalidClass::class)
+		val exception = assertThrows(JSONObjectMapper.ConstructorMissingDefault::class.java) {
+			mapper.toObject(JSONParser().parse("""{"&className&": "InvalidClass", "name": "Won't be set"}""") as JSONObject) as InvalidClass
+		}
+
+		assertEquals("InvalidClass", exception.className)
+		assertEquals("name", exception.parameter)
+	}
+
+	@Test
+	fun testMissingClassName() {
+		assertThrows(JSONObjectMapper.MissingClassNameDefinitionInObject::class.java) {
+			mapper.toObject(JSONParser().parse("""{"djkfshk": "Invalid"}""") as JSONObject)
+		}
 	}
 
 	@Test
@@ -179,7 +219,7 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun testPrimitiveValuesInArray() {
-		data class Entry(val array: List<Int>)
+		data class Entry(var array: List<Int>? = null)
 
 		val mapper = JSONObjectMapper()
 		mapper.registerClass(Entry::class)
@@ -188,10 +228,10 @@ internal class JSONObjectMapperTest {
 
 		assertEquals("""{"array":["du",2,3.6,4,5,6,7,8,9,true,false,null],"&className&":"Entry"}""", JSONObject.toJSONString(mapper.toMap(obj)))
 
-		assertEquals(3, obj.array[2])
+		assertEquals(3, obj.array!![2])
 
 		assertThrows(ClassCastException::class.java) {
-			obj.array[0] as Number
+			obj.array!![0] as Number
 		}
 	}
 

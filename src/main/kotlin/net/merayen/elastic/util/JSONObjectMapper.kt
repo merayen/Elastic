@@ -1,9 +1,8 @@
 package net.merayen.elastic.util
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import org.json.simple.JSONArray
-import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
-import kotlin.reflect.KVisibility
+import kotlin.reflect.*
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -16,13 +15,17 @@ import kotlin.reflect.jvm.jvmErasure
  */
 class JSONObjectMapper {
 	class AnonymousClassesNotSupportedException : RuntimeException()
-	class JsonMissingKey(val key: String, val className: String) : RuntimeException("JSON missing key '$key' for class '$className'")
+	//class JsonMissingKey(val key: String, val className: String) : RuntimeException("JSON missing key '$key' for class '$className'")
+
 	class ClassNotRegistered(val className: String) : RuntimeException("Class '$className' not registered")
 	class ClassAlreadyRegistered(val className: String) : RuntimeException(className)
 	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
+	class MissingClassNameDefinitionInObject() : RuntimeException()
+	class ClassMemberIsReadOnly(val className: String, val member: String) : RuntimeException("Can not apply value to '$member' on class '$className' as it is read-only")
+	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class constructor missing default value")
 
 	private val registry = HashMap<String, KClass<out Any>>()
-	private val translatorRegistry = HashMap<String,((name: String, value: Any?) -> Any?)?>()
+	private val translatorRegistry = HashMap<String, ((name: String, value: Any?) -> Any?)?>()
 
 	companion object {
 		val CLASSNAME_IDENTIFIER = "&className&"
@@ -40,59 +43,91 @@ class JSONObjectMapper {
 
 	private val NOT_SET = Any()
 
-	fun toObject(jsonobject: Map<*,*>): Any? {
-		val className = (jsonobject.get(CLASSNAME_IDENTIFIER) ?: return null) as String
+	fun toObject(jsonobject: Map<*, *>): Any? {
+		val className = (jsonobject.get(CLASSNAME_IDENTIFIER) ?: throw MissingClassNameDefinitionInObject()) as String
 		val klass = registry[className] ?: throw ClassNotRegistered(className)
 		val primaryConstructor = klass.primaryConstructor ?: return null
 		val translator = translatorRegistry[className]
 
-		val args = HashMap<KParameter, Any?>()
-		for (parameter in primaryConstructor.parameters) {
-			val name = parameter.name ?: continue // Unnamed constructor parameters (varargs? Not supporting that...)
+		verifyConstructor(className, primaryConstructor)
 
-			val subItem = jsonobject[name]
+		// Build parameters that the class will be initialized with
+		val args = HashMap<KMutableProperty<*>, Any?>()
+		val memberProperties = klass.memberProperties.filter { !it.isConst && it.visibility == KVisibility.PUBLIC }
+		for (member in memberProperties) {
+			if (member is KMutableProperty<*>) {
+				val name = member.name
 
-			if (translator != null) {
-				val translatedSubItem = translator(name, subItem)
+				val subItem = jsonobject[name]
 
-				if (translatedSubItem != null)
-					args[parameter] = translatedSubItem
-			}
+				if (translator != null) {
+					val translatedSubItem = translator(name, subItem)
 
-			if (parameter !in args) {
-				if (subItem is Map<*,*>) {
-					val sub = toObject(subItem)
-					if (sub != null) // It was possible to convert
-						args[parameter] = sub
-				} else if (subItem is JSONArray) {
-					args[parameter] = subItem.map {
-						if (it is Map<*,*>)
-							toObject(it)
-						else if (it == null || it is Number || it is String || it is Boolean)
-							it
-						else
-							throw GenericListsLimitedSupport()
-					}
-				} else if (subItem != null) {
-					args[parameter] = argConvert(jsonobject[name], parameter.type.jvmErasure)
+					if (translatedSubItem != null)
+						args[member] = translatedSubItem
 				}
-			}
 
-			if (!parameter.isOptional && parameter !in args)
-				throw JsonMissingKey(name, className)
+				if (member !in args) {
+					if (subItem is Map<*, *>) {
+						val sub = toObject(subItem)
+						if (sub != null) // It was possible to convert
+							args[member] = sub
+					} else if (subItem is JSONArray) {
+						args[member] = subItem.map {
+							if (it is Map<*, *>)
+								toObject(it)
+							else if (it == null || it is Number || it is String || it is Boolean)
+								it
+							else
+								throw GenericListsLimitedSupport()
+						}
+					} else if (subItem != null) {
+						args[member] = argConvert(jsonobject[name], member.setter.parameters[1].type.jvmErasure)
+					}
+				}
+
+				//if (parameter !in args)
+				//	throw JsonMissingKey(name, className)
+			} else {
+				throw ClassMemberIsReadOnly(className, member.name)
+			}
 		}
 
-		return primaryConstructor.callBy(args)
+		// Create instance with just nulls
+		val nullArgs = HashMap<KParameter, Any?>()
+		//for (parameter in primaryConstructor.parameters)
+		//	nullArgs[parameter] = null
+
+		val result = primaryConstructor.callBy(nullArgs)
+
+
+		// Then apply all the values afterwards
+		for ((property,value) in args) {
+			if (property.name in jsonobject)
+				property.setter.call(result, value)
+		}
+
+		return result
 	}
 
-	fun toMap(obj: Any): Map<String,Any?> {
+	/**
+	 * Verifies that all the parameters in the constructor has defaults.
+	 */
+	private fun verifyConstructor(className: String, primaryConstructor: KFunction<Any>) {
+		for (parameter in primaryConstructor.parameters) {
+			if (!parameter.isOptional)
+				throw ConstructorMissingDefault(className, parameter.name ?: "#UNKNOWN#")
+		}
+	}
+
+	fun toMap(obj: Any): Map<String, Any?> {
 		val className = obj::class.simpleName ?: throw AnonymousClassesNotSupportedException()
 		val klass = registry[className] ?: throw ClassNotRegistered(className)
 
 		val primaryConstructor = klass.primaryConstructor
 				?: throw RuntimeException("Class to serialize must have a primary constructor")
 
-		val result = HashMap<String,Any?>()
+		val result = HashMap<String, Any?>()
 
 		for (parameter in primaryConstructor.parameters) {
 			val name = parameter.name ?: continue // Unnamed constructor parameters (varargs? Not supporting that...)
