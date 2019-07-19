@@ -154,7 +154,6 @@ internal class JSONObjectMapperTest {
 	@Test
 	fun testConvertingStrings() {
 		data class Test(val p0: String, val p1: String?)
-
 		val text = JSONParser().parse("\"Test\"")
 		val nullText = JSONParser().parse("null")
 
@@ -187,7 +186,7 @@ internal class JSONObjectMapperTest {
 
 		val obj = mapper.toObject(JSONParser().parse("""{"&className&": "Entry", "array": ["du",2,3.6,4,5,6,7,8,9,true,false,null]}""") as JSONObject) as Entry
 
-		assertEquals("""{"array":["du",2,3.6,4,5,6,7,8,9,true,false,null],"&className&":"Entry"}""", mapper.toJson(obj).toJSONString())
+		assertEquals("""{"array":["du",2,3.6,4,5,6,7,8,9,true,false,null],"&className&":"Entry"}""", JSONObject.toJSONString(mapper.toMap(obj)))
 
 		assertEquals(3, obj.array[2])
 
@@ -198,7 +197,7 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun testDumpSingleObject() {
-		val result = mapper.toJson(Book("Bible", "Contains Jesus")).toJSONString()
+		val result = JSONObject.toJSONString(mapper.toMap(Book("Bible", "Contains Jesus")))
 		assertEquals("""
 			{"&className&":"Book","name":"Bible","description":"Contains Jesus"}
 		""".trimIndent(), result)
@@ -206,7 +205,7 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun testDumpDeepObject() {
-		val result = mapper.toJson(Man("John")).toJSONString()
+		val result = JSONObject.toJSONString(mapper.toMap(Man("John")))
 		assertEquals("""{"&className&":"Man","wife":{"&className&":"Wife","sexy":true,"nickname":"My default wife","weight":45.0,"hysterical":true,"age":18,"height":1.7},"name":"John","reads":null}""", result)
 	}
 
@@ -214,7 +213,7 @@ internal class JSONObjectMapperTest {
 	fun testDumpUnknownClass() {
 		data class NonregisteredClass(val blabla: String)
 		assertThrows(JSONObjectMapper.ClassNotRegistered::class.java) {
-			mapper.toJson(NonregisteredClass("Hohoho"))
+			mapper.toMap(NonregisteredClass("Hohoho"))
 		}
 	}
 
@@ -227,7 +226,7 @@ internal class JSONObjectMapperTest {
 						Book("Cars", "How men should fix cars")
 				)
 		)
-		val result = mapper.toObject(mapper.toJson(data))
+		val result = mapper.toObject(mapper.toMap(data))
 
 		assertEquals(data, result)
 	}

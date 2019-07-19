@@ -11,6 +11,7 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.nodes.adsr_1.ADSR;
 import net.merayen.elastic.backend.logicnodes.Format;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
@@ -158,7 +159,7 @@ class TopNode extends LocalNode { // The topmost group that spawns children
 	protected void onProcess(InputFrameData data) {}
 
 	@Override
-	protected void onParameter(String key, Object value) {}
+	protected void onParameter(BaseNodeData instance) {}
 
 	@Override
 	protected void onFinishFrame() {}
@@ -208,7 +209,7 @@ class GeneratorNode extends LocalNode {
 	protected void onDestroy() {}
 
 	@Override
-	protected void onParameter(String key, Object value) {}
+	protected void onParameter(BaseNodeData instance) {}
 
 	@Override
 	protected void onSpawnProcessor(LocalProcessor lp) {}
@@ -266,7 +267,7 @@ class MiddleNode extends LocalNode {
 	protected void onDestroy() {}
 
 	@Override
-	protected void onParameter(String key, Object value) {}
+	protected void onParameter(BaseNodeData instance) {}
 
 	@Override
 	protected void onSpawnProcessor(LocalProcessor lp) {}
@@ -374,7 +375,7 @@ class DispatchNode extends LocalNode {
 	protected void onDestroy() {}
 
 	@Override
-	protected void onParameter(String key, Object value) {}
+	protected void onParameter(BaseNodeData instance) {}
 
 	@Override
 	protected void onSpawnProcessor(LocalProcessor lp) {}
@@ -449,7 +450,7 @@ class ConsumerNode extends LocalNode {
 	protected void onDestroy() {}
 
 	@Override
-	protected void onParameter(String key, Object value) {}
+	protected void onParameter(BaseNodeData instance) {}
 
 	@Override
 	protected void onSpawnProcessor(LocalProcessor lp) {}

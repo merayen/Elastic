@@ -1,8 +1,8 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1
 
 import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
 import net.merayen.elastic.ui.objects.components.PopupParameter1D
@@ -37,23 +37,33 @@ class UI : UINode(), INodeEditable {
 			port.translation.x = layoutWidth
 	}
 
-	override fun onMessage(message: NodeParameterMessage) {
-		when {
-			message.key == "data.frequency" -> {
-				(frequency_port_parameter!!.not_connected as PopupParameter1D).value = (Math.pow((message.value as Number).toFloat().toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
+	override fun onMessage(instance: BaseNodeData) {
+		if (instance is Data) {
+			val frequencyData = instance.frequency
+			val curveData = instance.curve
+
+			if (frequencyData != null) {
+				(frequency_port_parameter!!.not_connected as PopupParameter1D).value = (Math.pow(frequencyData.toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
 				updateFrequencyText()
 			}
-			message.key == "data.curve" ->
-				@Suppress("UNCHECKED_CAST")
-				curve.bezier.setPoints(message.value as List<Number>)
-			message.key == "data.InputSignalParameters:frequency" ->
-				(frequency_port_parameter!!.connected as InputSignalParameters).handleMessage(message)
+
+			if (curveData != null) {
+				curve.bezier.setPoints(curveData)
+			}
+
+
+			// TODO should probably fix this...? What does it do? Why are we not just using frequency? Due to amplitude?
+			//	instance.key == "data.InputSignalParameters:frequency" ->
+			//		(frequency_port_parameter!!.connected as InputSignalParameters).handleMessage(instance)
+			//}
 		}
 	}
 
 	public override fun onCreatePort(port: UIPort) {
 		if (port.name == "frequency") {
-			frequency_port_parameter = PortParameter(this, getPort("frequency")!!, PopupParameter1D(), InputSignalParameters(this, "frequency"))
+			val isp = InputSignalParameters(this, "frequency")
+			isp.handler = InputSignalParameters.Handler { amplitude, offset -> sendParameter(Data(inputAmplitude = amplitude, inputOffset = offset)) }
+			frequency_port_parameter = PortParameter(this, getPort("frequency")!!, PopupParameter1D(), isp)
 			frequency_port_parameter!!.translation.x = 20f
 			frequency_port_parameter!!.translation.y = 20f
 			add(frequency_port_parameter!!)
@@ -61,7 +71,7 @@ class UI : UINode(), INodeEditable {
 			(frequency_port_parameter!!.not_connected as PopupParameter1D).setHandler(object : PopupParameter1D.Handler {
 				override fun onMove(value: Float) {
 					updateFrequencyText()
-					sendParameter("data.frequency", frequency)
+					sendParameter(Data(frequency = frequency))
 				}
 
 				override fun onChange(value: Float) {}
@@ -90,13 +100,13 @@ class UI : UINode(), INodeEditable {
 		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() {
-				//sendParameter(Data())
+				sendParameter(Data(curve = bwb.bezier.floats))
 				//sendParameter("data.curve", bwb.bezier.floats)
 			}
 
 			override fun onMove() {
 				if (i++ % 10 == 0) // FIXME Should really be based on time
-					sendParameter("data.curve", bwb.bezier.floats)
+					sendParameter(Data(curve = bwb.bezier.floats))
 			}
 
 			override fun onDotClick() {}
@@ -111,7 +121,7 @@ class UI : UINode(), INodeEditable {
 		(frequency_port_parameter!!.not_connected as PopupParameter1D).label.text = String.format("Frequency: %.3f", frequency)
 	}
 
-	override fun onParameter(key: String, value: Any) {}
+	override fun onParameter(instance: BaseNodeData) {}
 
 	override fun getNodeEditor() = Editor(nodeId)
 }

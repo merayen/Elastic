@@ -1,11 +1,18 @@
 package net.merayen.elastic.ui.objects.node
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.util.Movable
 
 class Titlebar internal constructor() : UIObject() {
+	interface Handler {
+		fun onMove()
+	}
+
+	var handler: Handler? = null
+
 	var layoutWidth = 0f
 	var title = ""
 
@@ -24,8 +31,7 @@ class Titlebar internal constructor() : UIObject() {
 			}
 
 			override fun onMove() {
-				(parent as UINode).sendParameter("ui.java.translation.x", parent!!.translation.x)
-				(parent as UINode).sendParameter("ui.java.translation.y", parent!!.translation.y)
+				handler?.onMove()
 			}
 
 			override fun onDrop() {

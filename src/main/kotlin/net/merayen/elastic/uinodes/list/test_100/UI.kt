@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.test_100
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox
 import net.merayen.elastic.ui.objects.node.UINode
@@ -35,9 +35,9 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: NodeParameterMessage) {}
+	override fun onMessage(message: BaseNodeData) {}
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(key: String, value: Any) {}
+	override fun onParameter(instance: BaseNodeData) {}
 }

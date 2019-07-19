@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
 import net.merayen.elastic.backend.logicnodes.Environment
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
@@ -34,8 +35,8 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onDisconnect(port: String) {}
 
-	override fun onParameterChange(key: String, value: Any) {
-		set(key, value)
+	override fun onParameterChange(instance: BaseNodeData) {
+		updateProperties(instance)
 	}
 
 	override fun onFinishFrame(data: OutputFrameData) {

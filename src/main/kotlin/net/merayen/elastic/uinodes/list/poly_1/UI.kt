@@ -1,12 +1,14 @@
 package net.merayen.elastic.uinodes.list.poly_1
 
+import net.merayen.elastic.backend.logicnodes.list.poly_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 class UI : UINode() {
@@ -33,7 +35,7 @@ class UI : UINode() {
 		unison.setHandler(object : ParameterSlider.IHandler {
 			override fun onLabelUpdate(value: Double) = String.format("%d", Math.round(value * 31) + 1)
 
-			override fun onChange(value: Double, programatic: Boolean) = sendParameter("unison", (value * 31).roundToLong() + 1)
+			override fun onChange(value: Double, programatic: Boolean) = sendParameter(Data(unison = (value * 31).roundToInt() + 1))
 
 			override fun onButton(offset: Int) {
 				unison.value = unison.value + offset / 31.0
@@ -57,12 +59,15 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: NodeParameterMessage) {
-		if (message.key == "unison")
-			unison.value = ((message.value as Number).toInt() - 1) / 31.0
-	}
+	override fun onMessage(message: BaseNodeData) {}
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(key: String, value: Any) {}
+	override fun onParameter(instance: BaseNodeData) {
+		if (instance is Data) {
+			val unisonData = instance.unison
+			if (unisonData != null)
+				unison.value = (unisonData - 1) / 31.0
+		}
+	}
 }

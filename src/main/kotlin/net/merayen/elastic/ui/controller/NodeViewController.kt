@@ -126,7 +126,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 
 		} else if (message is NodeParameterMessage) {
 
-			if (message.key.startsWith("ui.java."))
+			if (message.instance.uiTranslation != null)
 				for (nv in nodeViews)
 					nv.messageNode(message.node_id, message) // Forward messages with parameters used by us (only)
 

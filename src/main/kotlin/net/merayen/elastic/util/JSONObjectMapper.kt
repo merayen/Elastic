@@ -1,7 +1,6 @@
 package net.merayen.elastic.util
 
 import org.json.simple.JSONArray
-import org.json.simple.JSONObject
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility
@@ -25,9 +24,11 @@ class JSONObjectMapper {
 	private val registry = HashMap<String, KClass<out Any>>()
 	private val translatorRegistry = HashMap<String,((name: String, value: Any?) -> Any?)?>()
 
-	private val CLASSNAME_IDENTIFIER = "&className&"
+	companion object {
+		val CLASSNAME_IDENTIFIER = "&className&"
+	}
 
-	fun registerClass(klass: KClass<out Any>, translator: ((name: String, value: Any?) -> Any?)? = null) {
+	fun registerClass(klass: KClass<*>, translator: ((name: String, value: Any?) -> Any?)? = null) {
 		val className = klass.simpleName ?: throw AnonymousClassesNotSupportedException()
 
 		if (className in registry)
@@ -39,9 +40,9 @@ class JSONObjectMapper {
 
 	private val NOT_SET = Any()
 
-	fun toObject(jsonobject: JSONObject): Any? {
+	fun toObject(jsonobject: Map<*,*>): Any? {
 		val className = (jsonobject.get(CLASSNAME_IDENTIFIER) ?: return null) as String
-		val klass = registry[className] ?: return null
+		val klass = registry[className] ?: throw ClassNotRegistered(className)
 		val primaryConstructor = klass.primaryConstructor ?: return null
 		val translator = translatorRegistry[className]
 
@@ -59,13 +60,13 @@ class JSONObjectMapper {
 			}
 
 			if (parameter !in args) {
-				if (subItem is JSONObject) {
+				if (subItem is Map<*,*>) {
 					val sub = toObject(subItem)
 					if (sub != null) // It was possible to convert
 						args[parameter] = sub
 				} else if (subItem is JSONArray) {
 					args[parameter] = subItem.map {
-						if (it is JSONObject)
+						if (it is Map<*,*>)
 							toObject(it)
 						else if (it == null || it is Number || it is String || it is Boolean)
 							it
@@ -84,14 +85,14 @@ class JSONObjectMapper {
 		return primaryConstructor.callBy(args)
 	}
 
-	fun toJson(obj: Any): JSONObject {
+	fun toMap(obj: Any): Map<String,Any?> {
 		val className = obj::class.simpleName ?: throw AnonymousClassesNotSupportedException()
 		val klass = registry[className] ?: throw ClassNotRegistered(className)
 
 		val primaryConstructor = klass.primaryConstructor
 				?: throw RuntimeException("Class to serialize must have a primary constructor")
 
-		val result = JSONObject()
+		val result = HashMap<String,Any?>()
 
 		for (parameter in primaryConstructor.parameters) {
 			val name = parameter.name ?: continue // Unnamed constructor parameters (varargs? Not supporting that...)
@@ -114,7 +115,7 @@ class JSONObjectMapper {
 			arr.addAll(value.map { valueToJSON(it) })
 			return arr
 		} else {
-			return toJson(value)
+			return toMap(value)
 		}
 	}
 

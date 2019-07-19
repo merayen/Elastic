@@ -3,13 +3,12 @@ package net.merayen.elastic.backend.logicnodes.list.midi_1
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import java.util.ArrayList
 
-import net.merayen.elastic.backend.interfacing.types.MidiPacket
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
-import net.merayen.elastic.util.UniqueID
 
 class LogicNode : BaseLogicNode() {
 	/**
@@ -17,8 +16,6 @@ class LogicNode : BaseLogicNode() {
 	 * give immediate feedback.
 	 */
 	internal var buffer: ArrayList<ShortArray> = ArrayList()
-
-	private val parameters = Parameters(this)
 
 	/**
 	 * This is the midi for the midi_1 node that gets played when user clicks "play"
@@ -50,13 +47,8 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onInit() {}
 
-	override fun onParameterChange(key: String, value: Any) {
-		set(key, value)
-
-		when (key) {
-			"mute" -> System.out.println("Mute! Got it!")
-			"trackName" -> System.out.println("Midi node received track-name '${value as String}'")
-		}
+	override fun onParameterChange(instance: BaseNodeData) {
+		updateProperties(instance)
 	}
 
 	override fun onConnect(port: String) {}
@@ -103,31 +95,43 @@ class LogicNode : BaseLogicNode() {
 			}
 			is AddEventZoneMessage -> {
 				println("Adding EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
-				val eventZones = parameters.getEventZones()
-				val eventZone = Parameters.EventZone()
-				eventZone.id = data.eventZoneId
-				eventZone.start = data.start
-				eventZone.length = data.length
-				eventZones.add(eventZone)
 
-				parameters.setEventZones(eventZones)
+				val eventZones = (properties as Data).eventZones ?: ArrayList()
+
+				eventZones.add(Data.EventZone(
+						id = data.eventZoneId,
+						start = data.start,
+						length = data.length,
+						midi = MidiData()
+				))
+
+				(properties as Data).eventZones = eventZones
+				updateProperties()
 			}
 			is ChangeEventZoneMessage -> {
 				println("Changing EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
-				val eventZones = parameters.getEventZones()
-				val eventZone = eventZones.find { it.id == data.eventZoneId }
+
+				val eventZone = (properties as Data).eventZones?.find { it.id == data.eventZoneId }
 
 				if (eventZone != null) {
 					eventZone.start = data.start
 					eventZone.length = data.length
-					parameters.setEventZones(eventZones)
+					updateProperties()
+				} else {
+					println("WARNING: EventZone could not be changed as id=${data.eventZoneId} was not found")
 				}
 			}
 			is RemoveEventZoneMessage -> {
 				println("Removing EventZone id=${data.eventZoneId}")
-				val eventZones = parameters.getEventZones()
-				val eventZone = eventZones.removeIf { it.id == data.eventZoneId }
-				parameters.setEventZones(eventZones)
+
+				val eventZones = (properties as Data).eventZones
+				if (eventZones != null) {
+					if (eventZones.removeIf { it.id == data.eventZoneId }) {
+						updateProperties()
+					}
+				} else {
+					println("WARNING: EventZone could not be removed as id=${data.eventZoneId} was not found")
+				}
 			}
 		}
 	}

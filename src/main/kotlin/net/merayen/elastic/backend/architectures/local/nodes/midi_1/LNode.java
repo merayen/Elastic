@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.data.eventdata.MidiData;
 import net.merayen.elastic.backend.logicnodes.list.midi_1.MidiNodeInputFrameData;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
@@ -32,7 +33,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onParameter(String key, Object value) {}
+	protected void onParameter(BaseNodeData instance) {}
 
 	@Override
 	protected void onFinishFrame() {

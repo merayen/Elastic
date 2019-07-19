@@ -11,6 +11,12 @@ import net.merayen.elastic.ui.objects.node.UINode;
  * To be used with InputSignalParametersProcessor that sits on the other end (backend) and actually transforms the signal.
  */
 public class InputSignalParameters extends UIObject {
+	public interface Handler {
+		void onChange(float amplitude, float offset);
+	}
+
+	public Handler handler;
+
 	public final PopupParameter1D amplitude = new PopupParameter1D();
 	public final PopupParameter1D offset = new PopupParameter1D();
 
@@ -73,7 +79,7 @@ public class InputSignalParameters extends UIObject {
 		return amplitude_value;
 	}
 
-	private void setAmplitude(float v) {
+	public void setAmplitude(float v) {
 		amplitude.setValue((float)Math.pow(v, 1/14.0) / 2);
 		amplitude_value = v;
 	}
@@ -82,20 +88,10 @@ public class InputSignalParameters extends UIObject {
 		return offset_value;
 	}
 
-	private void setOffset(float v) {
+	public void setOffset(float v) {
 		float value = (float)(Math.pow(Math.max(1, v), 1/14.0) - Math.pow(Math.max(1, -v), 1/14.0)) / 2 + .5f;
 		offset.setValue(value);
 		offset_value = v;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void handleMessage(NodeParameterMessage message) {
-		if(message.key.equals("data.InputSignalParameters:" + name)) {
-			setAmplitude(((Number)((Map<String,Object>)message.value).get("amplitude")).floatValue());
-			setOffset(((Number)((Map<String,Object>)message.value).get("offset")).floatValue());
-
-			updateTexts();
-		}
 	}
 
 	private void updateTexts() {
@@ -105,9 +101,12 @@ public class InputSignalParameters extends UIObject {
 
 	@SuppressWarnings("serial")
 	private void sendParameters() {
-		node.sendParameter("data.InputSignalParameters:" + name, new HashMap<String, Object>(){{
-			put("amplitude", getAmplitude());
-			put("offset", getOffset());
-		}});
+		if (handler != null) {
+			handler.onChange(getAmplitude(), getOffset());
+		}
+	}
+
+	public void setHandler(Handler handler) {
+		this.handler = handler;
 	}
 }

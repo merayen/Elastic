@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.midi.MidiStatuses
 import kotlin.experimental.and
 
 
+// TODO split data from functions?
 class MidiData(
 		private val midi: MutableList<MidiChunk> = ArrayList()
 ) : Cloneable, Iterable<MidiData.IteratorItem> {

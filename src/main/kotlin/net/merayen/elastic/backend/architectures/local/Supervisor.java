@@ -2,10 +2,13 @@ package net.merayen.elastic.backend.architectures.local;
 
 import java.util.*;
 
+import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NetListValidator;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.UtilKt;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
@@ -78,8 +81,8 @@ class Supervisor {
 			localnode.init();
 
 			// Apply any parameters
-			for(Map.Entry<String, Object> x : node_properties.parameters.getAll(node).entrySet())
-				localnode.onParameter(x.getKey().substring(2), x.getValue());
+			BaseNodeData data = UtilKt.mapToLogicNodeData(node_properties.getName(node), node_properties.getVersion(node), node.properties);
+			localnode.onParameter(data);
 		}
 	}
 
@@ -109,7 +112,7 @@ class Supervisor {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			LocalNode localnode = local_properties.getLocalNode(netlist.getNode(m.node_id));
-			localnode.onParameter(m.key, m.value);
+			localnode.onParameter(m.instance);
 		}
 	}
 

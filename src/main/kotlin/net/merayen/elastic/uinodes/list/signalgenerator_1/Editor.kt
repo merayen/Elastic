@@ -1,5 +1,7 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1
 
+import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
@@ -21,11 +23,11 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		layout.placement.applyConstraint(curve, LayoutMethods.HorizontalLiquidBox.Constraint(0.5f))
 		layout.placement.layoutWidth = 100f
 		layout.placement.layoutHeight = 100f
-		layout.add(object: UIObject() {
+		layout.add(object : UIObject() {
 			override fun onDraw(draw: Draw) {
-				draw.setColor(255,255,0)
+				draw.setColor(255, 255, 0)
 				draw.setStroke(2f)
-				draw.rect(0f,0f,50f,50f)
+				draw.rect(0f, 0f, 50f, 50f)
 			}
 
 			override fun getWidth() = 50f
@@ -39,14 +41,14 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		layout.placement.layoutHeight = getHeight()
 	}
 
-	override fun onMessage(message: NodeMessage) {
-		if(message is NodeParameterMessage) {
-			when {
-				message.key == "data.curve" ->
-					@Suppress("UNCHECKED_CAST")
-					curve.bezier.setPoints(message.value as List<Number>)
-			}
+	override fun onParameter(instance: BaseNodeData) {
+		val data = instance as Data
+		val curveData = data.curve
+
+		if (curveData != null) {
+			curve.bezier.setPoints(curveData)
 		}
+
 	}
 
 	private fun createBezierWave(): SignalBezierCurveBoxControlFrame {
@@ -67,9 +69,11 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 
 			override fun onDotClick() {}
 
-			private fun send() = sendMessage(NodeParameterMessage(nodeId, "data.curve", bwb.bezier.floats))
+			private fun send() = sendMessage(NodeParameterMessage(nodeId, Data(curve = bwb.bezier.floats)))
 		})
 
 		return bwb
 	}
+
+	override fun onMessage(message: NodeMessage) {}
 }

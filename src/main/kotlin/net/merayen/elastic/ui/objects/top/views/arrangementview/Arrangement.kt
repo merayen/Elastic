@@ -11,7 +11,6 @@ import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi.MidiTrack
 import net.merayen.elastic.util.Point
-import net.merayen.elastic.util.Postmaster
 
 class Arrangement : UIObject() {
 	var layoutWidth: Float = 0f
@@ -117,7 +116,7 @@ class Arrangement : UIObject() {
 		for (track in tracks) {
 			if (message is NodeParameterMessage)
 				if (message.nodeId == track.nodeId)
-					track.onParameter(message.key, message.value)
+					track.onParameter(message.instance)
 		}
 	}
 

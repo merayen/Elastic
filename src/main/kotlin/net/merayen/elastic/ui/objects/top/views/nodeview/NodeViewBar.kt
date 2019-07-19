@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
+import net.merayen.elastic.backend.logicnodes.list.group_1.Data
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.top.viewbar.ViewBar
@@ -18,7 +19,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 			override fun onChange(bpm: Int) {
 				val nodeId = nodeView.currentNodeId
 				if (nodeId != null)
-					sendMessage(NodeParameterMessage(nodeId, "bpm", bpm))
+					sendMessage(NodeParameterMessage(nodeId, Data(bpm = bpm)))
 			}
 		}
 		add(bpmSlider)

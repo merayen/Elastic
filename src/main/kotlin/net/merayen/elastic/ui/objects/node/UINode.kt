@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.node
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.*
 import java.util.ArrayList
 
@@ -7,7 +8,6 @@ import net.merayen.elastic.ui.Draw
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 
 abstract class UINode : UIObject(), FlexibleDimension {
@@ -15,7 +15,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 80f
 
-	protected var titlebar: Titlebar
+	protected lateinit var titlebar: Titlebar
 		private set
 
 	private val nodePorts = ArrayList<UIPort>()
@@ -27,19 +27,22 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
-	protected abstract fun onMessage(message: NodeParameterMessage)
+	protected abstract fun onMessage(message: BaseNodeData) // TODO remove. Use onParameter instead!
 	protected abstract fun onData(message: NodeDataMessage)
-	protected abstract fun onParameter(key: String, value: Any)
+	protected abstract fun onParameter(instance: BaseNodeData)
 
 	val UINet
 		get() = search.parentByType(NodeView::class.java)?.uiNet
 
-	init {
-		titlebar = Titlebar()
-		add(titlebar)
-	}
-
 	override fun onInit() {
+		titlebar = Titlebar()
+		titlebar.handler = object : Titlebar.Handler {
+			override fun onMove() {
+				sendUiData()
+			}
+		}
+		add(titlebar)
+
 		inited = true
 	}
 
@@ -49,15 +52,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 		draw.setColor(80, 80, 80)
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
-
-		/*draw.setColor(100, 100, 100)
-		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
-
-		draw.setColor(180, 180, 180)
-		draw.fillRect(1f, 1f, layoutWidth - 2f, layoutHeight - 2f)*/
-
-		/*draw.setColor(100, 100, 100)
-		draw.fillRect(2f, 2f, layoutWidth - 4f, layoutHeight - 4f)*/
 
 		titlebar.layoutWidth = layoutWidth
 
@@ -72,9 +66,8 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		return null
 	}
 
-	fun sendParameter(key: String , data: Any) {
-		TODO()
-		//sendMessage(NodeParameterMessage(nodeId, key, value))
+	fun sendParameter(instance: BaseNodeData) {
+		sendMessage(NodeParameterMessage(nodeId, instance))
 	}
 
 	fun sendData(value: NodeDataMessage) {
@@ -83,14 +76,23 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	fun executeMessage(message: Any) {
 		if (message is NodeParameterMessage) {
+			val properties = message.instance
+			if (properties is BaseNodeData) {
+				if (properties.uiTranslation != null)
 
-			if (message.key == "ui.java.translation.x" && !titlebar.isDragging)
-				translation.x = (message.value as Number).toFloat()
-			else if (message.key == "ui.java.translation.y" && !titlebar.isDragging)
-				translation.y = (message.value as Number).toFloat()
 
-			onMessage(message)
-			onParameter(message.key, message.value)
+					if (!titlebar.isDragging) {
+						val newTranslation = message.instance.uiTranslation
+
+						if (newTranslation != null) {
+							translation.x = translation.x
+							translation.y = translation.y
+						}
+					}
+			}
+
+			onMessage(message.instance)
+			onParameter(message.instance)
 
 		} else if (message is NodeDataMessage) {
 			onData(message)
@@ -108,5 +110,13 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			onRemovePort(port)
 		} else if (message is NodeStatusMessage)
 			println(message) // TODO implement
+	}
+
+	private fun sendUiData() {
+		sendParameter(
+				BaseNodeData(
+						uiTranslation = BaseNodeData.UITranslation(translation.x, translation.y)
+				)
+		)
 	}
 }

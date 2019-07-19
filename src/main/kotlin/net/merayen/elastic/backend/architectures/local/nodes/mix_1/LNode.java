@@ -2,6 +2,8 @@ package net.merayen.elastic.backend.architectures.local.nodes.mix_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.logicnodes.list.mix_1.Data;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
@@ -20,9 +22,12 @@ public class LNode extends LocalNode {
 	protected void onProcess(InputFrameData data) {}
 
 	@Override
-	protected void onParameter(String key, Object value) {
-		if(key.equals("mix"))
-			mix = ((Number)value).floatValue();
+	protected void onParameter(BaseNodeData instance) {
+		Data data = (Data)instance;
+		Float mixData = data.getMix();
+
+		if(mixData != null)
+			mix = mixData;
 	}
 
 	@Override

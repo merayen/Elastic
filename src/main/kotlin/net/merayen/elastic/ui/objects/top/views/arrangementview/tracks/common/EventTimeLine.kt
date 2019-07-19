@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
-import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
+import net.merayen.elastic.backend.logicnodes.list.midi_1.Data
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.Rect
@@ -176,7 +176,7 @@ class EventTimeLine : BaseTimeLine() {
 		return events[eventId]
 	}
 
-	fun loadEventZones(eventZones: List<Parameters.EventZone>) {
+	fun loadEventZones(eventZones: List<Data.EventZone>) {
 		clearEventZones()
 
 		for (event in eventZones) {

@@ -1,11 +1,11 @@
 package net.merayen.elastic.system.actions;
 
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.Action;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.system.intercom.ui.InitUIMessage;
-import net.merayen.elastic.util.Postmaster;
 import net.merayen.elastic.util.tap.Tap;
 import net.merayen.elastic.util.tap.TapSpreader;
 
@@ -21,23 +21,23 @@ public class NewProject extends Action {
 	private final String project_path;
 
 	public NewProject(String project_path) {
-		if(new File(project_path).exists())
+		if (new File(project_path).exists())
 			throw new RuntimeException("Project already exists. Use LoadProject()-action instead.");
 		this.project_path = project_path;
 	}
 
 	@Override
 	protected void run() {
-		try(
-			Tap<Object> from_backend = system.tapIntoMessagesFromBackend()) {
+		try (
+				Tap<Object> from_backend = system.tapIntoMessagesFromBackend()) {
 
 			from_backend.set(new TapSpreader.Func<Object>() {
 				public void receive(Object message) {
-					if(message instanceof CreateNodeMessage) {
-						nodes.add((CreateNodeMessage)message);
-					} else if(message instanceof BeginResetNetListMessage) {
+					if (message instanceof CreateNodeMessage) {
+						nodes.add((CreateNodeMessage) message);
+					} else if (message instanceof BeginResetNetListMessage) {
 						nodes.clear();
-					} else if(message instanceof ProcessMessage) {
+					} else if (message instanceof ProcessMessage) {
 						//ProcessMessage pm = (ProcessMessage)message;
 						System.out.print("Process response\n");
 					}
@@ -70,34 +70,25 @@ public class NewProject extends Action {
 		// Wait until the top-most node has been created
 		waitFor(() -> nodes.size() == 1);
 
-		// Create lots of nodes inside our top-most node
-		system.sendMessageToBackend(new CreateNodeMessage("test", 100, nodes.get(0).node_id));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, nodes.get(0).node_id));
+		// Create nodes inside our top-most node
 		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, nodes.get(0).node_id));
 		system.sendMessageToBackend(new CreateNodeMessage("output", 1, nodes.get(0).node_id));
-		system.sendMessageToBackend(new CreateNodeMessage("mix", 1, nodes.get(0).node_id));
-		system.sendMessageToBackend(new CreateNodeMessage("signalgenerator", 1, nodes.get(0).node_id));
 
 		// Wait until all the nodes has been reported to have been created (we receive async messages back upon backend having created them)
-		waitFor(() -> nodes.size() == 7);
+		waitFor(() -> nodes.size() == 3);
 
 		// Set the position of the nodes
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, "ui.java.translation.y", 300f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "ui.java.translation.x", 400f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "ui.java.translation.y", 400f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(4).node_id, "ui.java.translation.x", 800f));
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(4).node_id, "ui.java.translation.y", 400f));
+		net.merayen.elastic.backend.logicnodes.list.output_1.Data outputNodeData = new net.merayen.elastic.backend.logicnodes.list.output_1.Data();
+		outputNodeData.setUiTranslation(new BaseNodeData.UITranslation(200, 0));
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, outputNodeData));
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(4).node_id, "input"));
 
 		// Set frequency parameter on one of the nodes
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(3).node_id, "data.frequency", 1000f));
-
-		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, "data.InputSignalParameters:frequency", new HashMap<String,Object>(){{
-			put("amplitude", 1000f);
-			put("offset", 440f*4);
-		}}));
+		net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data signalgeneratorNodeData = new net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data();
+		signalgeneratorNodeData.setFrequency(1000f);
+		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(1).node_id, signalgeneratorNodeData));
 
 		// Store the whole project (same as going to "File" --> "Save project")
 		system.sendMessageToBackend(new CreateCheckpointMessage());

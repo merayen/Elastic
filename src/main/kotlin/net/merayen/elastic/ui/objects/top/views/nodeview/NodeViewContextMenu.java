@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview;
 
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.intercom.CreateNodeMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.UIObject;
@@ -52,9 +53,9 @@ class NodeViewContextMenu extends UIObject {
 
 		String node_id = NodeUtil.createID();
 		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), this.node_id)); // TODO group shall not be null, but
-		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.x", position.getX()));
-		sendMessage(new NodeParameterMessage(node_id, "ui.java.translation.y", position.getY()));
-		// TODO also send parameter for X and Y translation?
+
+		BaseNodeData baseData = new BaseNodeData();
+		baseData.setUiTranslation(new BaseNodeData.UITranslation(position.getX(), position.getY()));
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class BezierCurve {
 	/**
 	 * Converts a flat list of points to an array of BezierCurve.Dot()s
 	 */
-	public static Dot[] fromFlat(List<Number> points) {
+	public static Dot[] fromFlat(List<Float> points) {
 		if(points.size() % (2 * 3) != 0)
 			throw new RuntimeException();
 
@@ -36,14 +36,14 @@ public class BezierCurve {
 		for(int i = 0; i < result.length; i++) {
 			Dot dot = result[i] = new BezierCurve.Dot();
 
-			dot.left.setX(points.get(p++).floatValue());
-			dot.left.setY(points.get(p++).floatValue());
+			dot.left.setX(points.get(p++));
+			dot.left.setY(points.get(p++));
 
-			dot.position.setX(points.get(p++).floatValue());
-			dot.position.setY(points.get(p++).floatValue());
+			dot.position.setX(points.get(p++));
+			dot.position.setY(points.get(p++));
 
-			dot.right.setX(points.get(p++).floatValue());
-			dot.right.setY(points.get(p++).floatValue());
+			dot.right.setX(points.get(p++));
+			dot.right.setY(points.get(p++));
 		}
 
 		return result;

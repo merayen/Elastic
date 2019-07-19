@@ -1,9 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi
 
-import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
-import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
-import net.merayen.elastic.backend.logicnodes.list.midi_1.Parameters
-import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.*
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.buttons.Button
@@ -45,7 +43,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				backgroundColor = Color(1f, 0f, 0f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
-						sendParameter("mute", value)
+						sendParameter(Data(mute = value))
 					}
 				}
 			}
@@ -58,7 +56,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				backgroundColor = Color(1f, 1f, 0f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
-						sendParameter("solo", value)
+						sendParameter(Data(solo = value))
 					}
 				}
 			}
@@ -71,7 +69,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				backgroundColor = Color(1f, 0.5f, 0.5f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
-						sendParameter("record", value)
+						sendParameter(Data(record = value))
 					}
 				}
 			}
@@ -85,7 +83,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		trackName.description = "Name of the track"
 		trackName.handler = object : TextInput.Handler {
 			override fun onChange(text: String) {
-				sendParameter("trackName", text)
+				sendParameter(Data(trackName = text))
 			}
 		}
 		trackPane.add(trackName)
@@ -140,21 +138,26 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		}
 	}
 
-	override fun onParameter(key: String, value: Any) {
-		when (key) {
-			"mute" -> muteButton.value = value as Boolean
-			"solo" -> soloButton.value = value as Boolean
-			"record" -> recordButton.value = value as Boolean
-			"trackName" -> trackName.value = value as String
-			"eventZones" -> {
-				eventTimeLine.loadEventZones((value as List<HashMap<String, Any>>).map { Parameters.EventZone(it) })
+	override fun onParameter(instance: BaseNodeData) {
+		val data = instance as Data
+		val mute = data.mute
+		val solo = data.solo
+		val record = data.record
+		val trackNameData = data.trackName
+		val eventZones = data.eventZones
 
-				// Exit edit mode if we get updates on events and the event has disappeared
-				val editEventZone = midiEditPane.eventZone
-				if (editEventZone != null && eventTimeLine.getEvent(editEventZone.id) == null) {
-					eventPane.editMode = false
-					midiEditPane.eventZone = null
-				}
+		if (mute != null) muteButton.value = mute
+		if (solo != null) soloButton.value = solo
+		if (record != null) recordButton.value = record
+		if (trackNameData != null) trackName.value = trackNameData
+		if (eventZones != null) {
+			eventTimeLine.loadEventZones(eventZones)
+
+			// Exit edit mode if we get updates on events and the event has disappeared
+			val editEventZone = midiEditPane.eventZone
+			if (editEventZone != null && eventTimeLine.getEvent(editEventZone.id) == null) {
+				eventPane.editMode = false
+				midiEditPane.eventZone = null
 			}
 		}
 	}

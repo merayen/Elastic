@@ -88,7 +88,7 @@ abstract class View : UIObject {
 		}
 	}
 
-	val properties: HashMap<String, Any>
+	/*val properties: HashMap<String, Any>
 		get() {
 			val group = search.parentByType(net.merayen.elastic.uinodes.list.group_1.UI::class.java) ?: throw RuntimeException("group-node not found. Can not retrieve data")
 			val parameters = group.parameters
@@ -96,7 +96,7 @@ abstract class View : UIObject {
 			val views = parameters.getOrPut("ui.java.views") {HashMap<String, HashMap<String, Any>>()} as HashMap<String, HashMap<String, Any>>
 
 			return views.getOrPut(id) {HashMap()}
-		}
+		}*/
 
 	/**
 	 * Adds a task in to the closest ViewportContainer() domain.

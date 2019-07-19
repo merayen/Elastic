@@ -5,6 +5,7 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.AddMidiMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.PushTangentMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ReleaseTangentMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveMidiMessage
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
@@ -15,6 +16,8 @@ import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
  * Editor for the MIDI-roll shown in a separate view.
  */
 class Editor(nodeId: String) : NodeEditor(nodeId) {
+	override fun onParameter(instance: BaseNodeData) {}
+
 	private val midiRoll: MidiRoll
 	private val menuBar: MidiEditorMenuBar
 	private val layout = AutoLayout(LayoutMethods.HorizontalLiquidBox())
@@ -44,8 +47,8 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 			}
 
-			override fun onRemoveMidi(midiId: String) {
-				sendData(RemoveMidiMessage(nodeId, midiId))
+			override fun onRemoveMidi(id: String) {
+				sendData(RemoveMidiMessage(nodeId, id))
 			}
 
 			override fun onUp(tangent_no: Int) {

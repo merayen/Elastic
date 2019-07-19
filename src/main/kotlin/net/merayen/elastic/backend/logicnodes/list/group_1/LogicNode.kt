@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.group_1
 
 import net.merayen.elastic.backend.nodes.GroupLogicNode
 import net.merayen.elastic.backend.nodes.BaseLogicNode
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
@@ -17,8 +18,9 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 	override fun onFinishFrame(data: OutputFrameData) {}
 	override fun onData(data: NodeDataMessage) {
 		if (data is SetBPMMessage) {
-			set("bpm", data.bpm)
+			(properties as Data).bpm = data.bpm
+			updateProperties()
 		}
 	}
-	override fun onParameterChange(key: String, value: Any) = set(key, value)
+	override fun onParameterChange(instance: BaseNodeData) = updateProperties(instance)
 }

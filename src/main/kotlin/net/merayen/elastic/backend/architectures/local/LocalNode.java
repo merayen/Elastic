@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.InputFrameData;
@@ -57,7 +58,7 @@ public abstract class LocalNode {
 	 */
 	protected abstract void onProcess(InputFrameData data);
 
-	protected abstract void onParameter(String key, Object value);
+	protected abstract void onParameter(BaseNodeData instance);
 
 	/**
 	 * Called when a frame has been processed.

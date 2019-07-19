@@ -72,7 +72,7 @@ private fun run(program: String): AbstractRuntime {
 private fun testWorking() {
 	parse("""
 		var variable = 123.456  # This is a comment
-		var uninitialized  # Defaults to fp32 type. Initial value is undetermined
+		var uninitialized  # Defaults to fp32 type. Initial instance is undetermined
 		var initialized: fp16 = 123.456
 		var array[256]: fp16
 

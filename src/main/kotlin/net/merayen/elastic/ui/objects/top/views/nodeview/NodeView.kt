@@ -12,7 +12,6 @@ import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
-import net.merayen.elastic.util.Postmaster
 import java.util.*
 
 // TODO accept NetList as input and rebuild ourselves automatically from that
@@ -130,13 +129,14 @@ class NodeView : View() {
 		}
 
 		// We listen to messages
-		if (message.nodeId == currentNodeId) {
-			if (message is NodeParameterMessage) {
-				if (message.key == "bpm") {
-					nodeViewBar.bpmSlider.setBPM((message.value as Number).toInt())
+		// TODO not like this. Fix!
+		/*if (message.nodeId == currentNodeId) {
+			if (message is NodeParameterMessage && ) {
+				if (message.instance == "bpm") {
+					nodeViewBar.bpmSlider.setBPM((message.instance as Number).toInt())
 				}
 			}
-		}
+		}*/
 
 		node.executeMessage(message)
 	}

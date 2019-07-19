@@ -1,7 +1,8 @@
 package net.merayen.elastic.uinodes.list.delay_1
 
+import net.merayen.elastic.backend.logicnodes.list.delay_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -20,7 +21,7 @@ class UI : UINode() {
             }
 
             override fun onChange(value: Double, programatic: Boolean) {
-                self.sendParameter("delay_time", value.toFloat())
+                self.sendParameter(Data(delayTime = value.toFloat()))
             }
 
             override fun onButton(offset: Int) {
@@ -51,12 +52,15 @@ class UI : UINode() {
 
     override fun onRemovePort(port: UIPort) {}
 
-    override fun onMessage(message: NodeParameterMessage) {}
+    override fun onMessage(message: BaseNodeData) {}
 
     override fun onData(message: NodeDataMessage) {}
 
-    override fun onParameter(key: String, value: Any) {
-        if (key == "delay_time")
-            delayTime.value = (value as Number).toDouble()
+    override fun onParameter(instance: BaseNodeData) {
+        if (instance is Data) {
+            val delayTimeData = instance.delayTime
+            if (delayTimeData != null)
+                delayTime.value = delayTimeData.toDouble()
+        }
     }
 }

@@ -37,9 +37,9 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	 * Gets all points as a flat list of floats in this format: [p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, ...]
 	 * @return
 	 */
-	val floats: List<Number>
+	val floats: List<Float>
 		get() {
-			val result = ArrayList<Number>()
+			val result = ArrayList<Float>()
 
 			for (bd in points) {
 				result.add(bd.left_dot.translation.x)

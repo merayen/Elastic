@@ -42,7 +42,7 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 			return result as Array<BezierCurve.Dot>
 		}
 
-	val floats: List<Number>
+	val floats: List<Float>
 		get() = curve.floats
 
 	interface Handler {
@@ -192,7 +192,7 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 		return (result / OFFSET_LINE_RESOLUTION).toFloat()
 	}
 
-	fun setPoints(new_points: List<Number>) {
+	fun setPoints(new_points: List<Float>) {
 		if (moving)
 			return  // Don't accept new points when user is interacting with us
 

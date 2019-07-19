@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.util.Point
@@ -17,7 +18,7 @@ abstract class ArrangementTrack(val nodeId: String, private val arrangement: Arr
 	val trackPane = TrackPane()
 	val eventPane = EventPane()
 
-	abstract fun onParameter(key: String, value: Any)
+	abstract fun onParameter(instance: BaseNodeData)
 
 	/**
 	 * Called when selection rectangle has changed.
@@ -27,5 +28,5 @@ abstract class ArrangementTrack(val nodeId: String, private val arrangement: Arr
 
 	abstract fun clearSelections()
 
-	fun sendParameter(key: String, value: Any) = arrangement.sendMessage(NodeParameterMessage(nodeId, key, value))
+	fun sendParameter(instance: BaseNodeData) = arrangement.sendMessage(NodeParameterMessage(nodeId, instance))
 }

@@ -1,6 +1,9 @@
 package net.merayen.elastic.util
 
 import net.merayen.elastic.backend.analyzer.NodeProperties
+import net.merayen.elastic.backend.nodes.getLogicNodeDataClass
+import net.merayen.elastic.backend.nodes.logicNodeDataToMap
+import net.merayen.elastic.backend.nodes.mapToLogicNodeData
 import net.merayen.elastic.netlist.NetList
 import net.merayen.elastic.system.intercom.*
 import java.util.*
@@ -43,10 +46,10 @@ object NetListMessages { // TODO silly name, fix
 			result.add(NodeConnectMessage(line.node_a.id, line.port_a, line.node_b.id, line.port_b))
 
 		// Restore the Node()'s properties
-		for (node in netlist.nodes)
-			for (key in node.properties.keys)
-				if (key.startsWith("p."))
-					result.add(NodeParameterMessage(node.id, key.substring(2), node.properties[key]))
+		for (node in netlist.nodes) {
+			val data = mapToLogicNodeData(np.getName(node), np.getVersion(node), node.properties)
+			result.add(NodeParameterMessage(node.id, data))
+		}
 
 		return result
 	}
@@ -101,7 +104,18 @@ object NetListMessages { // TODO silly name, fix
 			netlist.disconnect(message.node_a, message.port_a, message.node_b, message.port_b)
 
 		} else if (message is NodeParameterMessage) {
-			np.parameters.set(netlist.getNode(message.node_id), message.key, message.value)
+			// Merges in the non-null properties from NodeParameterMessage
+			val node = netlist.getNode(message.node_id)
+			val name = np.getName(node)
+			val version = np.getVersion(node)
+
+			val data = mapToLogicNodeData(name, version, node.properties)
+			ClassInstanceMerger.merge(message.instance, data)
+
+			val updatedProperties = logicNodeDataToMap(name, version, data)
+
+			node.properties.clear()
+			node.properties.putAll(updatedProperties)
 
 		} else if (message is BeginResetNetListMessage)
 			netlist.clear()

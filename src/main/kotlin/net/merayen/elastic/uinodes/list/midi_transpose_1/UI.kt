@@ -1,7 +1,8 @@
 package net.merayen.elastic.uinodes.list.midi_transpose_1
 
+import net.merayen.elastic.backend.logicnodes.list.midi_transpose_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -17,7 +18,7 @@ class UI : UINode() {
 
 		toneSlider.setHandler(object : ParameterSlider.IHandler {
 			override fun onChange(value: Double, programatic: Boolean) {
-				sendParameter("transpose", ((value * 48) - 24).roundToInt())
+				sendTransposeParameters()
 			}
 
 			override fun onButton(offset: Int) {
@@ -31,7 +32,7 @@ class UI : UINode() {
 
 		fineToneSlider.setHandler(object : ParameterSlider.IHandler {
 			override fun onChange(value: Double, programatic: Boolean) {
-				sendParameter("transpose", ((value * 48) - 24).roundToInt())
+				//sendParameter(((value * 48) - 24).roundToInt())
 			}
 
 			override fun onButton(offset: Int) {
@@ -70,13 +71,21 @@ class UI : UINode() {
 		add(fineToneSlider)
 	}
 
-	override fun onMessage(message: NodeParameterMessage) {}
+	override fun onMessage(message: BaseNodeData) {}
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(key: String, value: Any) {
-		if (key == "transpose" && value is Number) {
-			toneSlider.value = (value.toDouble() + 24) / 48
-			fineToneSlider.value = (value.toDouble() + 24) / 48
-		}
+	override fun onParameter(instance: BaseNodeData) {
+		val data = instance as Data
+		val transposeData = data.transpose
+		if (transposeData != null)
+			toneSlider.value = (transposeData.toDouble() + 24) / 48
+	}
+
+	private fun sendTransposeParameters() {
+		sendParameter(
+				Data(
+						transpose = ((toneSlider.value * 48) - 24).roundToInt()
+				)
+		)
 	}
 }

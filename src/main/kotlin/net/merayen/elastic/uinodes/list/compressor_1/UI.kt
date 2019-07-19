@@ -1,8 +1,9 @@
 package net.merayen.elastic.uinodes.list.compressor_1
 
 import net.merayen.elastic.backend.logicnodes.list.compressor_1.CompressorNodeOutputFrameData
+import net.merayen.elastic.backend.logicnodes.list.compressor_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.CircularSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -83,40 +84,40 @@ class UI : UINode() {
 		add(threshold)
 
 		inputAmplitude.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("inputAmplitude", calcCentricPow(value))
+			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
 		inputSidechainAmplitude.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("inputSidechainAmplitude", calcCentricPow(value))
+			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
 		outputAmplitude.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("outputAmplitude", calcCentricPow(value))
+			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
 		attack.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("attack", value.pow(2))
+			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(value * 1000).toInt()}ms"
 		}
 
 		release.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("release", value.pow(2))
+			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(value * 1000).toInt()}ms"
 		}
 
 		ratio.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("ratio", 1 + value * 9)
+			override fun onChange(value: Float) = sendCompressorParameters()
 		}
 
 		knee.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("knee", value)
+			override fun onChange(value: Float) = sendCompressorParameters()
 		}
 
 		threshold.handler = object : CircularSlider.Handler {
-			override fun onChange(value: Float) = sendParameter("threshold", min(1f, value.pow(2) + 0.0001f))
+			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "-${(log(1 / min(1f, value.pow(2) + 0.0001f), 10f) * 10).roundToInt()}dB"
 		}
 
@@ -140,27 +141,63 @@ class UI : UINode() {
 		when {
 			port.name == "input" -> port.translation.y = 40f
 			port.name == "sidechain" -> port.translation.y = 70f
-			port.name == "output" -> { port.translation.x = WIDTH; port.translation.y = 40f }
-			port.name == "attenuation" -> { port.translation.x = WIDTH; port.translation.y = 70f }
+			port.name == "output" -> {
+				port.translation.x = WIDTH; port.translation.y = 40f
+			}
+			port.name == "attenuation" -> {
+				port.translation.x = WIDTH; port.translation.y = 70f
+			}
 		}
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: NodeParameterMessage) {}
+	override fun onMessage(message: BaseNodeData) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is CompressorNodeOutputFrameData)
 			compressionValue = 1 - log(1 / max(0.0001f, message.amplitude), 10f) / 3f
 	}
 
-	override fun onParameter(key: String, value: Any) {
-		when (key) {
-			"attack" -> attack.value = (value as Number).toFloat().pow(0.5f)
-			"release" -> release.value = (value as Number).toFloat().pow(0.5f)
-			"threshold" -> threshold.value = ((value as Number).toFloat()).pow(0.5f)
-			"inputAmplitude" -> inputAmplitude.value = calcCentricToKnob((value as Number).toFloat())
-			"inputSidechainAmplitude" -> inputSidechainAmplitude.value = calcCentricToKnob((value as Number).toFloat())
-			"outputAmplitude" -> outputAmplitude.value = calcCentricToKnob((value as Number).toFloat())
+	override fun onParameter(instance: BaseNodeData) {
+		if (instance is Data) {
+			val attackData = instance.attack
+			val releaseData = instance.release
+			val thresholdData = instance.threshold
+			val inputAmplitudeData = instance.inputAmplitude
+			val inputSidechainAmplitudeData = instance.inputSidechainAmplitude
+			val outputAmplitudeData = instance.outputAmplitude
+
+			if (attackData != null)
+				attack.value = attackData.pow(0.5f)
+
+			if (releaseData != null)
+				release.value = releaseData.pow(0.5f)
+
+			if (thresholdData != null)
+				threshold.value = thresholdData.pow(0.5f)
+
+			if (inputAmplitudeData != null)
+				inputAmplitude.value = calcCentricToKnob(inputAmplitudeData)
+
+			if (inputSidechainAmplitudeData != null)
+				inputSidechainAmplitude.value = calcCentricToKnob(inputSidechainAmplitudeData)
+
+			if (outputAmplitudeData != null)
+				outputAmplitude.value = calcCentricToKnob(outputAmplitudeData)
 		}
+
+	}
+
+	private fun sendCompressorParameters() {
+		val data = Data(
+				inputAmplitude = calcCentricPow(inputAmplitude.value),
+				inputSidechainAmplitude = calcCentricPow(inputSidechainAmplitude.value),
+				outputAmplitude = calcCentricPow(outputAmplitude.value),
+				attack = attack.value.pow(2),
+				release = release.value.pow(2),
+				ratio = ratio.value * 9 + 1,
+				knee = knee.value,
+				threshold = min(1f, threshold.value.pow(2) + 0.0001f)
+		)
 	}
 }

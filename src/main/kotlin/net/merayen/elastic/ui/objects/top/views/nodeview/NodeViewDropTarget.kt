@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.PopupLabel
@@ -14,7 +15,7 @@ class NodeViewDropTarget(private val nodeview: NodeView) : TargetItem(nodeview.c
 	private val popupLabel = PopupLabel("Yoyoyo!")
 
 	override fun onInterest(item: MouseCarryItem) {
-		if(item is FileListItemDragable)
+		if (item is FileListItemDragable)
 			interested = true
 	}
 
@@ -23,7 +24,7 @@ class NodeViewDropTarget(private val nodeview: NodeView) : TargetItem(nodeview.c
 	}
 
 	override fun onHover(item: MouseCarryItem) {
-		if(item is FileListItemDragable)
+		if (item is FileListItemDragable)
 			hover = true
 	}
 
@@ -32,16 +33,19 @@ class NodeViewDropTarget(private val nodeview: NodeView) : TargetItem(nodeview.c
 	}
 
 	override fun onDrop(item: MouseCarryItem) {
-		if(item is FileListItemDragable) {
+		if (item is FileListItemDragable) {
 			hover = false
 
 			val p = nodeview.container.getRelativeFromAbsolute(mouseEvent.x.toFloat(), mouseEvent.y.toFloat())
 
 			val nodeId = NodeUtil.createID()
 			nodeview.sendMessage(CreateNodeMessage(nodeId, "sample", 1, nodeview.currentNodeId))
-			nodeview.sendMessage(NodeParameterMessage(nodeId, "ui.java.translation.x", p.x))
-			nodeview.sendMessage(NodeParameterMessage(nodeId, "ui.java.translation.y", p.y))
-			println(p)
+			nodeview.sendMessage(NodeParameterMessage(nodeId, BaseNodeData(
+					uiTranslation = BaseNodeData.UITranslation(
+							x = p.x,
+							y = p.y
+					)
+			)))
 			//(nodeview.search.top as Top).mouseCursorManager.retrieveCarryItem(mouseEvent.id)
 		}
 	}

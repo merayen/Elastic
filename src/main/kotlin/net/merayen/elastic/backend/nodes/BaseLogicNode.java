@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.nodes;
 
-import kotlin.NotImplementedError;
+import kotlin.jvm.internal.Reflection;
 import kotlin.reflect.KClass;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
@@ -8,10 +8,10 @@ import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.util.ClassInstanceMerger;
+import net.merayen.elastic.util.JSONObjectMapper;
 import net.merayen.elastic.util.NetListMessages;
-import net.merayen.elastic.util.treesettings.InheritanceTree;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseLogicNode {
@@ -55,11 +55,13 @@ public abstract class BaseLogicNode {
 
 	//private InheritanceTree parameters;
 
-	public BaseNodeData data;
+	private JSONObjectMapper mapper;
+	public BaseNodeData properties;
 
 	/**
 	 * Called when this node is created for the first time.
 	 * You will need to initialize stuff like defining ports.
+	 * TODO remove. Should rather do this in onInit, and check if e.g any ports are missing
 	 */
 	protected abstract void onCreate();
 
@@ -73,11 +75,12 @@ public abstract class BaseLogicNode {
 	 * Called when a parameter change has occurred.
 	 * This could be the UI changing a parameter, or a restore loading parameters.
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
+	 * @param instance
 	 */
-	protected abstract void onParameterChange(String key, Object value);
+	protected abstract void onParameterChange(BaseNodeData instance);
 
 	/**
-	 * Data received from UI.
+	 * Data received from UI. Data is not meant for storing, and is usually for streaming etc
 	 */
 	protected abstract void onData(NodeDataMessage data);
 
@@ -130,23 +133,29 @@ public abstract class BaseLogicNode {
 
 		supervisor.sendMessageToUI(message);
 		supervisor.sendMessageToProcessor(message);
-
 	}
 
 	protected void removePort(String name) {
 		supervisor.removePort(this, name);
 	}
 
-	public void set(String key, Object value) {
-		NodeParameterMessage message = new NodeParameterMessage(id, key, value);
-		supervisor.sendMessageToProcessor(message);
-		supervisor.sendMessageToUI(message);
-
-		np.parameters.set(node, key, value);
+	/**
+	 * Update the properties from a BaseNodeData instance.
+	 * @param instance
+	 */
+	public void updateProperties(BaseNodeData instance) {
+		ClassInstanceMerger.Companion.merge(instance, properties, null);
+		updateProperties();
 	}
 
-	public Object getParameter(String key) {
-		return np.parameters.get(node, key);
+	/**
+	 * Update properties on the node from the propertes on the LogicNode.
+	 * (Perhaps do this automatically? Like when saving?)
+	 */
+	public void updateProperties() {
+		Map<String,?> data = mapper.toMap(properties);
+		node.properties.clear();
+		node.properties.putAll(data);
 	}
 
 	protected void sendDataToUI(NodeDataMessage data) {
@@ -176,13 +185,10 @@ public abstract class BaseLogicNode {
 
 	void processData(NodeDataMessage data) {
 		onData(data);
-
-		//if(data.containsKey("node_stats"))
-		//	sendMessageToUI((NodeStatusMessage)data.get("node_stats"));
 	}
 
 	/**
-	 * Only used by the
+	 * Only used by the Supervisor.
 	 */
 	void setInfo(String id, Supervisor supervisor, Node node) {
 		this.id = id;
@@ -192,7 +198,10 @@ public abstract class BaseLogicNode {
 		env = supervisor.env;
 		logicnode_list = supervisor.logicnode_list;
 		netlist = ((Environment) supervisor.env).project.getNetList();
-		np = new NodeProperties(netlist);
+
+		// Load data
+		mapper = UtilKt.getMapperForLogicDataClass(getClass());
+		properties = (BaseNodeData) mapper.toObject(node.properties);
 	}
 
 	void notifyConnect(String port) {
@@ -228,7 +237,7 @@ public abstract class BaseLogicNode {
 	}
 
 	private BaseLogicNode getParent() {
-		String parentId = np.getParent(node);
+		String parentId = properties.getParent();
 		if (parentId != null)
 			return supervisor.logicnode_list.get(parentId);
 

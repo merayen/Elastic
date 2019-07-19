@@ -1,7 +1,8 @@
 package net.merayen.elastic.uinodes.list.midi_spread_1
 
+import net.merayen.elastic.backend.logicnodes.list.midi_spread_1.Data
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -20,7 +21,7 @@ class UI : UINode() {
 			}
 
 			override fun onChange(value: Double, programatic: Boolean) {
-				self.sendParameter("layoutWidth", value.toFloat())
+				self.sendParameter(Data(width = value.toFloat()))
 			}
 
 			override fun onButton(offset: Int) {
@@ -51,12 +52,15 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: NodeParameterMessage) {}
+	override fun onMessage(message: BaseNodeData) {}
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(key: String, value: Any) {
-		if (key == "layoutWidth")
-			spread_width.value = (value as Number).toFloat().toDouble()
+	override fun onParameter(instance: BaseNodeData) {
+		if (instance is Data) {
+			val widthData = instance.width
+			if (widthData != null)
+				spread_width.value = widthData.toDouble()
+		}
 	}
 }

@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.midi_in_1
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
@@ -53,9 +53,9 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: NodeParameterMessage) {}
+	override fun onMessage(message: BaseNodeData) {}
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(key: String, value: Any) {}
+	override fun onParameter(instance: BaseNodeData) {}
 }

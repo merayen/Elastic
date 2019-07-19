@@ -1,6 +1,8 @@
 package net.merayen.elastic.ui.objects.top.views.editview
 
+import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeMessage
+import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.EditNodeController
@@ -59,6 +61,10 @@ class EditNodeView : View() {
 
 	fun receiveMessage(message: NodeMessage) {
 		nodeEditor?.onMessage(message)
+
+		if (message is NodeParameterMessage) {
+			nodeEditor?.onParameter(message.instance);
+		}
 	}
 
 	fun editNode(node: INodeEditable) {

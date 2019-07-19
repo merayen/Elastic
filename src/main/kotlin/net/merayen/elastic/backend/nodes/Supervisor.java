@@ -1,17 +1,15 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
-import net.merayen.elastic.backend.script.interpreter.Any;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.util.JSONObjectMapper;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 
@@ -52,8 +50,6 @@ public class Supervisor {
 	}
 
 	private void createNode(String node_id, String name, Integer version, String parent) {
-		logicnode_list.getLogicNodeClass(name, version); // Will throw exception if node is not found
-
 		Node node;
 		if (node_id == null)
 			node = ((Environment) env).project.getNetList().createNode();
@@ -64,7 +60,10 @@ public class Supervisor {
 		node_properties.setVersion(node, version);
 		node_properties.setParent(node, parent);
 
-		logicnode_list.createLogicNode(node);
+		// Make properties (de)serializable by adding {..."&className&": "Data"...}
+		node.properties.put(JSONObjectMapper.Companion.getCLASSNAME_IDENTIFIER(), "Data");
+
+		logicnode_list.addAsLogicNode(node);
 	}
 
 	public synchronized void handleMessageFromUI(Object message) {
@@ -88,7 +87,7 @@ public class Supervisor {
 
 			BaseLogicNode logicNode = logicnode_list.get(m.node_id);
 
-			logicNode.onParameterChange(m.key, m.value);
+			logicNode.onParameterChange(m.instance);
 
 		} else if (message instanceof NodeDataMessage) {
 			NodeDataMessage m = (NodeDataMessage) message;

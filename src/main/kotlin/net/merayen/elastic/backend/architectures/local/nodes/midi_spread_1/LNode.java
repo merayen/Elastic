@@ -6,6 +6,8 @@ import java.util.Set;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.logicnodes.list.midi_spread_1.Data;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
@@ -59,9 +61,12 @@ public class LNode extends LocalNode {
 	protected void onProcess(InputFrameData data) {}
 
 	@Override
-	protected void onParameter(String key, Object value) {
-		if(key.equals("layoutWidth")) {
-			width = ((Number)value).floatValue();
+	protected void onParameter(BaseNodeData instance) {
+		Data data = (Data)instance;
+		Float widthData = data.getWidth();
+
+		if(widthData != null) {
+			width = widthData;
 			updateVoices();
 		}
 	}

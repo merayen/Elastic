@@ -3,9 +3,9 @@ package net.merayen.elastic.backend.logicnodes.list.midi_in_1;
 import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.interfacing.AbstractDevice;
 import net.merayen.elastic.backend.interfacing.devicetypes.MidiInputDevice;
-import net.merayen.elastic.backend.interfacing.types.MidiPacket;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
+import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.OutputFrameData;
@@ -29,8 +29,8 @@ public class LogicNode extends BaseLogicNode {
 	}
 
 	@Override
-	protected void onParameterChange(String key, Object value) {
-		set(key, value);
+	protected void onParameterChange(BaseNodeData instance) {
+		updateProperties(instance);
 	}
 
 	@Override
