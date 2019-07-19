@@ -236,6 +236,37 @@ internal class JSONObjectMapperTest {
 	}
 
 	@Test
+	fun testDumpingClassesWithNonDumpableMember() {
+		data class TheClass(var name: String? = null) {
+			val shouldNotBeDumped = 1337
+		}
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(TheClass::class)
+
+		val result = mapper.toObject(JSONParser().parse("""{"&className&": "TheClass", "name": "Peopleperson"}""") as JSONObject) as TheClass
+
+		assertEquals("Peopleperson", result.name)
+	}
+
+	@Test
+	fun testNonConstructorMembers() {
+		data class DaClass(var name: String? = null) {
+			var age = 42
+		}
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(DaClass::class)
+
+		val result = mapper.toObject(JSONParser().parse("""{"&className&": "DaClass", "name": "Smith John", "age": 59}""") as JSONObject) as DaClass
+
+		assertEquals("Smith John", result.name)
+		assertEquals(59, result.age)
+
+		assertEquals("", JSONObject.toJSONString(mapper.toMap(result)))
+	}
+
+	@Test
 	fun testDumpSingleObject() {
 		val result = JSONObject.toJSONString(mapper.toMap(Book("Bible", "Contains Jesus")))
 		assertEquals("""
