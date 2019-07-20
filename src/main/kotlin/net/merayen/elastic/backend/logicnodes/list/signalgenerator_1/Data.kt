@@ -7,4 +7,10 @@ data class Data(
 		var inputOffset: Float? = null,
 		var frequency: Float? = null,
 		var curve: List<Float>? = null
-) : BaseNodeData()
+) : BaseNodeData() {
+	init {
+		listTranslators["curve"] = {
+			(it as Number).toFloat()
+		}
+	}
+}

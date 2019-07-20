@@ -96,7 +96,7 @@ fun getMapperForLogicDataClass(klass: Class<out BaseLogicNode>): JSONObjectMappe
 	val mapper = JSONObjectMapper()
 
 	for (klass in dataClassInstance.classRegistry)
-		mapper.registerClass(klass)
+		mapper.registerClass(klass, dataClassInstance.listTranslators)
 
 	return mapper
 }
