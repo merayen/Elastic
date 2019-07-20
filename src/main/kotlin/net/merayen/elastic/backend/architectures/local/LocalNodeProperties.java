@@ -12,8 +12,8 @@ public class LocalNodeProperties {
 		//this.netlist = netlist;
 	}
 
-	public void setLocalNode(Node node, LocalNode localnode) {
-		node.properties.put("architecture.local.localnode", localnode);
+	public void setLocalNode(Node node, LocalNode localnode) { // Not working
+		//node.properties.put("architecture.local.localnode", localnode);
 	}
 
 	public LocalNode getLocalNode(Node node) {

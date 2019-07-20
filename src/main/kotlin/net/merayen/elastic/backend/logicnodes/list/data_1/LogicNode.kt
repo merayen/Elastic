@@ -15,6 +15,6 @@ class LogicNode : BaseLogicNode() {
 	override fun onFinishFrame(data: OutputFrameData) {}
 
 	override fun onParameterChange(instance: BaseNodeData) {
-		updateProperties(instance)
+		acceptProperties(instance)
 	}
 }

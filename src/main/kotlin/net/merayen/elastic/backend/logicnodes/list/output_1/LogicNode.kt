@@ -36,7 +36,7 @@ class LogicNode : BaseLogicNode() {
 	override fun onDisconnect(port: String) {}
 
 	override fun onParameterChange(instance: BaseNodeData) {
-		updateProperties(instance)
+		acceptProperties(instance)
 	}
 
 	override fun onFinishFrame(data: OutputFrameData) {

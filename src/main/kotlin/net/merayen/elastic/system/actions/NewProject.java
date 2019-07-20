@@ -79,11 +79,11 @@ public class NewProject extends Action {
 
 		// Set the position of the nodes
 		net.merayen.elastic.backend.logicnodes.list.output_1.Data outputNodeData = new net.merayen.elastic.backend.logicnodes.list.output_1.Data();
-		outputNodeData.setUiTranslation(new BaseNodeData.UITranslation(200, 0));
+		outputNodeData.setUiTranslation(new BaseNodeData.UITranslation(200f, 0f));
 		system.sendMessageToBackend(new NodeParameterMessage(nodes.get(2).node_id, outputNodeData));
 
 		// Connect signal generator to output
-		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(2).node_id, "output", nodes.get(4).node_id, "input"));
+		system.sendMessageToBackend(new NodeConnectMessage(nodes.get(1).node_id, "output", nodes.get(2).node_id, "input"));
 
 		// Set frequency parameter on one of the nodes
 		net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data signalgeneratorNodeData = new net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data();

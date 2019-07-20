@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.nodes;
 
-import kotlin.jvm.internal.Reflection;
-import kotlin.reflect.KClass;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.logicnodes.Format;
@@ -143,16 +141,18 @@ public abstract class BaseLogicNode {
 	 * Update the properties from a BaseNodeData instance.
 	 * @param instance
 	 */
-	public void updateProperties(BaseNodeData instance) {
+	public void acceptProperties(BaseNodeData instance) {
 		ClassInstanceMerger.Companion.merge(instance, properties, null);
-		updateProperties();
+		supervisor.sendMessageToProcessor(new NodeParameterMessage(node.getID(), instance));
+		supervisor.sendMessageToUI(new NodeParameterMessage(node.getID(), instance));
+		acceptProperties();
 	}
 
 	/**
 	 * Update properties on the node from the propertes on the LogicNode.
 	 * (Perhaps do this automatically? Like when saving?)
 	 */
-	public void updateProperties() {
+	public void acceptProperties() {
 		Map<String,?> data = mapper.toMap(properties);
 		node.properties.clear();
 		node.properties.putAll(data);

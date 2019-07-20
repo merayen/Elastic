@@ -15,6 +15,8 @@ import net.merayen.elastic.util.NodeUtil;
 import net.merayen.elastic.util.Point;
 import org.jetbrains.annotations.NotNull;
 
+import static net.merayen.elastic.backend.nodes.UtilKt.createNewNodeData;
+
 class NodeViewContextMenu extends UIObject {
 	private final ContextMenu menu;
 	private final String node_id;
@@ -52,9 +54,13 @@ class NodeViewContextMenu extends UIObject {
 		String name = path[path.length - 2];
 
 		String node_id = NodeUtil.createID();
-		sendMessage(new CreateNodeMessage(node_id, NodeUtil.getNodeName(name), NodeUtil.getNodeVersion(name), this.node_id)); // TODO group shall not be null, but
 
-		BaseNodeData baseData = new BaseNodeData();
+		String nodeName = NodeUtil.getNodeName(name);
+		int nodeVersion = NodeUtil.getNodeVersion(name);
+
+		sendMessage(new CreateNodeMessage(node_id, nodeName, nodeVersion, this.node_id)); // TODO group shall not be null, but
+
+		BaseNodeData baseData = createNewNodeData(nodeName, nodeVersion);
 		baseData.setUiTranslation(new BaseNodeData.UITranslation(position.getX(), position.getY()));
 	}
 

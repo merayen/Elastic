@@ -1,6 +1,5 @@
 package net.merayen.elastic.util
 
-import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.junit.jupiter.api.Test
@@ -100,10 +99,6 @@ internal class JSONObjectMapperTest {
 	@Test
 	fun testDefaultValues() {
 		val json = JSONParser().parse("""{"&className&": "Book"}""") as JSONObject
-
-		/*val exception = assertThrows(JSONObjectMapper.JsonMissingKey::class.java) {
-			mapper.toObject(json)
-		}*/
 
 		val result = mapper.toObject(json) as Book
 

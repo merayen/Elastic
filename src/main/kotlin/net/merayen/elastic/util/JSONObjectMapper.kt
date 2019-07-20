@@ -15,14 +15,12 @@ import kotlin.reflect.jvm.jvmErasure
  */
 class JSONObjectMapper {
 	class AnonymousClassesNotSupportedException : RuntimeException()
-	//class JsonMissingKey(val key: String, val className: String) : RuntimeException("JSON missing key '$key' for class '$className'")
-
 	class ClassNotRegistered(val className: String) : RuntimeException("Class '$className' not registered")
 	class ClassAlreadyRegistered(val className: String) : RuntimeException(className)
 	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
 	class MissingClassNameDefinitionInObject() : RuntimeException()
 	class ClassMemberIsReadOnly(val className: String, val member: String) : RuntimeException("Can not apply value to '$member' on class '$className' as it is read-only")
-	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class constructor missing default value")
+	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class '$className' constructor missing default value for parameter $parameter")
 
 	private val registry = HashMap<String, KClass<out Any>>()
 
@@ -107,14 +105,22 @@ class JSONObjectMapper {
 
 		val result = HashMap<String, Any?>()
 
-		for (property in obj::class.memberProperties)
-			if (property.visibility == KVisibility.PUBLIC && !property.isConst)
-				result[property.name] = valueToJSON(property.getter.call(obj))
+		for (property in obj::class.memberProperties) {
+			if (property.visibility == KVisibility.PUBLIC && property is KMutableProperty<*>) {
+				if (property.name == "classRegistry")
+					println("Noes")
+				val jsonValue = valueToJSON(property.getter.call(obj))
+				if (jsonValue !== UNDEFINED)
+					result[property.name] = jsonValue
+			}
+		}
 
 		result[CLASSNAME_IDENTIFIER] = className
 
 		return result
 	}
+
+	private val UNDEFINED = Any()
 
 	private fun valueToJSON(value: Any?): Any? {
 		if (value == null || value is Number || value is Boolean || value is String) {
@@ -123,9 +129,11 @@ class JSONObjectMapper {
 			val arr = JSONArray()
 			arr.addAll(value.map { valueToJSON(it) })
 			return arr
-		} else {
+		} else if (registry[value::class.simpleName] === value::class) {
 			return toMap(value)
 		}
+
+		return UNDEFINED
 	}
 
 	/**

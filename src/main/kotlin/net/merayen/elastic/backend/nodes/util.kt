@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.nodes
 
+import net.merayen.elastic.util.ClassInstanceMerger
 import net.merayen.elastic.util.JSONObjectMapper
 import kotlin.reflect.full.primaryConstructor
 
@@ -21,6 +22,10 @@ fun getLogicNodeClass(name: String, version: Int): Class<out BaseLogicNode> {
 }
 
 fun createLogicNode(name: String, version: Int): BaseLogicNode {
+	val constructor = getLogicNodeClass(name, version).constructors[0]
+	if (constructor.parameters.size > 0)
+		throw RuntimeException("LogicNode should not have a constructor with parameters")
+
 	return getLogicNodeClass(name, version).constructors[0].newInstance() as BaseLogicNode
 }
 
@@ -52,8 +57,24 @@ fun getDataClassFromLogicNodeClass(klass: Class<out BaseLogicNode>): Class<out B
 }
 
 
-fun mapToLogicNodeData(name: String, version: Int, data: Map<String, Any?>): BaseNodeData {
+/**
+ * Get an empty instance of a BaseNodeData for a LogicNode
+ */
+fun getNewNodeData(logicNode: BaseLogicNode): BaseNodeData {
+	return getDataClassFromLogicNodeClass(logicNode.javaClass).kotlin.primaryConstructor!!.callBy(mapOf())
+}
+
+
+fun createNewNodeData(name: String, version: Int): BaseNodeData {
+	return getLogicNodeDataClass(name, version).kotlin.primaryConstructor!!.callBy(mapOf())
+}
+
+
+fun mapToLogicNodeData(name: String, version: Int, data: MutableMap<String, Any?>): BaseNodeData {
 	val mapper = getMapperForLogicDataClass(getLogicNodeClass(name, version))
+
+	// Add the name of the Data-class, which is always "Data"
+	data[JSONObjectMapper.CLASSNAME_IDENTIFIER] = "Data"
 	return mapper.toObject(data) as BaseNodeData
 }
 
@@ -62,8 +83,6 @@ fun getMapperForLogicDataClass(klass: Class<out BaseLogicNode>): JSONObjectMappe
 	val dataClassInstance: BaseNodeData
 
 	val kotlinClass = getDataClassFromLogicNodeClass(klass).kotlin
-	//if (!kotlinClass.isData)
-	//	throw RuntimeException("Class ${kotlinClass.qualifiedName} must be a 'data class'")
 
 	val primaryConstructor = kotlinClass.primaryConstructor
 			?: throw RuntimeException("data class does not have a constructor")
@@ -76,8 +95,6 @@ fun getMapperForLogicDataClass(klass: Class<out BaseLogicNode>): JSONObjectMappe
 	dataClassInstance = primaryConstructor.callBy(mapOf())
 	val mapper = JSONObjectMapper()
 
-	mapper.registerClass(kotlinClass)
-
 	for (klass in dataClassInstance.classRegistry)
 		mapper.registerClass(klass)
 
@@ -88,4 +105,18 @@ fun getMapperForLogicDataClass(klass: Class<out BaseLogicNode>): JSONObjectMappe
 fun logicNodeDataToMap(name: String, version: Int, data: BaseNodeData): Map<String, Any?> {
 	val mapper = getMapperForLogicDataClass(getLogicNodeClass(name, version))
 	return mapper.toMap(data)
+}
+
+
+fun updateNodeData(name: String, version: Int, source: BaseNodeData, destination: MutableMap<String, Any?>) {
+	val data = mapToLogicNodeData(name, version, destination)
+	ClassInstanceMerger.merge(source, data)
+	destination.putAll(logicNodeDataToMap(name, version, data))
+}
+
+
+fun updateNodeData(name: String, version: Int, source: Map<String, Any?>, destination: BaseNodeData) {
+	val mapper = getMapperForLogicDataClass(getLogicNodeClass(name, version))
+	val data = mapper.toObject(source) as Any
+	ClassInstanceMerger.merge(data, destination)
 }

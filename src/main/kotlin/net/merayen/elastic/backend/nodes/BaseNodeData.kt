@@ -2,13 +2,17 @@ package net.merayen.elastic.backend.nodes
 
 import kotlin.reflect.KClass
 
-open class BaseNodeData(
+abstract class BaseNodeData(
 		var name: String? = null,
 		var version: Int? = null,
 		var parent: String? = null,
-		var uiTranslation: UITranslation? = null
+		var uiTranslation: UITranslation? = null,
+		var logicNode: String? = null
 ) {
-	data class UITranslation(var x: Float, var y: Float)
+	data class UITranslation(var x: Float? = null, var y: Float? = null)
 
-	val classRegistry = ArrayList<KClass<*>>()
+	val classRegistry = arrayListOf<KClass<*>>(
+			this::class,
+			UITranslation::class
+	)
 }

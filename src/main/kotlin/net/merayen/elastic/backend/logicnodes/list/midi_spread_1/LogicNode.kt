@@ -26,7 +26,7 @@ class LogicNode : BaseLogicNode() {
 	override fun onInit() {}
 
 	override fun onParameterChange(instance: BaseNodeData) {
-		updateProperties(instance)
+		acceptProperties(instance)
 	}
 
 	override fun onData(data: NodeDataMessage) {}

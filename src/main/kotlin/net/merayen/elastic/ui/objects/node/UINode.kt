@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.node
 
 import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.createNewNodeData
 import net.merayen.elastic.system.intercom.*
 import java.util.ArrayList
 
@@ -9,14 +10,14 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
+import net.merayen.elastic.util.NodeUtil
 
 abstract class UINode : UIObject(), FlexibleDimension {
 	lateinit var nodeId: String // Same ID as in the backend-system, netlist etc
 	override var layoutWidth = 100f
 	override var layoutHeight = 80f
 
-	protected lateinit var titlebar: Titlebar
-		private set
+	protected val titlebar = Titlebar()
 
 	private val nodePorts = ArrayList<UIPort>()
 
@@ -35,7 +36,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		get() = search.parentByType(NodeView::class.java)?.uiNet
 
 	override fun onInit() {
-		titlebar = Titlebar()
 		titlebar.handler = object : Titlebar.Handler {
 			override fun onMove() {
 				sendUiData()
@@ -109,14 +109,18 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			nodePorts.remove(port)
 			onRemovePort(port)
 		} else if (message is NodeStatusMessage)
-			println(message) // TODO implement
+			TODO()
 	}
 
 	private fun sendUiData() {
-		sendParameter(
-				BaseNodeData(
-						uiTranslation = BaseNodeData.UITranslation(translation.x, translation.y)
-				)
-		)
+		val data = newNodeData()
+		data.uiTranslation = BaseNodeData.UITranslation(translation.x, translation.y)
+	}
+
+	protected fun newNodeData(): BaseNodeData {
+		val path = this::class.qualifiedName!!.split(".")
+		val name = NodeUtil.getNodeName(path[path.size - 2])
+		val version = NodeUtil.getNodeVersion(path[path.size - 2])
+		return createNewNodeData(name, version)
 	}
 }
