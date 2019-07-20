@@ -79,7 +79,6 @@ public class Executor extends AbstractExecutor {
 	private NetList branchNetList() {
 		if(upcoming_netlist == null) {
 			upcoming_netlist = netlist.copy();
-			new LocalNodeProperties().clear(upcoming_netlist);
 
 			if(Config.processor.debug.verbose)
 				System.out.println("Executor: Upcoming NetList created");

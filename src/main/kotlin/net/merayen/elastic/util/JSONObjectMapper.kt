@@ -1,6 +1,5 @@
 package net.merayen.elastic.util
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
 import org.json.simple.JSONArray
 import kotlin.reflect.*
 import kotlin.reflect.full.cast
@@ -10,8 +9,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Converts JSONObject to POJOs.
- * Hardcoded for org.simple.json, because it seems we will stick with it for a while.
- * DOES NOT SUPPORT ARRAYS WITH GENERICS OTHER THAN OBJECTS (JSONObject). Seems like they will need to be in a List<Any> if we are going to support this? :(
+ * Hardcoded for org.simple.json, because it seems we will stick with it for a while, and it is small.
  */
 class JSONObjectMapper {
 	class AnonymousClassesNotSupportedException : RuntimeException()
@@ -23,18 +21,28 @@ class JSONObjectMapper {
 	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class '$className' constructor missing default value for parameter $parameter")
 
 	private val registry = HashMap<String, KClass<out Any>>()
+	private val listConverters = HashMap<String, Map<String, (it: Any?) -> Any?>>()
 
 	companion object {
 		val CLASSNAME_IDENTIFIER = "&className&"
 	}
 
-	fun registerClass(klass: KClass<*>) {
+	/**
+	 * Register a new class to (de)serialize to.
+	 * Due to JVM type erasure for generics, JSONObjectMapper also supports lambdas to convert/cast array items to correct type
+	 * @param klass Class that is formatted with "var value: String? = null"-members
+	 * @param listConverter Map of lambdas that will ensure that types are converted/cast to correct type
+	 */
+	fun registerClass(klass: KClass<*>, listConverter: (Map<String, (it: Any?) -> Any?>)? = null) {
 		val className = klass.simpleName ?: throw AnonymousClassesNotSupportedException()
 
 		if (className in registry)
 			throw ClassAlreadyRegistered(className)
 
 		registry[className] = klass
+
+		if (listConverter != null)
+			listConverters[className] = listConverter
 	}
 
 	private val NOT_SET = Any()
@@ -60,8 +68,11 @@ class JSONObjectMapper {
 						if (sub != null) // It was possible to convert
 							args[member] = sub
 					} else if (subItem is JSONArray) {
+						val listConverter = listConverters[className]?.get(name)
 						args[member] = subItem.map {
-							if (it is Map<*, *>)
+							if (listConverter != null) {
+								listConverter(it)
+							} else if (it is Map<*, *>)
 								toObject(it)
 							else if (it == null || it is Number || it is String || it is Boolean)
 								it

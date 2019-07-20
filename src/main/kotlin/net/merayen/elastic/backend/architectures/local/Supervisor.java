@@ -32,8 +32,8 @@ class Supervisor {
 
 	private final NodeProperties node_properties;
 	public final NetListUtil netlist_util;
-	final LocalNodeProperties local_properties = new LocalNodeProperties();
 	final ProcessorList processor_list = new ProcessorList();
+	private final HashMap<String, LocalNode> nodes = new HashMap<>();
 	private int session_id_counter;
 
 	private boolean dead;
@@ -61,7 +61,7 @@ class Supervisor {
 
 	private void load() {
 		for(Node node : netlist.getNodes()) {
-			LocalNode localnode = local_properties.getLocalNode(node);
+			LocalNode localnode = nodes.get(node.getID());
 
 			if(localnode == null) { // LocalNode could already be loaded and assigned when doing tests
 				String path = String.format(CLASS_PATH, node_properties.getName(node), node_properties.getVersion(node));
@@ -74,7 +74,7 @@ class Supervisor {
 					throw new RuntimeException(e);
 				}
 
-				local_properties.setLocalNode(node, localnode);
+				nodes.put(node.getID(), localnode);
 			}
 
 			localnode.compiler_setInfo(this, node, sample_rate, buffer_size);
@@ -102,16 +102,16 @@ class Supervisor {
 
 		processor_list.clear();
 
-		for(Node node : netlist.getNodes()) {
-			local_properties.getLocalNode(node).onDestroy();
-			local_properties.setLocalNode(node, null);
-		}
+		for(LocalNode lnode : nodes.values())
+			lnode.onDestroy();
+
+		nodes.clear();
 	}
 
 	public void handleMessage(Object message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
-			LocalNode localnode = local_properties.getLocalNode(netlist.getNode(m.node_id));
+			LocalNode localnode = nodes.get(m.node_id);
 			localnode.onParameter(m.instance);
 		}
 	}
@@ -147,7 +147,7 @@ class Supervisor {
 		List<LocalNode> lnodes = new ArrayList<>(); // LocalNodes to create sessions on
 		for(Node n : netlist.getNodes())
 			if((node == null && node_properties.getParent(n) == null) || (node != null && node.equals(netlist_util.getParent(n))))
-				lnodes.add(local_properties.getLocalNode(n));
+				lnodes.add(nodes.get(n.getID()));
 
 		if(node != null)
 			for(LocalNode ln : lnodes)
@@ -214,7 +214,7 @@ class Supervisor {
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for (Node node : netlist.getNodes()) {
-			LocalNode ln = local_properties.getLocalNode(node);
+			LocalNode ln = nodes.get(node.getID());
 			ln.process(message.getInput().get(node.getID()));
 		}
 
@@ -251,7 +251,7 @@ class Supervisor {
 
 		// Notify all LocalNodes that we have processed.
 		for(Node node : netlist.getNodes()) {
-			LocalNode ln = local_properties.getLocalNode(node);
+			LocalNode ln = nodes.get(node.getID());
 
 			ln.finishFrame();
 
@@ -289,7 +289,7 @@ class Supervisor {
 	}
 
 	public LocalNode getLocalNode(String id) {
-		return local_properties.getLocalNode(netlist.getNode(id));
+		return nodes.get(id);
 	}
 
 	public LocalProcessor getProcessor(LocalNode localnode, int session_id) {
@@ -323,9 +323,6 @@ class Supervisor {
 	}
 
 	private List<LocalNode> getLocalNodes() {
-		List<LocalNode> result = new ArrayList<>();
-		for(Node node : netlist.getNodes())
-			result.add(local_properties.getLocalNode(node));
-		return result;
+		return new ArrayList<>(nodes.values());
 	}
 }

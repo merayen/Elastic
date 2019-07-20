@@ -15,4 +15,10 @@ abstract class BaseNodeData(
 			this::class,
 			UITranslation::class
 	)
+
+	/**
+	 * Add your own list translators if you use any List<...>-types, to ensure correct types.
+	 * E.g, you want List<Float>, but that information is not contained in the JSON, so you need to convert it first.
+	 */
+	val listTranslators = mutableMapOf<String, Map<String, (it: Any?) -> Any?>>()
 }

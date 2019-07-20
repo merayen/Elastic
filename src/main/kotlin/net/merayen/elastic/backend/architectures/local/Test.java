@@ -20,6 +20,7 @@ import net.merayen.elastic.system.intercom.ProcessMessage;
 
 /**
  * Emulates the Analyzer() and fakes nodes for testing Supervisor().
+ * TODO make test work again, by having Supervisor supporting injecting of a class resolver
  */
 public class Test {
 	private Test() {}
@@ -41,12 +42,10 @@ public class Test {
 	private static NetList createNetList() {
 		NetList netlist = new NetList();
 		NodeProperties properties = new NodeProperties(netlist);
-		LocalNodeProperties local_properties = new LocalNodeProperties();
 		Port port;
 
 		// Top node
 		Node top = netlist.createNode();
-		local_properties.setLocalNode(top, new TopNode());
 
 		// Generator
 		Node generator_node = netlist.createNode();
@@ -54,7 +53,6 @@ public class Test {
 		port = netlist.createPort(generator_node, "output");
 		properties.setOutput(port);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(generator_node, new GeneratorNode());
 
 		// middle-node, contains nodes that processes
 		Node middle_node = netlist.createNode();
@@ -64,7 +62,6 @@ public class Test {
 		port = netlist.createPort(middle_node, "output");
 		properties.setOutput(port);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(middle_node, new MiddleNode());
 
 		// Dispatch input, subgroup in middle-node
 		Node dispatch_in = netlist.createNode();
@@ -72,28 +69,23 @@ public class Test {
 		port = netlist.createPort(dispatch_in, "output");
 		properties.setOutput(port);
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(dispatch_in, new DispatchNode());
 
 		// Consumer, subgroup in middle-node
 		Node dispatch_out = netlist.createNode();
 		properties.setParent(dispatch_out, middle_node);
 		netlist.createPort(dispatch_out, "input");
-		local_properties.setLocalNode(dispatch_out, new DispatchNode());
 
 		// Consumer
 		Node consumer_node = netlist.createNode();
 		properties.setParent(consumer_node, top);
 		port = netlist.createPort(consumer_node, "input");
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(consumer_node, new ConsumerNode(1));
-		//properties.setName(consumer_node, "");
 
 		// Consumer 2, does nothing
 		Node consumer2_node = netlist.createNode();
 		properties.setParent(consumer2_node, top);
 		port = netlist.createPort(consumer2_node, "input");
 		properties.analyzer.setDecidedFormat(port, Format.AUDIO);
-		local_properties.setLocalNode(consumer2_node, new ConsumerNode(2));
 
 		// Connect nodes
 		netlist.connect(generator_node, "output", middle_node, "input");

@@ -124,7 +124,7 @@ public abstract class LocalNode {
 	public List<LocalNode> getChildrenNodes() {
 		List<LocalNode> result = new ArrayList<>();
 		for (Node ln : supervisor.netlist_util.getChildren(node))
-			result.add(supervisor.local_properties.getLocalNode(ln));
+			result.add(supervisor.getLocalNode(ln.getID()));
 
 		return result;
 	}
@@ -134,7 +134,7 @@ public abstract class LocalNode {
 		if (parent == null)
 			return null;
 
-		return supervisor.local_properties.getLocalNode(parent);
+		return supervisor.getLocalNode(parent.getID());
 	}
 
 	void init() {

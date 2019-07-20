@@ -124,7 +124,7 @@ class NodeView : View() {
 		val node = getNode(node_id)
 
 		if (node == null) {
-			System.out.printf("WARNING: Node with id %s not found in this NodeView. Out of sync?\n", node_id)
+			//System.out.printf("WARNING: Node with id %s not found in this NodeView. Out of sync?\n", node_id)
 			return
 		}
 

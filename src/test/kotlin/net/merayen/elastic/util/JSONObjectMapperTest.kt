@@ -187,8 +187,30 @@ internal class JSONObjectMapperTest {
 	}
 
 	@Test
+	fun testNumberArrayToFloatArray() {
+		data class Test(var numbers: List<Float>? = null)
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(Test::class, mapOf(
+				"numbers" to { it: Any? -> (it as Number).toFloat() }
+		))
+
+		val json = JSONParser().parse("""{"&className&": "Test", "numbers": [0, 0.1, 0.2, 0.3, 0.4]}""") as JSONObject
+
+		val result = mapper.toObject(json) as Test
+
+		assert(result.numbers?.size == 5)
+		result.numbers?.get(0) as Float
+		result.numbers?.get(1) as Float
+		result.numbers?.get(2) as Float
+		result.numbers?.get(3) as Float
+		result.numbers?.get(4) as Float
+	}
+
+	@Test
 	fun testConvertingStrings() {
 		data class Test(val p0: String, val p1: String?)
+
 		val text = JSONParser().parse("\"Test\"")
 		val nullText = JSONParser().parse("null")
 
