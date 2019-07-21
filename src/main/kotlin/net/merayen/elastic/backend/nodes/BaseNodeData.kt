@@ -6,8 +6,7 @@ abstract class BaseNodeData(
 		var name: String? = null,
 		var version: Int? = null,
 		var parent: String? = null,
-		var uiTranslation: UITranslation? = null,
-		var logicNode: String? = null
+		var uiTranslation: UITranslation? = null
 ) {
 	data class UITranslation(var x: Float? = null, var y: Float? = null)
 

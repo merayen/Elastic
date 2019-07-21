@@ -83,11 +83,14 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 					if (!titlebar.isDragging) {
 						val newTranslation = message.instance.uiTranslation
+						val x = newTranslation?.x
+						val y = newTranslation?.y
 
-						if (newTranslation != null) {
-							translation.x = translation.x
-							translation.y = translation.y
-						}
+						if (x != null)
+							translation.x = x
+
+						if (y != null)
+							translation.y = y
 					}
 			}
 
@@ -115,6 +118,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	private fun sendUiData() {
 		val data = newNodeData()
 		data.uiTranslation = BaseNodeData.UITranslation(translation.x, translation.y)
+		sendParameter(data)
 	}
 
 	protected fun newNodeData(): BaseNodeData {
