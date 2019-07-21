@@ -8,19 +8,8 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	override fun onCreate() {
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "input"
-			}
-		})
-
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "output"
-				output = true
-				format = Format.MIDI
-			}
-		})
+		createInputPort("input")
+		createOutputPort("output", Format.MIDI)
 	}
 
 	override fun onInit() {}

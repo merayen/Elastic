@@ -8,19 +8,8 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	override fun onCreate() {
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "frequency"
-			}
-		})
-
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "output"
-				format = Format.AUDIO
-				output = true
-			}
-		})
+		createInputPort("frequency")
+		createOutputPort("output", Format.AUDIO)
 
 		(properties as Data).frequency = 440f
 	}

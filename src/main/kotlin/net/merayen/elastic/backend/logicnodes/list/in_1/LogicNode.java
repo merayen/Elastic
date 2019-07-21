@@ -16,11 +16,7 @@ public class LogicNode extends BaseLogicNode {
 		for(String p : getPorts())
 			removePort(p);
 
-		createPort(new PortDefinition() {{
-			name = "output";
-			format = port_format;
-			output = true;
-		}});
+		createOutputPort("output", port_format);
 	}
 
 	@Override

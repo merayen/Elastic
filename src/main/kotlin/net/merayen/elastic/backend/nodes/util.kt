@@ -40,7 +40,7 @@ fun getLogicNodeDataClass(name: String, version: Int): Class<out BaseNodeData> {
 				"Data"
 		)) as Class<out BaseNodeData>
 	} catch (e: ClassNotFoundException) {
-		throw RuntimeException(e)
+		throw RuntimeException("Could not find the Data-class for ${name}_${version}. Forgotten to create it?")
 	}
 }
 

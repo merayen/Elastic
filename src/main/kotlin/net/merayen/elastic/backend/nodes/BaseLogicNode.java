@@ -13,34 +13,6 @@ import net.merayen.elastic.util.NetListMessages;
 import java.util.Map;
 
 public abstract class BaseLogicNode {
-	/**
-	 * Instantiate, edit and pass into createPort() to create ports.
-	 */
-	public static class PortDefinition {
-		public String name; // Name of the port
-		public boolean output; // If port is output or not
-		public Format format; // Format the port uses. Only for output-ports
-
-		public PortDefinition() {
-		}
-
-		/**
-		 * Define an input port
-		 **/
-		public PortDefinition(String name) {
-			this.name = name;
-		}
-
-		/**
-		 * Define an output port with format
-		 **/
-		public PortDefinition(String name, Format format) {
-			this.name = name;
-			this.format = format;
-			this.output = true;
-		}
-	}
-
 	private LogicEnvironment env;
 
 	private String id; // Same ID as the one in NetList
@@ -111,26 +83,30 @@ public abstract class BaseLogicNode {
 	 * Call this to create a port.
 	 * All LogicNodes needs to this on creation. This will add the ports in the UI and the processor.
 	 */
-	protected void createPort(PortDefinition def) {
-		if (def.name == null || def.name.length() == 0)
+	private void createPort(String name, Format format) {
+		boolean output = format != null;
+
+		if (name == null || name.length() == 0)
 			throw new RuntimeException("Invalid port name");
 
-		if (netlist.getPort(node, def.name) != null)
-			throw new RuntimeException(String.format("Port %s already exist on node", def.name));
-
-		if (def.output && def.format == null)
-			throw new RuntimeException("Output-ports must have a format");
-
-		if (!def.output && def.format != null)
-			throw new RuntimeException("Input-ports can not have a format set, as it will depend on the output-port it is connected to");
+		if (netlist.getPort(node, name) != null)
+			throw new RuntimeException(String.format("Port %s already exist on node", name));
 
 		// Everything OK
-		Object message = new CreateNodePortMessage(id, def.name, def.output, def.format); // TODO rename to chain_ident
+		Object message = new CreateNodePortMessage(id, name, output, format); // TODO rename to chain_ident
 
 		NetListMessages.INSTANCE.apply(netlist, message); // Apply the port to the NetList
 
 		supervisor.sendMessageToUI(message);
 		supervisor.sendMessageToProcessor(message);
+	}
+
+	protected void createInputPort(String name) {
+		createPort(name, null);
+	}
+
+	protected void createOutputPort(String name, Format format) {
+		createPort(name, format);
 	}
 
 	protected void removePort(String name) {

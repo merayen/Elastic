@@ -21,5 +21,6 @@ object NodeRegistry {
 		nodes.add("sample_1")
 		nodes.add("eq_1")
 		nodes.add("midi_transpose_1")
+		nodes.add("histogram_1")
 	}
 }

@@ -30,19 +30,8 @@ class LogicNode : BaseLogicNode() {
 	private var dirty = true
 
 	override fun onCreate() {
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "in"
-			}
-		})
-
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "out"
-				output = true
-				format = Format.MIDI
-			}
-		})
+		createInputPort("in")
+		createOutputPort("out", Format.MIDI)
 	}
 
 	override fun onInit() {}

@@ -22,9 +22,9 @@ class LogicNode : BaseLogicNode() {
 	override fun onParameterChange(instance: BaseNodeData) = updateProperties(instance)
 
 	override fun onCreate() {
-		createPort(PortDefinition("input"))
-		createPort(PortDefinition("sidechain"))
-		createPort(PortDefinition("output", Format.AUDIO))
-		createPort(PortDefinition("attenuation", Format.SIGNAL))
+		createInputPort("input")
+		createInputPort("sidechain")
+		createOutputPort("output", Format.AUDIO)
+		createOutputPort("attenuation", Format.SIGNAL)
 	}
 }

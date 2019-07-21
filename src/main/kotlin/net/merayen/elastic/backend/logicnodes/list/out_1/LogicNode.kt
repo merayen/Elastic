@@ -7,7 +7,7 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
 	override fun onCreate() {
-		createPort(PortDefinition("in"))
+		createInputPort("in")
 	}
 
 	override fun onInit() {}

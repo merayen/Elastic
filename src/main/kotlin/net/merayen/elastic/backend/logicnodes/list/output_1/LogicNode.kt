@@ -12,11 +12,7 @@ class LogicNode : BaseLogicNode() {
 	private var output_device: String? = null
 
 	override fun onCreate() {
-		createPort(object : BaseLogicNode.PortDefinition() {
-			init {
-				name = "input"
-			}
-		})
+		createInputPort("input")
 	}
 
 	override fun onInit() {

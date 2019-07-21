@@ -9,9 +9,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onCreate() {
-		BaseLogicNode.PortDefinition input = new BaseLogicNode.PortDefinition();
-		input.name = "input";
-		createPort(input);
+		createInputPort("input");
 	}
 
 	@Override

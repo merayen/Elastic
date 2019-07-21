@@ -15,7 +15,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onCreate() {
-		createPort(new PortDefinition("output", Format.MIDI));
+		createOutputPort("output", Format.MIDI);
 	}
 
 	@Override
