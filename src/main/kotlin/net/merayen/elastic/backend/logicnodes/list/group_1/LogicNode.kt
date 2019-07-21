@@ -18,9 +18,8 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 	override fun onFinishFrame(data: OutputFrameData) {}
 	override fun onData(data: NodeDataMessage) {
 		if (data is SetBPMMessage) {
-			(properties as Data).bpm = data.bpm
-			acceptProperties()
+			updateProperties(Data(bpm = data.bpm))
 		}
 	}
-	override fun onParameterChange(instance: BaseNodeData) = acceptProperties(instance)
+	override fun onParameterChange(instance: BaseNodeData) = updateProperties(instance)
 }

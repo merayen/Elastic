@@ -28,7 +28,7 @@ class LogicNode : BaseLogicNode() {
 	override fun onInit() {}
 
 	override fun onParameterChange(instance: BaseNodeData) { // Parameter change from UI
-		this.acceptProperties(instance) // Accept anyway
+		this.updateProperties(instance) // Accept anyway
 	}
 
 	override fun onConnect(port: String) {}

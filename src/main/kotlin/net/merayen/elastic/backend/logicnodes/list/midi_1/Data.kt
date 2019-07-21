@@ -13,10 +13,10 @@ data class Data(
 		var trackName: String? = null
 ) : BaseNodeData() {
 	data class EventZone(
-			var id: String,
-			var start: Float,
-			var length: Float,
-			var midi: MidiData
+			var id: String? = null,
+			var start: Float? = null,
+			var length: Float? = null,
+			var midi: MidiData? = null
 	)
 
 	init {

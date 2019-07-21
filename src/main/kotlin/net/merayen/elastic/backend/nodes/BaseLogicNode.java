@@ -139,20 +139,15 @@ public abstract class BaseLogicNode {
 
 	/**
 	 * Update the properties from a BaseNodeData instance.
-	 * @param instance
+	 * Merges the instance with the current properties.
+	 * Usage: Create a new instance of BaseNodeData with only the changed fields set and send it into this method.
+	 * @param instance A BaseNodeData-subclass instance with the fields being updated set
 	 */
-	public void acceptProperties(BaseNodeData instance) {
+	public void updateProperties(BaseNodeData instance) {
 		ClassInstanceMerger.Companion.merge(instance, properties, null);
 		supervisor.sendMessageToProcessor(new NodeParameterMessage(node.getID(), instance));
 		supervisor.sendMessageToUI(new NodeParameterMessage(node.getID(), instance));
-		acceptProperties();
-	}
 
-	/**
-	 * Update properties on the node from the propertes on the LogicNode.
-	 * (Perhaps do this automatically? Like when saving?)
-	 */
-	public void acceptProperties() {
 		Map<String,?> data = mapper.toMap(properties);
 		node.properties.clear();
 		node.properties.putAll(data);

@@ -180,9 +180,9 @@ class EventTimeLine : BaseTimeLine() {
 		clearEventZones()
 
 		for (event in eventZones) {
-			val e = createEventZone(event.id)
-			e.start = event.start
-			e.length = event.length
+			val e = createEventZone(event.id!!)
+			e.start = event.start!!
+			e.length = event.length!!
 		}
 
 		updateSelections()

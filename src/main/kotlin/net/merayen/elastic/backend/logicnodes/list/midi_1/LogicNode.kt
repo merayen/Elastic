@@ -48,7 +48,7 @@ class LogicNode : BaseLogicNode() {
 	override fun onInit() {}
 
 	override fun onParameterChange(instance: BaseNodeData) {
-		acceptProperties(instance)
+		updateProperties(instance)
 	}
 
 	override fun onConnect(port: String) {}
@@ -105,18 +105,19 @@ class LogicNode : BaseLogicNode() {
 						midi = MidiData()
 				))
 
-				(properties as Data).eventZones = eventZones
-				acceptProperties()
+				updateProperties(Data(eventZones = eventZones))
 			}
 			is ChangeEventZoneMessage -> {
 				println("Changing EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
 
-				val eventZone = (properties as Data).eventZones?.find { it.id == data.eventZoneId }
+				val eventZones = (properties as Data).eventZones
+
+				val eventZone = eventZones?.find { it.id == data.eventZoneId }
 
 				if (eventZone != null) {
 					eventZone.start = data.start
 					eventZone.length = data.length
-					acceptProperties()
+					updateProperties(Data(eventZones = eventZones))
 				} else {
 					println("WARNING: EventZone could not be changed as id=${data.eventZoneId} was not found")
 				}
@@ -127,7 +128,7 @@ class LogicNode : BaseLogicNode() {
 				val eventZones = (properties as Data).eventZones
 				if (eventZones != null) {
 					if (eventZones.removeIf { it.id == data.eventZoneId }) {
-						acceptProperties()
+						updateProperties(Data(eventZones = eventZones))
 					}
 				} else {
 					println("WARNING: EventZone could not be removed as id=${data.eventZoneId} was not found")

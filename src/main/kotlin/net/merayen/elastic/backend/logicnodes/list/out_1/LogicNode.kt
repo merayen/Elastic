@@ -11,7 +11,7 @@ class LogicNode : BaseLogicNode() {
 	}
 
 	override fun onInit() {}
-	override fun onParameterChange(instance: BaseNodeData) = acceptProperties(instance)
+	override fun onParameterChange(instance: BaseNodeData) = updateProperties(instance)
 	override fun onData(data: NodeDataMessage) {}
 	override fun onConnect(port: String) {}
 	override fun onDisconnect(port: String) {}

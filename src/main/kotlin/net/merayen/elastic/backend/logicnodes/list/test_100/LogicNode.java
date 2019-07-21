@@ -19,7 +19,7 @@ public class LogicNode extends BaseLogicNode {
 
 	@Override
 	protected void onParameterChange(BaseNodeData instance) {
-		acceptProperties(instance);
+		updateProperties(instance);
 	}
 
 	@Override

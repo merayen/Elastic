@@ -19,7 +19,7 @@ class LogicNode : BaseLogicNode() {
 		sendDataToUI(data)
 	}
 
-	override fun onParameterChange(instance: BaseNodeData) = acceptProperties(instance)
+	override fun onParameterChange(instance: BaseNodeData) = updateProperties(instance)
 
 	override fun onCreate() {
 		createPort(PortDefinition("input"))
