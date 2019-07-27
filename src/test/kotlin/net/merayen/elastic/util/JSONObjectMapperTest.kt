@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import kotlin.reflect.full.IllegalCallableAccessException
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -308,5 +309,29 @@ internal class JSONObjectMapperTest {
 		val result = mapper.toObject(mapper.toMap(data))
 
 		assertEquals(data, result)
+	}
+
+	enum class Mood {
+		NORMAL,
+		HYSTERICAL,
+		HAPPY,
+		GLORIOUS
+	}
+
+	@Test
+	fun testEnumsNotWorking() {
+		data class Wife(var mood: Mood? = null)
+
+		val mapper = JSONObjectMapper()
+		mapper.registerClass(Wife::class)
+		mapper.registerClass(Mood::class)
+
+		val result = mapper.toMap(Wife(mood = Mood.HAPPY))
+		assert((result["mood"] as Map<String,Any?>)["&className&"] == "Mood")
+		assert((result["mood"] as Map<String,Any?>).size == 1) // Should not just be &className&, we fail
+
+		assertThrows(IllegalCallableAccessException::class.java) {
+			mapper.toObject(result) // We fail. Can't do enums :-(
+		}
 	}
 }

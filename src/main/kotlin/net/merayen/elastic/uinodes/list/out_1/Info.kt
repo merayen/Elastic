@@ -5,5 +5,5 @@ import net.merayen.elastic.uinodes.BaseInfo
 class Info : BaseInfo {
 	override fun getName() = "Out"
 	override fun getDescription() = "Interface output point"
-	override fun getCategories() = arrayOf("Interface")
+	override fun getCategories() = arrayOf("Poly")
 }

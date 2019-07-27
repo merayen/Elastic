@@ -25,7 +25,7 @@ internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content(
         }
 
         override fun onInit() {
-            addCategory("Import node")
+            addCategory("Import")
 
             for (category in UINodeInformation.getCategories())
                 addCategory(category)

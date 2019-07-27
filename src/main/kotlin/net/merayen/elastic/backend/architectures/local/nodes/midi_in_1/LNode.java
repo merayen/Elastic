@@ -1,11 +1,13 @@
 package net.merayen.elastic.backend.architectures.local.nodes.midi_in_1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
+import net.merayen.elastic.backend.logicnodes.list.midi_in_1.MidiIn1InputFrameData;
 import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
@@ -22,14 +24,14 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onSpawnProcessor(LocalProcessor lp) {}
+	protected void onSpawnProcessor(LocalProcessor lp) {
+	}
 
 	@Override
 	protected void onProcess(InputFrameData data) {
-		//if(data.containsKey("midi")) {
-		//	buffer.addAll(Arrays.asList((short[][]) data.get("midi")));
-		//}
-		throw new NotImplementedError("Implementer dette igjen. Hadde ikke midi-keyboard tilgjengelig her");
+		MidiIn1InputFrameData input = (MidiIn1InputFrameData) data;
+		if (input.getMidi() != null)
+			buffer.addAll(Arrays.asList((short[][]) input.getMidi()));
 	}
 
 	@Override

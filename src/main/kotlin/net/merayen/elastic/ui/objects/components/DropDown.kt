@@ -69,4 +69,6 @@ class DropDown(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 		currentItem = item
 	}
+
+	fun getItems() = items.toTypedArray()
 }

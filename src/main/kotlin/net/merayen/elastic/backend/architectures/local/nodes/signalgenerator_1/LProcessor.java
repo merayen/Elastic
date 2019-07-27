@@ -14,6 +14,7 @@ import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.backend.midi.MidiState;
+import net.merayen.elastic.backend.util.AudioUtil;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private enum Mode {
@@ -175,7 +176,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		float pitch = midiState.getPitch();
 
 		if(active_tangent != null && resampling != null) {
-			double freq = midiNoteToFreq(active_tangent[1] + pitch);
+			double freq = AudioUtil.midiNoteToFreq(active_tangent[1] + pitch);
 			float volume_div = sample_rate / 1000;
 			float[] audio = outlet.audio[0];
 
@@ -216,10 +217,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 			inlet.read += inlet.available();
 		}
-	}
-
-	private double midiNoteToFreq(float n) {
-		return 440 * Math.pow(2, (n - 69) / 12.0f);
 	}
 
 	@Override

@@ -6,16 +6,16 @@ public class Info implements BaseInfo {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "Midi";
+		return "Notes";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Midi notes";
+		return "Notes";
 	}
 
 	@Override
 	public String[] getCategories() {
-		return new String[]{"Midi generators"};
+		return new String[]{"Midi"};
 	}
 }

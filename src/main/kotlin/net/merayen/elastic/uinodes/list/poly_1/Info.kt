@@ -5,5 +5,5 @@ import net.merayen.elastic.uinodes.BaseInfo
 class Info : BaseInfo {
 	override fun getName() = "Poly"
 	override fun getDescription() = "Polyphonic group"
-	override fun getCategories() = arrayOf("Misc")
+	override fun getCategories() = arrayOf("Poly")
 }

@@ -23,4 +23,9 @@ public class AudioUtil {
 				output[i * channel_count + channel_no] = input[channel_no][i];
 		}
 	}
+
+
+	public static double midiNoteToFreq(float n) {
+		return 440 * Math.pow(2, (n - 69) / 12.0f);
+	}
 }

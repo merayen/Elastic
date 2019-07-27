@@ -5,5 +5,5 @@ import net.merayen.elastic.uinodes.BaseInfo
 class Info : BaseInfo {
 	override fun getName() = "Delay"
 	override fun getDescription() = "Delays the input signal"
-	override fun getCategories() = arrayOf("Audio effects")
+	override fun getCategories() = arrayOf("Audio")
 }
