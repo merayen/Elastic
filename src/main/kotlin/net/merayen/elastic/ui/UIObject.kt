@@ -3,7 +3,6 @@ package net.merayen.elastic.ui
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.UINodeUtil
 import net.merayen.elastic.util.Point
-import net.merayen.elastic.util.Postmaster
 import java.util.*
 
 open class UIObject {
@@ -64,9 +63,6 @@ open class UIObject {
 
 			if (result == null)
 				return null
-
-			if (absoluteOutline != null)
-				result.clip(absoluteOutline);
 
 			result.x1 -= absoluteTranslation.x
 			result.y1 -= absoluteTranslation.y
