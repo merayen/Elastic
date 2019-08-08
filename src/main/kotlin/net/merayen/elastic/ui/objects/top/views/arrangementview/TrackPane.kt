@@ -14,7 +14,7 @@ class TrackPane : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 50f
 
-	val buttons = AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox())
+	val buttons = AutoLayout(LayoutMethods.HorizontalBox())
 
 	private val resizer = object : UIObject() {
 		override fun onDraw(draw: Draw) {
@@ -36,7 +36,6 @@ class TrackPane : UIObject(), FlexibleDimension {
 			}
 
 			override fun onDrop() {}
-
 		})
 		add(resizer)
 

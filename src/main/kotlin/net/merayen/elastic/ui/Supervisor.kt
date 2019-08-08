@@ -3,7 +3,6 @@ package net.merayen.elastic.ui
 import net.merayen.elastic.ui.controller.Gate
 import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.util.DrawContext
-import net.merayen.elastic.util.Postmaster
 import java.util.*
 
 /**

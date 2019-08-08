@@ -1,12 +1,15 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi
 
-import net.merayen.elastic.backend.logicnodes.list.midi_1.*
+import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.Data
+import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
 import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.buttons.StateButton
-import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.EventTimeLine
