@@ -1,7 +1,5 @@
 package net.merayen.elastic.ui.objects.components.curvebox
 
-import java.util.ArrayList
-
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.Rect
@@ -11,10 +9,11 @@ import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
+import java.util.*
 import kotlin.math.pow
 
+// TODO make more generic, UI-wise
 class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
-
 	var layoutWidth = 100f
 	var layoutHeight = 100f
 
@@ -126,10 +125,10 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		override fun onDraw(draw: Draw) {
 			if (visible) {
 				//val radius = max(layoutWidth / layoutHeight, layoutHeight / layoutWidth) * 0.05f
-				val r_y = radius * (layoutWidth / layoutHeight).pow(0.5f)
-				val r_x = radius * (layoutHeight / layoutWidth).pow(0.5f)
+				val rY = radius * (layoutWidth / layoutHeight).pow(0.5f)
+				val rX = radius * (layoutHeight / layoutWidth).pow(0.5f)
 				draw.setColor(color.red, color.green, color.blue)
-				draw.fillOval(-r_x / 2, -r_y / 2, r_x, r_y)
+				draw.fillOval(-rX / 2, -rY / 2, rX, rY)
 			}
 		}
 
@@ -173,8 +172,8 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		translation.scaleY = 1 / layoutHeight
 		translation.clip = Rect(0f, 0f, layoutWidth + 1, layoutHeight + 1)
 
-		draw.setColor(20, 20, 40)
-		draw.fillRect(0f, 0f, 1f, 1f)
+		//draw.setColor(20, 20, 40)
+		//draw.fillRect(0f, 0f, 1f, 1f)
 
 		draw.setColor(150, 150, 150)
 		draw.setStroke(1 / ((layoutWidth + layoutHeight) / 2))

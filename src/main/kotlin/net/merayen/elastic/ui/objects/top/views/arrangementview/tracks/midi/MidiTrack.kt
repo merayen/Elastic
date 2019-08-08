@@ -10,6 +10,9 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.buttons.StateButton
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.EventTimeLine
@@ -29,6 +32,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 
 	private val midiEditPane = MidiEditPane(nodeId)
 	var handler: Handler? = null
+
+	private val removeTrackMenuItem = TextContextMenuItem("Remove track")
 
 	init {
 		val removeButton = Button()
@@ -138,6 +143,17 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 			override fun onSelectionDrop(start: Point, offset: Point) {
 				handler?.onSelectionDrop(start, offset)
 			}
+		}
+
+		trackPane.contextMenu.addMenuItem(removeTrackMenuItem)
+		trackPane.contextMenu.handler = object : ContextMenu.Handler {
+			override fun onSelect(item: ContextMenuItem?, position: Point) {
+				when (item) {
+					removeTrackMenuItem -> TODO("Implement!")
+				}
+			}
+
+			override fun onMouseDown(position: Point) {}
 		}
 	}
 
