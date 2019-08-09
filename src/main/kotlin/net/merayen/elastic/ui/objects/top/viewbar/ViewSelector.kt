@@ -8,7 +8,6 @@ import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementView
 import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView
 import net.merayen.elastic.ui.objects.top.views.filebrowserview.FileBrowserView
-import net.merayen.elastic.ui.objects.top.views.midiview.MidiView
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
 import net.merayen.elastic.ui.objects.top.views.statisticsview.StatisticsView
@@ -34,7 +33,6 @@ internal class ViewSelector(handler: Handler) : UIObject() {
 		views.add(DropDownItem(NodeView::class, "Nodes"))
 		views.add(DropDownItem(FileBrowserView::class, "Files"))
 		views.add(DropDownItem(EditNodeView::class, "Edit"))
-		views.add(DropDownItem(MidiView::class, "Midi"))
 		views.add(DropDownItem(TransportView::class, "Transport"))
 		views.add(DropDownItem(ArrangementView::class, "Arrangement"))
 		views.add(DropDownItem(StatisticsView::class, "Statistics"))

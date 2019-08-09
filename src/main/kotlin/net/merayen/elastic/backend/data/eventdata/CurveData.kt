@@ -8,9 +8,9 @@ class CurveData : Cloneable {
 
 		enum class Type {
 			/**
-			 * Beats per minute
+			 * Beats per minute. TODO really bpm here? Shouldn't it be inherited outside midi?
 			 */
-			BPM,
+			//BPM,
 
 			/**
 			 * Midi channel volume

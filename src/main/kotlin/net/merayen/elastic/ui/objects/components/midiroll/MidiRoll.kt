@@ -33,7 +33,7 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		net = PianoNet(OCTAVE_COUNT)
 		net.handler = object : PianoNet.Handler {
 			override fun onRemoveMidi(id: String) {
-				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+				TODO("not implemented")
 			}
 
 			override fun onAddMidi(midiData: MidiData) {

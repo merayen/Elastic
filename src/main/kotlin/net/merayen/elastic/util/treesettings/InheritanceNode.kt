@@ -4,12 +4,13 @@ import kotlin.reflect.KClass
 
 /**
  * Hierarchical settings for trees, with inheritance.
+ * No supervisor, put them together by setting parent-property.
  */
-class InheritanceTree {
+class InheritanceNode {
 	class AlreadyInTreeException : RuntimeException()
 	class ItemCanNotBeItsOwnParent : RuntimeException()
 
-	var parent: InheritanceTree? = null
+	var parent: InheritanceNode? = null
 		set(value) {
 			if (value == this)
 				throw ItemCanNotBeItsOwnParent()
@@ -51,8 +52,8 @@ class InheritanceTree {
 		settings.remove(klass)
 	}
 
-	private fun getTree(): List<InheritanceTree> {
-		val r = ArrayList<InheritanceTree>()
+	private fun getTree(): List<InheritanceNode> {
+		val r = ArrayList<InheritanceNode>()
 
 		r.add(this)
 

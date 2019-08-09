@@ -129,7 +129,7 @@ public abstract class LocalNode {
 		return result;
 	}
 
-	protected LocalNode getParent() {
+	public LocalNode getParent() {
 		Node parent = supervisor.netlist_util.getParent(node);
 		if (parent == null)
 			return null;

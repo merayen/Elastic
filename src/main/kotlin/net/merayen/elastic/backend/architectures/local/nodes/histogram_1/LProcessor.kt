@@ -63,7 +63,7 @@ class LProcessor : LocalProcessor() {
 
 				for (i in dataPort.read until dataPort.read + available) {
 					val sample = audio[i]
-					if (sample >= start && sample < start+width)
+					if ((sample > 0.01f || sample < -0.01) && sample >= start && sample < start+width)
 						buckets[((sample - start) / width * (resolution-1)).toInt()] += 1f
 
 					if (sample < minValue)

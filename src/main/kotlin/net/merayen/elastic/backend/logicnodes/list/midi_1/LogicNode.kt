@@ -24,7 +24,7 @@ class LogicNode : BaseLogicNode() {
 	private val midiData = MidiData()
 
 	/**
-	 * Set to true whenever we should pdate the processing backend and UI with new data.
+	 * Set to true whenever we should update the processing backend and UI with new data.
 	 * This happens on first process frame / load or if user has changed any midi.
 	 */
 	private var dirty = true
@@ -49,16 +49,16 @@ class LogicNode : BaseLogicNode() {
 	override fun onPrepareFrame(): InputFrameData {
 		if (dirty || buffer.size > 0) {
 			return MidiNodeInputFrameData(
-					id,
+					nodeId = id,
 
-					if (dirty) {
+					midiDataMessage = if (dirty) {
 						dirty = false
 						MidiDataMessage(id, midiData.clone())
 					} else {
 						null
 					},
 
-					if (buffer.size > 0) {
+					temporaryMidi = if (buffer.size > 0) {
 						// TODO remove cancellations?
 						val r = buffer.toTypedArray();
 						buffer.clear();
@@ -76,6 +76,11 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onData(data: NodeDataMessage) {
 		when (data) {
+			is AddMidiMessage -> {
+				println("Adding midi message $data")
+				midiData.merge(data.midiData)
+				dirty = true
+			}
 			is PushTangentMessage -> {
 				buffer.add(shortArrayOf(144.toShort(), data.tangent, 64))
 			}

@@ -2,30 +2,29 @@ package net.merayen.elastic.util.treesettings
 
 import org.junit.jupiter.api.Assertions
 
-internal class InheritanceTreeTest {
-
+internal class InheritanceNodeTest {
 	data class MyName(val name: String)
 	data class MyAge(val age: Int)
 
-	private lateinit var top: InheritanceTree
-	private lateinit var left: InheritanceTree
-	private lateinit var right: InheritanceTree
-	private lateinit var rightBottom: InheritanceTree
+	private lateinit var top: InheritanceNode
+	private lateinit var left: InheritanceNode
+	private lateinit var right: InheritanceNode
+	private lateinit var rightBottom: InheritanceNode
 
 	@org.junit.jupiter.api.BeforeEach
 	fun setUp() {
-		top = InheritanceTree()
+		top = InheritanceNode()
 		top.put(MyName("Merayen"))
 
-		left = InheritanceTree()
+		left = InheritanceNode()
 		left.parent = top
 		left.put(MyAge(24))
 
-		right = InheritanceTree()
+		right = InheritanceNode()
 		right.put(MyName("Per"))
 		right.parent = top
 
-		rightBottom = InheritanceTree()
+		rightBottom = InheritanceNode()
 		rightBottom.parent = right
 	}
 
@@ -38,17 +37,17 @@ internal class InheritanceTreeTest {
 
 	@org.junit.jupiter.api.Test
 	fun setParent() {
-		val t1 = InheritanceTree()
-		val t2 = InheritanceTree()
-		val t3 = InheritanceTree()
-		Assertions.assertThrows(InheritanceTree.ItemCanNotBeItsOwnParent::class.java) {
+		val t1 = InheritanceNode()
+		val t2 = InheritanceNode()
+		val t3 = InheritanceNode()
+		Assertions.assertThrows(InheritanceNode.ItemCanNotBeItsOwnParent::class.java) {
 			t1.parent = t1
 		}
 
 		t2.parent = t1
 		t3.parent = t2
 
-		Assertions.assertThrows(InheritanceTree.AlreadyInTreeException::class.java) {
+		Assertions.assertThrows(InheritanceNode.AlreadyInTreeException::class.java) {
 			t1.parent = t3
 		}
 
@@ -73,7 +72,7 @@ internal class InheritanceTreeTest {
 
 	@org.junit.jupiter.api.Test
 	fun set() {
-		val t1 = InheritanceTree()
+		val t1 = InheritanceNode()
 		val someone = MyName("Someone")
 		val someoneElse = MyName("Someone else")
 		t1.put(someone)
@@ -84,7 +83,7 @@ internal class InheritanceTreeTest {
 
 	@org.junit.jupiter.api.Test
 	fun clear() {
-		val t1 = InheritanceTree()
+		val t1 = InheritanceNode()
 		t1.put(MyName("Gunnar"))
 		t1.put(MyAge(42))
 		t1.clear(MyName::class)

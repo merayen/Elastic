@@ -17,6 +17,8 @@ class LProcessor : LocalProcessor() {
 			if (inputMidi != null) // TODO write any note from MidiData too
 				outlet.putMidi(0, inputMidi); // TODO shouldn't quantize to beginning of frame
 
+			//if (lnode.midiData.)
+
 			outlet.written = buffer_size
 			outlet.push()
 		}
