@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.util.Movable
 import kotlin.math.max
 
@@ -14,7 +15,13 @@ class TrackPane : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 50f
 
-	val buttons = AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox())
+	val buttons = AutoLayout(LayoutMethods.HorizontalBox())
+
+	/**
+	 * Populate contextMenu with your own items.
+	 * Remember to attach your own handler too.
+	 */
+	val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
 
 	private val resizer = object : UIObject() {
 		override fun onDraw(draw: Draw) {
@@ -36,7 +43,6 @@ class TrackPane : UIObject(), FlexibleDimension {
 			}
 
 			override fun onDrop() {}
-
 		})
 		add(resizer)
 
@@ -51,6 +57,7 @@ class TrackPane : UIObject(), FlexibleDimension {
 
 	override fun onEvent(event: UIEvent) {
 		movable.handle(event)
+		contextMenu.handle(event)
 	}
 
 	override fun getWidth() = layoutWidth

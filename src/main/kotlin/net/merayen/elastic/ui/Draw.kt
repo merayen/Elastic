@@ -18,6 +18,9 @@ import java.awt.geom.Path2D
 class Draw internal constructor(private val uiobject: UIObject, private val draw_context: DrawContext) {
 	private val g2d: java.awt.Graphics2D = draw_context.graphics2d
 
+	/**
+	 * outline is null if the object has not drawn anything on this particular frame.
+	 */
 	var outline: Rect? = null // Relative
 
 	private var font_name = "Geneva"
@@ -39,22 +42,21 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	val surfaceID: String
 		get() = draw_context.surfaceID
 
-	val absoluteOutline: Rect
+	val absoluteOutline: Rect?
 		get() {
+			val outline = outline ?: return null
+
 			val absoluteTranslation = uiobject.absoluteTranslation!!
-			val outline = outline
 
 			val result = Rect()
 
-			if (outline != null) {
-				result.x1 = outline.x1 / absoluteTranslation.scaleX + absoluteTranslation.x
-				result.y1 = outline.y1 / absoluteTranslation.scaleY + absoluteTranslation.y
-				result.x2 = outline.x2 / absoluteTranslation.scaleX + absoluteTranslation.x
-				result.y2 = outline.y2 / absoluteTranslation.scaleY + absoluteTranslation.y
+			result.x1 = outline.x1 / absoluteTranslation.scaleX + absoluteTranslation.x
+			result.y1 = outline.y1 / absoluteTranslation.scaleY + absoluteTranslation.y
+			result.x2 = outline.x2 / absoluteTranslation.scaleX + absoluteTranslation.x
+			result.y2 = outline.y2 / absoluteTranslation.scaleY + absoluteTranslation.y
 
-				if (absoluteTranslation.clip != null)
-					result.clip(absoluteTranslation.clip)
-			}
+			if (absoluteTranslation.clip != null)
+				result.clip(absoluteTranslation.clip)
 
 			return result
 		}

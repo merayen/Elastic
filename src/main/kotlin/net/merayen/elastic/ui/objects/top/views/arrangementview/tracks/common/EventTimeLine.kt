@@ -9,11 +9,12 @@ import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
+import net.merayen.elastic.ui.util.boolean
 import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.UniqueID
-import net.merayen.elastic.ui.util.boolean
 import kotlin.math.max
 
 /**
@@ -70,8 +71,12 @@ class EventTimeLine : BaseTimeLine() {
 	private var selectedEventZoneIds = ArrayList<String>()
 
 	private val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
+	private val addEventZoneMenuItem = TextContextMenuItem("Add zone")
+	private val graphMenuItem = TextContextMenuItem("Show graph")
 
 	private val mouseHandler = MouseHandler(this, MouseEvent.Button.LEFT)
+
+	private val eventTimeLineGraph = EventTimeLineGraph()
 
 	override fun onInit() {
 		super.onInit()
@@ -80,13 +85,22 @@ class EventTimeLine : BaseTimeLine() {
 			override fun onMouseDown(position: Point) {}
 
 			override fun onSelect(item: ContextMenuItem?, position: Point) {
-				handler?.onCreateEvent(UniqueID.create(), position.x / zoomFactor, 1f)
+				when (item) {
+					addEventZoneMenuItem -> handler?.onCreateEvent(UniqueID.create(), position.x / zoomFactor, 1f)
+					graphMenuItem -> toggleGraph(true)
+				}
 			}
 		}
 
 		contextMenu.backgroundColor = Color(0.3f, 0.3f, 0.3f)
 
-		contextMenu.addMenuItem(TextContextMenuItem("Add"))
+		contextMenu.addMenuItem(addEventZoneMenuItem)
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(graphMenuItem)
 
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
 			override fun onMouseDown(position: Point?) {
@@ -101,6 +115,12 @@ class EventTimeLine : BaseTimeLine() {
 				handler?.onSelectionDrop(position, offset)
 			}
 		})
+
+		eventTimeLineGraph.handler = object : EventTimeLineGraph.Handler {
+			override fun onHide() {
+				toggleGraph(false)
+			}
+		}
 	}
 
 	fun createEventZone(eventZoneId: String): EventZone {
@@ -159,6 +179,9 @@ class EventTimeLine : BaseTimeLine() {
 			event.layoutHeight = layoutHeight - 4f
 			layoutWidth = max(layoutWidth, event.translation.x + event.layoutWidth)
 		}
+
+		eventTimeLineGraph.layoutWidth = layoutWidth
+		eventTimeLineGraph.layoutHeight = layoutHeight
 	}
 
 	override fun onEvent(event: UIEvent) {
@@ -219,5 +242,15 @@ class EventTimeLine : BaseTimeLine() {
 		}
 
 		updateSelections()
+	}
+
+	fun toggleGraph(show: Boolean) {
+		if (show) {
+			if (eventTimeLineGraph.parent == null)
+				add(eventTimeLineGraph)
+		} else {
+			if (eventTimeLineGraph.parent != null)
+				remove(eventTimeLineGraph)
+		}
 	}
 }
