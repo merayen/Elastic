@@ -15,7 +15,7 @@ class LogicNode : BaseLogicNode() {
 	override fun onRemove() {}
 	override fun onPrepareFrame(): InputFrameData = InputFrameData(id)
 
-	override fun onFinishFrame(data: OutputFrameData) {
+	override fun onFinishFrame(data: OutputFrameData?) {
 		sendDataToUI(data)
 	}
 

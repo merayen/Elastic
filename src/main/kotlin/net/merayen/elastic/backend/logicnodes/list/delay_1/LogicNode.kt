@@ -24,5 +24,5 @@ class LogicNode : BaseLogicNode() {
 
     override fun onRemove() {}
 
-    override fun onFinishFrame(data: OutputFrameData) {}
+    override fun onFinishFrame(data: OutputFrameData?) {}
 }

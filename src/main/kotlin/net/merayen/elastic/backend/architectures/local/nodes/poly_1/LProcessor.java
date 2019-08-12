@@ -15,7 +15,7 @@ import java.util.List;
  * Creates sessions of is children group when a tangent is pressed.
  * Automatically kills session when tangent is depressed, AND that
  * no processor has notified us that it is active (TODO the messaging part)
- * 
+ *
  * TODO support multiple input and output ports
  * TODO rename input and output to in_0 and out_0 for future proofing
  */
@@ -99,7 +99,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void push_tangent(short tangent, short velocity, int position) { // TODO support unison, and forwarding of channel number
-		int unison = ((LNode)getLocalNode()).unison;
+		int unison = ((LNode) getLocalNode()).getUnison();
 		for(int i = 0; i < unison; i++) {
 			int spawned_session_id;
 			try {
@@ -107,10 +107,10 @@ public class LProcessor extends LocalProcessor {
 			} catch (SpawnLimitException e) {
 				return; // No more voices can be spawned. XXX Should probably kill the oldest one and replace them
 			}
-	
+
 			MidiOutlet midi_outlet = new MidiOutlet(buffer_size);
 			List<OutputInterfaceNode> outnodes = new ArrayList<>();
-	
+
 			for(InterfaceNode in : interfaces) { // Add the children node as being connected, push() will then automatically schedule the processor
 				if (in instanceof InputInterfaceNode) {
 					((InputInterfaceNode) in).setForwardOutlet(spawned_session_id, midi_outlet);
@@ -121,7 +121,7 @@ public class LProcessor extends LocalProcessor {
 			}
 
 			sessions.push(spawned_session_id, tangent, midi_outlet, outnodes.toArray(new OutputInterfaceNode[0]));
-	
+
 			midi_outlet.putMidi(position, new short[] {MidiStatuses.KEY_DOWN, tangent, velocity});
 			if(current_pitch != null)
 				midi_outlet.putMidi(position, current_pitch);

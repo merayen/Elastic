@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.logicnodes
 
-import java.util.ArrayList
+import java.util.*
 
 object NodeRegistry {
 	val nodes: MutableList<String> = ArrayList()
@@ -23,5 +23,6 @@ object NodeRegistry {
 		nodes.add("midi_transpose_1")
 		nodes.add("histogram_1")
 		nodes.add("wave_1")
+		nodes.add("metronome_1")
 	}
 }

@@ -4,7 +4,7 @@ public class TranslationData {
 	public float x = 0, y = 0; // Object's origin (relative to parent)
 	public float scaleX = 1, scaleY = 1; // Scales the content INSIDE, not ourself
 	public Rect clip;
-	public Color color = new Color(); // TODO implement color and alpha filtering when drawing, so that we can translate colors on children objects
+	//public Color color = new Color(); // Probably do not do this? If we were to implement buffering of components, we need to compare color values? Or?
 
 	public TranslationData() {}
 
@@ -14,7 +14,7 @@ public class TranslationData {
 		scaleX = t.scaleX;
 		scaleY = t.scaleY;
 		clip = t.clip;
-		color = t.color;
+		//color = t.color;
 	}
 
 	public void translate(TranslationData td) {

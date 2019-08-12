@@ -35,7 +35,7 @@ class LogicNode : BaseLogicNode() {
 		updateProperties(instance)
 	}
 
-	override fun onFinishFrame(data: OutputFrameData) {
+	override fun onFinishFrame(data: OutputFrameData?) {
 		val output = data as OutputNodeOutputData
 
 		// Count max channels

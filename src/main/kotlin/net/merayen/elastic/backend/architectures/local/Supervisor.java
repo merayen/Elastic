@@ -1,8 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.*;
-
-import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NetListValidator;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
@@ -11,8 +8,12 @@ import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.backend.nodes.UtilKt;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.system.intercom.*;
+import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.system.intercom.ProcessMessage;
+import net.merayen.elastic.system.intercom.StatisticsReportMessage;
 import net.merayen.elastic.util.AverageStat;
+
+import java.util.*;
 
 /**
  * For now, the Supervisor does not support adding and removal of nodes/ports, connections etc. You will need to clear and restart.
@@ -24,6 +25,7 @@ class Supervisor {
 	final NetList netlist;
 	private final int sample_rate;
 	final int buffer_size;
+	long sampleCount = 0; // Global sample counter from
 
 	/**
 	 * Global samplePosition

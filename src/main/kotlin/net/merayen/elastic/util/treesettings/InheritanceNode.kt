@@ -36,7 +36,7 @@ class InheritanceNode {
 	/**
 	 * Checks if the setting is set locally
 	 */
-	fun isLocal(klass: KClass<out Any>) = settings.contains(klass)
+	fun isLocal(klass: KClass<out Any>) = klass in settings
 
 	/**
 	 * Set a setting locally.

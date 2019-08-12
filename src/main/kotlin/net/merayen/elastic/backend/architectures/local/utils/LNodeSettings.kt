@@ -6,15 +6,19 @@ import net.merayen.elastic.util.treesettings.InheritanceNode
 class LNodeSettings {
 	private val cache = HashMap<LocalNode, InheritanceNode>()
 
-	fun get(lnode: LocalNode): InheritanceNode {
-		TODO()
-		if (lnode !in cache) {
-			cache[lnode] = InheritanceNode()
+	fun get(lnode: LocalNode) = cache[lnode] ?: loadInheritanceNode(lnode)
 
-		}
-	}
+	private fun loadInheritanceNode(lnode: LocalNode): InheritanceNode {
+		val inheritanceNode = InheritanceNode()
 
-	private fun getTree() {
+		val parent = lnode.parent
+		if (parent != null)
+			inheritanceNode.parent = loadInheritanceNode(parent)
 
+		cache[lnode] = inheritanceNode
+
+		lnode.getParameter("settings")
+
+		return inheritanceNode
 	}
 }

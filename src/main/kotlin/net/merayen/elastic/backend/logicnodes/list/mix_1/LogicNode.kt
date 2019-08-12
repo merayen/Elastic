@@ -24,7 +24,7 @@ class LogicNode : BaseLogicNode() {
 
     override fun onDisconnect(port: String) {}
 
-    override fun onFinishFrame(data: OutputFrameData) {}
+    override fun onFinishFrame(data: OutputFrameData?) {}
 
     override fun onRemove() {}
 

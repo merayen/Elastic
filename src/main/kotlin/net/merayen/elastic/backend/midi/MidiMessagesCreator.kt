@@ -6,7 +6,7 @@ import kotlin.math.min
 object MidiMessagesCreator {
 	fun keyDown(tangent: Int, weight: Float): ShortArray {
 		val t = min(12*6, max(0, tangent)).toShort()
-		val w = min(1f, max(0f, weight)).toShort()
+		val w = min(127f, max(0f, weight * 127)).toShort()
 		return shortArrayOf(MidiStatuses.KEY_DOWN, t, w)
 	}
 

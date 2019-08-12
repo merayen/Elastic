@@ -72,7 +72,7 @@ class LogicNode : BaseLogicNode() {
 		return MidiNodeInputFrameData(id)
 	}
 
-	override fun onFinishFrame(data: OutputFrameData) {}
+	override fun onFinishFrame(data: OutputFrameData?) {}
 
 	override fun onData(data: NodeDataMessage) {
 		when (data) {

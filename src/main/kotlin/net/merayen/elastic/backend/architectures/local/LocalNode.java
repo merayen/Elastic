@@ -1,10 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.netlist.NetList;
@@ -12,6 +7,11 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.NodeStatusMessage;
 import net.merayen.elastic.system.intercom.OutputFrameData;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
@@ -86,14 +86,17 @@ public abstract class LocalNode {
 	}
 
 	void finishFrame() {
-		onFinishFrame();
+		outgoing = null;
+		onFinishFrame(); // TODO make it create and return outgoing-object instead
 
-		if (outgoing == null)
-			outgoing = new OutputFrameData(getID(), null);
+		/*if (outgoing == null)
+			outgoing = new OutputFrameData(getID(), null);*/
 
-		if (lastNodeStats + 1000 < System.currentTimeMillis()) {
-			outgoing.setNodeStats(new NodeStatusMessage(node.getID(), (float) getStatisticsMax(), 0, getStatisticsProcessCount()));
-			lastNodeStats = System.currentTimeMillis();
+		if (outgoing != null) {
+			if (lastNodeStats + 1000 < System.currentTimeMillis()) {
+				outgoing.setNodeStats(new NodeStatusMessage(node.getID(), (float) getStatisticsMax(), 0, getStatisticsProcessCount()));
+				lastNodeStats = System.currentTimeMillis();
+			}
 		}
 	}
 
