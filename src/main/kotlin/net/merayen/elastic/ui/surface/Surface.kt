@@ -49,4 +49,6 @@ abstract class Surface(val id: String, protected var handler: Handler) {
 	abstract fun pullEvents(): List<UIEvent>
 
 	abstract fun end()
+
+	abstract fun isReady(): Boolean
 }

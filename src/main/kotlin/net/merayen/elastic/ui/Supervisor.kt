@@ -10,8 +10,8 @@ import java.util.*
  * (Remote UI might be an option later on)
  */
 class Supervisor(private val handler: Handler) {
-	private var surfacehandler = SurfaceHandler(this)
-	private val top: Top
+	private val surfacehandler = SurfaceHandler(this)
+	private val top = Top(surfacehandler)
 	private val ui_gate: Gate.UIGate // Only to be used by the UI-thread
 	private val backend_gate: Gate.BackendGate // Only to be used by the main-thread
 	private val gate: Gate
@@ -32,8 +32,6 @@ class Supervisor(private val handler: Handler) {
 	}
 
 	init {
-		top = Top(surfacehandler)
-
 		val self = this
 		gate = Gate(top, object: Gate.Handler {
 			override fun onMessageToBackend(message: Any) {
@@ -42,8 +40,14 @@ class Supervisor(private val handler: Handler) {
 		})
 
 		ui_gate = gate.uiGate
-		top.setUIGate(ui_gate)
+
+		top.handler = object : Top.Handler {
+			override fun onSendMessage(message: Any) = ui_gate.send(message)
+		}
+
 		backend_gate = gate.backendGate
+
+		top.createWindow() // First window
 	}
 
 	@Synchronized

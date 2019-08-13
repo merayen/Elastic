@@ -4,7 +4,6 @@ import net.merayen.elastic.ui.SurfaceHandler
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.Gate.UIGate
 import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
-import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.util.UniqueID
 import java.util.*
 
@@ -13,12 +12,17 @@ import java.util.*
  * Holds track of all the windows (called surfaces), and which to draw in which context.
  */
 class Top(private val surfacehandler: SurfaceHandler) : UIObject() {
+	interface Handler {
+		fun onSendMessage(message: Any)
+	}
+
+	var handler: Handler? = null
+
 	val mouseCursorManager = MouseCursorManager()
 	private val windows = ArrayList<Window>()
 	private var ui_gate: UIGate? = null
 
 	init {
-		createWindow()
 		add(mouseCursorManager)
 	}
 
@@ -59,6 +63,6 @@ class Top(private val surfacehandler: SurfaceHandler) : UIObject() {
 	}
 
 	override fun sendMessage(message: Any) {
-		ui_gate!!.send(message)
+		handler?.onSendMessage(message)
 	}
 }

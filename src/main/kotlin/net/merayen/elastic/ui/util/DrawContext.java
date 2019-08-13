@@ -1,14 +1,14 @@
 package net.merayen.elastic.ui.util;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import net.merayen.elastic.ui.TranslationDataStack;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.surface.Surface;
 import net.merayen.elastic.util.Point;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Session-like class for the current drawing.
@@ -16,7 +16,7 @@ import net.merayen.elastic.util.Point;
  * Object is thrown between all the UIObject()s
  */
 public class DrawContext {
-	public final java.awt.Graphics2D graphics2d; 
+	public final java.awt.Graphics2D graphics2d;
 	public final int width;
 	public final int height;
 
@@ -54,6 +54,7 @@ public class DrawContext {
 			throw new RuntimeException("Cyclic drawing of object detected");
 
 		draw_stack.addLast(uiobject);
+
 		translation_stack.push(uiobject.getTranslation()); // XXX occasionally NullPointerException here
 	}
 

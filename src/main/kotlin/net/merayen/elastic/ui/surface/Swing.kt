@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities
  */
 class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	private lateinit var panel: LolPanel
-	private lateinit var frame: LolFrame
+	private var frame: LolFrame? = null
 	private val eventsQueue = ArrayList<UIEvent>()
 
 	/*
@@ -39,11 +39,8 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			try {
 				dp.addDropTargetListener(object : DropTargetListener {
 					override fun dragEnter(dtde: DropTargetDragEvent) {}
-
 					override fun dragOver(dtde: DropTargetDragEvent) {}
-
 					override fun dropActionChanged(dtde: DropTargetDragEvent) {}
-
 					override fun dragExit(dte: DropTargetEvent) {}
 
 					override fun drop(dtde: DropTargetDropEvent) {
@@ -161,11 +158,22 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 
 	init {
 		java.awt.EventQueue.invokeLater {
-			frame = LolFrame(Runnable { end() })
+			val frame = LolFrame(Runnable { end() })
 			panel = LolPanel()
 			panel.name = id
 			frame.add(panel)
+
+			this.frame = frame
 		}
+
+		for(i in 0 until 100)
+			if (frame == null)
+				Thread.sleep(10)
+			else
+				break
+
+		if (frame == null)
+			throw RuntimeException("Failed to initialize frame in expected time window")
 	}
 
 	override val width: Int
@@ -200,9 +208,11 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	}
 
 	override fun end() {
-		frame.isVisible = false
-		frame.dispose()
-		frame.timer.stop()
+		frame?.isVisible = false
+		frame?.dispose()
+		frame?.timer?.stop()
+
+		frame = null
 	}
 
 	override fun pullEvents(): List<UIEvent> {
@@ -235,11 +245,11 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			}
 
 			override fun hide() {
-				frame.contentPane.cursor = blankCursor
+				frame?.contentPane?.cursor = blankCursor
 			}
 
 			override fun show() {
-				frame.contentPane.cursor = Cursor.getDefaultCursor()
+				frame?.contentPane?.cursor = Cursor.getDefaultCursor()
 			}
 		}
 
@@ -254,4 +264,6 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	}
 
 	override val nativeUI = SwingNativeUI()
+
+	override fun isReady() = frame != null
 }
