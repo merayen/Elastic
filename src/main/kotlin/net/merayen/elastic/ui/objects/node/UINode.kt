@@ -3,14 +3,12 @@ package net.merayen.elastic.ui.objects.node
 import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.backend.nodes.createNewNodeData
 import net.merayen.elastic.system.intercom.*
-import java.util.ArrayList
-
 import net.merayen.elastic.ui.Draw
-
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.util.NodeUtil
+import java.util.*
 
 abstract class UINode : UIObject(), FlexibleDimension {
 	lateinit var nodeId: String // Same ID as in the backend-system, netlist etc
@@ -79,7 +77,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			val properties = message.instance
 			if (properties is BaseNodeData) {
 				if (properties.uiTranslation != null)
-
 
 					if (!titlebar.isDragging) {
 						val newTranslation = message.instance.uiTranslation

@@ -1,23 +1,22 @@
 package net.merayen.elastic.backend.context
 
 import net.merayen.elastic.backend.context.action.ImportFileIntoNodeGroupAction
-import java.util.ArrayList
-
 import net.merayen.elastic.backend.context.action.LoadProjectAction
+import net.merayen.elastic.system.intercom.BeginResetNetListMessage
+import net.merayen.elastic.system.intercom.FinishResetNetListMessage
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
 import net.merayen.elastic.system.intercom.ProcessMessage
-import net.merayen.elastic.system.intercom.FinishResetNetListMessage
-import net.merayen.elastic.system.intercom.BeginResetNetListMessage
 import net.merayen.elastic.system.intercom.backend.*
-import net.merayen.elastic.util.Postmaster
 import net.merayen.elastic.util.NetListMessages
+import net.merayen.elastic.util.Postmaster
+import java.util.*
 
 /**
  * Helper class for BackendContext.
  * Routes messages between UI, LogicNodes and Processor
  */
 class MessageHandler internal constructor(private val backendContext: BackendContext) {
-    private val to_ui = Postmaster()
+    private val to_ui = Postmaster() // FIXME seem to get really big after a good while?
     private val to_backend = Postmaster()
     private val from_processor = Postmaster()
 
