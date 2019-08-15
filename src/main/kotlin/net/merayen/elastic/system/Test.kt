@@ -19,25 +19,8 @@ class Test private constructor() {
 	}
 
 	init {
-		/*try {
-			List<Number> test = ((List<Number>)new org.json.simple.parser.JSONParser().parse("[1,2,3,4,5.5,\"hei\"]"));
-			System.out.println(test.get(5).doubleValue());
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(5+6 > 6)
-			return;*/
-
-		// Temporary XXX
 		val file = File(PROJECT_PATH)
 		if (file.exists()) {
-			/*try {
-				Files.walk(Paths.get(PROJECT_PATH)).sorted(Comparator.reverseOrder()).forEach((x) -> x.toFile().delete());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}*/
-			// Load the project
 			system.runAction(LoadProject(PROJECT_PATH))
 		} else {
 			system.runAction(NewProject(PROJECT_PATH))

@@ -36,7 +36,7 @@ public class SignalBezierCurve {
 		}
 	}
 
-	private static void getValuesFromSegment(Dot dot0, Dot dot1, final float[] result, int start, int length) {
+	public static void getValuesFromSegment(Dot dot0, Dot dot1, final float[] result, int start, int length) {
 		int last = 0;
 		float last_value = 0;
 
@@ -163,33 +163,5 @@ public class SignalBezierCurve {
 		double four = Math.pow(t, 3) * p[3];
 
 		return (float)(one + two + three + four);
-	}
-
-	public static void test() {
-		Dot dot0 = new Dot();
-		Dot dot1 = new Dot();
-
-		dot0.position.setX(0);
-		dot0.position.setY(0.5f);
-		dot0.right.setX(0.5f);
-		dot0.right.setY(0);
-
-		dot1.position.setX(1);
-		dot1.position.setY(0.5f);
-		dot1.left.setX(0.5f);
-		dot1.left.setY(1);
-
-		final int ITERATIONS = 100;
-		float[] result = new float[ITERATIONS];
-
-		getValuesFromSegment(dot0, dot1, result, 0, result.length);
-
-		/*int i = 0; // Doesn't work. bezier very different from sine waves?
-		for(float r : result) {
-			double fasit = Math.sin(-Math.PI * 2 * (i++ / (float)ITERATIONS)) / 6.95 + 0.5f;
-			System.out.println(String.format("%.3f - %.3f (%.3f)\t-> %.3f%%", r, fasit, fasit - r, Math.abs(r - 0.5) / Math.abs(fasit - 0.5) * 100));
-			if(Math.abs(fasit - r) > 0.01)
-				no();
-		}*/
 	}
 }
