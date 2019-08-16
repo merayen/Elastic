@@ -18,8 +18,6 @@ class Test {
 			//net.merayen.elastic.backend.interfacing.Test.test();
 
 			net.merayen.elastic.system.Test.test()
-
-			println("Test done")
 		}
 	}
 }

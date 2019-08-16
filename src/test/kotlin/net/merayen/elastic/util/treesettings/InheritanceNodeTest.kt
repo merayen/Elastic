@@ -2,7 +2,7 @@ package net.merayen.elastic.util.treesettings
 
 import org.junit.jupiter.api.Assertions
 
-internal class InheritanceNodeTest {
+class InheritanceNodeTest {
 	data class MyName(val name: String)
 	data class MyAge(val age: Int)
 

@@ -2,16 +2,15 @@ package net.merayen.elastic.ui.surface
 
 import net.merayen.elastic.ui.event.*
 import net.merayen.elastic.util.Point
-import java.awt.Cursor
-import java.awt.MouseInfo
-import java.awt.Robot
-import java.awt.Toolkit
+import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.awt.dnd.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
+import java.awt.image.ImageObserver
+import java.awt.image.IndexColorModel
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -95,6 +94,9 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	inner class LolPanel : javax.swing.JPanel(), java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.MouseWheelListener, java.awt.event.KeyListener {
 		private val active_key_codes = HashSet<Int>() // Ugly hack as JKeyListener repeats the keys, at least for Linux
 
+		private var bufferedImage: BufferedImage? = null
+		private val bufferRendering = false
+
 		init {
 			isFocusable = true
 			//grabFocus();
@@ -109,7 +111,17 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			//super.paintComponent(g);
 
-			handler.onDraw(g as java.awt.Graphics2D)
+			if (bufferRendering) {
+				if (bufferedImage?.width != width || bufferedImage?.height != height)
+					this.bufferedImage = null
+
+				val bufferedImage = bufferedImage ?: BufferedImage(width, height, IndexColorModel.BITMASK);
+				handler.onDraw(bufferedImage.createGraphics()!!)
+
+				g.drawImage(bufferedImage, 0, 0, bufferedImage.width, bufferedImage.height, null)
+			} else {
+				handler.onDraw(g as Graphics2D)
+			}
 		}
 
 		override fun mousePressed(e: java.awt.event.MouseEvent) {
