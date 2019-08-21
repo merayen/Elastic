@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.surface
 
 import net.merayen.elastic.ui.event.*
+import net.merayen.elastic.util.AverageStat
 import net.merayen.elastic.util.Point
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
@@ -9,7 +10,6 @@ import java.awt.dnd.*
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
-import java.awt.image.ImageObserver
 import java.awt.image.IndexColorModel
 import java.io.File
 import java.io.IOException
@@ -95,7 +95,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 		private val active_key_codes = HashSet<Int>() // Ugly hack as JKeyListener repeats the keys, at least for Linux
 
 		private var bufferedImage: BufferedImage? = null
-		private val bufferRendering = false
+		private var bufferRendering = false
 
 		init {
 			isFocusable = true
@@ -106,12 +106,19 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			addKeyListener(this)
 		}
 
+
+		private var lol = 0
+		private val averageStatLive = AverageStat<Long>(120)
+		private val averageStatBuffered = AverageStat<Long>(120)
 		public override fun paintComponent(g: java.awt.Graphics) {
 			//RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			//super.paintComponent(g);
 
+			bufferRendering = (lol++ % 120) > 60
 			if (bufferRendering) {
+				val t = System.currentTimeMillis()
+
 				if (bufferedImage?.width != width || bufferedImage?.height != height)
 					this.bufferedImage = null
 
@@ -119,8 +126,16 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 				handler.onDraw(bufferedImage.createGraphics()!!)
 
 				g.drawImage(bufferedImage, 0, 0, bufferedImage.width, bufferedImage.height, null)
+
+				averageStatBuffered.add(System.currentTimeMillis() - t)
 			} else {
+				val t = System.currentTimeMillis()
 				handler.onDraw(g as Graphics2D)
+				averageStatLive.add(System.currentTimeMillis() - t)
+			}
+
+			if (lol % 60 == 0) {
+				println("Buffered: ${averageStatBuffered.info()}   /   Live: ${averageStatLive.info()}")
 			}
 		}
 
@@ -169,7 +184,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	}
 
 	init {
-		java.awt.EventQueue.invokeLater {
+		EventQueue.invokeLater {
 			val frame = LolFrame(Runnable { end() })
 			panel = LolPanel()
 			panel.name = id
