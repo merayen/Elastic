@@ -62,6 +62,7 @@ class NodeViewContextMenu extends UIObject {
 
 		BaseNodeData baseData = createNewNodeData(nodeName, nodeVersion);
 		baseData.setUiTranslation(new BaseNodeData.UITranslation(position.getX(), position.getY()));
+		sendMessage(new NodeParameterMessage(node_id, baseData));
 	}
 
 	@Override
