@@ -8,6 +8,8 @@ import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.util.NodeUtil
+import net.merayen.elastic.util.Pacer
+import net.merayen.elastic.util.Point
 import java.util.*
 
 abstract class UINode : UIObject(), FlexibleDimension {
@@ -24,6 +26,9 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	private var inited: Boolean = false
 
+	private val targetLocation = Point()
+	private val lastDraw = Pacer()
+
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
 	protected abstract fun onMessage(message: BaseNodeData) // TODO remove. Use onParameter instead!
@@ -36,6 +41,8 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	override fun onInit() {
 		titlebar.handler = object : Titlebar.Handler {
 			override fun onMove() {
+				targetLocation.x = translation.x
+				targetLocation.y = translation.y
 				sendUiData()
 			}
 		}
@@ -44,9 +51,17 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		inited = true
 	}
 
+
 	override fun onDraw(draw: Draw) {
 		if (!inited)
 			throw RuntimeException("Forgotten super.onInit() ?")
+
+		lastDraw.update()
+
+		val diff = lastDraw.getDiff(30f)
+
+		translation.x += (targetLocation.x - translation.x) * diff
+		translation.y += (targetLocation.y - translation.y) * diff
 
 		draw.setColor(80, 80, 80)
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
@@ -84,10 +99,10 @@ abstract class UINode : UIObject(), FlexibleDimension {
 						val y = newTranslation?.y
 
 						if (x != null)
-							translation.x = x
+							targetLocation.x = x
 
 						if (y != null)
-							translation.y = y
+							targetLocation.y = y
 					}
 			}
 
@@ -114,7 +129,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	private fun sendUiData() {
 		val data = newNodeData()
-		data.uiTranslation = BaseNodeData.UITranslation(translation.x, translation.y)
+		data.uiTranslation = BaseNodeData.UITranslation(targetLocation.x, targetLocation.y)
 		sendParameter(data)
 	}
 
