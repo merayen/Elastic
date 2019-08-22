@@ -21,12 +21,12 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	private val nodePorts = ArrayList<UIPort>()
 
-	protected val ports
+	val ports
 		get() = ArrayList<UIPort>(nodePorts)
 
 	private var inited: Boolean = false
 
-	private val targetLocation = Point()
+	val targetLocation = Point()
 	private val lastDraw = Pacer()
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
@@ -58,7 +58,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 		lastDraw.update()
 
-		val diff = lastDraw.getDiff(30f)
+		val diff = lastDraw.getDiff(10f)
 
 		translation.x += (targetLocation.x - translation.x) * diff
 		translation.y += (targetLocation.y - translation.y) * diff

@@ -2,7 +2,6 @@ package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
 import net.merayen.elastic.system.intercom.NodeMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.controller.NodeViewController
 import net.merayen.elastic.ui.event.MouseEvent
@@ -234,8 +233,16 @@ class NodeView : View() {
 
 		nodes.clear()
 
-		contextMenu = NodeViewContextMenu(container, currentNodeId)
-		container.add(contextMenu!!)
+		val contextMenu = NodeViewContextMenu(container, currentNodeId)
+		contextMenu.handler = object : NodeViewContextMenu.Handler {
+			override fun onSolveNodes() {
+				NodeViewSolver(nodes.toTypedArray()).solve()
+			}
+
+		}
+		container.add(contextMenu)
+
+		this.contextMenu = contextMenu
 	}
 
 	fun disable() {
