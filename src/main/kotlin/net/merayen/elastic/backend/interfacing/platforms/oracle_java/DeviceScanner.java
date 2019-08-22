@@ -1,17 +1,13 @@
 package net.merayen.elastic.backend.interfacing.platforms.oracle_java;
 
+import net.merayen.elastic.backend.interfacing.AbstractDevice;
+import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
+
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
+import javax.sound.sampled.*;
 import javax.sound.sampled.Mixer.Info;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
-
-import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner;
-import net.merayen.elastic.backend.interfacing.AbstractDevice;
 
 /**
  * Scanner for the Oracle/OpenJDK JRE.
@@ -43,8 +39,6 @@ public class DeviceScanner extends AbstractDeviceScanner {
 				}
 
 				if(source_line instanceof SourceDataLine) {
-					SourceDataLine sdl = (SourceDataLine)source_line;
-
 					AbstractDevice device = new OracleAudioOutputDevice(m, (SourceDataLine)source_line); // We just know that it is available
 					addDevice(device);
 				}

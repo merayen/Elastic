@@ -9,6 +9,13 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
+	companion object {
+		val knownOutputDevices = arrayOf(
+			"oracle_java:Default Audio Device", // Mac OS X 10.9
+			"oracle_java:PulseAudio Mixer", // Ubuntu 16.04
+			"oracle_java:default [default]"
+		)
+	}
 	private var output_device: String? = null
 
 	override fun onCreate() {
@@ -20,10 +27,7 @@ class LogicNode : BaseLogicNode() {
 		for (ad in env.mixer.availableDevices)
 			if (ad is AudioDevice)
 				if (ad.isOutput)
-					if (ad.id == "oracle_java:Default Audio Device" ||// Mac OS X 10.9
-							ad.id == "oracle_java:PulseAudio Mixer" || // Ubuntu 16.04
-							ad.id == "oracle_java:default [default]"
-					)
+					if (ad.id in knownOutputDevices)
 						output_device = ad.id
 	}
 

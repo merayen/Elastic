@@ -57,7 +57,7 @@ public class Mixer { // Rename to e.g "IODispatch"?
 					}
 				} else {
 					synchronized (input_buffer) {
-						input_buffer.remove(device.getId());
+						input_buffer.put(device.getId(), new ArrayList<>());
 					}
 				}
 			}
