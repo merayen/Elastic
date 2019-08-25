@@ -10,7 +10,6 @@ import net.merayen.elastic.system.intercom.InputFrameData
 class LNode : LocalNode(LProcessor::class.java) {
 	internal var inputMidi: Array<ShortArray>? = null
 	internal var midiData: MidiData? = null
-	//internal var bpmCurve: Curv
 
 	override fun onInit() {}
 

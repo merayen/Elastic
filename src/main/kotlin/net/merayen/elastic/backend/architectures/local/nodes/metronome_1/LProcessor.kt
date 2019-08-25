@@ -12,7 +12,7 @@ import kotlin.math.sin
 class LProcessor : LocalProcessor() {
 	private var lastBeatPosition = 0
 
-	private var beepPosition = 0
+	private var audioBeepPosition = 0
 	private var midiBeepPosition = 0
 
 	private var midiState = 0
@@ -27,7 +27,7 @@ class LProcessor : LocalProcessor() {
 		val currentBeatPosition = parent.getCurrentBeatPosition()
 
 		if (currentBeatPosition.toInt() != lastBeatPosition) {
-			beepPosition = 0
+			audioBeepPosition = 0
 			midiBeepPosition = 0
 			lastBeatPosition = currentBeatPosition.toInt()
 		}
@@ -39,9 +39,9 @@ class LProcessor : LocalProcessor() {
 			audio.audio[1] = audio.audio[0]
 			val hz = if (lastBeatPosition == 0) 1760 else 880
 
-			if (beepPosition < beepLength)
+			if (audioBeepPosition < beepLength)
 				for (i in 0 until buffer_size)
-					audio.audio[0][i] = sin(beepPosition++ / sample_rate.toDouble() * PI * 2 * hz).toFloat() * (1 - beepPosition / beepLength).pow(2);
+					audio.audio[0][i] = sin(audioBeepPosition++ / sample_rate.toDouble() * PI * 2 * hz).toFloat() * (1 - audioBeepPosition / beepLength).pow(2);
 			else
 				for (i in 0 until buffer_size)
 					audio.audio[0][i] = 0f;

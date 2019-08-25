@@ -1,68 +1,10 @@
 package net.merayen.elastic.backend.data.eventdata
 
-import net.merayen.elastic.backend.midi.MidiStatuses
-import kotlin.experimental.and
-
 
 // TODO split data from functions?
 class MidiData(
-		private val midi: MutableList<MidiChunk> = ArrayList()
-) : Cloneable, Iterable<MidiData.IteratorItem> {
-
-	class IteratorItem(val midiChunk: MidiChunk)
-
-	inner class IteratorHandler(private var position: Double) : Iterator<IteratorItem> {
-		private var currentRevision = revision
-		private var index = 0
-		private var lastMidiChunk: MidiChunk? = null
-		private var lastPosition = 0.0
-
-		override fun hasNext(): Boolean {
-			relocate()
-
-			return index+1 < midi.size
-		}
-
-		override fun next(): IteratorItem {
-			if (index >= midi.size)
-				throw NoSuchElementException()
-
-			return IteratorItem(midi[index++])
-		}
-
-		private fun relocate() {
-			if (currentRevision == revision)
-				return
-
-			// Try to relocate based on previous sent MidiChunk
-			val lastMidiChunk = lastMidiChunk
-			if (lastMidiChunk != null) {
-				val newIndex = midi.indexOf(lastMidiChunk)
-				if (newIndex > -1) {
-					index = newIndex
-					currentRevision = revision
-					return
-				}
-			}
-
-			// Couldn't relocate based on last MidiChunk, so we need to find next one based on time
-			// If two or more MidiChunk shares the exact same start-time, we may drop one or more MidiChunks
-			// This only happens if user changes the midi data on the same part that is getting played
-			var newIndex = 0
-			for (midiChunk in midi) {
-				if (midiChunk.start > lastPosition) {
-					// Found the next one
-					index = newIndex
-					currentRevision = revision
-				}
-				newIndex++
-			}
-
-			// Couldn't relocate. Give up
-			index = Int.MAX_VALUE
-		}
-	}
-
+	private val midi: MutableList<MidiChunk> = ArrayList()
+): Cloneable, Iterable<MidiData.MidiChunk> {
 	/**
 	 * A chunk of midi packets.
 	 * They can happen at the same time, but are ensured to be in the correct order.
@@ -83,13 +25,23 @@ class MidiData(
 
 	private var dirty = false
 
+	val size: Int
+		get() {
+			return midi.size
+		}
+
 	/**
 	 * Increased every time a change has been made.
 	 */
-	private var revision = 0
+	var revision = 0L
+		private set
 
-	override fun iterator(): Iterator<IteratorItem> {
-		return IteratorHandler(0.0)
+	fun iterator(start: Double): MidiDataIterator {
+		return MidiDataIterator(this, start)
+	}
+
+	override fun iterator(): MidiDataIterator {
+		return MidiDataIterator(this)
 	}
 
 	public override fun clone(): MidiData {
@@ -100,13 +52,16 @@ class MidiData(
 		midi.add(midiChunk)
 		dirty = true
 		revision++
+
+		midi.sortBy { it.start }
 	}
 
-	fun slice(from: Float = 0f, to: Float = Float.MAX_VALUE): MidiData {
-		if (dirty)
-			cleanUp()
+	fun addAll(midiChunk: Array<MidiChunk>) {
+		midi.addAll(midiChunk)
+		dirty = true
+		revision++
 
-		TODO()
+		midi.sortBy { it.start }
 	}
 
 	fun merge(midiData: MidiData) {
@@ -114,12 +69,30 @@ class MidiData(
 			midi.add(midiPacket)
 
 		revision++
+
+		midi.sortBy { it.start }
 	}
 
-	/**
+	fun remove(id: String): Boolean {
+		val removed = midi.removeIf { it.id == id }
+
+		revision++
+
+		return removed
+	}
+
+	fun remove(midiChunk: MidiChunk): Boolean {
+		val removed = midi.remove(midiChunk)
+
+		revision++
+
+		return removed
+	}
+
+	/* // NOT HERE! Elsewhere!
 	 * Removes overlaying duplicates, zero-length notes, and then sorts.
 	 */
-	fun cleanUp() {
+	/*fun cleanUp() {
 		midi.sortBy { it.start }
 
 		val activeTangents = HashMap<Short, MidiChunk>()
@@ -148,14 +121,7 @@ class MidiData(
 		midi.addAll(result)
 
 		revision++
-	}
+	}*/
 
-	/**
-	 * Flattens all non-midi like bezier curves to MIDI CC data points.
-	 * Like for use by the backend, that doesn't deal with curves.
-	 * @param pointsPerSecond How many MIDI data points to write for each second
-	 */
-	fun flattenToMidi(pointsPerSecond: Int) {
-
-	}
+	fun getMidiChunks() = ArrayList(midi)
 }
