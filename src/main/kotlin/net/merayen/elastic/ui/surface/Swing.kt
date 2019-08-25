@@ -135,7 +135,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			}
 
 			if (lol % 60 == 0) {
-				println("Buffered: ${averageStatBuffered.info()}   /   Live: ${averageStatLive.info()}")
+				//println("Buffered: ${averageStatBuffered.info()}   /   Live: ${averageStatLive.info()}")
 			}
 		}
 

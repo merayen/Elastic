@@ -3,19 +3,17 @@ package net.merayen.elastic.backend.architectures.local.nodes.group_1
 import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
+import net.merayen.elastic.backend.logicnodes.list.group_1.Group1InputFrameData
 import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java), GroupLNode {
-	/**
-	 * A buffer for BPM for every sample. Children nodes retrieves this via getBPMCurveFrameBuffer and uses it for
-	 * every sample to adjust the speed.
-	 */
-	@Volatile
-	private var currentFrameBPM: Float? = null
-
 	private var currentBeatPosition = 0.0
-	private var currentSamplePosition = 0L
+	//private var currentSamplePosition = 0L
+
+	private var currentCursorBeatPosition = 0.0
+	private var currentCursorTimePosition = 0.0
+
 	private var playing = false
 
 	override fun getCurrentBarDivision(): Int {
@@ -35,23 +33,28 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		return 120.0 // TODO either return cached value, or calculate from curve
 	}
 
-	override fun getCursorBeatPosition(): Double {
+	override fun getCursorPosition(): Double {
 		val parent = parent as? GroupLNode
 		if (parent != null)
-			return getCursorBeatPosition()
+			return getCursorPosition()
 
-		return 120.0 // TODO either return cached value, or calculate from curve
+		return currentCursorBeatPosition
 	}
 
 	override fun getCursorTimePosition(): Double {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		TODO()
+		val parent = parent as? GroupLNode
+		if (parent != null)
+			return getCursorTimePosition()
+
+		return currentCursorTimePosition
 	}
 
-	override fun getCursorSamplePosition() = currentSamplePosition
+	//override fun getCursorSamplePosition() = currentSamplePosition
 
-	override fun getCurrentBeatPosition() = currentBeatPosition
+	override fun getBeatPosition() = currentBeatPosition
 
-	override fun getSamplePosition() = currentSamplePosition
+	//override fun getSamplePosition() = currentSamplePosition
 
 	override fun isPlaying() = playing
 
@@ -61,16 +64,36 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	override fun onInit() {}
 	override fun onSpawnProcessor(lp: LocalProcessor) {}
-	override fun onProcess(data: InputFrameData) {}
+
+	override fun onProcess(data: InputFrameData) {
+		data as Group1InputFrameData
+
+		val startPlaying = data.startPlaying ?: false
+		val stopPlaying = data.stopPlaying ?: false
+		val cursorBeatPosition = data.cursorBeatPosition
+
+		if (startPlaying && !stopPlaying)
+			playing = true
+
+		if (stopPlaying)
+			playing = false
+
+		if (cursorBeatPosition != null)
+			currentBeatPosition = cursorBeatPosition
+	}
+
 	override fun onParameter(instance: BaseNodeData) {}
 
 	override fun onFinishFrame() {
-		currentBeatPosition += (buffer_size / sample_rate.toDouble()) * (getCurrentFrameBPM() / 60.0)
-		currentBeatPosition %= getCurrentBarDivision()
+		if (playing) {
+			currentCursorBeatPosition += (buffer_size / sample_rate.toDouble()) * (getCurrentFrameBPM() / 60.0)
+			currentBeatPosition = currentCursorBeatPosition % getCurrentBarDivision()
+		} else {
+			currentBeatPosition += (buffer_size / sample_rate.toDouble()) * (getCurrentFrameBPM() / 60.0)
+			currentBeatPosition %= getCurrentBarDivision()
+		}
 
-		currentSamplePosition += buffer_size
-
-		currentFrameBPM = null
+		//currentSamplePosition += buffer_size
 	}
 
 	override fun onDestroy() {}

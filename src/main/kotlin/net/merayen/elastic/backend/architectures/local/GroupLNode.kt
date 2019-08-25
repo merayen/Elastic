@@ -25,7 +25,7 @@ interface GroupLNode {
 	 * When isPlaying() is false, this value will never change, unless user changes the BPM manually.
 	 * Will not increase isPlaying() returns false.
 	 */
-	fun getCursorBeatPosition(): Double
+	fun getCursorPosition(): Double
 
 	/**
 	 * Get playback cursor position in time from frame start.
@@ -33,24 +33,24 @@ interface GroupLNode {
 	 */
 	fun getCursorTimePosition(): Double
 
-	/**
+	/*
 	 * Get position in samples from beginning.
 	 * E.g: Time is 1 min exactly, 44100Hz sampling, this will return 44100*60=2646000.
 	 * Increases regardless of isPlaying() is true or false.
 	 */
-	fun getCursorSamplePosition(): Long
+	//fun getCursorSamplePosition(): Long
 
-	/**
+	/*
 	 * Returns sample position, that starts at 0 and increases every frame for the whole life of the DSP Supervisor.
 	 * Never resets.
 	 */
-	fun getSamplePosition(): Long
+	//fun getSamplePosition(): Long
 
 	/**
 	 * Returns the current beat position.
 	 * Overflow to 0 whenever reaching the bar divison count (getCurrentBarDivision())
 	 */
-	fun getCurrentBeatPosition(): Double
+	fun getBeatPosition(): Double
 
 	/**
 	 * If we are playing or not.

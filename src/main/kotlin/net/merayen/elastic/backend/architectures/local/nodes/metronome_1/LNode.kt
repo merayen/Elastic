@@ -16,7 +16,7 @@ class LNode : LocalNode(LProcessor::class.java) {
 	override fun onParameter(instance: BaseNodeData?) {}
 	override fun onFinishFrame() {
 		val parent = parent as GroupLNode
-		val currentBeatPosition = parent.getCurrentBeatPosition().toInt()
+		val currentBeatPosition = parent.getBeatPosition().toInt()
 		if (lastBeat != currentBeatPosition) {
 			outgoing = Metronome1OutputFrameData(id, currentBeat = currentBeatPosition, currentDivision = parent.getCurrentBarDivision())
 			lastBeat = currentBeatPosition

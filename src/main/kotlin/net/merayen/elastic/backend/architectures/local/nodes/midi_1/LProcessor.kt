@@ -12,15 +12,18 @@ class LProcessor : LocalProcessor() {
 	override fun onProcess() {
 		val outlet = getOutlet("out") as MidiOutlet?
 		if (outlet != null) {
-			val parent = parent as GroupLNode
+			val parent = localNode.parent as GroupLNode
 
-			val startBeat = parent.getCursorBeatPosition()
+			val startBeat = parent.getCursorPosition()
 
 			val stopBeat = if (parent.isPlaying()) {
 				startBeat + (parent.getCurrentFrameBPM() * (buffer_size / sample_rate.toDouble())) / 60.0
 			} else {
 				startBeat
 			}
+
+			if (parent.isPlaying())
+				println("Playing! startBeat=${startBeat}, stopBeat=${stopBeat}")
 
 			val lnode = (localNode as LNode)
 			val inputMidi = lnode.inputMidi

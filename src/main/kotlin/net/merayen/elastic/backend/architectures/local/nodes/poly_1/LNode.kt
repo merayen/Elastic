@@ -10,11 +10,11 @@ import net.merayen.elastic.system.intercom.InputFrameData
 class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	override fun getCurrentFrameBPM() = (parent as GroupLNode).getCurrentFrameBPM()
 	override fun getCurrentBarDivision() = (parent as GroupLNode).getCurrentBarDivision()
-	override fun getSamplePosition() = (parent as GroupLNode).getSamplePosition()
-	override fun getCurrentBeatPosition() = (parent as GroupLNode).getCurrentBeatPosition()
-	override fun getCursorBeatPosition() = (parent as GroupLNode).getCursorBeatPosition()
+	//override fun getSamplePosition() = (parent as GroupLNode).getSamplePosition()
+	override fun getBeatPosition() = (parent as GroupLNode).getBeatPosition()
+	override fun getCursorPosition() = (parent as GroupLNode).getCursorPosition()
 	override fun getCursorTimePosition() = (parent as GroupLNode).getCursorTimePosition()
-	override fun getCursorSamplePosition() = (parent as GroupLNode).getCursorSamplePosition()
+	//override fun getCursorSamplePosition() = (parent as GroupLNode).getCursorSamplePosition()
 	override fun isPlaying() = (parent as GroupLNode).isPlaying()
 	override fun playStartedCount() = (parent as GroupLNode).playStartedCount()
 

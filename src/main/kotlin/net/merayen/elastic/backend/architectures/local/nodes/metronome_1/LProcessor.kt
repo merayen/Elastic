@@ -24,9 +24,10 @@ class LProcessor : LocalProcessor() {
 		val midi = getOutlet("midi") as? MidiOutlet
 
 		val parent = (localNode.parent as GroupLNode)
-		val currentBeatPosition = parent.getCurrentBeatPosition()
+		val currentBeatPosition = parent.getBeatPosition()
+		val playing = parent.isPlaying()
 
-		if (currentBeatPosition.toInt() != lastBeatPosition) {
+		if (playing && currentBeatPosition.toInt() != lastBeatPosition) {
 			audioBeepPosition = 0
 			midiBeepPosition = 0
 			lastBeatPosition = currentBeatPosition.toInt()
