@@ -41,4 +41,21 @@ class MidiDataTest {
 
 		assertEquals(0, clonedMidiData.getMidiChunks()[0].midi[0][0])
 	}
+
+	@Test
+	fun testMerge() {
+		val midiData = midiData!!
+
+		val newMidiData = MidiData()
+
+		newMidiData.add(MidiData.MidiChunk("10", 1.0, arrayOf(shortArrayOf(10))))
+		newMidiData.add(MidiData.MidiChunk("11", 1.5, arrayOf(shortArrayOf(10))))
+		newMidiData.add(MidiData.MidiChunk("12", 2.1, arrayOf(shortArrayOf(10))))
+
+		midiData.merge(newMidiData)
+
+		assertEquals("10", midiData.getMidiChunks()[2].id)
+		assertEquals("11", midiData.getMidiChunks()[3].id)
+		assertEquals("12", midiData.getMidiChunks()[5].id)
+	}
 }
