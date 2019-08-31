@@ -1,10 +1,9 @@
 package net.merayen.elastic.ui.objects.components.midiroll.eventzone
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
-import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
-import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.Data
+import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -27,8 +26,9 @@ class MidiRollEventZones : UIObject(), FlexibleDimension {
 
 	}
 
-	fun handleMessage(message: NodeDataMessage) {
-		when (message) {
+	fun handleMessage(message: NodeParameterMessage) {
+		val data = message.instance as Data
+		/*when (message) {
 			is AddEventZoneMessage -> {
 				val zone = MidiRollEventZone(message.eventZoneId)
 				eventZones.add(zone)
@@ -45,9 +45,25 @@ class MidiRollEventZones : UIObject(), FlexibleDimension {
 				eventZones.remove(zone)
 			}
 			else -> return
-		}
+		}*/
 
-		eventZones.sortBy { it.start }
+		val newEventZones = data.eventZones
+
+		if (newEventZones != null) {
+			eventZones.forEach { remove(it) }
+			eventZones.clear()
+
+			for (newZone in newEventZones) {
+				val m = MidiRollEventZone(newZone.id!!)
+				m.start = newZone.start!!
+				m.length = newZone.length!!
+
+				eventZones.add(m)
+				add(m)
+			}
+
+			eventZones.sortBy { it.start }
+		}
 	}
 
 	override fun onUpdate() {
@@ -63,10 +79,8 @@ class MidiRollEventZones : UIObject(), FlexibleDimension {
 	fun getEventZoneHit(midiData: MidiData): String? {
 		val midiChunks = midiData.getMidiChunks()
 
-		// Validates that there is just 1 position of the midi packets and that there is at least 1 midi packet
-		val starts = midiChunks.map { it.start }.toSet()
-		if (starts.size != 1)
-			throw RuntimeException("Expected added midi to have at least 1 midi packet and only 1 start point")
+		if (midiChunks.size == 0)
+			throw RuntimeException("Expected added midi to have at least 1 midi packet")
 
 		val point = midiChunks[0].start
 

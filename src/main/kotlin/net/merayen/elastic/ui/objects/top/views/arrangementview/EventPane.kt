@@ -11,6 +11,8 @@ class EventPane : UIObject(), FlexibleDimension {
 	override var layoutWidth = 0f
 	override var layoutHeight = 0f
 
+	var beatWidth = 20f
+
 	override fun getWidth() = layoutWidth
 	override fun getHeight() = layoutHeight
 
@@ -52,6 +54,8 @@ class EventPane : UIObject(), FlexibleDimension {
 		timeLine?.layoutWidth = max(layoutWidth, timeLine?.layoutWidth ?: 0f)
 		editPane?.layoutHeight = layoutHeight
 		editPane?.layoutWidth = max(editPane?.layoutWidth ?: 0f, layoutWidth)
+
+		timeLine?.beatWidth = beatWidth
 	}
 
 	private fun updateView() {

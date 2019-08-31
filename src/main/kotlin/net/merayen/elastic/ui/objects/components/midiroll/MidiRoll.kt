@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
@@ -15,10 +15,15 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		fun onAddMidi(eventZoneId: String, midiData: MidiData)
 		fun onChangeNote(id: String, tangent: Int, start: Float, length: Float, weight: Float)
 		fun onRemoveMidi(id: String)
+
+		fun onAddEventZone(start: Float, length: Float)
+		fun onRemoveEventZone(eventZoneId: String)
 	}
 
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
+
+	var beatWidth = 20f
 
 	private val OCTAVE_COUNT = 8
 	private lateinit var piano: Piano
@@ -42,7 +47,8 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onAddMidi(midiData: MidiData) {
-				val eventZoneId = eventZones.getEventZoneHit(midiData) ?: throw RuntimeException("Could not find EventZone to place note")
+				val eventZoneId = eventZones.getEventZoneHit(midiData)
+					?: throw RuntimeException("Could not find EventZone to place note")
 				handler.onAddMidi(eventZoneId, midiData)
 			}
 
@@ -67,11 +73,23 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 			}
 		})
 
-		add(piano)
+		darkzones.handler = object : EventDarkZones.Handler {
+			override fun onCreateEventZone(start: Float) {
+				// TODO make sure we do not overlap anything
+				handler.onAddEventZone(start, 4f) // TODO figure out length
+			}
+		}
+
 		add(notes)
+		add(darkzones)
+		add(piano)
 	}
 
 	override fun onUpdate() {
+		// Hardcoded for noe
+		net.beatWidth = beatWidth
+		darkzones.beatWidth = beatWidth
+
 		net.layoutWidth = layoutWidth
 
 		notes.layoutWidth = layoutWidth
@@ -84,6 +102,9 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 			handler.onUp(tangentDown)
 			tangentDown = -1
 		}
+
+		darkzones.translation.x = piano.pianoDepth
+		darkzones.layoutHeight = net.layoutHeight
 	}
 
 	fun loadMidi(midiChunk: MidiData.MidiChunk) {
@@ -107,23 +128,26 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		val result = ArrayList<StartStop>()
 
 		// Add beginning
-		result.add(StartStop(Float.NEGATIVE_INFINITY , startStops[0].start))
+		result.add(StartStop(-1000000f, 1000000 + startStops[0].start))
 
 		// Add inverts in between the event zones
 		for (i in 0 until startStops.size - 1)
-			result.add(StartStop(startStops[i].start + startStops[i].length, startStops[i+1].start))
+			result.add(StartStop(startStops[i].start + startStops[i].length, startStops[i + 1].start))
 
 		// Add end
-		result.add(StartStop(startStops[startStops.size-1].start + startStops[startStops.size-1].length, Float.POSITIVE_INFINITY))
+		result.add(StartStop(
+			startStops[startStops.size - 1].start + startStops[startStops.size - 1].length,
+			1000000 - (startStops[startStops.size - 1].start + startStops[startStops.size - 1].length))
+		)
 
 		return result
 	}
 
-	fun handleMessage(message: NodeDataMessage) {
+	fun handleMessage(message: NodeParameterMessage) {
 		eventZones.handleMessage(message)
 
 		// Update dark zones
-		darkzones.applyDarkZones(getDarkZoneStartStops())
+		darkzones.applyDarkZones(getDarkZoneStartStops()) // TODO only when necessary
 	}
 
 	override fun getWidth() = net.getWidth()

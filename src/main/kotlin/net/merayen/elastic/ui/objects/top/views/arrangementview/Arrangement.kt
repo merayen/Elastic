@@ -16,6 +16,8 @@ class Arrangement : UIObject() {
 	var layoutWidth: Float = 0f
 	var layoutHeight: Float = 0f
 
+	var beatWidth = 20f
+
 	private val tracks = ArrayList<ArrangementTrack>()
 	private val trackList = TrackList()
 	private val eventList = EventList()
@@ -57,6 +59,8 @@ class Arrangement : UIObject() {
 
 		for (track in tracks) // Make EventPane keep up with the height of the TrackPane
 			track.eventPane.layoutHeight = track.trackPane.layoutHeight
+
+		eventList.beatWidth = beatWidth
 	}
 
 	fun handleMessage(message: Any) {

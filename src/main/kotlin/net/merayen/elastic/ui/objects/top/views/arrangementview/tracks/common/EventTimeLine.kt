@@ -59,7 +59,7 @@ class EventTimeLine : BaseTimeLine() {
 	override var layoutHeight = 0f
 	var handler: Handler? = null
 
-	var zoomFactor = 100f
+	override var beatWidth = 20f
 		set(value) {
 			field = value
 			for (event in events.values)
@@ -86,7 +86,7 @@ class EventTimeLine : BaseTimeLine() {
 
 			override fun onSelect(item: ContextMenuItem?, position: Point) {
 				when (item) {
-					addEventZoneMenuItem -> handler?.onCreateEvent(UniqueID.create(), position.x / zoomFactor, 1f)
+					addEventZoneMenuItem -> handler?.onCreateEvent(UniqueID.create(), position.x / beatWidth, 4f)
 					graphMenuItem -> toggleGraph(true)
 				}
 			}
@@ -154,7 +154,7 @@ class EventTimeLine : BaseTimeLine() {
 
 		event.translation.y = 2f
 		event.layoutHeight = layoutHeight - 4f
-		event.zoomFactor = zoomFactor
+		event.zoomFactor = beatWidth
 		events[eventZoneId] = event
 		add(event)
 

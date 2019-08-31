@@ -9,6 +9,8 @@ class EventList : AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.Horizont
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
+	var beatWidth = 20f
+
 	private val arrangementGrid = ArrangementGrid()
 	private val arrangementEventTracks = UIObject()
 
@@ -23,8 +25,10 @@ class EventList : AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.Horizont
 		arrangementGrid.layoutHeight = layoutHeight
 
 		for (obj in search.children) {
-			if (obj is EventPane)
+			if (obj is EventPane) {
 				obj.layoutWidth = layoutWidth
+				obj.beatWidth
+			}
 		}
 
 		placement.maxWidth = layoutWidth

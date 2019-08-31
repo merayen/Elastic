@@ -115,7 +115,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			//super.paintComponent(g);
 
-			bufferRendering = (lol++ % 120) > 60
+			//bufferRendering = (lol++ % 120) > 60
 			if (bufferRendering) {
 				val t = System.currentTimeMillis()
 
