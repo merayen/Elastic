@@ -6,6 +6,7 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.PushTangentMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ReleaseTangentMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveMidiMessage
 import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
@@ -19,28 +20,28 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 	override fun onParameter(instance: BaseNodeData) {}
 
 	private val midiRoll: MidiRoll
-	private val menuBar: MidiEditorMenuBar
+	private val menuBar = MidiEditorMenuBar(object : MidiEditorMenuBar.Handler {
+		override fun onChangeNoteStart(value: Float) {
+
+		}
+
+		override fun onChangeNoteLength(value: Float) {
+
+		}
+
+		override fun onTransposeNote(value: Int) {
+
+		}
+	})
 	private val layout = AutoLayout(LayoutMethods.HorizontalLiquidBox())
 
 	init {
-		menuBar = MidiEditorMenuBar(object : MidiEditorMenuBar.Handler {
-			override fun onChangeNoteStart(value: Float) {
-
-			}
-
-			override fun onChangeNoteLength(value: Float) {
-
-			}
-
-			override fun onTransposeNote(value: Int) {
-
-			}
-		})
 		menuBar.layoutHeight = 40f
 		add(menuBar)
+
 		midiRoll = MidiRoll(object : MidiRoll.Handler {
-			override fun onAddMidi(midiData: MidiData) {
-				sendData(AddMidiMessage(nodeId, midiData))
+			override fun onAddMidi(eventZoneId: String, midiData: MidiData) {
+				sendData(AddMidiMessage(nodeId, eventZoneId, midiData))
 			}
 
 			override fun onChangeNote(id: String, tangent: Int, start: Float, length: Float, weight: Float) {
@@ -61,8 +62,10 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		})
 		midiRoll.translation.scaleX = 0.5f
 		midiRoll.translation.scaleY = 0.5f
+
 		layout.translation.y = 40f
 		add(layout)
+
 		layout.add(midiRoll)
 		layout.placement.applyConstraint(midiRoll, LayoutMethods.HorizontalLiquidBox.Constraint(1f))
 	}
@@ -78,5 +81,8 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		midiRoll.translation.scaleX = 0.5f
 	}
 
-	override fun onMessage(message: NodeMessage) {}
+	override fun onMessage(message: NodeMessage) {
+		if (message is NodeDataMessage)
+			midiRoll.handleMessage(message)
+	}
 }

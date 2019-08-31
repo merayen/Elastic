@@ -1,14 +1,13 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import java.util.ArrayList
-
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
+import java.util.*
 
 class LogicNode : BaseLogicNode() {
 	/**
@@ -80,6 +79,8 @@ class LogicNode : BaseLogicNode() {
 				println("Adding midi message $data")
 				midiData.merge(data.midiData)
 				dirty = true
+				TODO("Send a Data() with all the events and their contents")
+				//updateProperties(Data(midiData = midiData.clone()))
 			}
 			is PushTangentMessage -> {
 				buffer.add(shortArrayOf(144.toShort(), data.tangent, 64))

@@ -5,5 +5,6 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 
 data class AddMidiMessage(
 		override val nodeId: String,
+		val eventZoneId: String,
 		val midiData: MidiData
 ) : NodeDataMessage
