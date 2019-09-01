@@ -110,6 +110,9 @@ open class UIObject {
 	}
 
 	open fun add(uiobject: UIObject, index: Int) {
+		if (uiobject == this)
+			throw RuntimeException("UIObject can not be a child of itself")
+
 		if (uiobject.parent != null)
 			throw RuntimeException("UIObject already has a parent")
 

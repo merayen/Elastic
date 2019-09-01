@@ -112,7 +112,7 @@ class Arrangement : UIObject() {
 						}
 					}
 					trackList.add(midiTrack.trackPane)
-					eventList.add(midiTrack.eventPane)
+					eventList.addEventPane(midiTrack.eventPane)
 					tracks.add(midiTrack)
 				}
 			}
@@ -127,7 +127,7 @@ class Arrangement : UIObject() {
 
 	private fun removeTrack(track: ArrangementTrack) {
 		trackList.remove(track.trackPane)
-		eventList.remove(track.eventPane)
+		eventList.removeEventPane(track.eventPane)
 		tracks.remove(track)
 	}
 }
