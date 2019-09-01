@@ -1,7 +1,6 @@
 package net.merayen.elastic.util
 
 import net.merayen.elastic.backend.analyzer.NodeProperties
-import net.merayen.elastic.backend.nodes.getLogicNodeDataClass
 import net.merayen.elastic.backend.nodes.logicNodeDataToMap
 import net.merayen.elastic.backend.nodes.mapToLogicNodeData
 import net.merayen.elastic.netlist.NetList
@@ -19,8 +18,8 @@ object NetListMessages { // TODO silly name, fix
 	 * Creates messages for the whole NetList, including groups, subgroups etc.
 	 * Returned messages will need to be executed in the order returned.
 	 */
-	fun disassemble(netlist: NetList): List<Any> {
-		val result = ArrayList<Any>()
+	fun disassemble(netlist: NetList): List<ElasticMessage> {
+		val result = ArrayList<ElasticMessage>()
 		val np = NodeProperties(netlist)
 
 		// Restore the nodes
@@ -58,7 +57,7 @@ object NetListMessages { // TODO silly name, fix
 	 * Restore from NetList, but filter by a certain group.
 	 * Delete?
 	 */
-	fun disassemble(netlist: NetList, parent_node_id: String): List<Any> {
+	fun disassemble(netlist: NetList, parent_node_id: String): List<ElasticMessage> {
 		val filtered = netlist.copy()
 		val np = NodeProperties(filtered)
 
@@ -74,7 +73,7 @@ object NetListMessages { // TODO silly name, fix
 	 * Change a NetList by a message.
 	 * All messages should be sent in correct order, with no loss, or we may have synchronization issues.
 	 */
-	fun apply(netlist: NetList, message: Any) {
+	fun apply(netlist: NetList, message: ElasticMessage) {
 		val np = NodeProperties(netlist)
 
 		if (message is CreateNodeMessage) {

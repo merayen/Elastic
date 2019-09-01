@@ -93,7 +93,7 @@ public abstract class BaseLogicNode {
 			throw new RuntimeException(String.format("Port %s already exist on node", name));
 
 		// Everything OK
-		Object message = new CreateNodePortMessage(id, name, output, format); // TODO rename to chain_ident
+		ElasticMessage message = new CreateNodePortMessage(id, name, output, format); // TODO rename to chain_ident
 
 		NetListMessages.INSTANCE.apply(netlist, message); // Apply the port to the NetList
 
@@ -196,14 +196,14 @@ public abstract class BaseLogicNode {
 	/**
 	 * Send message to UI (frontend).
 	 */
-	protected void sendMessageToUI(Object message) {
+	protected void sendMessageToUI(ElasticMessage message) {
 		supervisor.sendMessageToUI(message);
 	}
 
 	/**
 	 * Send message to processor.
 	 */
-	protected void sendMessageToProcessor(Object message) {
+	protected void sendMessageToProcessor(ElasticMessage message) {
 		supervisor.sendMessageToProcessor(message);
 	}
 

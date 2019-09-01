@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview
 
 import net.merayen.elastic.system.intercom.BeginResetNetListMessage
 import net.merayen.elastic.system.intercom.CreateNodeMessage
+import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Scroll
@@ -63,7 +64,7 @@ class Arrangement : UIObject() {
 		eventList.beatWidth = beatWidth
 	}
 
-	fun handleMessage(message: Any) {
+	fun handleMessage(message: ElasticMessage) {
 		when (message) {
 			is BeginResetNetListMessage -> {
 				ArrayList(tracks).forEach { removeTrack(it) }

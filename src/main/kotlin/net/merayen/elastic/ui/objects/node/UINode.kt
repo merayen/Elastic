@@ -87,7 +87,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		sendMessage(value)
 	}
 
-	fun executeMessage(message: Any) {
+	fun executeMessage(message: ElasticMessage) {
 		if (message is NodeParameterMessage) {
 			val properties = message.instance
 			if (properties is BaseNodeData) {

@@ -9,20 +9,12 @@ internal class SupervisorTest {
 
 	@BeforeEach
 	fun setUp() {
-		supervisor = Supervisor(object : Supervisor.Handler {
-			override fun onMessageToBackend(message: Any) {
-
-			}
-
-			override fun onReadyForMessages() {
-
-			}
-		})
+		supervisor = Supervisor(UIObject())
 	}
 
 	@AfterEach
 	fun tearDown() {
-		supervisor!!.end()
+
 	}
 
 	@Test

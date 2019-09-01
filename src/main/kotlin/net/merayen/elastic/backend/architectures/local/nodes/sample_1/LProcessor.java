@@ -1,8 +1,11 @@
 package net.merayen.elastic.backend.architectures.local.nodes.sample_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.architectures.local.lets.*;
-import net.merayen.elastic.util.Postmaster;
+import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
+import net.merayen.elastic.backend.architectures.local.lets.Inlet;
+import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
+import net.merayen.elastic.backend.architectures.local.lets.SignalInlet;
+import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 	@Override
@@ -61,7 +64,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}

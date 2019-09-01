@@ -13,7 +13,7 @@ object UINodeUtil {
 		return uiobject.search.parentByType(Window::class.java)
 	}
 
-	fun getTop(uiobject: UIObject): Top? {
+	fun getTop(uiobject: UIObject): UIObject? {
 		val result = uiobject.search.top
 		return if (result is Top)
 			result

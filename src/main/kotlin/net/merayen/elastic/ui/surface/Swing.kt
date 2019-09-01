@@ -16,7 +16,6 @@ import java.io.IOException
 import java.util.*
 import javax.swing.JOptionPane
 import javax.swing.SwingUtilities
-
 /**
  * Java Swing Surface.
  * TODO move somewhere else?
@@ -25,6 +24,11 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	private lateinit var panel: LolPanel
 	private var frame: LolFrame? = null
 	private val eventsQueue = ArrayList<UIEvent>()
+
+	private var internalThreadId: Long? = null
+
+	override val threadId: Long
+		get() = internalThreadId ?: throw RuntimeException("UI thread id not detected yet")
 
 	/*
 	 * A surface to draw on for the Java Swing GUI.
@@ -111,6 +115,11 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 		private val averageStatLive = AverageStat<Long>(120)
 		private val averageStatBuffered = AverageStat<Long>(120)
 		public override fun paintComponent(g: java.awt.Graphics) {
+			if (internalThreadId == null)
+				internalThreadId = Thread.currentThread().id
+			else if (internalThreadId != Thread.currentThread().id)
+				throw RuntimeException("Called by another thread, not expected")
+
 			//RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 			//((java.awt.Graphics2D)g).setRenderingHints(rh);
 			//super.paintComponent(g);
@@ -294,3 +303,4 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 
 	override fun isReady() = frame != null
 }
+

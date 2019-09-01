@@ -3,6 +3,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.midi_1
 import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet
+import net.merayen.elastic.system.intercom.ElasticMessage
 
 class LProcessor : LocalProcessor() {
 	override fun onInit() {}
@@ -37,7 +38,7 @@ class LProcessor : LocalProcessor() {
 		}
 	}
 
-	override fun onMessage(message: Any) {}
+	override fun onMessage(message: ElasticMessage) {}
 
 	override fun onDestroy() {}
 }

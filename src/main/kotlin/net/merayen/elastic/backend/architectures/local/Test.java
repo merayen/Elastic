@@ -1,10 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
@@ -15,8 +10,14 @@ import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.ProcessMessage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Emulates the Analyzer() and fakes nodes for testing Supervisor().
@@ -180,7 +181,7 @@ class TopProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}
@@ -225,7 +226,7 @@ class GeneratorProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	void sendStuff() {
 		output.setChannelCount(1);
@@ -313,7 +314,7 @@ class MiddleProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onPrepare() {
@@ -403,7 +404,7 @@ class DispatchProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onPrepare() {}
@@ -472,7 +473,7 @@ class ConsumerProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onPrepare() {}

@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures;
 
+import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.Postmaster;
 
@@ -9,7 +10,7 @@ public abstract class AbstractExecutor {
 		 * Called when processor sends a message.
 		 * Do not do any time consuming tasks in this callback, rather queue the message and notify someone to react on it.
 		 */
-		void onMessageFromProcessor(Object message);
+		void onMessageFromProcessor(ElasticMessage message);
 	}
 
 	protected final int sample_rate, sample_buffer_size;
@@ -21,9 +22,9 @@ public abstract class AbstractExecutor {
 
 	private Handler handler;
 
-	final Postmaster to_processing = new Postmaster(); // Messages queued to be read from the processing architecture
+	final Postmaster<ElasticMessage> to_processing = new Postmaster<>(); // Messages queued to be read from the processing architecture
 
-	protected abstract void onMessage(Object message);
+	protected abstract void onMessage(ElasticMessage message);
 
 	/**
 	 * Call this to stop the processing.
@@ -31,7 +32,7 @@ public abstract class AbstractExecutor {
 	 */
 	public abstract void stop();
 
-	protected void sendFromProcessing(Object message) {
+	protected void sendFromProcessing(ElasticMessage message) {
 		handler.onMessageFromProcessor(message);
 	}
 

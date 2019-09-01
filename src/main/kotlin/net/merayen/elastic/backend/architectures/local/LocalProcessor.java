@@ -1,12 +1,5 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
 import net.merayen.elastic.backend.architectures.local.lets.FormatMaps;
@@ -16,8 +9,11 @@ import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
+import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.util.AverageStat;
-import net.merayen.elastic.util.Postmaster;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * Base class for all processors.
@@ -58,7 +54,7 @@ public abstract class LocalProcessor {
 	 */
 	protected abstract void onProcess();
 
-	protected abstract void onMessage(Object message); // For NodeParameterChange() Really? Shouldn't it be interpreted by the LocalNode instead?
+	protected abstract void onMessage(ElasticMessage message); // For NodeParameterChange() Really? Shouldn't it be interpreted by the LocalNode instead?
 
 	protected abstract void onDestroy();
 

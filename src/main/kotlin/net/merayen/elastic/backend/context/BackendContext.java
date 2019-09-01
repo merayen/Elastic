@@ -5,8 +5,8 @@ import net.merayen.elastic.backend.architectures.Dispatch;
 import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.backend.nodes.Supervisor;
 import net.merayen.elastic.system.ElasticSystem;
+import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
-import net.merayen.elastic.util.Postmaster;
 
 /**
  * Glues together NetList, MainNodes and the processing backend (architecture)
@@ -23,7 +23,7 @@ public class BackendContext {
 	 * Remember to call end()!
 	 */
 	public BackendContext(ElasticSystem system, InitBackendMessage message) {
-		env = Env.create(system, message);
+		env = Env.INSTANCE.create(system, message);
 
 		dispatch = new Dispatch(Architecture.LOCAL, message1 -> message_handler.queueFromProcessor(message1));
 
@@ -31,12 +31,12 @@ public class BackendContext {
 
 		logicnode_supervisor = new Supervisor(env, new Supervisor.Handler() {
 			@Override
-			public void sendMessageToUI(Object message) { // Message sent from LogicNodes to the UI
+			public void sendMessageToUI(ElasticMessage message) { // Message sent from LogicNodes to the UI
 				message_handler.handleFromLogicToUI(message);
 			}
 
 			@Override
-			public void sendMessageToProcessor(Object message) { // Messages sent further into the backend, from the LogicNodes
+			public void sendMessageToProcessor(ElasticMessage message) { // Messages sent further into the backend, from the LogicNodes
 				message_handler.handleFromLogicToProcessor(message);
 			}
 

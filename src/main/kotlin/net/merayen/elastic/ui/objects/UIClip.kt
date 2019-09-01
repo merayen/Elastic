@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.Rect
 import net.merayen.elastic.ui.UIObject
 
 /**
- * Draws children inside ourself, clipping by our size.
+ * Draws children inside our self, clipping by our size.
  * TODO implement caching?
  */
 open class UIClip : UIObject(), FlexibleDimension {

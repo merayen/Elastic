@@ -1,5 +1,5 @@
 package net.merayen.elastic.system.intercom
 
-interface NodeMessage {
+interface NodeMessage : ElasticMessage {
 	val nodeId: String
 }

@@ -1,13 +1,13 @@
 package net.merayen.elastic.system.intercom
 
-import java.util.HashMap
+import java.util.*
 
 /**
  * Message is sent to backend when we want to process a new frame.
  * Backend responds with a new ProcessMessage with the processed data.
  * TODO split this into DoProcessMessage, FinishedProcessMessage
  */
-class ProcessMessage {
+class ProcessMessage : ElasticMessage {
 	/**
 	 * Data to be sent into the processing backend
 	 */

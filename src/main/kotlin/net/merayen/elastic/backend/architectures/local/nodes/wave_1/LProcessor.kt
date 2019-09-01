@@ -6,6 +6,7 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiInlet
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Data
 import net.merayen.elastic.backend.midi.MidiState
 import net.merayen.elastic.backend.util.AudioUtil
+import net.merayen.elastic.system.intercom.ElasticMessage
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -106,6 +107,6 @@ class LProcessor : LocalProcessor() {
 		}
 	}
 
-	override fun onMessage(message: Any?) {}
+	override fun onMessage(message: ElasticMessage) {}
 	override fun onDestroy() {}
 }

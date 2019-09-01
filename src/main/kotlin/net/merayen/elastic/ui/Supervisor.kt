@@ -1,7 +1,5 @@
 package net.merayen.elastic.ui
 
-import net.merayen.elastic.ui.controller.Gate
-import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.util.DrawContext
 import java.util.*
 
@@ -9,53 +7,12 @@ import java.util.*
  * This runs in the main-thread (???), and represents everything UI, at least locally.
  * (Remote UI might be an option later on)
  */
-class Supervisor(private val handler: Handler) {
-	private val surfacehandler = SurfaceHandler(this)
-	private val top = Top(surfacehandler)
-	private val ui_gate: Gate.UIGate // Only to be used by the UI-thread
-	private val backend_gate: Gate.BackendGate // Only to be used by the main-thread
-	private val gate: Gate
-
-	interface Handler {
-		/**
-		 * Called by the UI thread. DO NOT DO ANY TIME-CONSUMING STUFF IN THIS CALL.
-		 * It will hang the UI.
-		 * Rather, queue the message and notify() whatever needs to react on the message.
-		 */
-		fun onMessageToBackend(message: Any)
-
-		/**
-		 * Called by the UI-thread when ready to receive message.
-		 * Call Supervisor().sendMessageToUI(...) in a loop until you have no messages.
-		 */
-		fun onReadyForMessages()
-	}
-
-	init {
-		val self = this
-		gate = Gate(top, object: Gate.Handler {
-			override fun onMessageToBackend(message: Any) {
-				self.handler.onMessageToBackend(message)
-			}
-		})
-
-		ui_gate = gate.uiGate
-
-		top.handler = object : Top.Handler {
-			override fun onSendMessage(message: Any) = ui_gate.send(message)
-		}
-
-		backend_gate = gate.backendGate
-
-		top.createWindow() // First window
-	}
+class Supervisor(private val top: UIObject) {
 
 	@Synchronized
-	fun draw(dc: DrawContext) {
-		internalDraw(dc, top)
-		internalUpdate(dc, top)
-		internalExecuteIncomingMessages()
-		ui_gate.update()
+	fun draw(drawContext: DrawContext) {
+		internalDraw(drawContext, top)
+		internalUpdate(drawContext, top)
 	}
 
 	/**
@@ -102,17 +59,5 @@ class Supervisor(private val handler: Handler) {
 
 		for (o in ArrayList(uiobject.onGetChildren(dc.surfaceID)))
 			internalUpdate(dc, o)
-	}
-
-	private fun internalExecuteIncomingMessages() {
-		handler.onReadyForMessages()
-	}
-
-	fun sendMessageToUI(message: Any) {
-		backend_gate.send(message)
-	}
-
-	fun end() {
-		surfacehandler.end()
 	}
 }

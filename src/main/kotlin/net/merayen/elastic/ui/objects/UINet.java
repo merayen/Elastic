@@ -1,20 +1,15 @@
 package net.merayen.elastic.ui.objects;
 
-import net.merayen.elastic.system.intercom.NodeConnectMessage;
-import net.merayen.elastic.system.intercom.NodeDisconnectMessage;
-import net.merayen.elastic.system.intercom.RemoveNodeMessage;
-import net.merayen.elastic.system.intercom.RemoveNodePortMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.UIPortTemporary;
-import net.merayen.elastic.ui.objects.top.Top;
 import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
-import net.merayen.elastic.util.Postmaster;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -166,13 +161,13 @@ public class UINet extends UIObject {
 	 * Disconnects all connections on a port.
 	 */
 	public void disconnectAll(UIPort p) {
-		Top top = UINodeUtil.INSTANCE.getTop(this);
+		UIObject top = UINodeUtil.INSTANCE.getTop(this);
 		for(Connection c : connections)
 			if(p == c.a || p == c.b)
 				top.sendMessage(new NodeDisconnectMessage(c.a.getNode().getNodeId(), c.a.name, c.b.getNode().getNodeId(), c.b.name));
 	}
 
-	public void handleMessage(Object message) {
+	public void handleMessage(ElasticMessage message) {
 		if(message instanceof NodeConnectMessage)
 			internalConnect((NodeConnectMessage)message);
 

@@ -2,12 +2,13 @@ package net.merayen.elastic.ui.controller
 
 import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsData
+import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.StatisticsReportMessage
+import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.views.statisticsview.StatisticsView
-import net.merayen.elastic.util.Postmaster
 
-class StatisticsReportController(gate: Gate) : Controller(gate) {
+class StatisticsReportController(top: Top) : Controller(top) {
 	class Hello
 
 	private val statisticsViews: List<StatisticsView>
@@ -22,15 +23,15 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 
 	override fun onInit() {}
 
-	override fun onMessageFromBackend(message: Any) {
+	override fun onMessageFromBackend(message: ElasticMessage) {
 		if (message is StatisticsReportMessage) {
 			for (x in statisticsViews)
 				x.handleStatisticsReportMessage(message)
 		} else if (message is NodeDataMessage) {
-			val nodeProperties = NodeProperties(gate.netlist)
+			val nodeProperties = NodeProperties(top.netlist)
 
 			val nodeId = message.nodeId
-			val node = gate.netlist.getNode(nodeId)
+			val node = top.netlist.getNode(nodeId)
 			if (node != null && nodeProperties.getName(node) == "output") {
 				if (message is OutputNodeStatisticsData) {
 					// Send it to all the Statistics views
@@ -41,5 +42,5 @@ class StatisticsReportController(gate: Gate) : Controller(gate) {
 		}
 	}
 
-	override fun onMessageFromUI(message: Any) {}
+	override fun onMessageFromUI(message: ElasticMessage) {}
 }

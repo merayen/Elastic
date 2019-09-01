@@ -1,30 +1,32 @@
 package net.merayen.elastic.ui.controller
 
-import net.merayen.elastic.ui.objects.top.views.View
-
+import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.ui.objects.top.Top
+import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.util.Postmaster
+import java.util.*
 
-import java.util.ArrayList
-
-abstract class Controller(protected val gate: Gate) {
-	val top: Top
-		get() = gate.top
+abstract class Controller(val top: Top) {
+	private val messagesToBackend = Postmaster<ElasticMessage>()
 
 	abstract fun onInit()
 
 	/**
 	 * Message received from the backend.
 	 */
-	abstract fun onMessageFromBackend(message: Any)
+	abstract fun onMessageFromBackend(message: ElasticMessage)
 
 	/**
 	 * Message sent from the UI.
 	 */
-	abstract fun onMessageFromUI(message: Any)
+	abstract fun onMessageFromUI(message: ElasticMessage)
 
-	fun sendToBackend(message: Any) {
-		gate.sendMessageToBackend(message)
+	fun sendToBackend(messages: Collection<ElasticMessage>) {
+		messagesToBackend.send(messages)
+	}
+
+	fun retrieveMessagesToBackend(): Collection<ElasticMessage> {
+		return messagesToBackend.receiveAll()
 	}
 
 	protected fun <T : View> getViews(cls: Class<T>): List<T> {

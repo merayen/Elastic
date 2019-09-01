@@ -8,6 +8,7 @@ import net.merayen.elastic.backend.nodes.BaseNodeData;
 import net.merayen.elastic.backend.nodes.UtilKt;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.StatisticsReportMessage;
@@ -110,7 +111,7 @@ class Supervisor {
 		nodes.clear();
 	}
 
-	public void handleMessage(Object message) {
+	public void handleMessage(ElasticMessage message) {
 		if(message instanceof NodeParameterMessage) {
 			NodeParameterMessage m = (NodeParameterMessage)message;
 			LocalNode localnode = nodes.get(m.node_id);

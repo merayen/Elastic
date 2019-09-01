@@ -1,7 +1,5 @@
 package net.merayen.elastic.system;
 
-import net.merayen.elastic.backend.logicnodes.Environment;
-
 public abstract class Action {
 	protected ElasticSystem system;
 
@@ -10,10 +8,6 @@ public abstract class Action {
 	public synchronized void start(ElasticSystem es) {
 		system = es;
 		run();
-	}
-
-	protected Environment getEnvironment() {
-		return system.backend.getEnvironment();
 	}
 
 	protected void waitFor(Func func) {

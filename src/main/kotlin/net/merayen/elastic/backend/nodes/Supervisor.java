@@ -1,7 +1,5 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.List;
-
 import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.logicnodes.Environment;
@@ -13,6 +11,8 @@ import net.merayen.elastic.util.JSONObjectMapper;
 import net.merayen.elastic.util.NetListMessages;
 import net.merayen.elastic.util.Postmaster;
 
+import java.util.List;
+
 /**
  * This is the "central control". All node-related messages from UI and processor is sent into this class.
  * The LogicNodes then validates and forwards messages to the processor.
@@ -21,9 +21,9 @@ import net.merayen.elastic.util.Postmaster;
  */
 public class Supervisor {
 	public interface Handler {
-		void sendMessageToUI(Object message);
+		void sendMessageToUI(ElasticMessage message);
 
-		void sendMessageToProcessor(Object message);
+		void sendMessageToProcessor(ElasticMessage message);
 
 		/**
 		 * Called when processing a frame has been finished.
@@ -36,7 +36,7 @@ public class Supervisor {
 
 	//NetList netlist; // This is the main NetList
 	final LogicNodeList logicnode_list;
-	private Postmaster while_processing_queue = new Postmaster();
+	private Postmaster<ElasticMessage> while_processing_queue = new Postmaster<>();
 	private volatile boolean is_processing; // Set to true when LogicNodes (and nodes) are processing, as we then can not take any messages
 	volatile boolean restoring; // Set to true when receiving NetListRefreshMessage, meaning that no events should be called
 	final NodeProperties node_properties;
@@ -66,7 +66,7 @@ public class Supervisor {
 		logicnode_list.addAsLogicNode(node);
 	}
 
-	public synchronized void handleMessageFromUI(Object message) {
+	public synchronized void handleMessageFromUI(ElasticMessage message) {
 		if (is_processing) {
 			while_processing_queue.send(message);
 		} else {
@@ -74,7 +74,7 @@ public class Supervisor {
 		}
 	}
 
-	private synchronized void executeMessageFromUI(Object message) {
+	private synchronized void executeMessageFromUI(ElasticMessage message) {
 		NetList netlist = ((Environment) env).project.getNetList();
 
 		if (message instanceof CreateNodeMessage) {
@@ -183,14 +183,14 @@ public class Supervisor {
 	/**
 	 * Used by BaseLogicNode to send messages.
 	 */
-	void sendMessageToUI(Object message) {
+	void sendMessageToUI(ElasticMessage message) {
 		handler.sendMessageToUI(message);
 	}
 
 	/**
 	 * Used by BaseLogicNode to send messages.
 	 */
-	void sendMessageToProcessor(Object message) {
+	void sendMessageToProcessor(ElasticMessage message) {
 		handler.sendMessageToProcessor(message);
 	}
 
@@ -213,7 +213,7 @@ public class Supervisor {
 
 		// Execute all messages that are waiting due to LogicNode and processor processing a frame previously
 		is_processing = false;
-		Object m;
+		ElasticMessage m;
 		while ((m = while_processing_queue.receive()) != null)
 			handleMessageFromUI(m);
 
@@ -237,7 +237,7 @@ public class Supervisor {
 		netlist.removePort(logic_node.node, name);
 
 		// Notify both ways
-		Object message = new RemoveNodePortMessage(logic_node.getID(), name);
+		ElasticMessage message = new RemoveNodePortMessage(logic_node.getID(), name);
 		sendMessageToUI(message);
 		sendMessageToProcessor(message);
 	}

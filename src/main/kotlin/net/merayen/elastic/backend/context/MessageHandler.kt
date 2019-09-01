@@ -2,10 +2,7 @@ package net.merayen.elastic.backend.context
 
 import net.merayen.elastic.backend.context.action.ImportFileIntoNodeGroupAction
 import net.merayen.elastic.backend.context.action.LoadProjectAction
-import net.merayen.elastic.system.intercom.BeginResetNetListMessage
-import net.merayen.elastic.system.intercom.FinishResetNetListMessage
-import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
-import net.merayen.elastic.system.intercom.ProcessMessage
+import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.system.intercom.backend.*
 import net.merayen.elastic.util.NetListMessages
 import net.merayen.elastic.util.Postmaster
@@ -16,34 +13,27 @@ import java.util.*
  * Routes messages between UI, LogicNodes and Processor
  */
 class MessageHandler internal constructor(private val backendContext: BackendContext) {
-    private val to_ui = Postmaster() // FIXME seem to get really big after a good while?
-    private val to_backend = Postmaster()
-    private val from_processor = Postmaster()
+    private val to_ui = Postmaster<ElasticMessage>() // FIXME seem to get really big after a good while?
+    private val to_backend = Postmaster<ElasticMessage>()
+    private val from_processor = Postmaster<ElasticMessage>()
 
     /**
      * Messages sent from LogicNode further into backend is handled here.
      */
-    fun handleFromLogicToProcessor(message: Any) {
+    fun handleFromLogicToProcessor(message: ElasticMessage) {
         backendContext.dispatch.executeMessage(message)
     }
 
-    fun handleFromLogicToUI(message: Any) {
+    fun handleFromLogicToUI(message: ElasticMessage) {
         to_ui.send(message)
     }
 
-    /**
-     * Handles messages to backend.
-     */
-    fun sendToBackend(message: Any) {
-        to_backend.send(message)
-    }
-
-    fun sendToBackend(messages: List<Any>) {
-        to_backend.send(messages)
+    fun sendToBackend(messages: Collection<ElasticMessage>) {
+        to_backend.send(messages = messages)
     }
 
     fun executeMessagesToBackend() {
-        var message: Any?
+        var message: ElasticMessage?
         while (true) {
             message = to_backend.receive() ?: return
 
@@ -51,7 +41,7 @@ class MessageHandler internal constructor(private val backendContext: BackendCon
                 is NetListRefreshRequestMessage -> {
                     val m = message as NetListRefreshRequestMessage?
 
-                    val refresh_messages = ArrayList<Any>()
+                    val refresh_messages = ArrayList<ElasticMessage>()
                     refresh_messages.add(BeginResetNetListMessage(m!!.group_id)) // This will clear the receiver's NetList
                     refresh_messages.addAll(NetListMessages.disassemble(backendContext.env.project.netList, m.group_id!!)) // All these messages will rebuild the receiver's NetList
                     refresh_messages.add(FinishResetNetListMessage())
@@ -69,16 +59,16 @@ class MessageHandler internal constructor(private val backendContext: BackendCon
         }
     }
 
-    fun receiveMessagesFromBackend(): Array<Any> {
+    fun receiveMessagesFromBackend(): Collection<ElasticMessage> {
         return to_ui.receiveAll()
     }
 
-    fun queueFromProcessor(message: Any) {
+    fun queueFromProcessor(message: ElasticMessage) {
         from_processor.send(message)
     }
 
     fun executeMessagesFromProcessor() {
-        var message: Any?
+        var message: ElasticMessage?
         while (true) {
             message = from_processor.receive() ?: return
 

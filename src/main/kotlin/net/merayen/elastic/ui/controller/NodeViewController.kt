@@ -1,18 +1,18 @@
 package net.merayen.elastic.ui.controller
 
 import net.merayen.elastic.backend.analyzer.NetListUtil
-import java.util.ArrayList
-
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage
 import net.merayen.elastic.system.intercom.backend.ImportFileIntoNodeGroupMessage
+import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.util.NetListMessages
+import java.util.*
 
 /**
  * Handles messages sent and received by nodes.
  */
-class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
+class NodeViewController internal constructor(top: Top) : Controller(top) {
 
 	/**
 	 * NetList accumulated based on all the incoming messages.
@@ -36,12 +36,12 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 	 * NodeViews send this message when they are created.
 	 * These messages get picked up by us and we register them.
 	 */
-	class Hello
+	class Hello : ElasticMessage
 
 	override fun onInit() {}
 
-	override fun onMessageFromBackend(message: Any) {
-		val netListUtil = NetListUtil(gate.netlist)
+	override fun onMessageFromBackend(message: ElasticMessage) {
+		val netListUtil = NetListUtil(top.netlist)
 
 		// Forward message regarding the net, from backend to the UINet, to all NodeViews
 		when (message) {
@@ -70,8 +70,8 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 		// UINet
 		when (message) {
 			is NodeConnectMessage -> {
-				val nodeAParent = netListUtil.getParent(gate.netlist.getNode(message.node_a))
-				val nodeBParent = netListUtil.getParent(gate.netlist.getNode(message.node_b))
+				val nodeAParent = netListUtil.getParent(top.netlist.getNode(message.node_a))
+				val nodeBParent = netListUtil.getParent(top.netlist.getNode(message.node_b))
 
 				if (nodeAParent != nodeBParent)
 					throw RuntimeException("Should not happen")
@@ -81,8 +81,8 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 						nv.uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
 			}
 			is NodeDisconnectMessage -> {
-				val nodeAParent = netListUtil.getParent(gate.netlist.getNode(message.node_a))
-				val nodeBParent = netListUtil.getParent(gate.netlist.getNode(message.node_b))
+				val nodeAParent = netListUtil.getParent(top.netlist.getNode(message.node_a))
+				val nodeBParent = netListUtil.getParent(top.netlist.getNode(message.node_b))
 
 				if (nodeAParent != nodeBParent)
 					throw RuntimeException("Should not happen")
@@ -100,7 +100,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 				}
 			}
 			is RemoveNodePortMessage -> {
-				val nodeParent = netListUtil.getParent(gate.netlist.getNode(message.nodeId))
+				val nodeParent = netListUtil.getParent(top.netlist.getNode(message.nodeId))
 
 				for (nv in nodeViews)
 					if (nodeParent.id == nv.currentNodeId)
@@ -109,16 +109,16 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 		}
 	}
 
-	override fun onMessageFromUI(message: Any) {
+	override fun onMessageFromUI(message: ElasticMessage) {
 		if (message is Hello) {  // Set us on the NodeViews, so that they can call us
-			val netListUtil = NetListUtil(gate.netlist)
+			val netListUtil = NetListUtil(top.netlist)
 
 			for (view in getViews(NodeView::class.java)) {
 				view.nodeViewController = this
 				if (view.currentNodeId == null) {
 					val topNodes = netListUtil.topNodes
 					if (topNodes.size != 1)
-						throw RuntimeException("Expected only 1 top node in the NetList")
+						throw RuntimeException("Expected exact 1 top node in the NetList")
 
 					view.swapView(topNodes.first().id)
 				}
@@ -130,7 +130,7 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 				for (nv in nodeViews)
 					nv.messageNode(message.node_id, message) // Forward messages with parameters used by us (only)
 
-			sendToBackend(message) // Forward message to backend
+			sendToBackend(listOf(message)) // Forward message to backend
 
 		} else if (
 				message is RemoveNodeMessage ||
@@ -140,19 +140,19 @@ class NodeViewController internal constructor(gate: Gate) : Controller(gate) {
 				message is NodeConnectMessage ||
 				message is NodeDisconnectMessage) {
 
-			sendToBackend(message)
+			sendToBackend(listOf(message))
 
 		} else if (message is NetListRefreshRequestMessage) { // Move it out to a separate controller, with only purpose to accumulate the netlist and resend it?
 
-			val messages = ArrayList<Any>()
+			val messages = ArrayList<ElasticMessage>()
 			messages.add(BeginResetNetListMessage())
-			messages.addAll(NetListMessages.disassemble(gate.netlist))
+			messages.addAll(NetListMessages.disassemble(top.netlist))
 			messages.add(FinishResetNetListMessage())
 			for (m in messages)
 				onMessageFromBackend(m)
 
 		} else if (message is ImportFileIntoNodeGroupMessage) {
-			sendToBackend(message)
+			sendToBackend(listOf(message))
 		}
 	}
 }

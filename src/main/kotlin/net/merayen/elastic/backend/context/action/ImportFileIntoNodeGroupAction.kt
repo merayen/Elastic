@@ -32,7 +32,7 @@ class ImportFileIntoNodeGroupAction(private val message: ImportFileIntoNodeGroup
 
 
                 }
-                backendContext.message_handler.sendToBackend(CreateCheckpointMessage())
+                backendContext.message_handler.sendToBackend(listOf(CreateCheckpointMessage()))
             }
 
             override fun onCleanup() {

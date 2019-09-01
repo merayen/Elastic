@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures;
 
+import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 
 /**
@@ -10,7 +11,7 @@ public class Dispatch {
 		/**
 		 * Message received from the backend.
 		 */
-		void onMessageFromProcessor(Object message);
+		void onMessageFromProcessor(ElasticMessage message);
 	}
 
 	class Runner extends Thread {
@@ -34,7 +35,7 @@ public class Dispatch {
 				}
 
 				synchronized (this) {
-					Object message;
+					ElasticMessage message;
 					while ((message = executor.to_processing.receive()) != null)
 						executor.onMessage(message);
 				}
@@ -52,7 +53,7 @@ public class Dispatch {
 		this.handler = handler;
 	}
 
-	public void executeMessage(Object message) {
+	public void executeMessage(ElasticMessage message) {
 		synchronized (runner) {
 			executor.to_processing.send(message);
 			runner.notifyAll();

@@ -1,9 +1,9 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
+import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
 import net.merayen.elastic.ui.controller.ArrangementController
 import net.merayen.elastic.ui.objects.top.views.View
-import net.merayen.elastic.util.Postmaster
 
 class ArrangementView : View() {
 	private val bar = ArrangementViewBar()
@@ -31,5 +31,5 @@ class ArrangementView : View() {
 		return ArrangementView()
 	}
 
-	fun handleMessage(message: Any) = arrangement.handleMessage(message)
+	fun handleMessage(message: ElasticMessage) = arrangement.handleMessage(message)
 }

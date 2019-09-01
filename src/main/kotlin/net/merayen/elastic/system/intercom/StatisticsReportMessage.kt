@@ -6,7 +6,7 @@ class StatisticsReportMessage(
 		val notProcessingFrameTimeAvg: Double,
 		val nodeStats: Map<String, NodeStats>,
 		val frameDuration: Double // In seconds
-) {
+) : ElasticMessage {
 	class NodeStats(
 			val nodeClassPath: String,
 

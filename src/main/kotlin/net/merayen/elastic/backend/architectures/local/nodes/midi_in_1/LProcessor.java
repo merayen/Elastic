@@ -1,9 +1,10 @@
 package net.merayen.elastic.backend.architectures.local.nodes.midi_in_1;
 
-import java.util.List;
-
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
+import net.merayen.elastic.system.intercom.ElasticMessage;
+
+import java.util.List;
 
 public class LProcessor extends LocalProcessor {
 
@@ -29,7 +30,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}

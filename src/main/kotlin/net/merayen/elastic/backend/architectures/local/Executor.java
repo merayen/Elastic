@@ -7,7 +7,6 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
 import net.merayen.elastic.util.NetListMessages;
-import net.merayen.elastic.util.Postmaster;
 
 public class Executor extends AbstractExecutor {
 	public Executor(InitBackendMessage message) {
@@ -19,7 +18,7 @@ public class Executor extends AbstractExecutor {
 	private Supervisor supervisor;
 
 	@Override
-	protected void onMessage(Object message) {
+	protected void onMessage(ElasticMessage message) {
 		if(message instanceof ProcessMessage) {
 			applyNetList();
 

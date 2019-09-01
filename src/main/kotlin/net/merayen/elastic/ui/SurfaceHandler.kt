@@ -1,12 +1,19 @@
 package net.merayen.elastic.ui
 
 import net.merayen.elastic.ui.surface.Surface
-import net.merayen.elastic.ui.surface.Swing
 import net.merayen.elastic.ui.util.DrawContext
 import java.awt.Graphics2D
 import java.util.*
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
-class SurfaceHandler internal constructor(private val supervisor: Supervisor) {
+class SurfaceHandler {
+	interface Handler {
+		fun onDraw(drawContext: DrawContext)
+	}
+
+	var handler: Handler? = null
+
 	private val surfaces: MutableMap<String, Surface> = HashMap() // A surface is usually a window
 
 	@Volatile
@@ -20,11 +27,11 @@ class SurfaceHandler internal constructor(private val supervisor: Supervisor) {
 	}
 
 	@Synchronized
-	fun createSurface(id: String): Surface {
+	fun createSurface(id: String, cls: KClass<out Surface>): Surface {
 		if (surfaces.containsKey(id))
 			throw RuntimeException("Surface with that id already exists")
 
-		val surface = Swing(id, object : Surface.Handler {
+		val surface = cls.primaryConstructor!!.call(id, object : Surface.Handler {
 			override fun onDraw(graphics2d: Graphics2D) {
 				// TODO Hardcoded Swing as that is the only one we support for now
 				val surface = surfaces[id] ?: return
@@ -35,7 +42,7 @@ class SurfaceHandler internal constructor(private val supervisor: Supervisor) {
 						throw RuntimeException("UI can only be run by a single thread")
 
 					drawing = true
-					supervisor.draw(DrawContext(graphics2d, surface, currentEvents))
+					handler?.onDraw(DrawContext(graphics2d, surface, currentEvents))
 				} finally {
 					drawing = false
 				}
@@ -45,5 +52,22 @@ class SurfaceHandler internal constructor(private val supervisor: Supervisor) {
 		surfaces[id] = surface
 
 		return surface
+	}
+
+	/**
+	 * Checks if the current thread is a UI thread.
+	 */
+	fun isUIThread(): Boolean {
+		val id = Thread.currentThread().id
+		return surfaces.values.any {it.threadId == id }
+	}
+
+	/**
+	 * Throws RuntimeException if the caller of the method is not being run inside a UI-thread.
+	 * This is for making traps that detects programming errors.
+	 */
+	fun assertUIThread() {
+		if (!isUIThread())
+			throw RuntimeException("Code expected to run in UI thread only")
 	}
 }

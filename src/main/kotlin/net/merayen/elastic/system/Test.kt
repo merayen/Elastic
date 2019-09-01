@@ -28,7 +28,7 @@ class Test private constructor() {
 
 		val roflmao = Roflmao()
 
-		system.sendMessageToBackend(StartBackendMessage())
+		system.sendMessageToBackend(listOf(StartBackendMessage()))
 
 		// Run "forever", project should be identical to the one created at the beginning
 		while (true) {
@@ -39,7 +39,7 @@ class Test private constructor() {
 				}
 			})
 			println("Saving checkpoint")
-			system.sendMessageToBackend(CreateCheckpointMessage())
+			system.sendMessageToBackend(listOf(CreateCheckpointMessage()))
 		}
 	}
 

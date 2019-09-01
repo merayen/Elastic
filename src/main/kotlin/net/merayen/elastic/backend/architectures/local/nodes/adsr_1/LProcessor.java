@@ -1,13 +1,16 @@
 package net.merayen.elastic.backend.architectures.local.nodes.adsr_1;
 
-import java.util.*;
-
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.midi.MidiStatuses;
+import net.merayen.elastic.system.intercom.ElasticMessage;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class LProcessor extends LocalProcessor {
 	private MidiOutlet output;
@@ -119,7 +122,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}

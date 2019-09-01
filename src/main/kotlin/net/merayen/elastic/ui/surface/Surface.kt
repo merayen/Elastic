@@ -51,4 +51,9 @@ abstract class Surface(val id: String, protected var handler: Handler) {
 	abstract fun end()
 
 	abstract fun isReady(): Boolean
+
+	/**
+	 * Returns the ID of the thread that is used to draw the UI.
+	 */
+	abstract val threadId: Long
 }

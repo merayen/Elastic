@@ -1,20 +1,16 @@
 package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
-import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
-import net.merayen.elastic.backend.architectures.local.lets.Inlet;
-import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
-import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
-import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+import net.merayen.elastic.backend.architectures.local.lets.*;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeeper;
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.util.AudioUtil;
+import net.merayen.elastic.system.intercom.ElasticMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private enum Mode {
@@ -231,7 +227,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	@Override
-	protected void onMessage(Object message) {}
+	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}
