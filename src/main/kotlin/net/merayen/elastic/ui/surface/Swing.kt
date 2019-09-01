@@ -244,6 +244,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	}
 
 	override fun end() {
+		frame?.end()
 		frame?.isVisible = false
 		frame?.dispose()
 		frame?.timer?.stop()
