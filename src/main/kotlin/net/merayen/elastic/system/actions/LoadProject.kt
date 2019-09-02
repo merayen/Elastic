@@ -10,7 +10,7 @@ import net.merayen.elastic.system.intercom.ui.InitUIMessage
 class LoadProject(private val path: String) : Action() {
 	override fun run() {
 		system.end()
-		system.sendMessageToUI(listOf(InitUIMessage()))
 		system.sendMessageToBackend(listOf(InitBackendMessage(44100, 16, 1024, path)))
+		system.sendMessageToUI(listOf(InitUIMessage()))
 	}
 }
