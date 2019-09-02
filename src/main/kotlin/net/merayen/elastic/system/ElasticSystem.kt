@@ -64,7 +64,7 @@ class ElasticSystem {
 					}
 				}
 
-				this.ui = uiBridge
+				ui = uiBridge
 			}
 
 			if (ui != null && message is EndUIMessage) {

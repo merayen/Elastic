@@ -13,8 +13,8 @@ import kotlin.math.sin
 class LProcessor : LocalProcessor() {
 	private var lastBeatPosition = 0
 
-	private var audioBeepPosition = 0
-	private var midiBeepPosition = 0
+	private var audioBeepPosition = Int.MAX_VALUE
+	private var midiBeepPosition = Int.MAX_VALUE
 
 	private var midiState = 0
 
