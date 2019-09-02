@@ -9,10 +9,11 @@ import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	private var currentBeatPosition = 0.0
-	//private var currentSamplePosition = 0L
 
 	private var currentCursorBeatPosition = 0.0
 	private var currentCursorTimePosition = 0.0
+
+	private var bpm = 120.0
 
 	private var playing = false
 
@@ -30,7 +31,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		if (parent != null)
 			return getCurrentFrameBPM()
 
-		return 120.0 // TODO either return cached value, or calculate from curve
+		return bpm
 	}
 
 	override fun getCursorPosition(): Double {
@@ -50,11 +51,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		return currentCursorTimePosition
 	}
 
-	//override fun getCursorSamplePosition() = currentSamplePosition
-
 	override fun getBeatPosition() = currentBeatPosition
-
-	//override fun getSamplePosition() = currentSamplePosition
 
 	override fun isPlaying() = playing
 
@@ -71,6 +68,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		val startPlaying = data.startPlaying ?: false
 		val stopPlaying = data.stopPlaying ?: false
 		val cursorBeatPosition = data.cursorBeatPosition
+		val bpm = data.bpm
 
 		if (startPlaying && !stopPlaying)
 			playing = true
@@ -80,6 +78,9 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 		if (cursorBeatPosition != null)
 			currentBeatPosition = cursorBeatPosition
+
+		if (bpm != null)
+			this.bpm = bpm
 	}
 
 	override fun onParameter(instance: BaseNodeData) {}
@@ -92,8 +93,6 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 			currentBeatPosition += (buffer_size / sample_rate.toDouble()) * (getCurrentFrameBPM() / 60.0)
 			currentBeatPosition %= getCurrentBarDivision()
 		}
-
-		//currentSamplePosition += buffer_size
 	}
 
 	override fun onDestroy() {}

@@ -22,16 +22,26 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 	override fun onDisconnect(port: String) {}
 	override fun onRemove() {}
 	override fun onFinishFrame(data: OutputFrameData?) {}
-	override fun onData(data: NodeDataMessage) {
-		when (data) {
-			is SetBPMMessage -> updateProperties(Data(bpm = data.bpm))
+	override fun onData(message: NodeDataMessage) {
+		when (message) {
+			is SetBPMMessage -> {
+				bpm = message.bpm.toDouble()
+				updateProperties(Data(bpm = bpm.toInt()))
+			}
 			is TransportStartPlaybackMessage -> startPlaying = true
 			is TransportStopPlaybackMessage -> stopPlaying = true
-			is MovePlaybackCursorMessage -> cursorBeatPosition = data.beatPosition
+			is MovePlaybackCursorMessage -> cursorBeatPosition = message.beatPosition
 		}
 	}
 
-	override fun onParameterChange(instance: BaseNodeData) = updateProperties(instance)
+	override fun onParameterChange(instance: BaseNodeData) {
+		instance as Data
+		val bpm = instance.bpm
+		if (bpm != null)
+			this.bpm = bpm.toDouble()
+
+		updateProperties(instance)
+	}
 
 	override fun onPrepareFrame(): InputFrameData {
 		val data = Group1InputFrameData(
@@ -39,7 +49,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 			startPlaying = startPlaying,
 			stopPlaying = stopPlaying,
 			cursorBeatPosition = cursorBeatPosition,
-			bpm = bpm
+			bpm = bpm // TODO remove this and use a curve instead
 		)
 
 		startPlaying = false
