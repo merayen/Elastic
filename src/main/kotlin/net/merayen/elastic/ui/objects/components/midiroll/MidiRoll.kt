@@ -4,7 +4,6 @@ import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.SelectionRectangle
 import net.merayen.elastic.ui.objects.components.midiroll.eventzone.MidiRollEventZones
 
 class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
@@ -33,8 +32,6 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 	private var tangentDown = -1
 
 	private val notes = PianoNotes(OCTAVE_COUNT)
-
-	private val selectionReadable = SelectionRectangle()
 
 	private val eventZones = MidiRollEventZones()
 	private val darkzones = EventDarkZones()
@@ -107,18 +104,10 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		darkzones.layoutHeight = net.layoutHeight
 	}
 
-	fun loadMidi(midiChunk: MidiData.MidiChunk) {
-		net.loadMidi(midiChunk)
-	}
-
-	fun retrieveMidi(): Array<Array<Short>> {
-		TODO()
-	}
-
 	private fun getDarkZoneStartStops(): ArrayList<StartStop> {
 		val startStops = eventZones.getStartStops()
 
-		if (startStops.size == 0) {
+		if (startStops.isEmpty()) {
 			val result = ArrayList<StartStop>()
 			result.add(StartStop(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY))
 			return result

@@ -66,6 +66,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 
 		layout.add(midiRoll)
 		layout.placement.applyConstraint(midiRoll, LayoutMethods.HorizontalLiquidBox.Constraint(1f))
+
 	}
 
 	override fun onUpdate() {

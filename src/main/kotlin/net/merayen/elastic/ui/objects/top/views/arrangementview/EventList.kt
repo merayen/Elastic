@@ -32,7 +32,7 @@ class EventList : /*AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.Horizo
 
 		//println("${System.identityHashCode(arrangementGrid)}\t${arrangementGrid.translation.x}")
 
-		for (obj in search.children) {
+		for (obj in eventPane.search.children) {
 			if (obj is EventPane) {
 				obj.layoutWidth = layoutWidth
 				obj.beatWidth = beatWidth

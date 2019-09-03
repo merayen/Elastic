@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
-import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.BaseEditPane
@@ -42,11 +41,6 @@ class EventPane : UIObject(), FlexibleDimension {
 
 	override fun onInit() {
 		updateView()
-	}
-
-	override fun onDraw(draw: Draw) {
-		//draw.setColor(255,0,255)
-		//draw.rect(0f, 0f, layoutWidth, layoutHeight)
 	}
 
 	override fun onUpdate() {
