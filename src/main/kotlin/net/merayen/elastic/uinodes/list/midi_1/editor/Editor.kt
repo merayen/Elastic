@@ -30,6 +30,10 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		add(menuBar)
 
 		midiRoll = MidiRoll(object : MidiRoll.Handler {
+			override fun onChangeEventZone(eventZoneId: String, start: Float, length: Float) {
+				sendData(ChangeEventZoneMessage(nodeId, eventZoneId, start, length))
+			}
+
 			override fun onAddMidi(eventZoneId: String, midiData: MidiData) {
 				sendData(AddMidiMessage(nodeId, eventZoneId, midiData))
 			}
@@ -38,8 +42,8 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 			}
 
-			override fun onRemoveMidi(id: String) {
-				sendData(RemoveMidiMessage(nodeId, id))
+			override fun onRemoveMidi(eventZoneId: String, id: String) {
+				sendData(RemoveMidiMessage(nodeId, eventZoneId, id))
 			}
 
 			override fun onUp(tangent_no: Int) {
@@ -66,7 +70,6 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 
 		layout.add(midiRoll)
 		layout.placement.applyConstraint(midiRoll, LayoutMethods.HorizontalLiquidBox.Constraint(1f))
-
 	}
 
 	override fun onUpdate() {

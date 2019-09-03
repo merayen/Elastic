@@ -4,5 +4,6 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 
 class RemoveMidiMessage(
 		override val nodeId: String,
+		eventZoneId: String,
 		id: String
 ) : NodeDataMessage

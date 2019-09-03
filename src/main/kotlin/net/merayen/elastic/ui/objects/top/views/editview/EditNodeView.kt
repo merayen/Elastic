@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.top.views.editview
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodeParameterMessage
 import net.merayen.elastic.ui.Draw
@@ -71,8 +70,6 @@ class EditNodeView : View() {
 		val nodeEditor = node.getNodeEditor()
 		this.nodeEditor = nodeEditor
 		nodeId = nodeEditor.nodeId
-
-		println("EditNodeView now editing $nodeId")
 
 		content.removeAll()
 		content.add(nodeEditor)

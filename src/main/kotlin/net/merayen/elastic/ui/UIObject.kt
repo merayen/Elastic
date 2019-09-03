@@ -106,10 +106,14 @@ open class UIObject {
 	}
 
 	open fun add(uiobject: UIObject) {
-		add(uiobject, children.size)
+		internalAdd(uiobject, children.size)
 	}
 
 	open fun add(uiobject: UIObject, index: Int) {
+		internalAdd(uiobject, index)
+	}
+
+	private fun internalAdd(uiobject: UIObject, index: Int) {
 		if (uiobject == this)
 			throw RuntimeException("UIObject can not be a child of itself")
 

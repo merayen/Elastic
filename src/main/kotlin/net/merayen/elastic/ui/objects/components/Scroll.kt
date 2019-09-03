@@ -64,7 +64,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
 	override fun onInit() {
 		clip.add(uiobject)
-		add(clip)
+		super.add(clip)
 		updateBars()
 	}
 
@@ -79,7 +79,6 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
 		contentWidth = uiobject.getWidth()
 		contentHeight = uiobject.getHeight()
-		//println("${contentHeight.toInt()}\t${uiobject.translation.y.toInt()}")
 
 		clip.layoutWidth = layoutWidth - barWidth
 		clip.layoutHeight = layoutHeight - barWidth
@@ -110,7 +109,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 	private fun updateBars() {
 		if (contentWidth - (layoutWidth - barWidth) > 0) {
 			if (barX.parent == null)
-				add(barX)
+				super.add(barX)
 
 			barX.translation.y = layoutHeight - barWidth
 		} else if (barX.parent != null) {
@@ -119,7 +118,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 
 		if (contentHeight - (layoutHeight - barWidth) > 0) {
 			if (barY.parent == null)
-				add(barY)
+				super.add(barY)
 
 			barY.translation.x = layoutWidth - barWidth
 		} else if (barY.parent != null) {
@@ -135,7 +134,6 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 	private fun updateFromBars() {
 		uiobject.translation.x = barX.translation.x / (layoutWidth - barWidth) * -(contentWidth - layoutWidth + barLengthX)
 		uiobject.translation.y = barY.translation.y / (layoutHeight - barWidth) * -(contentHeight - layoutHeight + barLengthY)
-		//uiobject.translation.y = sin((System.currentTimeMillis() % (Math.PI * 2000)) / 1000).toFloat() * 50f - 50
 	}
 
 	private fun updateBarLengths() {
@@ -145,4 +143,7 @@ class Scroll(private val uiobject: UIObject) : UIObject() {
 		barX.layoutWidth = barLengthX
 		barY.layoutHeight = barLengthY
 	}
+
+	override fun add(uiobject: UIObject) = throw RuntimeException("Items can not be added to Scroll directly")
+	override fun add(uiobject: UIObject, index: Int) = throw RuntimeException("Items can not be added to Scroll directly")
 }
