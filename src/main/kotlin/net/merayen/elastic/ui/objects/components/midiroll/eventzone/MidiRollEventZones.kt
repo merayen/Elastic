@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui.objects.components.midiroll.eventzone
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.Draw
@@ -9,14 +8,18 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
+import net.merayen.elastic.util.Point
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	interface Handler {
+		fun onCreateEventZone(start: Float, length: Float)
+
 		/**
 		 * Called if user changes the start or stop position of the event zone
 		 */
-		fun onChange(message: ChangeEventZoneMessage)
+		fun onChangeEventZone(eventZoneId: String, start: Float, length: Float)
 
 		fun onAddMidi(eventZoneId: String, midiData: MidiData)
 		fun onRemoveMidi(eventZoneId: String, id: String)
@@ -36,6 +39,14 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 
 	override fun onInit() {
 		contextMenu.addMenuItem(createEventZone)
+
+		contextMenu.handler = object : ContextMenu.Handler {
+			override fun onSelect(item: ContextMenuItem?, position: Point) {
+				handler?.onCreateEventZone(0f, 4f)
+			}
+
+			override fun onMouseDown(position: Point) {}
+		}
 	}
 
 	fun handleMessage(message: NodePropertyMessage) {

@@ -54,7 +54,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 				sendData(PushTangentMessage(nodeId, tangent_no.toShort()))
 			}
 
-			override fun onAddEventZone(start: Float, length: Float) {
+			override fun onCreateEventZone(start: Float, length: Float) {
 				sendData(AddEventZoneMessage(nodeId, UniqueID.create(), start, length))
 			}
 

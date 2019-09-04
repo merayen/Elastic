@@ -1,8 +1,8 @@
 package net.merayen.elastic.backend.architectures.local.nodes.delay_1
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class DelayTest {
 	@Test

@@ -1,9 +1,9 @@
 package net.merayen.elastic.ui.surface
 
+import junit.framework.Assert.assertTrue
 import org.junit.jupiter.api.*
 import java.awt.Color
 import java.awt.Graphics2D
-import kotlin.test.assertTrue
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 internal class SwingTest {
@@ -55,6 +55,6 @@ internal class SwingTest {
 
 		Thread.sleep(1000)
 
-		assertTrue { frames > 10 }
+		assertTrue(frames > 10)
 	}
 }

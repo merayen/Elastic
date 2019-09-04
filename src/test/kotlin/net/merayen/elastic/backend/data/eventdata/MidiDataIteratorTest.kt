@@ -1,9 +1,9 @@
 package net.merayen.elastic.backend.data.eventdata
 
+import junit.framework.Assert.assertEquals
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class MidiDataIteratorTest {
 	private var midiData: MidiData? = null

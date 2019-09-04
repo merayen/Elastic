@@ -16,9 +16,7 @@ class SplashView : View() {
 		add(selectionRectangle)
 	}
 
-	override fun cloneView(): View {
-		return SplashView()
-	}
+	override fun cloneView() = SplashView()
 
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)

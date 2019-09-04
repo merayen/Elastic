@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -17,7 +16,7 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		fun onChangeNote(id: String, tangent: Int, start: Float, length: Float, weight: Float)
 		fun onRemoveMidi(eventZoneId: String, id: String)
 
-		fun onAddEventZone(start: Float, length: Float)
+		fun onCreateEventZone(start: Float, length: Float)
 		fun onChangeEventZone(eventZoneId: String, start: Float, length: Float)
 		fun onRemoveEventZone(eventZoneId: String)
 	}
@@ -37,17 +36,10 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 	override fun onInit() {
 		eventZones.handler = object : MidiRollEventZones.Handler {
-			override fun onChange(message: ChangeEventZoneMessage) {
-				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-			}
-
-			override fun onAddMidi(eventZoneId: String, midiData: MidiData) {
-				handler.onAddMidi(eventZoneId, midiData)
-			}
-
-			override fun onRemoveMidi(eventZoneId: String, id: String) {
-				handler.onRemoveMidi(eventZoneId, id)
-			}
+			override fun onCreateEventZone(start: Float, length: Float) = handler.onCreateEventZone(start, length)
+			override fun onChangeEventZone(eventZoneId: String, start: Float, length: Float) = handler.onChangeEventZone(eventZoneId, start, length)
+			override fun onAddMidi(eventZoneId: String, midiData: MidiData) = handler.onAddMidi(eventZoneId, midiData)
+			override fun onRemoveMidi(eventZoneId: String, id: String) = handler.onRemoveMidi(eventZoneId, id)
 
 			override fun onGhostNote(tangent: Short) {
 				piano.unmarkAllTangents()

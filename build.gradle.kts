@@ -27,13 +27,13 @@ dependencies {
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1")
+	//implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1")
 
 	// Use the Kotlin test library.
-	testImplementation("org.jetbrains.kotlin:kotlin-test")
+	//testImplementation("org.jetbrains.kotlin:kotlin-test")
 
 	// Use the Kotlin JUnit integration.
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+	//testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
 	testImplementation("org.junit.jupiter:junit-jupiter:5.5.0")
 

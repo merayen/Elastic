@@ -1,9 +1,7 @@
 package net.merayen.elastic.ui.objects.top.viewport
 
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class LayoutTest {
 	@Test
