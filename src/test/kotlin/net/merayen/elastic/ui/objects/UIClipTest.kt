@@ -4,10 +4,10 @@ import net.merayen.elastic.ui.*
 import net.merayen.elastic.ui.surface.Swing
 import net.merayen.elastic.ui.util.DrawContext
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
-import kotlin.test.assertEquals
 
 internal class UIClipTest {
 	private class TestTop : UIObject()
@@ -15,6 +15,40 @@ internal class UIClipTest {
 	private var supervisor: Supervisor? = null
 	private var top: UIObject? = null
 	private var surfaceHandler: SurfaceHandler? = null
+	private var clip: UIClip? = null
+	private var intermediateObject: UIObject? = null
+	private var innerObject: InnerObject? = null
+
+	class InnerObject : UIObject(), FlexibleDimension {
+		override var layoutWidth = 20f
+		override var layoutHeight = 20f
+
+		private var visible = false
+
+		@Volatile
+		var drawCount = 0
+
+		override fun onDraw(draw: Draw) {
+			draw.setColor(0f, 0f, 1f)
+			draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
+			drawCount++
+		}
+
+		override fun onUpdate() {
+
+		}
+
+		private fun waitForDraw() {
+			drawCount = 0
+			while (drawCount < 2)
+				Thread.sleep(10)
+		}
+
+		fun isVisible(): Boolean {
+			waitForDraw()
+			return search.parentByType(UIClip::class.java)!!.isVisible(this)
+		}
+	}
 
 	@BeforeEach
 	fun setUp() {
@@ -29,21 +63,6 @@ internal class UIClipTest {
 				supervisor.draw(drawContext)
 			}
 		}
-
-		this.supervisor = supervisor
-		this.top = top
-		this.surfaceHandler = surfaceHandler
-	}
-
-	@AfterEach
-	fun tearDown() {
-		surfaceHandler?.end()
-	}
-
-	@Test
-	@Timeout(10)
-	fun testIsVisible() {
-		val top = top!!
 
 		val clip = object : UIClip() {
 			override fun onDraw(draw: Draw) {
@@ -66,80 +85,97 @@ internal class UIClipTest {
 		clip.add(intermediateObject)
 
 
-		val innerObject = object : UIObject(), FlexibleDimension {
-			override var layoutWidth = 20f
-			override var layoutHeight = 20f
+		val innerObject = InnerObject()
+		intermediateObject.add(innerObject)
 
-			var visible = false
 
-			@Volatile
-			var drawCount = 0
+		this.supervisor = supervisor
+		this.top = top
+		this.surfaceHandler = surfaceHandler
+		this.clip = clip
+		this.intermediateObject = intermediateObject
+		this.innerObject = innerObject
+	}
 
-			override fun onDraw(draw: Draw) {
-				draw.setColor(0f, 0f, 1f)
-				draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
-				drawCount++
-			}
+	@AfterEach
+	fun tearDown() {
+		surfaceHandler?.end()
+	}
 
-			override fun onUpdate() {
-				val uiClip = search.parentByType(UIClip::class.java)!!
-				visible = uiClip.isVisible(this)
-			}
+	@Test
+	@Timeout(10)
+	fun testIsVisible() {
+		val intermediateObject = intermediateObject!!
+		val innerObject = innerObject!!
 
-			fun waitForDraw() {
-				drawCount = 0
-				while (drawCount < 2)
-					Thread.sleep(10)
-			}
-		}
 		innerObject.translation.x = 10f
 		innerObject.translation.y = 10f
 
-		intermediateObject.add(innerObject)
-
 		intermediateObject.translation.x = 0f
 		intermediateObject.translation.y = 0f
-		innerObject.waitForDraw()
-		assertEquals(true, innerObject.visible)
+		assertEquals(true, innerObject.isVisible())
 
 		intermediateObject.translation.x = -28f
 		intermediateObject.translation.y = 0f
-		innerObject.waitForDraw()
-		assertEquals(true, innerObject.visible)
+		assertEquals(true, innerObject.isVisible())
 
 		intermediateObject.translation.x = -32f
 		intermediateObject.translation.y = 0f
-		innerObject.waitForDraw()
-		assertEquals(false, innerObject.visible)
+		assertEquals(false, innerObject.isVisible())
 
 		intermediateObject.translation.x = 0f
 		intermediateObject.translation.y = -28f
-		innerObject.waitForDraw()
-		assertEquals(true, innerObject.visible)
+		assertEquals(true, innerObject.isVisible())
 
 		intermediateObject.translation.x = 50f
 		intermediateObject.translation.y = 88f
-		innerObject.waitForDraw()
-		assertEquals(true, innerObject.visible)
+		assertEquals(true, innerObject.isVisible())
 
 		intermediateObject.translation.x = 50f
 		intermediateObject.translation.y = 92f
-		innerObject.waitForDraw()
-		assertEquals(false, innerObject.visible)
+		assertEquals(false, innerObject.isVisible())
 
 		intermediateObject.translation.x = 88f
 		intermediateObject.translation.y = 50f
-		innerObject.waitForDraw()
-		assertEquals(true, innerObject.visible)
+		assertEquals(true, innerObject.isVisible())
 
 		intermediateObject.translation.x = 100f
 		intermediateObject.translation.y = 100f
-		innerObject.waitForDraw()
-		assertEquals(false, innerObject.visible)
+		assertEquals(false, innerObject.isVisible())
 
 		intermediateObject.translation.x = -100f
 		intermediateObject.translation.y = -100f
-		innerObject.waitForDraw()
-		assertEquals(false, innerObject.visible)
+		assertEquals(false, innerObject.isVisible())
+	}
+
+	@Test
+	fun testIsVisibleWithScaling() {
+		val intermediateObject = intermediateObject!!
+		val innerObject = innerObject!!
+
+		intermediateObject.translation.scaleX = .1f
+		intermediateObject.translation.scaleY = .1f
+
+		innerObject.translation.x = 4f
+		innerObject.translation.y = 2f
+		assertEquals(true, innerObject.isVisible())
+
+		innerObject.translation.x = 2f
+		innerObject.translation.y = 4f
+		assertEquals(true, innerObject.isVisible())
+
+		innerObject.translation.x = 5f
+		innerObject.translation.y = 5f
+		assertEquals(false, innerObject.isVisible())
+
+		innerObject.translation.x = -10f
+		innerObject.translation.y = -10f
+		assertEquals(true, innerObject.isVisible())
+
+		innerObject.translation.x = -19f
+		innerObject.translation.y = -19f
+		Thread.sleep(10000)
+		assertEquals(true, innerObject.isVisible())
+
 	}
 }

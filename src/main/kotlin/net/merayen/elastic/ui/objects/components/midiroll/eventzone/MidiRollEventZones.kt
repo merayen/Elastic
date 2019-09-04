@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
+import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
@@ -46,6 +47,11 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 
 			eventZones.sortBy { it.start }
 		}
+	}
+
+	override fun onDraw(draw: Draw) {
+		draw.setColor(0f, 0f, 0f)
+		draw.fillRect(0f, 0f, 100f, layoutHeight)
 	}
 
 	override fun onUpdate() {

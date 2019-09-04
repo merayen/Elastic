@@ -22,12 +22,25 @@ open class UIClip : UIObject(), FlexibleDimension {
 	 * Does not check if it is really a child of us.
 	 * The UIObject must implement the FlexibleDimension interface.
 	 */
-	fun isVisible(uiobject: UIObject): Boolean {
-		uiobject as FlexibleDimension
+	fun isVisible(uiObject: UIObject): Boolean {
+		uiObject as FlexibleDimension
 
-		val relative = getRelativePosition(uiobject)!!
+		val relative = getRelativePosition(uiObject)!!
 
-		return relative.x + uiobject.layoutWidth > 0 && relative.y + uiobject.layoutHeight > 0 &&
+
+		return relative.x + uiObject.layoutWidth > 0 && relative.y + uiObject.layoutHeight > 0 &&
 			relative.x < layoutWidth && relative.y < layoutHeight
+	}
+
+	/**
+	 * Returns a rectangle representing the visible area of the UIObject.
+	 * The UIObject must implement the FlexibleDimension interface.
+	 */
+	fun visibleRectangle(uiObject: UIObject): Rect {
+		uiObject as FlexibleDimension
+
+		val relative = getRelativePosition(uiObject)!!
+
+		return Rect(relative.x, relative.y, layoutWidth, layoutHeight)
 	}
 }

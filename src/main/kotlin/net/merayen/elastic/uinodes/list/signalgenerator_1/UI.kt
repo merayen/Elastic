@@ -47,9 +47,8 @@ class UI : UINode(), INodeEditable {
 				updateFrequencyText()
 			}
 
-			if (curveData != null) {
+			if (curveData != null)
 				curve.bezier.setPoints(curveData)
-			}
 
 
 			// TODO should probably fix this...? What does it do? Why are we not just using frequency? Due to amplitude?
@@ -101,7 +100,6 @@ class UI : UINode(), INodeEditable {
 			var i: Int = 0
 			override fun onChange() {
 				sendParameter(Properties(curve = bwb.bezier.floats))
-				//sendParameter("data.curve", bwb.bezier.floats)
 			}
 
 			override fun onMove() {
