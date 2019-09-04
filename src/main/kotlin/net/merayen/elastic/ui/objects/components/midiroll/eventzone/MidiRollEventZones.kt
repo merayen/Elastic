@@ -6,6 +6,10 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.MouseEvent
+import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	interface Handler {
@@ -26,6 +30,13 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	var handler: Handler? = null
 
 	private val eventZones = ArrayList<MidiRollEventZone>()
+
+	private val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
+	private val createEventZone = TextContextMenuItem("Create zone")
+
+	override fun onInit() {
+		contextMenu.addMenuItem(createEventZone)
+	}
 
 	fun handleMessage(message: NodePropertyMessage) {
 		val data = message.instance as Properties
@@ -57,5 +68,9 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	override fun onUpdate() {
 		for (zone in eventZones)
 			zone.layoutHeight = layoutHeight
+	}
+
+	override fun onEvent(event: UIEvent) {
+		contextMenu.handle(event)
 	}
 }

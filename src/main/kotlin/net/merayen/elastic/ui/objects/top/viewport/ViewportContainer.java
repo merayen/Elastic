@@ -1,20 +1,19 @@
 package net.merayen.elastic.ui.objects.top.viewport;
 
-import java.util.*;
-
 import net.merayen.elastic.ui.Draw;
-
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
 import net.merayen.elastic.ui.objects.top.views.View;
-import net.merayen.elastic.ui.objects.top.views.splashview.SplashView;
+import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.HitTester;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.Point;
 import net.merayen.elastic.util.TaskExecutor;
+
+import java.util.*;
 
 /**
  * Contains all the viewports.
@@ -60,13 +59,13 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private void defaultView() { // Testing purposes probably
-		Viewport a = createViewport(new SplashView());
+		Viewport a = createViewport(new NodeView());
 		layout = new Layout(a);
 
 		sendMessage(new ViewportHelloMessage(this));
 	}
 
-	boolean me;
+	private boolean me;
 	@Override
 	public void onInit() {
 		ViewportContainer self = this;
