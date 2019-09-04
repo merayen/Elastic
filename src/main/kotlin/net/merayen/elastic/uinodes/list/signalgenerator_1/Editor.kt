@@ -1,9 +1,9 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1
 
-import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
@@ -41,8 +41,8 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		layout.placement.layoutHeight = getHeight()
 	}
 
-	override fun onParameter(instance: BaseNodeData) {
-		val data = instance as Data
+	override fun onParameter(instance: BaseNodeProperties) {
+		val data = instance as Properties
 		val curveData = data.curve
 
 		if (curveData != null) {
@@ -69,7 +69,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 
 			override fun onDotClick() {}
 
-			private fun send() = sendMessage(NodeParameterMessage(nodeId, Data(curve = bwb.bezier.floats)))
+			private fun send() = sendMessage(NodePropertyMessage(nodeId, Properties(curve = bwb.bezier.floats)))
 		})
 
 		return bwb

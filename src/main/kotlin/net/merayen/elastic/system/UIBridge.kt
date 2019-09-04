@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.util.DrawContext
 
 class UIBridge {
 	interface Handler {
+		fun onStarted()
 		fun onMessageToBackend(message: ElasticMessage)
 	}
 
@@ -16,6 +17,8 @@ class UIBridge {
 	private val supervisor: Supervisor
 
 	var handler: Handler? = null
+
+	private var inited = false
 
 	init {
 		val self = this
@@ -29,6 +32,10 @@ class UIBridge {
 
 		surfaceHandler.handler = object : SurfaceHandler.Handler {
 			override fun onDraw(drawContext: DrawContext) {
+				if (!inited) {
+					inited = true
+					handler?.onStarted()
+				}
 				supervisor.draw(drawContext)
 			}
 		}

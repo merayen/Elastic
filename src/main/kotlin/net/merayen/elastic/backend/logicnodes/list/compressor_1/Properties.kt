@@ -1,8 +1,8 @@
 package net.merayen.elastic.backend.logicnodes.list.compressor_1
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 
-data class Data(
+data class Properties(
 		var inputAmplitude: Float? = null,
 		var inputSidechainAmplitude: Float? = null,
 		var outputAmplitude: Float? = null,
@@ -11,4 +11,4 @@ data class Data(
 		var ratio: Float? = null,
 		var knee: Float? = null,
 		var threshold: Float? = null
-) : BaseNodeData()
+) : BaseNodeProperties()

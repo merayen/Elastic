@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.logicnodes.list.test_100;
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.NodeDataMessage;
 import net.merayen.elastic.system.intercom.OutputFrameData;
 
@@ -16,7 +16,7 @@ public class LogicNode extends BaseLogicNode {
 	protected void onInit() {}
 
 	@Override
-	protected void onParameterChange(BaseNodeData instance) {
+	protected void onParameterChange(BaseNodeProperties instance) {
 		updateProperties(instance);
 	}
 

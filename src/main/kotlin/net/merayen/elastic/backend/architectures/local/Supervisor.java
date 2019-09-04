@@ -4,12 +4,12 @@ import net.merayen.elastic.backend.analyzer.NetListUtil;
 import net.merayen.elastic.backend.analyzer.NetListValidator;
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.backend.nodes.UtilKt;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.ElasticMessage;
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
+import net.merayen.elastic.system.intercom.NodePropertyMessage;
 import net.merayen.elastic.system.intercom.ProcessMessage;
 import net.merayen.elastic.system.intercom.StatisticsReportMessage;
 import net.merayen.elastic.util.AverageStat;
@@ -84,7 +84,7 @@ class Supervisor {
 			localnode.init();
 
 			// Apply any parameters
-			BaseNodeData data = UtilKt.mapToLogicNodeData(node_properties.getName(node), node_properties.getVersion(node), node.properties);
+			BaseNodeProperties data = UtilKt.mapToLogicNodeProperties(node_properties.getName(node), node_properties.getVersion(node), node.properties);
 			localnode.onParameter(data);
 		}
 	}
@@ -112,8 +112,8 @@ class Supervisor {
 	}
 
 	public void handleMessage(ElasticMessage message) {
-		if(message instanceof NodeParameterMessage) {
-			NodeParameterMessage m = (NodeParameterMessage)message;
+		if(message instanceof NodePropertyMessage) {
+			NodePropertyMessage m = (NodePropertyMessage)message;
 			LocalNode localnode = nodes.get(m.node_id);
 			localnode.onParameter(m.instance);
 		}

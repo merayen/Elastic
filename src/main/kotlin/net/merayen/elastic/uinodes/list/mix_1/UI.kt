@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.mix_1
 
-import net.merayen.elastic.backend.logicnodes.list.mix_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.mix_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.ParameterSlider
@@ -24,7 +24,7 @@ class UI : UINode() {
             }
 
             override fun onChange(value: Double, programmatic: Boolean) {
-                sendParameter(Data(mix=value.toFloat()))
+                sendParameter(Properties(mix=value.toFloat()))
             }
         })
     }
@@ -61,12 +61,12 @@ class UI : UINode() {
 
     override fun onRemovePort(port: UIPort) {}
 
-    override fun onMessage(message: BaseNodeData) {}
+    override fun onMessage(message: BaseNodeProperties) {}
 
     override fun onData(message: NodeDataMessage) {}
 
-    override fun onParameter(instance: BaseNodeData) {
-        if (instance is Data) {
+    override fun onParameter(instance: BaseNodeProperties) {
+        if (instance is Properties) {
             val mixData = instance.mix
             if (mixData != null)
                 slider.value = mixData.toDouble()

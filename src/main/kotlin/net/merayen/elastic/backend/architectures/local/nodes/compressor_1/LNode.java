@@ -3,8 +3,8 @@ package net.merayen.elastic.backend.architectures.local.nodes.compressor_1;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.logicnodes.list.compressor_1.CompressorNodeOutputFrameData;
-import net.merayen.elastic.backend.logicnodes.list.compressor_1.Data;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.logicnodes.list.compressor_1.Properties;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
@@ -35,8 +35,8 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onParameter(BaseNodeData instance) {
-		Data data = (Data) instance;
+	protected void onParameter(BaseNodeProperties instance) {
+		Properties data = (Properties) instance;
 		Float thresholdData = data.getThreshold();
 		Float attackData = data.getAttack();
 		Float releaseData = data.getRelease();

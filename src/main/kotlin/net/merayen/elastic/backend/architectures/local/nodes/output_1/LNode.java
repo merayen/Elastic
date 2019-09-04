@@ -6,7 +6,7 @@ import java.util.List;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeOutputData;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
@@ -25,7 +25,7 @@ public class LNode extends LocalNode {
 	protected void onProcess(InputFrameData data) {}
 
 	@Override
-	protected void onParameter(BaseNodeData instance) {}
+	protected void onParameter(BaseNodeProperties instance) {}
 
 	@Override
 	protected void onDestroy() {}

@@ -3,8 +3,8 @@ package net.merayen.elastic.backend.architectures.local.nodes.poly_1
 import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
-import net.merayen.elastic.backend.logicnodes.list.poly_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.poly_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java), GroupLNode {
@@ -24,8 +24,8 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	override fun onSpawnProcessor(lp: LocalProcessor) {}
 	override fun onProcess(data: InputFrameData) {}
 
-	override fun onParameter(instance: BaseNodeData) {
-		val data = instance as Data
+	override fun onParameter(instance: BaseNodeProperties) {
+		val data = instance as Properties
 		val unisonData = data.unison
 
 		if (unisonData != null)

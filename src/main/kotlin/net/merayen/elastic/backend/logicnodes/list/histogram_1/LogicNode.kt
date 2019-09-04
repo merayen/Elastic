@@ -2,12 +2,12 @@ package net.merayen.elastic.backend.logicnodes.list.histogram_1
 
 import net.merayen.elastic.backend.architectures.local.nodes.histogram_1.Histogram1NodeOutputFrameData
 import net.merayen.elastic.backend.nodes.BaseLogicNode
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
-	override fun onParameterChange(instance: BaseNodeData?) {
+	override fun onParameterChange(instance: BaseNodeProperties?) {
 		updateProperties(instance)
 	}
 

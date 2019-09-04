@@ -1,9 +1,5 @@
 package net.merayen.elastic.ui.objects.components;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import net.merayen.elastic.system.intercom.NodeParameterMessage;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 

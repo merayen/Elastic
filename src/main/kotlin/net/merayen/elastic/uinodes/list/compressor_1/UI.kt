@@ -1,8 +1,8 @@
 package net.merayen.elastic.uinodes.list.compressor_1
 
 import net.merayen.elastic.backend.logicnodes.list.compressor_1.CompressorNodeOutputFrameData
-import net.merayen.elastic.backend.logicnodes.list.compressor_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.compressor_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.components.CircularSlider
 import net.merayen.elastic.ui.objects.node.UINode
@@ -151,15 +151,15 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeData) {}
+	override fun onMessage(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is CompressorNodeOutputFrameData)
 			compressionValue = 1 - log(1 / max(0.0001f, message.amplitude), 10f) / 3f
 	}
 
-	override fun onParameter(instance: BaseNodeData) {
-		if (instance is Data) {
+	override fun onParameter(instance: BaseNodeProperties) {
+		if (instance is Properties) {
 			val attackData = instance.attack
 			val releaseData = instance.release
 			val thresholdData = instance.threshold
@@ -189,7 +189,7 @@ class UI : UINode() {
 	}
 
 	private fun sendCompressorParameters() {
-		val data = Data(
+		val data = Properties(
 				inputAmplitude = calcCentricPow(inputAmplitude.value),
 				inputSidechainAmplitude = calcCentricPow(inputSidechainAmplitude.value),
 				outputAmplitude = calcCentricPow(outputAmplitude.value),

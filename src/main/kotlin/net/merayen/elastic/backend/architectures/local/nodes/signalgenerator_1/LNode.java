@@ -2,8 +2,8 @@ package net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Properties;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.util.math.BezierCurve;
 import net.merayen.elastic.util.math.SignalBezierCurve;
@@ -41,10 +41,10 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onParameter(BaseNodeData instance) {
-		Data data = (Data)instance;
-		Float frequencyData = data.getFrequency();
-		List<Float> curveData = data.getCurve();
+	protected void onParameter(BaseNodeProperties instance) {
+		Properties properties = (Properties)instance;
+		Float frequencyData = properties.getFrequency();
+		List<Float> curveData = properties.getCurve();
 
 		if(frequencyData != null)
 			frequency = frequencyData;

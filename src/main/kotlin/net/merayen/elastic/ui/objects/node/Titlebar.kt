@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.node
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent

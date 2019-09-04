@@ -124,7 +124,7 @@ class NodeViewController internal constructor(top: Top) : Controller(top) {
 				}
 			}
 
-		} else if (message is NodeParameterMessage) {
+		} else if (message is NodePropertyMessage) {
 
 			if (message.instance.uiTranslation != null)
 				for (nv in nodeViews)

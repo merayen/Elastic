@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.wave_1
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet
-import net.merayen.elastic.backend.logicnodes.list.wave_1.Data
+import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.backend.midi.MidiState
 import net.merayen.elastic.backend.util.AudioUtil
 import net.merayen.elastic.system.intercom.ElasticMessage
@@ -11,7 +11,7 @@ import kotlin.math.PI
 import kotlin.math.sin
 
 class LProcessor : LocalProcessor() {
-	var type: Data.Type? = null
+	var type: Properties.Type? = null
 	var pos = 0.0
 
 	private lateinit var frequencyCoefficients: FloatArray
@@ -77,16 +77,16 @@ class LProcessor : LocalProcessor() {
 
 			val type = type
 			when (type) {
-				Data.Type.NOISE -> for (i in start until start+available) {
+				Properties.Type.NOISE -> for (i in start until start+available) {
 					val c = frequencyCoefficients[i]
 					audio[i] = if (c > 0) (Math.random().toFloat() - 0.5f) * 0.1f else 0f //noise[(pos % noise.size).toInt()] * 0.1f
 				}
-				Data.Type.SINE -> for (i in start until start+available) {
+				Properties.Type.SINE -> for (i in start until start+available) {
 					val c = frequencyCoefficients[i]
 					audio[i] = if (c > 0) sin(pos * PI * 2).toFloat() * 0.1f else 0f // Should we use a wavetable + resampler for performance? Or?
 					pos += c
 				}
-				Data.Type.SQUARE -> for (i in start until start+available) {
+				Properties.Type.SQUARE -> for (i in start until start+available) {
 					val c = frequencyCoefficients[i]
 					if (c > 0)
 						audio[i] = if (pos % 2 < 1f) 0.1f else -0.1f

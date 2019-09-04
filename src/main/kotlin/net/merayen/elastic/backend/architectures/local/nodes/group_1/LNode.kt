@@ -4,7 +4,7 @@ import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.logicnodes.list.group_1.Group1InputFrameData
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java), GroupLNode {
@@ -83,7 +83,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 			this.bpm = bpm
 	}
 
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 
 	override fun onFinishFrame() {
 		if (playing) {

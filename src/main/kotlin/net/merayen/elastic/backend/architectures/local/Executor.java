@@ -33,7 +33,7 @@ public class Executor extends AbstractExecutor {
 			ProcessMessage pm = supervisor.process((ProcessMessage)message);
 			sendFromProcessing(pm);
 
-		} else if(message instanceof NodeParameterMessage || message instanceof NodeDataMessage) {
+		} else if(message instanceof NodePropertyMessage || message instanceof NodeDataMessage) {
 			applyNetList();
 			supervisor.handleMessage(message);
 			NetListMessages.INSTANCE.apply(getNetList(), message);

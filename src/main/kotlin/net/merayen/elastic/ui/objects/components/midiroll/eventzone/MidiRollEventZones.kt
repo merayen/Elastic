@@ -2,8 +2,8 @@ package net.merayen.elastic.ui.objects.components.midiroll.eventzone
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
-import net.merayen.elastic.backend.logicnodes.list.midi_1.Data
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
@@ -26,8 +26,8 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 
 	private val eventZones = ArrayList<MidiRollEventZone>()
 
-	fun handleMessage(message: NodeParameterMessage) {
-		val data = message.instance as Data
+	fun handleMessage(message: NodePropertyMessage) {
+		val data = message.instance as Properties
 
 		val newEventZones = data.eventZones
 

@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.midi_transpose_1
 
-import net.merayen.elastic.backend.logicnodes.list.midi_transpose_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.midi_transpose_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.node.UINode
@@ -71,11 +71,11 @@ class UI : UINode() {
 		add(fineToneSlider)
 	}
 
-	override fun onMessage(message: BaseNodeData) {}
+	override fun onMessage(message: BaseNodeProperties) {}
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeData) {
-		val data = instance as Data
+	override fun onParameter(instance: BaseNodeProperties) {
+		val data = instance as Properties
 		val transposeData = data.transpose
 		if (transposeData != null)
 			toneSlider.value = (transposeData.toDouble() + 24) / 48
@@ -83,7 +83,7 @@ class UI : UINode() {
 
 	private fun sendTransposeParameters() {
 		sendParameter(
-				Data(
+				Properties(
 						transpose = ((toneSlider.value * 48) - 24).roundToInt()
 				)
 		)

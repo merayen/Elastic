@@ -1,13 +1,13 @@
 package net.merayen.elastic.backend.logicnodes.list.signalgenerator_1
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 
-data class Data(
+data class Properties(
 		var inputAmplitude: Float? = null,
 		var inputOffset: Float? = null,
 		var frequency: Float? = null,
 		var curve: List<Float>? = null
-) : BaseNodeData() {
+) : BaseNodeProperties() {
 	init {
 		listTranslators["curve"] = {
 			(it as Number).toFloat()

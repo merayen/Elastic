@@ -1,6 +1,6 @@
 package net.merayen.elastic.uinodes.list.ramp_1
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -14,7 +14,7 @@ class UI : UINode() {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
-	override fun onMessage(message: BaseNodeData) {
+	override fun onMessage(message: BaseNodeProperties) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
@@ -22,7 +22,7 @@ class UI : UINode() {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 
-	override fun onParameter(instance: BaseNodeData) {
+	override fun onParameter(instance: BaseNodeProperties) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
 }

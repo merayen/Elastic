@@ -4,7 +4,7 @@ import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.InputInterfaceNode;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode implements InputInterfaceNode {
@@ -23,7 +23,7 @@ public class LNode extends LocalNode implements InputInterfaceNode {
 	protected void onProcess(InputFrameData data) {}
 
 	@Override
-	protected void onParameter(BaseNodeData instance) {}
+	protected void onParameter(BaseNodeProperties instance) {}
 
 	@Override
 	protected void onFinishFrame() {}

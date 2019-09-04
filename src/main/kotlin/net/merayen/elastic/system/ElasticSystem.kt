@@ -6,6 +6,7 @@ import net.merayen.elastic.system.intercom.backend.EndBackendMessage
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage
 import net.merayen.elastic.system.intercom.ui.EndUIMessage
 import net.merayen.elastic.system.intercom.ui.InitUIMessage
+import net.merayen.elastic.system.intercom.ui.InitUISuccessMessage
 import net.merayen.elastic.util.tap.ObjectDistributor
 import net.merayen.elastic.util.tap.Tap
 
@@ -36,6 +37,7 @@ class ElasticSystem {
 				backend.message_handler.sendToBackend(ui.retrieveMessagesFromUI())
 				ui.sendMessagesToUI(messages)
 			}
+			messagesFromBackendDistributor.push(messages.toTypedArray())
 		}
 	}
 
@@ -58,6 +60,10 @@ class ElasticSystem {
 			if (ui == null && message is InitUIMessage) {
 				val uiBridge = UIBridge()
 				uiBridge.handler = object : UIBridge.Handler {
+					override fun onStarted() {
+						messagesFromUIDistributor.push(arrayOf(InitUISuccessMessage()))
+					}
+
 					override fun onMessageToBackend(message: ElasticMessage) {
 						backend!!.message_handler.sendToBackend(listOf(message))
 						messagesFromUIDistributor.push(arrayOf(message))
@@ -75,6 +81,8 @@ class ElasticSystem {
 
 		if (ui != null)
 			ui!!.sendMessagesToUI(messages)
+
+		messagesFromBackendDistributor.push(messages.toTypedArray())
 	}
 
 	/**

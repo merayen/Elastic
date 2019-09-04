@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.signalgenerator_1
 
-import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
@@ -37,8 +37,8 @@ class UI : UINode(), INodeEditable {
 			port.translation.x = layoutWidth
 	}
 
-	override fun onMessage(instance: BaseNodeData) {
-		if (instance is Data) {
+	override fun onMessage(instance: BaseNodeProperties) {
+		if (instance is Properties) {
 			val frequencyData = instance.frequency
 			val curveData = instance.curve
 
@@ -62,7 +62,7 @@ class UI : UINode(), INodeEditable {
 	public override fun onCreatePort(port: UIPort) {
 		if (port.name == "frequency") {
 			val isp = InputSignalParameters(this, "frequency")
-			isp.handler = InputSignalParameters.Handler { amplitude, offset -> sendParameter(Data(inputAmplitude = amplitude, inputOffset = offset)) }
+			isp.handler = InputSignalParameters.Handler { amplitude, offset -> sendParameter(Properties(inputAmplitude = amplitude, inputOffset = offset)) }
 			frequency_port_parameter = PortParameter(this, getPort("frequency")!!, PopupParameter1D(), isp)
 			frequency_port_parameter!!.translation.x = 20f
 			frequency_port_parameter!!.translation.y = 20f
@@ -71,7 +71,7 @@ class UI : UINode(), INodeEditable {
 			(frequency_port_parameter!!.not_connected as PopupParameter1D).setHandler(object : PopupParameter1D.Handler {
 				override fun onMove(value: Float) {
 					updateFrequencyText()
-					sendParameter(Data(frequency = frequency))
+					sendParameter(Properties(frequency = frequency))
 				}
 
 				override fun onChange(value: Float) {}
@@ -100,13 +100,13 @@ class UI : UINode(), INodeEditable {
 		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() {
-				sendParameter(Data(curve = bwb.bezier.floats))
+				sendParameter(Properties(curve = bwb.bezier.floats))
 				//sendParameter("data.curve", bwb.bezier.floats)
 			}
 
 			override fun onMove() {
 				if (i++ % 10 == 0) // FIXME Should really be based on time
-					sendParameter(Data(curve = bwb.bezier.floats))
+					sendParameter(Properties(curve = bwb.bezier.floats))
 			}
 
 			override fun onDotClick() {}
@@ -121,7 +121,7 @@ class UI : UINode(), INodeEditable {
 		(frequency_port_parameter!!.not_connected as PopupParameter1D).label.text = String.format("Frequency: %.3f", frequency)
 	}
 
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 
 	override fun getNodeEditor() = Editor(nodeId)
 }

@@ -61,7 +61,7 @@ public class Supervisor {
 		node_properties.setParent(node, parent);
 
 		// Make properties (de)serializable by adding {..."&className&": "Data"...}
-		node.properties.put(JSONObjectMapper.Companion.getCLASSNAME_IDENTIFIER(), "Data");
+		node.properties.put(JSONObjectMapper.Companion.getCLASSNAME_IDENTIFIER(), "Properties");
 
 		logicnode_list.addAsLogicNode(node);
 	}
@@ -81,8 +81,8 @@ public class Supervisor {
 			CreateNodeMessage m = (CreateNodeMessage) message;
 			createNode(m.node_id, m.name, m.version, m.parent);
 
-		} else if (message instanceof NodeParameterMessage) {
-			NodeParameterMessage m = (NodeParameterMessage) message;
+		} else if (message instanceof NodePropertyMessage) {
+			NodePropertyMessage m = (NodePropertyMessage) message;
 			NetListMessages.INSTANCE.apply(netlist, message); // Apply it already here, and allow the logicnode to change it back
 
 			BaseLogicNode logicNode = logicnode_list.get(m.node_id);

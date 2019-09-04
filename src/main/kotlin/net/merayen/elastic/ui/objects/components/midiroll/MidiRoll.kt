@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.components.midiroll
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Scroll
@@ -82,7 +82,7 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		}
 	}
 
-	fun handleMessage(message: NodeParameterMessage) {
+	fun handleMessage(message: NodePropertyMessage) {
 		eventZones.handleMessage(message)
 	}
 }

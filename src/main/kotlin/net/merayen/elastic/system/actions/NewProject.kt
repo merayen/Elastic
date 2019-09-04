@@ -1,11 +1,12 @@
 package net.merayen.elastic.system.actions
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.Action
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage
 import net.merayen.elastic.system.intercom.backend.InitBackendMessage
 import net.merayen.elastic.system.intercom.ui.InitUIMessage
+import net.merayen.elastic.system.intercom.ui.InitUISuccessMessage
 import java.io.File
 import java.util.*
 
@@ -15,6 +16,9 @@ import java.util.*
 class NewProject(private val project_path: String) : Action() {
 	internal var nodes = ArrayList<CreateNodeMessage>()
 
+	@Volatile
+	private var uiInited = false
+
 	init {
 		if (File(project_path).exists())
 			throw RuntimeException("Project already exists. Use LoadProject()-action instead.")
@@ -23,13 +27,25 @@ class NewProject(private val project_path: String) : Action() {
 	override fun run() {
 		system.listenToMessagesFromBackend {
 			for (message in it) {
-					when(message) {
-						is CreateNodeMessage -> nodes.add(message)
-						is BeginResetNetListMessage -> nodes.clear();
-						is ProcessMessage -> println("Process response");
-					}
+				var skip = false
+				when (message) {
+					is CreateNodeMessage -> nodes.add(message)
+					is BeginResetNetListMessage -> nodes.clear()
+					is ProcessMessage -> skip = true
 				}
+				if (!skip)
+					println("From Backend: $message")
 			}
+		}
+
+		system.listenToMessagesFromUI {
+			for (message in it) {
+				when (message) {
+					is InitUISuccessMessage -> uiInited = true
+				}
+				println("From UI: $message")
+			}
+		}
 
 		init()
 	}
@@ -50,6 +66,8 @@ class NewProject(private val project_path: String) : Action() {
 		// Init the UI, which will display a window
 		system.sendMessageToUI(listOf(InitUIMessage()))
 
+		waitFor { uiInited }
+
 		// Create the top-most node which will contain everything
 		system.sendMessageToBackend(listOf(CreateNodeMessage("group", 1, null)))
 
@@ -66,17 +84,17 @@ class NewProject(private val project_path: String) : Action() {
 		waitFor { nodes.size == 3 }
 
 		// Set the position of the nodes
-		val outputNodeData = net.merayen.elastic.backend.logicnodes.list.output_1.Data()
-		outputNodeData.uiTranslation = BaseNodeData.UITranslation(200f, 0f)
-		system.sendMessageToBackend(listOf(NodeParameterMessage(nodes[2].node_id, outputNodeData)))
+		val outputNodeData = net.merayen.elastic.backend.logicnodes.list.output_1.Properties()
+		outputNodeData.uiTranslation = BaseNodeProperties.UITranslation(200f, 0f)
+		system.sendMessageToBackend(listOf(NodePropertyMessage(nodes[2].node_id, outputNodeData)))
 
 		// Connect signal generator to output
 		system.sendMessageToBackend(listOf(NodeConnectMessage(nodes[1].node_id, "output", nodes[2].node_id, "input")))
 
 		// Set frequency parameter on one of the nodes
-		val signalgeneratorNodeData = net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Data()
+		val signalgeneratorNodeData = net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Properties()
 		signalgeneratorNodeData.frequency = 1000f
-		system.sendMessageToBackend(listOf(NodeParameterMessage(nodes[1].node_id, signalgeneratorNodeData)))
+		system.sendMessageToBackend(listOf(NodePropertyMessage(nodes[1].node_id, signalgeneratorNodeData)))
 
 		// Store the whole project (same as going to "File" --> "Save project")
 		system.sendMessageToBackend(listOf(CreateCheckpointMessage()))

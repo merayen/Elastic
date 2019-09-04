@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.system.intercom.InputFrameData;
@@ -58,7 +58,7 @@ public abstract class LocalNode {
 	 */
 	protected abstract void onProcess(InputFrameData data);
 
-	protected abstract void onParameter(BaseNodeData instance);
+	protected abstract void onParameter(BaseNodeProperties instance);
 
 	/**
 	 * Called when a frame has been processed.

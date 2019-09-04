@@ -1,9 +1,9 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
-import net.merayen.elastic.backend.nodes.createNewNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
+import net.merayen.elastic.backend.nodes.createNewNodeProperties
 import net.merayen.elastic.system.intercom.CreateNodeMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.objects.components.PopupLabel
 import net.merayen.elastic.ui.objects.components.dragdrop.TargetItem
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
@@ -42,12 +42,12 @@ class NodeViewDropTarget(private val nodeview: NodeView) : TargetItem(nodeview.c
 			val name = "sample"
 			val version = 1
 
-			val data = createNewNodeData(name, version)
-			data.uiTranslation = BaseNodeData.UITranslation(x = p.x, y = p.y)
+			val data = createNewNodeProperties(name, version)
+			data.uiTranslation = BaseNodeProperties.UITranslation(x = p.x, y = p.y)
 
 			val nodeId = NodeUtil.createID()
 			nodeview.sendMessage(CreateNodeMessage(nodeId, name, version, nodeview.currentNodeId))
-			nodeview.sendMessage(NodeParameterMessage(nodeId, data))
+			nodeview.sendMessage(NodePropertyMessage(nodeId, data))
 			// TODO implement actual sending of the filename to the node, for import
 			//(nodeview.search.top as Top).mouseCursorManager.retrieveCarryItem(mouseEvent.id)
 		}

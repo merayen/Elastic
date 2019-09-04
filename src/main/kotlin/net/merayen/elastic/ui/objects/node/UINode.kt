@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.node
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
-import net.merayen.elastic.backend.nodes.createNewNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
+import net.merayen.elastic.backend.nodes.createNewNodeProperties
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
@@ -31,9 +31,9 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
-	protected abstract fun onMessage(message: BaseNodeData) // TODO remove. Use onParameter instead!
+	protected abstract fun onMessage(message: BaseNodeProperties) // TODO remove. Use onParameter instead!
 	protected abstract fun onData(message: NodeDataMessage)
-	protected abstract fun onParameter(instance: BaseNodeData)
+	protected abstract fun onParameter(instance: BaseNodeProperties)
 
 	val UINet
 		get() = search.parentByType(NodeView::class.java)?.uiNet
@@ -79,8 +79,8 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		return null
 	}
 
-	fun sendParameter(instance: BaseNodeData) {
-		sendMessage(NodeParameterMessage(nodeId, instance))
+	fun sendParameter(instance: BaseNodeProperties) {
+		sendMessage(NodePropertyMessage(nodeId, instance))
 	}
 
 	fun sendData(value: NodeDataMessage) {
@@ -88,9 +88,9 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	}
 
 	fun executeMessage(message: ElasticMessage) {
-		if (message is NodeParameterMessage) {
+		if (message is NodePropertyMessage) {
 			val properties = message.instance
-			if (properties is BaseNodeData) {
+			if (properties is BaseNodeProperties) {
 				if (properties.uiTranslation != null)
 
 					if (!titlebar.isDragging) {
@@ -129,14 +129,14 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	private fun sendUiData() {
 		val data = newNodeData()
-		data.uiTranslation = BaseNodeData.UITranslation(targetLocation.x, targetLocation.y)
+		data.uiTranslation = BaseNodeProperties.UITranslation(targetLocation.x, targetLocation.y)
 		sendParameter(data)
 	}
 
-	protected fun newNodeData(): BaseNodeData {
+	protected fun newNodeData(): BaseNodeProperties {
 		val path = this::class.qualifiedName!!.split(".")
 		val name = NodeUtil.getNodeName(path[path.size - 2])
 		val version = NodeUtil.getNodeVersion(path[path.size - 2])
-		return createNewNodeData(name, version)
+		return createNewNodeProperties(name, version)
 	}
 }

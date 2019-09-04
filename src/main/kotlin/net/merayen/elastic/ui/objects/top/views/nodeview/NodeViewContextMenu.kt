@@ -1,9 +1,9 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
-import net.merayen.elastic.backend.nodes.createNewNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
+import net.merayen.elastic.backend.nodes.createNewNodeProperties
 import net.merayen.elastic.system.intercom.CreateNodeMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
@@ -60,9 +60,9 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 
 		sendMessage(CreateNodeMessage(node_id, nodeName, nodeVersion, this.node_id)) // TODO group shall not be null, but
 
-		val baseData = createNewNodeData(nodeName, nodeVersion)
-		baseData.uiTranslation = BaseNodeData.UITranslation(position.x, position.y)
-		sendMessage(NodeParameterMessage(node_id, baseData))
+		val baseData = createNewNodeProperties(nodeName, nodeVersion)
+		baseData.uiTranslation = BaseNodeProperties.UITranslation(position.x, position.y)
+		sendMessage(NodePropertyMessage(node_id, baseData))
 	}
 
 	override fun onEvent(event: UIEvent) {

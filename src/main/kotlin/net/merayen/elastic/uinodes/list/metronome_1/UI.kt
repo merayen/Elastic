@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.metronome_1
 
 import net.merayen.elastic.backend.logicnodes.list.metronome_1.MetronomeBeatMessage
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -36,14 +36,14 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeData) {}
+	override fun onMessage(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is MetronomeBeatMessage)
 			beatIndicator.handleMessage(message)
 	}
 
-	override fun onParameter(instance: BaseNodeData) {
+	override fun onParameter(instance: BaseNodeProperties) {
 
 	}
 }

@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview
 import net.merayen.elastic.system.intercom.BeginResetNetListMessage
 import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
@@ -119,7 +119,7 @@ class Arrangement : UIObject() {
 		}
 
 		for (track in tracks) {
-			if (message is NodeParameterMessage)
+			if (message is NodePropertyMessage)
 				if (message.nodeId == track.nodeId)
 					track.onParameter(message.instance)
 		}

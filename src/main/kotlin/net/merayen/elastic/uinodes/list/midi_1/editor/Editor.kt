@@ -2,9 +2,9 @@ package net.merayen.elastic.uinodes.list.midi_1.editor
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.*
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeMessage
-import net.merayen.elastic.system.intercom.NodeParameterMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.components.midiroll.MidiRoll
@@ -15,7 +15,7 @@ import net.merayen.elastic.util.UniqueID
  * Editor for the MIDI-roll shown in a separate view.
  */
 class Editor(nodeId: String) : NodeEditor(nodeId) {
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 
 	private val midiRoll: MidiRoll
 	private val menuBar = MidiEditorMenuBar(object : MidiEditorMenuBar.Handler {
@@ -84,7 +84,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 	}
 
 	override fun onMessage(message: NodeMessage) {
-		if (message is NodeParameterMessage)
+		if (message is NodePropertyMessage)
 			midiRoll.handleMessage(message)
 	}
 }

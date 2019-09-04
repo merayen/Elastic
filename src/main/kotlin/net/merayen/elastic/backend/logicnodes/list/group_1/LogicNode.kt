@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.logicnodes.list.group_1
 
 import net.merayen.elastic.backend.nodes.BaseLogicNode
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.backend.nodes.GroupLogicNode
 import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.NodeDataMessage
@@ -26,7 +26,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 		when (message) {
 			is SetBPMMessage -> {
 				bpm = message.bpm.toDouble()
-				updateProperties(Data(bpm = bpm.toInt()))
+				updateProperties(Properties(bpm = bpm.toInt()))
 			}
 			is TransportStartPlaybackMessage -> startPlaying = true
 			is TransportStopPlaybackMessage -> stopPlaying = true
@@ -34,8 +34,8 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 		}
 	}
 
-	override fun onParameterChange(instance: BaseNodeData) {
-		instance as Data
+	override fun onParameterChange(instance: BaseNodeProperties) {
+		instance as Properties
 		val bpm = instance.bpm
 		if (bpm != null)
 			this.bpm = bpm.toDouble()

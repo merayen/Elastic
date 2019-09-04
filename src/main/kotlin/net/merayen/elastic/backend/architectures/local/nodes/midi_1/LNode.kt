@@ -4,7 +4,7 @@ import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.MidiNodeInputFrameData
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java) {
@@ -24,7 +24,7 @@ class LNode : LocalNode(LProcessor::class.java) {
 			inputMidi = input.temporaryMidi
 	}
 
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 
 	override fun onFinishFrame() {
 		inputMidi = null

@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.nodes
 
 import kotlin.reflect.KClass
 
-abstract class BaseNodeData(
+abstract class BaseNodeProperties(
 		var name: String? = null,
 		var version: Int? = null,
 		var parent: String? = null,

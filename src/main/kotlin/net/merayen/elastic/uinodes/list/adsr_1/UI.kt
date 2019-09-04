@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.adsr_1
 
-import net.merayen.elastic.backend.logicnodes.list.adsr_1.Data
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.logicnodes.list.adsr_1.Properties
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.UIClip
 import net.merayen.elastic.ui.objects.components.CircularSlider
@@ -45,7 +45,7 @@ class UI : UINode() {
 		attack_slider.translation.y = 190f
 		attack_slider.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Data(attack = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				sendParameter(Properties(attack = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.attack_time = Math.pow(attack_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -63,7 +63,7 @@ class UI : UINode() {
 		decay_slider.translation.y = 190f
 		decay_slider.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Data(decay = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				sendParameter(Properties(decay = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.decay_time = Math.pow(decay_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -81,7 +81,7 @@ class UI : UINode() {
 		sustain_slider.translation.y = 190f
 		sustain_slider.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Data(sustain = value))
+				sendParameter(Properties(sustain = value))
 				adsrgraph.sustain_value = sustain_slider.value
 			}
 		}
@@ -99,7 +99,7 @@ class UI : UINode() {
 		release_slider.translation.y = 190f
 		release_slider.handler = object : CircularSlider.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Data(release = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				sendParameter(Properties(release = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.release_time = Math.pow(release_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -139,8 +139,8 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeData) {
-		val data = message as Data
+	override fun onMessage(message: BaseNodeProperties) {
+		val data = message as Properties
 		val attack = data.attack
 		val decay = data.decay
 		val sustain = data.sustain
@@ -163,5 +163,5 @@ class UI : UINode() {
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 }

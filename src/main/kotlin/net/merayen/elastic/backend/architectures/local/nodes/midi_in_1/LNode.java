@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.logicnodes.list.midi_in_1.MidiIn1InputFrameData;
-import net.merayen.elastic.backend.nodes.BaseNodeData;
+import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode {
@@ -35,7 +34,7 @@ public class LNode extends LocalNode {
 	}
 
 	@Override
-	protected void onParameter(BaseNodeData instance) {
+	protected void onParameter(BaseNodeProperties instance) {
 		// TODO Auto-generated method stub
 
 	}

@@ -1,6 +1,6 @@
 package net.merayen.elastic.uinodes.list.eq_1
 
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.node.UINode
@@ -39,7 +39,7 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeData) {}
+	override fun onMessage(message: BaseNodeProperties) {}
 	override fun onData(message: NodeDataMessage) {}
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 }

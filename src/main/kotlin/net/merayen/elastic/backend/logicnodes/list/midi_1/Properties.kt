@@ -1,15 +1,15 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 
-data class Data(
+data class Properties(
 	var eventZones: MutableList<EventZone>? = null,
 	var mute: Boolean? = null,
 	var solo: Boolean? = null,
 	var record: Boolean? = null,
 	var trackName: String? = null
-) : BaseNodeData() {
+) : BaseNodeProperties() {
 	data class EventZone(
 		var id: String? = null,
 		var start: Float? = null,

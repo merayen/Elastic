@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.logicnodes.list.signalgenerator_1
 
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
@@ -11,12 +11,12 @@ class LogicNode : BaseLogicNode() {
 		createInputPort("frequency")
 		createOutputPort("output", Format.AUDIO)
 
-		(properties as Data).frequency = 440f
+		(properties as Properties).frequency = 440f
 	}
 
 	override fun onInit() {}
 
-	override fun onParameterChange(instance: BaseNodeData) { // Parameter change from UI
+	override fun onParameterChange(instance: BaseNodeProperties) { // Parameter change from UI
 		this.updateProperties(instance) // Accept anyway
 	}
 

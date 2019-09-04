@@ -26,7 +26,7 @@ public abstract class BaseLogicNode {
 	//private InheritanceTree parameters;
 
 	private JSONObjectMapper mapper;
-	public BaseNodeData properties;
+	public BaseNodeProperties properties;
 
 	/**
 	 * Called when this node is created for the first time.
@@ -47,7 +47,7 @@ public abstract class BaseLogicNode {
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
 	 * @param instance
 	 */
-	protected abstract void onParameterChange(BaseNodeData instance);
+	protected abstract void onParameterChange(BaseNodeProperties instance);
 
 	/**
 	 * Data received from UI. Data is not meant for storing, and is usually for streaming etc
@@ -119,10 +119,10 @@ public abstract class BaseLogicNode {
 	 * Usage: Create a new instance of BaseNodeData with only the changed fields set and send it into this method.
 	 * @param instance A BaseNodeData-subclass instance with the fields being updated set
 	 */
-	public void updateProperties(BaseNodeData instance) {
+	public void updateProperties(BaseNodeProperties instance) {
 		ClassInstanceMerger.Companion.merge(instance, properties, null);
-		supervisor.sendMessageToProcessor(new NodeParameterMessage(node.getID(), instance));
-		supervisor.sendMessageToUI(new NodeParameterMessage(node.getID(), instance));
+		supervisor.sendMessageToProcessor(new NodePropertyMessage(node.getID(), instance));
+		supervisor.sendMessageToUI(new NodePropertyMessage(node.getID(), instance));
 
 		Map<String,?> data = mapper.toMap(properties);
 		node.properties.clear();
@@ -171,8 +171,8 @@ public abstract class BaseLogicNode {
 		netlist = ((Environment) supervisor.env).project.getNetList();
 
 		// Load data
-		mapper = UtilKt.getMapperForLogicDataClass(getClass());
-		properties = (BaseNodeData) mapper.toObject(node.properties);
+		mapper = UtilKt.getMapperForLogicPropertiesClass(getClass());
+		properties = (BaseNodeProperties) mapper.toObject(node.properties);
 	}
 
 	void notifyConnect(String port) {

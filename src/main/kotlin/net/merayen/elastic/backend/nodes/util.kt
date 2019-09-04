@@ -30,59 +30,59 @@ fun createLogicNode(name: String, version: Int): BaseLogicNode {
 }
 
 
-fun getLogicNodeDataClass(name: String, version: Int): Class<out BaseNodeData> {
+fun getLogicNodePropertiesClass(name: String, version: Int): Class<out BaseNodeProperties> {
 	val cls: Class<out BaseLogicNode>
 	try {
 		return Class.forName(String.format(
 				CLASS_PATH,
 				name,
 				version,
-				"Data"
-		)) as Class<out BaseNodeData>
+				"Properties"
+		)) as Class<out BaseNodeProperties>
 	} catch (e: ClassNotFoundException) {
-		throw RuntimeException("Could not find the Data-class for ${name}_${version}. Forgotten to create it?")
+		throw RuntimeException("Could not find the Properties-class for ${name}_${version}. Forgotten to create it?")
 	}
 }
 
 
-fun getDataClassFromLogicNodeClass(klass: Class<out BaseLogicNode>): Class<out BaseNodeData> {
+fun getPropertiesClassFromLogicNodeClass(klass: Class<out BaseLogicNode>): Class<out BaseNodeProperties> {
 	val qualifiedName = klass.name ?: throw RuntimeException("Anonymous class not supported")
 
 	if (!qualifiedName.endsWith(".LogicNode"))
 		throw RuntimeException("Class must be called 'LogicNode'")
 
-	val dataClassQualifiedName = qualifiedName.substring(0, qualifiedName.length - ".LogicNode".length) + ".Data"
+	val propertiesClassQualifiedName = qualifiedName.substring(0, qualifiedName.length - ".LogicNode".length) + ".Properties"
 
-	return Class.forName(dataClassQualifiedName) as Class<BaseNodeData>
+	return Class.forName(propertiesClassQualifiedName) as Class<BaseNodeProperties>
 }
 
 
 /**
- * Get an empty instance of a BaseNodeData for a LogicNode
+ * Get an empty instance of a BaseNodeProperties for a LogicNode
  */
-fun getNewNodeData(logicNode: BaseLogicNode): BaseNodeData {
-	return getDataClassFromLogicNodeClass(logicNode.javaClass).kotlin.primaryConstructor!!.callBy(mapOf())
+fun getNewNodeProperties(logicNode: BaseLogicNode): BaseNodeProperties {
+	return getPropertiesClassFromLogicNodeClass(logicNode.javaClass).kotlin.primaryConstructor!!.callBy(mapOf())
 }
 
 
-fun createNewNodeData(name: String, version: Int): BaseNodeData {
-	return getLogicNodeDataClass(name, version).kotlin.primaryConstructor!!.callBy(mapOf())
+fun createNewNodeProperties(name: String, version: Int): BaseNodeProperties {
+	return getLogicNodePropertiesClass(name, version).kotlin.primaryConstructor!!.callBy(mapOf())
 }
 
 
-fun mapToLogicNodeData(name: String, version: Int, data: MutableMap<String, Any?>): BaseNodeData {
-	val mapper = getMapperForLogicDataClass(getLogicNodeClass(name, version))
+fun mapToLogicNodeProperties(name: String, version: Int, properties: MutableMap<String, Any?>): BaseNodeProperties {
+	val mapper = getMapperForLogicPropertiesClass(getLogicNodeClass(name, version))
 
-	// Add the name of the Data-class, which is always "Data"
-	data[JSONObjectMapper.CLASSNAME_IDENTIFIER] = "Data"
-	return mapper.toObject(data) as BaseNodeData
+	// Add the name of the Properties-class, which is always "Properties"
+	properties[JSONObjectMapper.CLASSNAME_IDENTIFIER] = "Properties"
+	return mapper.toObject(properties) as BaseNodeProperties
 }
 
 
-fun getMapperForLogicDataClass(klass: Class<out BaseLogicNode>): JSONObjectMapper {
-	val dataClassInstance: BaseNodeData
+fun getMapperForLogicPropertiesClass(klass: Class<out BaseLogicNode>): JSONObjectMapper {
+	val propertiesClassInstance: BaseNodeProperties
 
-	val kotlinClass = getDataClassFromLogicNodeClass(klass).kotlin
+	val kotlinClass = getPropertiesClassFromLogicNodeClass(klass).kotlin
 
 	val primaryConstructor = kotlinClass.primaryConstructor
 			?: throw RuntimeException("data class does not have a constructor")
@@ -92,31 +92,31 @@ fun getMapperForLogicDataClass(klass: Class<out BaseLogicNode>): JSONObjectMappe
 	if (nonNullAble.size > 0)
 		throw RuntimeException("All arguments in data class must be nullable. Failed class: ${kotlinClass.qualifiedName}")
 
-	dataClassInstance = primaryConstructor.callBy(mapOf())
+	propertiesClassInstance = primaryConstructor.callBy(mapOf())
 	val mapper = JSONObjectMapper()
 
-	for (klass in dataClassInstance.classRegistry)
-		mapper.registerClass(klass, dataClassInstance.listTranslators)
+	for (klass in propertiesClassInstance.classRegistry)
+		mapper.registerClass(klass, propertiesClassInstance.listTranslators)
 
 	return mapper
 }
 
 
-fun logicNodeDataToMap(name: String, version: Int, data: BaseNodeData): Map<String, Any?> {
-	val mapper = getMapperForLogicDataClass(getLogicNodeClass(name, version))
-	return mapper.toMap(data)
+fun logicNodePropertiesToMap(name: String, version: Int, properties: BaseNodeProperties): Map<String, Any?> {
+	val mapper = getMapperForLogicPropertiesClass(getLogicNodeClass(name, version))
+	return mapper.toMap(properties)
 }
 
 
-fun updateNodeData(name: String, version: Int, source: BaseNodeData, destination: MutableMap<String, Any?>) {
-	val data = mapToLogicNodeData(name, version, destination)
-	ClassInstanceMerger.merge(source, data)
-	destination.putAll(logicNodeDataToMap(name, version, data))
+fun updateNodeProperties(name: String, version: Int, source: BaseNodeProperties, destination: MutableMap<String, Any?>) {
+	val properties = mapToLogicNodeProperties(name, version, destination)
+	ClassInstanceMerger.merge(source, properties)
+	destination.putAll(logicNodePropertiesToMap(name, version, properties))
 }
 
 
-fun updateNodeData(name: String, version: Int, source: Map<String, Any?>, destination: BaseNodeData) {
-	val mapper = getMapperForLogicDataClass(getLogicNodeClass(name, version))
-	val data = mapper.toObject(source) as Any
-	ClassInstanceMerger.merge(data, destination)
+fun updateNodeProperties(name: String, version: Int, source: Map<String, Any?>, destination: BaseNodeProperties) {
+	val mapper = getMapperForLogicPropertiesClass(getLogicNodeClass(name, version))
+	val properties = mapper.toObject(source) as Any
+	ClassInstanceMerger.merge(properties, destination)
 }

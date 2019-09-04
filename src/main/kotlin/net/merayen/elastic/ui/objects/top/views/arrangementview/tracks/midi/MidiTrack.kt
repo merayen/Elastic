@@ -2,9 +2,9 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi
 
 import net.merayen.elastic.backend.logicnodes.list.midi_1.AddEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
-import net.merayen.elastic.backend.logicnodes.list.midi_1.Data
+import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.TextInput
@@ -51,7 +51,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				backgroundColor = Color(1f, 0f, 0f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
-						sendParameter(Data(mute = value))
+						sendParameter(Properties(mute = value))
 					}
 				}
 			}
@@ -64,7 +64,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				backgroundColor = Color(1f, 1f, 0f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
-						sendParameter(Data(solo = value))
+						sendParameter(Properties(solo = value))
 					}
 				}
 			}
@@ -77,7 +77,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				backgroundColor = Color(1f, 0.5f, 0.5f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
-						sendParameter(Data(record = value))
+						sendParameter(Properties(record = value))
 					}
 				}
 			}
@@ -91,7 +91,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		trackName.description = "Name of the track"
 		trackName.handler = object : TextInput.Handler {
 			override fun onChange(text: String) {
-				sendParameter(Data(trackName = text))
+				sendParameter(Properties(trackName = text))
 			}
 		}
 		trackPane.add(trackName)
@@ -157,8 +157,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		}
 	}
 
-	override fun onParameter(instance: BaseNodeData) {
-		val data = instance as Data
+	override fun onParameter(instance: BaseNodeProperties) {
+		val data = instance as Properties
 		val mute = data.mute
 		val solo = data.solo
 		val record = data.record

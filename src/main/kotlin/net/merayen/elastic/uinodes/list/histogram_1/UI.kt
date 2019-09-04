@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.histogram_1
 
 import net.merayen.elastic.backend.logicnodes.list.histogram_1.HistogramUpdateMessage
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -30,7 +30,7 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeData) {}
+	override fun onMessage(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		message as HistogramUpdateMessage
@@ -39,5 +39,5 @@ class UI : UINode() {
 			histogram.buckets = bucketsData.clone()
 	}
 
-	override fun onParameter(instance: BaseNodeData) {}
+	override fun onParameter(instance: BaseNodeProperties) {}
 }

@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.logicnodes.list.midi_1
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
-import net.merayen.elastic.backend.nodes.BaseNodeData
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
@@ -35,7 +35,7 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onInit() {}
 
-	override fun onParameterChange(instance: BaseNodeData) {
+	override fun onParameterChange(instance: BaseNodeProperties) {
 		updateProperties(instance)
 	}
 
@@ -91,28 +91,28 @@ class LogicNode : BaseLogicNode() {
 			is AddEventZoneMessage -> {
 				println("Adding EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
 
-				val eventZones = (properties as Data).eventZones ?: ArrayList()
+				val eventZones = (properties as Properties).eventZones ?: ArrayList()
 
-				eventZones.add(Data.EventZone(
+				eventZones.add(Properties.EventZone(
 						id = data.eventZoneId,
 						start = data.start,
 						length = data.length,
 						midi = MidiData()
 				))
 
-				updateProperties(Data(eventZones = eventZones))
+				updateProperties(Properties(eventZones = eventZones))
 			}
 			is ChangeEventZoneMessage -> {
 				println("Changing EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
 
-				val eventZones = (properties as Data).eventZones
+				val eventZones = (properties as Properties).eventZones
 
 				val eventZone = eventZones?.find { it.id == data.eventZoneId }
 
 				if (eventZone != null) {
 					eventZone.start = data.start
 					eventZone.length = data.length
-					updateProperties(Data(eventZones = eventZones))
+					updateProperties(Properties(eventZones = eventZones))
 				} else {
 					println("WARNING: EventZone could not be changed as id=${data.eventZoneId} was not found")
 				}
@@ -120,10 +120,10 @@ class LogicNode : BaseLogicNode() {
 			is RemoveEventZoneMessage -> {
 				println("Removing EventZone id=${data.eventZoneId}")
 
-				val eventZones = (properties as Data).eventZones
+				val eventZones = (properties as Properties).eventZones
 				if (eventZones != null) {
 					if (eventZones.removeIf { it.id == data.eventZoneId }) {
-						updateProperties(Data(eventZones = eventZones))
+						updateProperties(Properties(eventZones = eventZones))
 					}
 				} else {
 					println("WARNING: EventZone could not be removed as id=${data.eventZoneId} was not found")
