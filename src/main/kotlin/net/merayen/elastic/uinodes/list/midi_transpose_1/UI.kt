@@ -71,10 +71,9 @@ class UI : UINode() {
 		add(fineToneSlider)
 	}
 
-	override fun onMessage(message: BaseNodeProperties) {}
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onMessage(instance: BaseNodeProperties) {
 		val data = instance as Properties
 		val transposeData = data.transpose
 		if (transposeData != null)

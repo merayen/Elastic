@@ -21,8 +21,4 @@ class UI : UINode() {
 	override fun onData(message: NodeDataMessage) {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
-
-	override fun onParameter(instance: BaseNodeProperties) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
 }

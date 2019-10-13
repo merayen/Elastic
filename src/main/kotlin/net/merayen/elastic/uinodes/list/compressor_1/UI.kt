@@ -151,14 +151,13 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is CompressorNodeOutputFrameData)
 			compressionValue = 1 - log(1 / max(0.0001f, message.amplitude), 10f) / 3f
 	}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onMessage(instance: BaseNodeProperties) {
 		if (instance is Properties) {
 			val attackData = instance.attack
 			val releaseData = instance.release

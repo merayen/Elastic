@@ -33,7 +33,5 @@ class UI : UINode(), INodeEditable {
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeProperties) {}
-
 	override fun getNodeEditor() = Editor(nodeId)
 }

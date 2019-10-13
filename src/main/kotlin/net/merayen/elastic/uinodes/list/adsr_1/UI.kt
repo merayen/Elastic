@@ -162,6 +162,4 @@ class UI : UINode() {
 	}
 
 	override fun onData(message: NodeDataMessage) {}
-
-	override fun onParameter(instance: BaseNodeProperties) {}
 }

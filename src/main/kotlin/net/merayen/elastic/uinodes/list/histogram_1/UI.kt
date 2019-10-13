@@ -38,6 +38,4 @@ class UI : UINode() {
 		if (bucketsData != null)
 			histogram.buckets = bucketsData.clone()
 	}
-
-	override fun onParameter(instance: BaseNodeProperties) {}
 }

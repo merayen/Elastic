@@ -119,7 +119,5 @@ class UI : UINode(), INodeEditable {
 		(frequency_port_parameter!!.not_connected as PopupParameter1D).label.text = String.format("Frequency: %.3f", frequency)
 	}
 
-	override fun onParameter(instance: BaseNodeProperties) {}
-
 	override fun getNodeEditor() = Editor(nodeId)
 }

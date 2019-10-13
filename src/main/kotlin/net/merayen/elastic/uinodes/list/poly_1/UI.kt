@@ -3,8 +3,8 @@ package net.merayen.elastic.uinodes.list.poly_1
 import net.merayen.elastic.backend.logicnodes.list.poly_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.ParameterSlider
+import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
@@ -58,11 +58,9 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeProperties) {}
-
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onMessage(instance: BaseNodeProperties) {
 		if (instance is Properties) {
 			val unisonData = instance.unison
 			if (unisonData != null)

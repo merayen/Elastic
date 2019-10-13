@@ -7,9 +7,9 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.NodeUtil
 import net.merayen.elastic.util.Pacer
-import net.merayen.elastic.util.MutablePoint
 import java.util.*
 
 abstract class UINode : UIObject(), FlexibleDimension {
@@ -31,9 +31,8 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
-	protected abstract fun onMessage(message: BaseNodeProperties) // TODO remove. Use onParameter instead!
+	protected abstract fun onMessage(message: BaseNodeProperties)
 	protected abstract fun onData(message: NodeDataMessage)
-	protected abstract fun onParameter(instance: BaseNodeProperties)
 
 	val UINet
 		get() = search.parentByType(NodeView::class.java)?.uiNet
@@ -107,7 +106,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			}
 
 			onMessage(message.instance)
-			onParameter(message.instance)
 
 		} else if (message is NodeDataMessage) {
 			onData(message)

@@ -42,8 +42,4 @@ class UI : UINode() {
 		if (message is MetronomeBeatMessage)
 			beatIndicator.handleMessage(message)
 	}
-
-	override fun onParameter(instance: BaseNodeProperties) {
-
-	}
 }
