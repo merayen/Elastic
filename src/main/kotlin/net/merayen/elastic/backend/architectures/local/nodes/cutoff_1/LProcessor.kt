@@ -3,6 +3,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.cutoff_1
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet
+import net.merayen.elastic.backend.architectures.local.lets.Inlet
 import net.merayen.elastic.backend.architectures.local.lets.SignalInlet
 import kotlin.math.max
 import kotlin.math.min
@@ -17,8 +18,8 @@ class LProcessor : LocalProcessor() {
 	override fun onProcess() {
 		val audioIn = getInlet("in") as? AudioInlet
 		val audioOut = getOutlet("out") as? AudioOutlet
-		val frequencyIn = getInlet("frequency") // Can be AudioInlet and SignalInlet
-		val dampingIn = getInlet("damping")
+		val frequencyIn = getInlet("frequency") as Inlet? // Can be AudioInlet and SignalInlet
+		val dampingIn = getInlet("damping") as Inlet?
 
 		val available = available()
 
@@ -93,14 +94,21 @@ class LProcessor : LocalProcessor() {
 				audioOut.written = stop
 				audioOut.push()
 			}
-		} else if (audioOut != null) {
-			audioOut.channelCount = 1
-			if (audioOut.written != buffer_size) {
-				audioOut.written = buffer_size
-				audioOut.push()
+		} else {
+			if (audioOut != null) {
+				audioOut.channelCount = 1
+				if (audioOut.written != buffer_size) {
+					audioOut.written = buffer_size
+					audioOut.push()
+				}
 			}
-		} else if (audioIn != null) {
-			audioIn.read = audioIn.outlet.written
+
+			if (audioIn != null) {
+				audioIn.read = audioIn.outlet.written
+			}
+
+			frequencyIn?.read = frequencyIn?.outlet?.written
+			dampingIn?.read = dampingIn?.outlet?.written
 		}
 	}
 
