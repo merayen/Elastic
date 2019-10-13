@@ -227,9 +227,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	@Override
-	protected void onMessage(ElasticMessage message) {}
-
-	@Override
 	protected void onDestroy() {}
 
 	@Override

@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.histogram_1
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet
-import net.merayen.elastic.system.intercom.ElasticMessage
 
 class LProcessor : LocalProcessor() {
 
@@ -78,6 +77,5 @@ class LProcessor : LocalProcessor() {
 		dataPort.read = buffer_size
 	}
 
-	override fun onMessage(message: ElasticMessage?) {}
 	override fun onDestroy() {}
 }

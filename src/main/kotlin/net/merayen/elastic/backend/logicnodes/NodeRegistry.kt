@@ -24,5 +24,6 @@ object NodeRegistry {
 		nodes.add("histogram_1")
 		nodes.add("wave_1")
 		nodes.add("metronome_1")
+		nodes.add("cutoff_1")
 	}
 }

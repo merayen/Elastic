@@ -10,7 +10,6 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.ProcessRequestMessage;
 import net.merayen.elastic.system.intercom.ProcessResponseMessage;
@@ -182,9 +181,6 @@ class TopProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(ElasticMessage message) {}
-
-	@Override
 	protected void onDestroy() {}
 }
 
@@ -225,9 +221,6 @@ class GeneratorProcessor extends LocalProcessor {
 	protected void onProcess() {
 		sendStuff();
 	}
-
-	@Override
-	protected void onMessage(ElasticMessage message) {}
 
 	void sendStuff() {
 		output.setChannelCount(1);
@@ -313,9 +306,6 @@ class MiddleProcessor extends LocalProcessor {
 			//Test.no(); // We should always have gotten data on input when asked to process
 		}
 	}
-
-	@Override
-	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onPrepare() {
@@ -405,9 +395,6 @@ class DispatchProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(ElasticMessage message) {}
-
-	@Override
 	protected void onPrepare() {}
 
 	@Override
@@ -472,9 +459,6 @@ class ConsumerProcessor extends LocalProcessor {
 			}
 		}
 	}
-
-	@Override
-	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onPrepare() {}

@@ -127,6 +127,5 @@ class LProcessor : LocalProcessor() {
 		}
 	}
 
-	override fun onMessage(message: ElasticMessage) {}
 	override fun onDestroy() {}
 }

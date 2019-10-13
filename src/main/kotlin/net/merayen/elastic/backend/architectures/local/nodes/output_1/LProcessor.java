@@ -48,9 +48,6 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	@Override
-	protected void onMessage(ElasticMessage message) {}
-
-	@Override
 	protected void onDestroy() {
 		((LNode)getLocalNode()).output[voice_id] = null; // Clean our buffer
 	}

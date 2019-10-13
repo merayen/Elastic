@@ -9,7 +9,6 @@ import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.util.AverageStat;
 
 import java.lang.reflect.InvocationTargetException;
@@ -53,8 +52,6 @@ public abstract class LocalProcessor {
 	 * See if there is any data available.
 	 */
 	protected abstract void onProcess();
-
-	protected abstract void onMessage(ElasticMessage message); // For NodeParameterChange() Really? Shouldn't it be interpreted by the LocalNode instead?
 
 	protected abstract void onDestroy();
 

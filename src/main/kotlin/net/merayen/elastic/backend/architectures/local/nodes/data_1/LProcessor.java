@@ -14,8 +14,5 @@ public class LProcessor extends LocalProcessor {
 	protected void onProcess() {}
 
 	@Override
-	protected void onMessage(ElasticMessage message) {}
-
-	@Override
 	protected void onDestroy() {}
 }

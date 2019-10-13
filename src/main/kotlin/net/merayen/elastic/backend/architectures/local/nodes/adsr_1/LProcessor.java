@@ -6,7 +6,6 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -120,9 +119,6 @@ public class LProcessor extends LocalProcessor {
 			output.written = buffer_size;
 		}
 	}
-
-	@Override
-	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}

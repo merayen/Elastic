@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.Inlet
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet
 import net.merayen.elastic.backend.midi.MidiStatuses
-import net.merayen.elastic.system.intercom.ElasticMessage
 import java.util.*
 
 class LProcessor : LocalProcessor() {
@@ -87,6 +86,5 @@ class LProcessor : LocalProcessor() {
 
 	private fun transposeKey(key: Short) = (key + transpose).toShort()
 
-	override fun onMessage(message: ElasticMessage) {}
 	override fun onDestroy() {}
 }
