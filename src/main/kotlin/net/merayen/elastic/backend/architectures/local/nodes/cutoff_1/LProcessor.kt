@@ -71,7 +71,7 @@ class LProcessor : LocalProcessor() {
 
 					for (i in start until stop) {
 						if (frequencyInData != null) // Slow?
-							frequency = (2 + min(1f, max(-1f, frequencyInData[i]))) * 200
+							frequency = (2 + min(1f, max(-1f, frequencyInData[i]))) * 10
 
 						if (dampingInData != null)
 							damping = 1.001f + dampingInData[i] * 100
