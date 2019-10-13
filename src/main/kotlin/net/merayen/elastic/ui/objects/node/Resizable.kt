@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent.Button
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class Resizable(private val node: FlexibleDimension, private val handler: Handler) : UIObject() {
 	private var mouseHandler: MouseHandler? = null
@@ -21,12 +21,12 @@ class Resizable(private val node: FlexibleDimension, private val handler: Handle
 	override fun onInit() {
 		mouseHandler = MouseHandler(this, Button.LEFT)
 		mouseHandler!!.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				startWidth = node.layoutWidth
 				startHeight = node.layoutHeight
 			}
 
-			override fun onMouseDrag(position: Point, offset: Point) {
+			override fun onMouseDrag(position: MutablePoint, offset: MutablePoint) {
 				node.layoutWidth = startWidth + offset.x
 				node.layoutHeight = startHeight + offset.y
 				handler.onResize()

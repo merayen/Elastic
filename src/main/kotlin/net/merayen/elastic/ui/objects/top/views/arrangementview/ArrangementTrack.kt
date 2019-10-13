@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 abstract class ArrangementTrack(val nodeId: String, private val arrangement: Arrangement) {
 	interface Handler {
@@ -12,8 +12,8 @@ abstract class ArrangementTrack(val nodeId: String, private val arrangement: Arr
 		 */
 		fun onEventSelect()
 
-		fun onSelectionDrag(start: Point, offset: Point)
-		fun onSelectionDrop(start: Point, offset: Point)
+		fun onSelectionDrag(start: MutablePoint, offset: MutablePoint)
+		fun onSelectionDrop(start: MutablePoint, offset: MutablePoint)
 	}
 	val trackPane = TrackPane()
 	val eventPane = EventPane()

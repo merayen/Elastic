@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
-import net.merayen.elastic.system.intercom.BeginResetNetListMessage
 import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
@@ -11,7 +10,7 @@ import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.midi.MidiTrack
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class Arrangement : UIObject() {
 	var layoutWidth: Float = 0f
@@ -66,9 +65,6 @@ class Arrangement : UIObject() {
 
 	fun handleMessage(message: ElasticMessage) {
 		when (message) {
-			is BeginResetNetListMessage -> {
-				ArrayList(tracks).forEach { removeTrack(it) }
-			}
 			is CreateNodeMessage -> {
 				if (message.name == "midi") {
 					val midiTrack = MidiTrack(message.nodeId, this)
@@ -78,9 +74,9 @@ class Arrangement : UIObject() {
 								track.clearSelections()
 						}
 
-						var startPosition: Point? = null
+						var startPosition: MutablePoint? = null
 
-						override fun onSelectionDrag(start: Point, offset: Point) {
+						override fun onSelectionDrag(start: MutablePoint, offset: MutablePoint) {
 							val pos = getRelativePosition(midiTrack.eventPane) ?: return
 
 							val startPosition = startPosition ?: start
@@ -104,7 +100,7 @@ class Arrangement : UIObject() {
 								track.onSelectionRectangle(selectionRectangle)
 						}
 
-						override fun onSelectionDrop(start: Point, offset: Point) {
+						override fun onSelectionDrop(start: MutablePoint, offset: MutablePoint) {
 							if (selectionRectangle.parent != null)
 								remove(selectionRectangle)
 

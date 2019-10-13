@@ -9,7 +9,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.util.NodeUtil
 import net.merayen.elastic.util.Pacer
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import java.util.*
 
 abstract class UINode : UIObject(), FlexibleDimension {
@@ -26,7 +26,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	private var inited: Boolean = false
 
-	val targetLocation = Point()
+	val targetLocation = MutablePoint()
 	private val lastDraw = Pacer()
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function

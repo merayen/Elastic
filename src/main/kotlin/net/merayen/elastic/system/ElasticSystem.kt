@@ -1,134 +1,147 @@
 package net.merayen.elastic.system
 
-import net.merayen.elastic.backend.context.BackendContext
+import net.merayen.elastic.system.actions.CreateDefaultProject
+import net.merayen.elastic.system.intercom.CreateDefaultProjectMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
-import net.merayen.elastic.system.intercom.backend.EndBackendMessage
-import net.merayen.elastic.system.intercom.backend.InitBackendMessage
-import net.merayen.elastic.system.intercom.ui.EndUIMessage
-import net.merayen.elastic.system.intercom.ui.InitUIMessage
-import net.merayen.elastic.system.intercom.ui.InitUISuccessMessage
 import net.merayen.elastic.util.tap.ObjectDistributor
-import net.merayen.elastic.util.tap.Tap
+import java.io.Closeable
+import kotlin.reflect.KClass
 
 /**
  * This class binds together the backend and the UI.
  * This is the top class for everything.
+ *
+ * Elastic has 3 modules:
+ * 	- Backend
+ * 	- UI
+ * 	- DSP
+ *
+ * 	This class routes the messages correctly between them
  */
-class ElasticSystem {
-	@Volatile
-	private var ui: UIBridge? = null
+class ElasticSystem(
+	projectPath: String,
+	uiModule: KClass<out UIModule>,
+	dspModule: KClass<out DSPModule>,
+	backendModule: KClass<out BackendModule>
+) : Closeable {
+	private var ui = uiModule.constructors.first().call()
+	private var backend = backendModule.constructors.first().call(projectPath)
+	private var dsp = dspModule.constructors.first().call()
 
-	@Volatile
-	internal var backend: BackendContext? = null
+	private val messagesFromUIDistributor = ObjectDistributor<ElasticMessage>()
+	private val messagesFromBackendDistributor = ObjectDistributor<ElasticMessage>()
+	private val messagesFromDSPDistributor = ObjectDistributor<ElasticMessage>()
 
-	private val messagesFromUIDistributor = ObjectDistributor<Array<Any>>()
-	private val messagesFromBackendDistributor = ObjectDistributor<Array<Any>>()
+	/**
+	 * The thread that made us. We do not allow being used by another
+	 */
+	private val threadLock = Thread.currentThread().id
+
+
+	init {
+		ui.start()
+		dsp.start()
+		backend.start()
+	}
+
 
 	/**
 	 * Needs to be called often by main thread.
+	 * Routes messages between the components.
 	 */
 	fun update() { // TODO perhaps don't do this, but rather trigger on events
-		val backend = backend
-		val ui = ui
-		if (backend != null) {
-			backend.update()
-			val messages = backend.message_handler.receiveMessagesFromBackend()
-			if (ui != null) {
-				backend.message_handler.sendToBackend(ui.retrieveMessagesFromUI())
-				ui.sendMessagesToUI(messages)
-			}
-			messagesFromBackendDistributor.push(messages.toTypedArray())
+		assertCorrectThread()
+
+		processMessagesFromBackend()
+		processMessagesFromUI()
+		processMessagesFromDSP()
+	}
+
+	private fun processMessagesFromBackend() {
+		for (message in backend.outgoing.receiveAll()) {
+			// TODO soon: Filter messages
+			ui.ingoing.send(message)
+			dsp.ingoing.send(message)
+			messagesFromBackendDistributor.push(message)
 		}
 	}
 
-	fun end() {
-		if (ui != null)
-			ui!!.end()
-
-		if (backend != null)
-			backend!!.end()
-
-		ui = null
-		backend = null
-	}
-
-	/**
-	 * Send message to UI.
-	 */
-	fun sendMessageToUI(messages: Collection<ElasticMessage>) {
-		for (message in messages) {
-			if (ui == null && message is InitUIMessage) {
-				val uiBridge = UIBridge()
-				uiBridge.handler = object : UIBridge.Handler {
-					override fun onStarted() {
-						messagesFromUIDistributor.push(arrayOf(InitUISuccessMessage()))
-					}
-
-					override fun onMessageToBackend(message: ElasticMessage) {
-						backend!!.message_handler.sendToBackend(listOf(message))
-						messagesFromUIDistributor.push(arrayOf(message))
-					}
-				}
-
-				ui = uiBridge
-			}
-
-			if (ui != null && message is EndUIMessage) {
-				ui!!.end()
-				ui = null
-			}
+	private fun processMessagesFromUI() {
+		for (message in ui.outgoing.receiveAll()) {
+			backend.ingoing.send(message)
+			messagesFromUIDistributor.push(message)
 		}
+	}
 
-		if (ui != null)
-			ui!!.sendMessagesToUI(messages)
-
-		messagesFromBackendDistributor.push(messages.toTypedArray())
+	private fun processMessagesFromDSP() {
+		for (message in dsp.outgoing.receiveAll()) {
+			backend.ingoing.send(message)
+			messagesFromDSPDistributor.push(message)
+		}
 	}
 
 	/**
-	 * Only for debugging purposes.
-	 * Only to be called outside the ElasticSystem.
+	 * Send messages to Elastic from outside.
 	 */
 	@Synchronized
-	fun sendMessageToBackend(messages: Collection<ElasticMessage>) {
-		for (message in messages) {
-			if (message is InitBackendMessage) {
-				if (backend == null) {
-					this.backend = BackendContext(this, message)
-				}
-			} else if (backend == null) {
-				println("Ignoring message as backend is not running: $message")
-				return
-			}
+	fun send(message: ElasticMessage) {
+		assertCorrectThread()
 
-			if (message is EndBackendMessage) {
-				backend?.end()
-				backend = null
-			}
+		println("ElasticSystem: $message")
 
-			backend?.message_handler?.sendToBackend(listOf(message))
+		val backend = backend
+
+		when (message) {
+			is CreateDefaultProjectMessage -> {
+				runAction(CreateDefaultProject(message))
+			}
 		}
+
+		backend.ingoing.send(message)
 	}
 
 	/**
 	 * Only for debugging purposes.
 	 * Listen to all messages being sent to the UI.
 	 */
-	fun listenToMessagesFromUI(func: (item: Array<Any>) -> Unit): Tap<Array<Any>> {
-		return messagesFromUIDistributor.createTap(func);
-	}
+	fun listenToMessagesFromUI(func: (item: ElasticMessage) -> Unit) = messagesFromUIDistributor.createTap(func)
 
 	/**
 	 * Only for debugging purposes.
 	 * Listen to all messages being sent to the backend.
 	 */
-	fun listenToMessagesFromBackend(func: (item: Array<Any>) -> Unit): Tap<Array<Any>> {
-		return messagesFromBackendDistributor.createTap(func)
+	fun listenToMessagesFromBackend(func: (item: ElasticMessage) -> Unit) = messagesFromBackendDistributor.createTap(func)
+
+	/**
+	 * Only for debugging purposes.
+	 * Listen to all messages being sent to the backend.
+	 */
+	fun listenToMessagesFromDSP(func: (item: ElasticMessage) -> Unit) = messagesFromDSPDistributor.createTap(func)
+
+	private fun runAction(action: Action) {
+		action.handler = object : Action.Handler {
+			override fun onMessage(message: ElasticMessage) = backend.ingoing.send(message)
+			override fun onUpdateSystem() = update()
+		}
+
+		// TODO soon: Should we close the tap? What happens here?
+		val tap = listenToMessagesFromBackend { action.onMessageFromBackend(it) }.use {
+			action.run()
+		}
 	}
 
-	fun runAction(action: Action) {
-		action.start(this)
+	override fun close() {
+		ui.close()
+		dsp.close()
+		backend.close()
+
+		ui.join()
+		dsp.join()
+		backend.join()
 	}
 
-
+	private fun assertCorrectThread() {
+		if (threadLock != Thread.currentThread().id)
+			throw RuntimeException("ElasticSystem can only be used by the thread it was ")
+	}
 }

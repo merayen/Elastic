@@ -8,12 +8,9 @@ import net.merayen.elastic.system.intercom.OutputFrameData;
 public class LogicNode extends BaseLogicNode {
 
 	@Override
-	protected void onCreate() {
+	protected void onInit() {
 		createInputPort("input");
 	}
-
-	@Override
-	protected void onInit() {}
 
 	@Override
 	protected void onParameterChange(BaseNodeProperties instance) {

@@ -7,12 +7,10 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
-	override fun onCreate() {
+	override fun onInit() {
 		createInputPort("frequency")
 		createOutputPort("audio", Format.AUDIO)
 	}
-
-	override fun onInit() {}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {
 		updateProperties(instance) // Accept everything anyways

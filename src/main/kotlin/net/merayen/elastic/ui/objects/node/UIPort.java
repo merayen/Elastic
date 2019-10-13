@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class UIPort extends UIObject {
 	public final static Color AUDIO_PORT = new Color(150, 200, 150);
@@ -46,7 +46,7 @@ public class UIPort extends UIObject {
 			}
 
 			@Override
-			public void onMouseDown(Point position) { // Creates a UITemporaryPort that we drag from
+			public void onMouseDown(MutablePoint position) { // Creates a UITemporaryPort that we drag from
 				if(!self.output) {// Input ports can only have 1 line connected
 					HashSet<UIPort> connected_ports = getUINetObject().getAllConnectedPorts(self);
 					if(connected_ports.size() == 1) {

@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.Rect
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.Movable
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
 import java.util.*
@@ -181,21 +181,21 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 		// The curve
 		draw.setColor(255, 200, 0)
-		val p = arrayOfNulls<Point>((points.size - 1) * 3)
+		val p = arrayOfNulls<MutablePoint>((points.size - 1) * 3)
 
 		var i = 0
 		for (j in 1 until points.size) {
 			val before = points[j - 1]
 			val current = points[j]
 
-			p[i++] = Point(before.right_dot.translation.x, before.right_dot.translation.y)
-			p[i++] = Point(current.left_dot.translation.x, current.left_dot.translation.y)
-			p[i++] = Point(current.position.translation.x, current.position.translation.y)
+			p[i++] = MutablePoint(before.right_dot.translation.x, before.right_dot.translation.y)
+			p[i++] = MutablePoint(current.left_dot.translation.x, current.left_dot.translation.y)
+			p[i++] = MutablePoint(current.position.translation.x, current.position.translation.y)
 		}
 
 		val bps = points[0] // The initial point
 		@Suppress("UNCHECKED_CAST")
-		draw.bezier(bps.position.translation.x, bps.position.translation.y, p as Array<Point>)
+		draw.bezier(bps.position.translation.x, bps.position.translation.y, p as Array<MutablePoint>)
 
 		// Draw lines from the dots to the points
 		drawDotLines(draw)

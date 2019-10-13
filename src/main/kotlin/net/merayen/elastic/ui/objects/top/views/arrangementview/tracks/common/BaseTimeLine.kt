@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 abstract class BaseTimeLine : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -10,12 +10,12 @@ abstract class BaseTimeLine : UIObject(), FlexibleDimension {
 		 * User is now sizing a selection.
 		 * Receiver of this event should probably process and allow the selection to span over several tracks.
 		 */
-		fun onSelectionDrag(start: Point, offset: Point)
+		fun onSelectionDrag(start: MutablePoint, offset: MutablePoint)
 
 		/**
 		 * User lets go of the selection.
 		 */
-		fun onSelectionDrop(start: Point, offset: Point)
+		fun onSelectionDrop(start: MutablePoint, offset: MutablePoint)
 	}
 
 	abstract var beatWidth: Float

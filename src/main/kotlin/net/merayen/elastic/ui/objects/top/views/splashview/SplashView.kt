@@ -1,45 +1,81 @@
 package net.merayen.elastic.ui.objects.top.views.splashview
 
+import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
-import net.merayen.elastic.ui.event.UIEvent
-import net.merayen.elastic.ui.objects.components.SelectionRectangle
+import net.merayen.elastic.ui.objects.top.Window
 import net.merayen.elastic.ui.objects.top.views.View
+import net.merayen.elastic.util.Pacer
+import kotlin.math.PI
+import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.sin
 
 class SplashView : View() {
-	private val bar = SplashViewBar()
-	private val selectionRectangle = SelectionRectangle(this)
+	private var loadingBubbles = Pacer()
+	private var coloringPacer: Pacer? = null // TODO
+	private var loadingBubblesPos = 0f
+	private var loadingDescription = "Waiting on computer..."
+	private val bgColor = Color(0, 0, 0)
+	private val fgColor = Color(1f, 1f, 1f)
+	override fun cloneView() = SplashView()
+
+	init {
+		System.currentTimeMillis()
+	}
 
 	override fun onInit() {
 		super.onInit()
-		add(bar)
-		add(selectionRectangle)
-	}
 
-	override fun cloneView() = SplashView()
+		val window = search.parentByType(Window::class.java)
+		if (window == null) {
+			println("WARNING: Window not found, can not apply properties to it")
+		} else {
+			window.layoutWidth = 1000f
+			window.layoutHeight = 600f
+			window.isDecorated = false
+			window.center()
+		}
+	}
 
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
-		draw.setColor(255, 255, 100)
-		draw.setFont("", 100f)
-		draw.text("Elastic", 10f, 600f)
 
-		val u = Math.sin(System.currentTimeMillis() / 500.0).toFloat()
-		val y = 500 - Math.abs(u * 400)
-		draw.fillOval(450f, y, 100f, 100f - u.pow(10f) * 5f)
+		// Update times
+		loadingBubbles.update()
+		loadingBubblesPos += loadingBubbles.getDiff()
+		val initPos = 1 - max(0f, 1 - loadingBubblesPos / 4).pow(4)
+		val initPosOrders = 1 - max(0f, 1 - loadingBubblesPos / 4).pow(3)
 
-		draw.setStroke(2f)
-		draw.setColor(0.5f, 0.5f, 1f)
-		draw.line(0f, 600f, layoutWidth, 600f)
-	}
+		bgColor.red = initPos
+		bgColor.green = initPos
+		bgColor.blue = initPos
+		fgColor.red = 1 - initPos
+		fgColor.green = 1 - initPos
+		fgColor.blue = 1 - initPos
 
-	override fun onUpdate() {
-		super.onUpdate()
-		bar.layoutWidth = getWidth()
-	}
+		draw.setColor(bgColor)
+		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
-	override fun onEvent(event: UIEvent) {
-		super.onEvent(event)
-		selectionRectangle.handle(event)
+		// Top and bottom bar
+		draw.setColor(fgColor)
+		draw.fillRect(0f, 0f, layoutWidth, 100f * initPosOrders)
+		draw.fillRect(0f, layoutHeight - 100f * initPosOrders, layoutWidth, 100f)
+
+		draw.setColor(fgColor)
+		draw.setFont("", 64f)
+
+		draw.text("Loading", 50f + 120f * (1 - initPos), layoutHeight / 2 + 50f)
+
+		// Funky moving bubbles
+		for (i in 0 until 20) {
+			val xNormalized = (((i / 20f + loadingBubblesPos / 5)) % 1).pow(2)
+			val x = ((xNormalized * layoutWidth + 50f) % layoutWidth) + 100 * (1 - initPos)
+			draw.fillOval(x, layoutHeight / 2 + 50f + sin(PI.toFloat() / 2) * (x / layoutWidth).pow(4) * 200f, 10f, 10f)
+		}
+
+		// Loading description
+		draw.setColor(fgColor)
+		draw.setFont("", 24f)
+		draw.text(loadingDescription, 50f + 140f * (1 - initPos), layoutHeight / 2 + 100f)
 	}
 }

@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui
 
-import java.util.ArrayList
-import java.util.Collections
+import java.util.*
 
 class Search(private val obj: UIObject) {
 
@@ -56,7 +55,7 @@ class Search(private val obj: UIObject) {
 			x = x.parent
 
 		@Suppress("UNCHECKED_CAST")
-		return if (x == null) null else x as T
+		return x as? T
 	}
 
 	fun <T> parentByInterface(cls: Class<T>): T? {

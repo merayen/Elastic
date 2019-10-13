@@ -1,8 +1,10 @@
 package net.merayen.elastic.ui.surface
 
+import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.event.*
 import net.merayen.elastic.util.AverageStat
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.ImmutablePoint
+import net.merayen.elastic.util.MutablePoint
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
@@ -16,14 +18,24 @@ import java.io.IOException
 import java.util.*
 import javax.swing.JOptionPane
 import javax.swing.SwingUtilities
+
 /**
  * Java Swing Surface.
  * TODO move somewhere else?
  */
 class Swing(id: String, handler: Handler) : Surface(id, handler) {
-	private lateinit var panel: LolPanel
+	private var panel: LolPanel? = null
 	private var frame: LolFrame? = null
 	private val eventsQueue = ArrayList<UIEvent>()
+
+	/**
+	 * The dimension of the panel (not the frame/window).
+	 */
+	private var dimension = Dimension()
+
+	private val this_Swing = this
+
+	private var isDecorated = true
 
 	private var internalThreadId: Long? = null
 
@@ -85,8 +97,8 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			})
 
 			title = "Elastic"
-			setSize(800, 800)
 			defaultCloseOperation = EXIT_ON_CLOSE
+			isUndecorated = !isDecorated
 			isVisible = true
 		}
 
@@ -103,48 +115,43 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 
 		init {
 			isFocusable = true
-			//grabFocus();
+			preferredSize = Dimension(dimension.width, dimension.height)
+
 			addMouseListener(this)
 			addMouseMotionListener(this)
 			addMouseWheelListener(this)
 			addKeyListener(this)
 		}
 
-
-		private var lol = 0
 		private val averageStatLive = AverageStat<Long>(120)
 		private val averageStatBuffered = AverageStat<Long>(120)
-		public override fun paintComponent(g: java.awt.Graphics) {
+		public override fun paintComponent(graphics: Graphics) {
 			if (internalThreadId == null)
 				internalThreadId = Thread.currentThread().id
 			else if (internalThreadId != Thread.currentThread().id)
 				throw RuntimeException("Called by another thread, not expected")
 
-			//RenderingHints rh = new RenderingHints(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-			//((java.awt.Graphics2D)g).setRenderingHints(rh);
-			//super.paintComponent(g);
+			graphics as Graphics2D
+			val rh = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			//(graphics as Graphics2D).setRenderingHints(rh);
 
-			//bufferRendering = (lol++ % 120) > 60
 			if (bufferRendering) {
 				val t = System.currentTimeMillis()
 
 				if (bufferedImage?.width != width || bufferedImage?.height != height)
 					this.bufferedImage = null
 
-				val bufferedImage = bufferedImage ?: BufferedImage(width, height, IndexColorModel.BITMASK);
+				val bufferedImage = bufferedImage ?: BufferedImage(width, height, IndexColorModel.BITMASK)
+
 				handler.onDraw(bufferedImage.createGraphics()!!)
 
-				g.drawImage(bufferedImage, 0, 0, bufferedImage.width, bufferedImage.height, null)
+				graphics.drawImage(bufferedImage, 0, 0, bufferedImage.width, bufferedImage.height, null)
 
 				averageStatBuffered.add(System.currentTimeMillis() - t)
 			} else {
 				val t = System.currentTimeMillis()
-				handler.onDraw(g as Graphics2D)
+				handler.onDraw(graphics)
 				averageStatLive.add(System.currentTimeMillis() - t)
-			}
-
-			if (lol % 60 == 0) {
-				//println("Buffered: ${averageStatBuffered.info()}   /   Live: ${averageStatLive.info()}")
 			}
 		}
 
@@ -192,42 +199,79 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 		}
 	}
 
-	init {
-		EventQueue.invokeLater {
-			val frame = LolFrame(Runnable { end() })
-			panel = LolPanel()
-			panel.name = id
-			frame.add(panel)
+	@Volatile
+	private var creatingWindowState = false
 
-			this.frame = frame
+	/**
+	 * Destroys current window if any, and creates a new one.
+	 */
+	@Synchronized
+	private fun createWindow() {
+		if (creatingWindowState)
+			throw RuntimeException("Already creating window")
+
+		try {
+			creatingWindowState = true
+
+			end()
+
+			if (SwingUtilities.isEventDispatchThread()) {
+				createPanels()
+			} else {
+				EventQueue.invokeLater {
+					createPanels()
+				}
+
+				// Block and wait for window being created
+				for (i in 0 until 1000)
+					if (creatingWindowState)
+						Thread.sleep(10)
+					else
+						break
+			}
+			if (creatingWindowState)
+				throw RuntimeException("Failed to initialize frame in expected time window")
+		} finally {
+			creatingWindowState = false
 		}
-
-		for(i in 0 until 100)
-			if (frame == null)
-				Thread.sleep(10)
-			else
-				break
-
-		if (frame == null)
-			throw RuntimeException("Failed to initialize frame in expected time window")
 	}
 
-	override val width: Int
-		get() = panel.width
+	private fun createPanels() {
+		val frame = LolFrame(Runnable { end() })
+		val panel = LolPanel()
+		panel.name = id
+		frame.add(panel)
+		frame.pack()
 
-	override val height: Int
-		get() = panel.height
+		this.frame = frame
+		this.panel = panel
 
-	override val surfaceLocation: Point
-		get() = Point(panel.locationOnScreen.x.toFloat(), this.panel.locationOnScreen.y.toFloat())
+		creatingWindowState = false
+	}
+
+	override fun end() {
+		frame?.end()
+		frame?.isVisible = false
+		frame?.dispose()
+		frame?.timer?.stop()
+
+		frame = null
+		panel = null
+	}
+
+	init {
+		createWindow()
+	}
+
+	@Deprecated("Use NativeUI instead?")
+	override val surfaceLocation: MutablePoint
+		get() = MutablePoint(panel?.locationOnScreen?.x?.toFloat() ?: 0f, panel?.locationOnScreen?.y?.toFloat() ?: 0f)
 
 
 	private fun createMouseEvent(e: java.awt.event.MouseEvent, action: MouseEvent.Action) {
 		var button: MouseEvent.Button? = null
 
-		val b = e.button
-
-		when (b) {
+		when (e.button) {
 			java.awt.event.MouseEvent.BUTTON1 -> button = MouseEvent.Button.LEFT
 			java.awt.event.MouseEvent.BUTTON2 -> button = MouseEvent.Button.MIDDLE
 			java.awt.event.MouseEvent.BUTTON3 -> button = MouseEvent.Button.RIGHT
@@ -243,15 +287,6 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 		}
 	}
 
-	override fun end() {
-		frame?.end()
-		frame?.isVisible = false
-		frame?.dispose()
-		frame?.timer?.stop()
-
-		frame = null
-	}
-
 	override fun pullEvents(): List<UIEvent> {
 		var result: List<UIEvent>
 
@@ -265,20 +300,18 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 
 
 	inner class SwingNativeUI : NativeUI {
-
-
 		override val mouseCursor = object : NativeUI.MouseCursor {
 			private val blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), java.awt.Point(), "blank cursor")
 
-			override fun setPosition(point: Point) {
+			override fun setPosition(point: MutablePoint) {
 				SwingUtilities.invokeLater {
 					Robot().mouseMove(point.x.toInt(), point.y.toInt())
 				}
 			}
 
-			override fun getPosition(): Point {
+			override fun getPosition(): MutablePoint {
 				val location = MouseInfo.getPointerInfo().location
-				return Point(location.getX().toFloat(), location.getY().toFloat())
+				return MutablePoint(location.getX().toFloat(), location.getY().toFloat())
 			}
 
 			override fun hide() {
@@ -298,10 +331,44 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 			}
 		}
 
+		override val screen = object : NativeUI.Screen {
+			override val activeScreenSize: ImmutableDimension
+				get() {
+					val screenSize = Toolkit.getDefaultToolkit().screenSize
+					return ImmutableDimension(screenSize.width.toFloat(), screenSize.height.toFloat())
+				}
+		}
+
+		override val window = object : NativeUI.Window {
+			override var position: ImmutablePoint
+				get() = ImmutablePoint(surfaceLocation)
+				set(value) {
+					frame!!.setLocation(value.x.toInt(), value.y.toInt())
+				}
+
+			override var size: ImmutableDimension
+				get() = ImmutableDimension(panel?.width?.toFloat() ?: 0f, panel?.height?.toFloat() ?: 0f)
+				set(value) {
+					dimension.width = value.width.toInt()
+					dimension.height = value.height.toInt()
+
+					panel!!.preferredSize = Dimension(value.width.toInt(), value.height.toInt())
+					frame!!.pack()
+				}
+
+			override var isDecorated: Boolean
+				get() = this_Swing.isDecorated
+				set(value) {
+					if (value != this_Swing.isDecorated) {
+						// Swing requires us to create a new window to change the decoration
+						this_Swing.isDecorated = value
+						createWindow()
+					}
+				}
+		}
 	}
 
 	override val nativeUI = SwingNativeUI()
 
 	override fun isReady() = frame != null
 }
-

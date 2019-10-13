@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.nodes;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
-import net.merayen.elastic.backend.logicnodes.Environment;
+import net.merayen.elastic.backend.context.JavaBackend;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
@@ -13,8 +13,6 @@ import net.merayen.elastic.util.NetListMessages;
 import java.util.Map;
 
 public abstract class BaseLogicNode {
-	private LogicEnvironment env;
-
 	private String id; // Same ID as the one in NetList
 	private Supervisor supervisor;
 	Node node; // NetList-node that this LogicNode represents
@@ -29,13 +27,6 @@ public abstract class BaseLogicNode {
 	public BaseNodeProperties properties;
 
 	/**
-	 * Called when this node is created for the first time.
-	 * You will need to initialize stuff like defining ports.
-	 * TODO remove. Should rather do this in onInit, and check if e.g any ports are missing
-	 */
-	protected abstract void onCreate();
-
-	/**
 	 * Called every time the LogicNode class is created (either by creating a new node or loading from existing node).
 	 * Called after onCreate().
 	 */
@@ -45,6 +36,7 @@ public abstract class BaseLogicNode {
 	 * Called when a parameter change has occurred.
 	 * This could be the UI changing a parameter, or a restore loading parameters.
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
+	 *
 	 * @param instance
 	 */
 	protected abstract void onParameterChange(BaseNodeProperties instance);
@@ -89,16 +81,12 @@ public abstract class BaseLogicNode {
 		if (name == null || name.length() == 0)
 			throw new RuntimeException("Invalid port name");
 
-		if (netlist.getPort(node, name) != null)
-			throw new RuntimeException(String.format("Port %s already exist on node", name));
-
 		// Everything OK
 		ElasticMessage message = new CreateNodePortMessage(id, name, output, format); // TODO rename to chain_ident
 
 		NetListMessages.INSTANCE.apply(netlist, message); // Apply the port to the NetList
 
-		supervisor.sendMessageToUI(message);
-		supervisor.sendMessageToProcessor(message);
+		supervisor.send(message);
 	}
 
 	protected void createInputPort(String name) {
@@ -117,20 +105,20 @@ public abstract class BaseLogicNode {
 	 * Update the properties from a BaseNodeData instance.
 	 * Merges the instance with the current properties.
 	 * Usage: Create a new instance of BaseNodeData with only the changed fields set and send it into this method.
+	 *
 	 * @param instance A BaseNodeData-subclass instance with the fields being updated set
 	 */
 	public void updateProperties(BaseNodeProperties instance) {
 		ClassInstanceMerger.Companion.merge(instance, properties, null);
-		supervisor.sendMessageToProcessor(new NodePropertyMessage(node.getID(), instance));
-		supervisor.sendMessageToUI(new NodePropertyMessage(node.getID(), instance));
+		supervisor.send(new NodePropertyMessage(node.getID(), instance));
 
-		Map<String,?> data = mapper.toMap(properties);
+		Map<String, ?> data = mapper.toMap(properties);
 		node.properties.clear();
 		node.properties.putAll(data);
 	}
 
 	protected void sendDataToUI(NodeDataMessage data) {
-		sendMessageToUI(data);
+		sendMessage(data);
 	}
 
 	protected boolean isConnected(String port) {
@@ -147,11 +135,9 @@ public abstract class BaseLogicNode {
 
 	void create(String name, Integer version, String parent) {
 		CreateNodeMessage m = new CreateNodeMessage(id, name, version, parent);
-		supervisor.sendMessageToUI(m); // Acknowledges creation of Node to the UI
-		supervisor.sendMessageToProcessor(m); // Notify the backend too
+		supervisor.send(m); // Acknowledges creation of Node
 
-		if (!supervisor.restoring)
-			onCreate();
+		onInit();
 	}
 
 	void processData(NodeDataMessage data) {
@@ -166,9 +152,8 @@ public abstract class BaseLogicNode {
 		this.supervisor = supervisor;
 		this.node = node;
 
-		env = supervisor.env;
-		logicnode_list = supervisor.logicnode_list;
-		netlist = ((Environment) supervisor.env).project.getNetList();
+		logicnode_list = supervisor.getLogicnode_list();
+		netlist = supervisor.getEnv().getProject().getNetList();
 
 		// Load data
 		mapper = UtilKt.getMapperForLogicPropertiesClass(getClass());
@@ -189,28 +174,21 @@ public abstract class BaseLogicNode {
 		return id;
 	}
 
-	protected LogicEnvironment getEnv() {
-		return env;
+	protected JavaBackend.Environment getEnv() { // TODO soon: Try to remove this one?
+		return supervisor.getEnv();
 	}
 
 	/**
 	 * Send message to UI (frontend).
 	 */
-	protected void sendMessageToUI(ElasticMessage message) {
-		supervisor.sendMessageToUI(message);
-	}
-
-	/**
-	 * Send message to processor.
-	 */
-	protected void sendMessageToProcessor(ElasticMessage message) {
-		supervisor.sendMessageToProcessor(message);
+	protected void sendMessage(ElasticMessage message) {
+		supervisor.send(message);
 	}
 
 	private BaseLogicNode getParent() {
 		String parentId = properties.getParent();
 		if (parentId != null)
-			return supervisor.logicnode_list.get(parentId);
+			return supervisor.getLogicnode_list().get(parentId);
 
 		return null;
 	}

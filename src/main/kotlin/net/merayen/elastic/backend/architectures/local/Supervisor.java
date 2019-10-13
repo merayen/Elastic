@@ -8,10 +8,7 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.backend.nodes.UtilKt;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
-import net.merayen.elastic.system.intercom.ElasticMessage;
-import net.merayen.elastic.system.intercom.NodePropertyMessage;
-import net.merayen.elastic.system.intercom.ProcessMessage;
-import net.merayen.elastic.system.intercom.StatisticsReportMessage;
+import net.merayen.elastic.system.intercom.*;
 import net.merayen.elastic.util.AverageStat;
 
 import java.util.*;
@@ -200,7 +197,7 @@ class Supervisor {
 	 * Calls process() on all processors until everyone is satisfied.
 	 * Returns a new ProcessMessage() with the output data.
 	 */
-	public synchronized ProcessMessage process(ProcessMessage message) {
+	public synchronized ProcessResponseMessage process(ProcessRequestMessage message) {
 		if (dead)
 			throw new RuntimeException("Should not be called after clear()");
 
@@ -250,7 +247,7 @@ class Supervisor {
 		if(failed)
 			System.out.println(Debug.debug(this));
 
-		ProcessMessage response = new ProcessMessage();
+		ProcessResponseMessage response = new ProcessResponseMessage();
 
 		// Notify all LocalNodes that we have processed.
 		for(Node node : netlist.getNodes()) {

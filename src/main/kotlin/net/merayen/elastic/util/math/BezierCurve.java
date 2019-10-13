@@ -2,7 +2,7 @@ package net.merayen.elastic.util.math;
 
 import java.util.List;
 
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 /**
  * Unfinished utility class.
@@ -10,13 +10,13 @@ import net.merayen.elastic.util.Point;
  */
 public class BezierCurve {
 	public static class Dot {
-		public Point position = new Point();
-		public Point left = new Point();
-		public Point right = new Point();
+		public MutablePoint position = new MutablePoint();
+		public MutablePoint left = new MutablePoint();
+		public MutablePoint right = new MutablePoint();
 
 		public Dot() {}
 
-		public Dot(Point position, Point left, Point right) {
+		public Dot(MutablePoint position, MutablePoint left, MutablePoint right) {
 			this.position = position;
 			this.left = left;
 			this.right = right;

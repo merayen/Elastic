@@ -8,7 +8,6 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
-	override fun onInit() {}
 	override fun onData(data: NodeDataMessage) {}
 	override fun onConnect(port: String?) {}
 	override fun onDisconnect(port: String?) {}
@@ -21,7 +20,7 @@ class LogicNode : BaseLogicNode() {
 
 	override fun onParameterChange(instance: BaseNodeProperties) = updateProperties(instance)
 
-	override fun onCreate() {
+	override fun onInit() {
 		createInputPort("input")
 		createInputPort("sidechain")
 		createOutputPort("output", Format.AUDIO)

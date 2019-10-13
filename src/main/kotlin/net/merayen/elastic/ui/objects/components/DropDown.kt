@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class DropDown(private val handler: Handler) : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -26,9 +26,9 @@ class DropDown(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 	override fun onInit() {
 		contextMenu.handler = object : ContextMenu.Handler {
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				var selected: Item? = null
 
 				for (m in items)

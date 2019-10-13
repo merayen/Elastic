@@ -14,13 +14,10 @@ public class LogicNode extends BaseLogicNode {
 	MidiInputDevice device;
 
 	@Override
-	protected void onCreate() {
-		createOutputPort("output", Format.MIDI);
-	}
-
-	@Override
 	protected void onInit() {
-		for(AbstractDevice ad : getEnv().mixer.getAvailableDevices())
+		createOutputPort("output", Format.MIDI);
+
+		for(AbstractDevice ad : getEnv().getMixer().getAvailableDevices())
 			if(ad instanceof MidiInputDevice)
 				if(ad.getId().startsWith("KEYBOARD") || ad.getId().contains("microKEY2 Air") || ad.getId().contains("microKEY2-37") || ad.getId().contains("Code 61 USB MIDI")) // TODO send all devices to UI Node and let hte user decide
 					device = (MidiInputDevice)ad;
@@ -47,7 +44,7 @@ public class LogicNode extends BaseLogicNode {
 		short[][] midi = null;
 
 		if(device != null) {
-			MidiPacket[] midi_packets = device.read(getEnv().buffer_size);
+			MidiPacket[] midi_packets = device.read(getEnv().getConfiguration().getBufferSize());  // TODO soon: Don't retrieve buffer size here? Should be set by a Group-node
 
 			midi = new short[midi_packets.length][];
 

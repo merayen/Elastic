@@ -6,10 +6,9 @@ import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
 import net.merayen.elastic.ui.objects.node.UIPort;
 import net.merayen.elastic.ui.objects.node.UIPortTemporary;
-import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.UINodeUtil;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,13 +43,12 @@ public class UINet extends UIObject {
 
 	@Override
 	public void onDraw(Draw draw) {
-		Window window = UINodeUtil.INSTANCE.getWindow(this);
 		draw.disableOutline();
 
 		for(Connection c : connections) {
 			if(c.a.isInitialized() && c.b.isInitialized()) { // We need to see if they are ready, otherwise translation isn't available
-				Point p1 = getRelativePosition(c.a);
-				Point p2 = getRelativePosition(c.b);
+				MutablePoint p1 = getRelativePosition(c.a);
+				MutablePoint p2 = getRelativePosition(c.b);
 
 				draw.setColor(150, 150, 150);
 				draw.setStroke(5f);
@@ -59,12 +57,6 @@ public class UINet extends UIObject {
 				draw.setColor(200, 200, 200);
 				draw.setStroke(3f);
 				draw.line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-
-				if (c.a instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
-					window.getDebug().set("UINet UITemporaryPort: %s\n", p1);
-
-				if (c.b instanceof net.merayen.elastic.ui.objects.node.UIPortTemporary)
-					window.getDebug().set("UINet UITemporaryPort: %s\n", p2);
 			}
 		}
 	}
@@ -92,8 +84,8 @@ public class UINet extends UIObject {
 
 	private void internalConnect(NodeConnectMessage message) {
 		NodeView nv = getNodeView();
-		UINode node_a = nv.getNode(message.node_a);
-		UINode node_b = nv.getNode(message.node_b);
+		UINode node_a = nv.getNodes().get(message.node_a);
+		UINode node_b = nv.getNodes().get(message.node_b);
 
 		if(node_a == null || node_b == null) {
 			System.out.printf("ERROR: Could not connect nodes together as one/both does not exist in the UI. Sync issues? (node_a=%s, node_b=%s)\n", message.node_a, message.node_b);
@@ -231,7 +223,7 @@ public class UINet extends UIObject {
 		return result;
 	}
 
-	public void reset() {
+	public void clear() {
 		connections.clear();
 		//dragging_port = null;
 		dragging_port_source = null;

@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import kotlin.math.pow
 
 class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, private val handler: Handler) : UIObject(), FlexibleDimension {
@@ -21,7 +21,7 @@ class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, priva
 
 		override fun onInit() {
 			mouseHandler.setHandler(object : MouseHandler.Handler() {
-				override fun onMouseDown(position: Point?) {
+				override fun onMouseDown(position: MutablePoint?) {
 					createPoint(position!!.x)
 				}
 			})
@@ -51,11 +51,11 @@ class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, priva
 
 	override fun onInit() {
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseClick(position: Point?) {
+			override fun onMouseClick(position: MutablePoint?) {
 				handler.onCreatePoint()
 			}
 
-			override fun onMouseMove(point: Point) {
+			override fun onMouseMove(point: MutablePoint) {
 				horizontalLine = point.x
 			}
 
@@ -96,7 +96,7 @@ class MultiParameterEqCurveBox(private val eqPoints: MultiParameterEqData, priva
 		// The EQ-curve
 		draw.setColor(1f, 1f, 0f)
 		draw.setStroke(1f)
-		draw.bezier(0f, layoutHeight / 2, arrayOf(Point(layoutWidth, 0f), Point(0f, layoutHeight), Point(layoutWidth, layoutHeight / 2)))
+		draw.bezier(0f, layoutHeight / 2, arrayOf(MutablePoint(layoutWidth, 0f), MutablePoint(0f, layoutHeight), MutablePoint(layoutWidth, layoutHeight / 2)))
 
 		// Border
 		draw.setStroke(1f)

@@ -1,7 +1,9 @@
 package net.merayen.elastic.ui.surface
 
+import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.event.UIEvent
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.ImmutablePoint
+import net.merayen.elastic.util.MutablePoint
 import java.awt.*
 import java.awt.font.FontRenderContext
 import java.awt.font.GlyphVector
@@ -287,20 +289,30 @@ internal class DummySurface(id: String, handler: Surface.Handler) : Surface(id, 
 	override val threadId: Long
 		get() = Thread.currentThread().id  // We do not care about threading with this dummy
 
-	override val width = 1000
-	override val height = 1000
+	override val surfaceLocation = MutablePoint()
 
-	override val surfaceLocation = Point()
-
-	private val timer = timer(period = 1000/60, action = { handler.onDraw(DummyGraphics2D()) })
+	private val timer = timer(period = 1000 / 60, action = { handler.onDraw(DummyGraphics2D()) })
 
 	private var running = true
 
 
 	override val nativeUI = object : NativeUI {
+		override val screen = object : NativeUI.Screen {
+			override val activeScreenSize: ImmutableDimension
+				get() = ImmutableDimension(1000f, 1000f)
+		}
+		override val window = object : NativeUI.Window {
+			override var position: ImmutablePoint
+				get() = ImmutablePoint(0f, 0f)
+				set(_) {}
+			override var size: ImmutableDimension
+				get() = ImmutableDimension(1000f, 1000f)
+				set(_) {}
+			override var isDecorated = true
+		}
 		override val mouseCursor = object : NativeUI.MouseCursor {
-			override fun setPosition(point: Point) {}
-			override fun getPosition() = Point()
+			override fun setPosition(point: MutablePoint) {}
+			override fun getPosition() = MutablePoint()
 			override fun hide() {}
 			override fun show() {}
 

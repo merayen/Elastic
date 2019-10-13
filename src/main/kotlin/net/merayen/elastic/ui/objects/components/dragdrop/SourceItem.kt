@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import kotlin.math.abs
 
 abstract class SourceItem(val source: UIObject) : MouseHandler(source) {
@@ -12,19 +12,19 @@ abstract class SourceItem(val source: UIObject) : MouseHandler(source) {
 
 	private var active = false
 	private var dragging = false
-	private var start: Point? = null
+	private var start: MutablePoint? = null
 
 	init {
 		val self = this
 
 		setHandler(object : MouseHandler.Handler() {
-			override fun onMouseDown(position: Point?) {
+			override fun onMouseDown(position: MutablePoint?) {
 				active = true
 				if(tolerance == 0f)
 					startDrag()
 			}
 
-			override fun onGlobalMouseUp(position: Point?) {
+			override fun onGlobalMouseUp(position: MutablePoint?) {
 				active = false
 				if (dragging) {
 					dragging = false
@@ -33,7 +33,7 @@ abstract class SourceItem(val source: UIObject) : MouseHandler(source) {
 				}
 			}
 
-			override fun onGlobalMouseMove(global_position: Point?) {
+			override fun onGlobalMouseMove(global_position: MutablePoint?) {
 				if (!active)
 					return
 

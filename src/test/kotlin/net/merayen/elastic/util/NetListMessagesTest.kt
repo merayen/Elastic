@@ -1,11 +1,8 @@
 package net.merayen.elastic.util
 
-import net.merayen.elastic.backend.architectures.Architecture
-import net.merayen.elastic.backend.architectures.Dispatch
+import net.merayen.elastic.backend.architectures.local.JavaLocalDSPBackend
 import net.merayen.elastic.netlist.NetList
 import net.merayen.elastic.netlist.Node
-import net.merayen.elastic.system.intercom.backend.InitBackendMessage
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class NetListMessagesTest {
@@ -13,7 +10,6 @@ internal class NetListMessagesTest {
 	fun testProperties() {
 
 	}
-
 
 	fun test() {
 		val netlist = NetList()
@@ -23,14 +19,10 @@ internal class NetListMessagesTest {
 
 		netlist.connect(test1, "output", test2, "input")
 
-		val dispatch = Dispatch(Architecture.LOCAL) { message ->
-
-		}
-
-		dispatch.launch(InitBackendMessage(44100, 16, 1024, ""))
+		val dspBackend = JavaLocalDSPBackend()
 
 		for (m in NetListMessages.disassemble(netlist))
-			dispatch.executeMessage(m)
+			dspBackend.ingoing.send(m)
 
 		val t = System.currentTimeMillis() + 3000
 		while (t > System.currentTimeMillis()) { // Let it run for 3 seconds
@@ -39,10 +31,9 @@ internal class NetListMessagesTest {
 			} catch (e: InterruptedException) {
 				throw RuntimeException(e)
 			}
-
 		}
 
-		dispatch.stop()
+		dspBackend.stop()
 	}
 
 	private fun createTestNode(netlist: NetList): Node {

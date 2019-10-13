@@ -24,6 +24,7 @@ class UI : UINode() {
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.SINE, "Sine"))
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.TRIANGLE, "Triangle"))
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.SQUARE, "Square"))
+		typeDropDown.addMenuItem(DropDownItem(Properties.Type.SAW, "Saw"))
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.NOISE, "Noise"))
 		typeDropDown.translation.x = 20f
 		typeDropDown.translation.y = 20f

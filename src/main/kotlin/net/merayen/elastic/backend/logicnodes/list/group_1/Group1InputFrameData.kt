@@ -7,5 +7,8 @@ class Group1InputFrameData(
 	val startPlaying: Boolean? = null,
 	val stopPlaying: Boolean? = null,
 	val cursorBeatPosition: Double? = null,
-	val bpm: Double? = null
+	val bpm: Double? = null,
+	val sampleRate: Int? = null,
+	val bufferSize: Int? = null,
+	val depth: Int? = null
 ) : InputFrameData(nodeId)

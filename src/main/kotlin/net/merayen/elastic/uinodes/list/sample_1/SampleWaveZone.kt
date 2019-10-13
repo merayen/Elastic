@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import kotlin.math.max
 import kotlin.math.min
 
@@ -37,14 +37,14 @@ class SampleWaveZone(private val handler: Handler) : UIObject(), FlexibleDimensi
 
 	override fun onInit() {
 		mouse.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseDown(position: Point?) {
+			override fun onMouseDown(position: MutablePoint?) {
 				handler.onSelect()
 
 				dragStart = start
 				dragStop = stop
 			}
 
-			override fun onMouseDrag(position: Point?, offset: Point?) {
+			override fun onMouseDrag(position: MutablePoint?, offset: MutablePoint?) {
 				val dragStart = dragStart
 
 				if(dragStart != null) {

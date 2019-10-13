@@ -1,5 +1,7 @@
 package net.merayen.elastic.system.intercom.backend
 
+import net.merayen.elastic.system.intercom.ElasticMessage
+
 /**
  * Send this to the backend to import a file into the project.
  *
@@ -11,4 +13,4 @@ package net.merayen.elastic.system.intercom.backend
  * @param x The X-position of where the file got dropped
  * @param y The Y-position of where the file got dropped
  */
-class ImportFileIntoNodeGroupMessage(val filePaths: Array<String>, val nodeId: String, val x: Float, val y: Float) : BackendMessage()
+class ImportFileIntoNodeGroupMessage(val filePaths: Array<String>, val nodeId: String, val x: Float, val y: Float) : ElasticMessage

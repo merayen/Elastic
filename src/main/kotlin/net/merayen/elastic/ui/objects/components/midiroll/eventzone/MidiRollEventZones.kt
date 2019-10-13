@@ -10,7 +10,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	interface Handler {
@@ -41,11 +41,11 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 		contextMenu.addMenuItem(createEventZone)
 
 		contextMenu.handler = object : ContextMenu.Handler {
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				handler?.onCreateEventZone(0f, 4f)
 			}
 
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 		}
 	}
 

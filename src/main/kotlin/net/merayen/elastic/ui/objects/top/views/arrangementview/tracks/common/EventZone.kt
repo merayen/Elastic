@@ -12,7 +12,7 @@ import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.ui.util.Movable
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import kotlin.math.max
 
 class EventZone(val id: String) : UIObject(), FlexibleDimension {
@@ -59,15 +59,15 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 
 		override fun onInit() {
 			mouseHandler.setHandler(object : MouseHandler.Handler() {
-				override fun onMouseDown(position: Point?) {
+				override fun onMouseDown(position: MutablePoint?) {
 					handler?.onDrag()
 				}
 
-				override fun onMouseDrag(position: Point, offset: Point) {
+				override fun onMouseDrag(position: MutablePoint, offset: MutablePoint) {
 					handler?.onMove(offset.x)
 				}
 
-				override fun onMouseDrop(position: Point, offset: Point) {
+				override fun onMouseDrop(position: MutablePoint, offset: MutablePoint) {
 					handler?.onDrop(offset.x)
 				}
 			})
@@ -106,11 +106,11 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 		translation.y = 2f
 
 		contextMenu.handler = object : ContextMenu.Handler {
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				handler?.onSelect()
 			}
 
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				if (item is TextContextMenuItem) {
 					when (item.text) {
 						"Remove" -> handler?.onRemove()

@@ -2,20 +2,20 @@ package net.merayen.elastic.ui.objects.contextmenu
 
 import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
+import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.top.Window
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.ui.util.UINodeUtil
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 /**
  * Puts up a context menu on top of everything (Top().overlay)
  */
 class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 	interface Handler {
-		fun onSelect(item: ContextMenuItem?, position: Point)
-		fun onMouseDown(position: Point)
+		fun onSelect(item: ContextMenuItem?, position: MutablePoint)
+		fun onMouseDown(position: MutablePoint)
 	}
 
 	var handler: Handler? = null
@@ -32,12 +32,12 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 
 	init {
 		mouse.setHandler(object : MouseHandler.Handler() {
-			var relative: Point? = null
+			var relative: MutablePoint? = null
 			private var window: Window? = null
 
-			var originalMousePointerLocation: Point? = null
+			var originalMousePointerLocation: MutablePoint? = null
 
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				val window = UINodeUtil.getWindow(trigger)
 				this.window = window
 
@@ -50,23 +50,23 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 
 				moveNativeMouseCursorPosition()
 
-				menu.translation.x = window.screenWidth / 2f
-				menu.translation.y = window.screenHeight / 2f
+				menu.translation.x = window.layoutWidth / 2f
+				menu.translation.y = window.layoutHeight / 2f
 
-				menu.radius = Math.min(window.screenWidth, window.screenHeight) / 4
+				menu.radius = Math.min(window.layoutWidth, window.layoutHeight) / 4
 
 				menu.animate()
 				handler?.onMouseDown(position)
 			}
 
-			override fun onMouseDrag(position: Point, offset: Point) {
+			override fun onMouseDrag(position: MutablePoint, offset: MutablePoint) {
 				val absolute = menu.absolutePosition
 
 				if (absolute != null)
 					menu.setPointer(mouse.mouseEvent.x - absolute.x, mouse.mouseEvent.y - absolute.y)
 			}
 
-			override fun onGlobalMouseUp(position: Point) {
+			override fun onGlobalMouseUp(position: MutablePoint) {
 				if (menu.parent != null) {
 					UINodeUtil.getWindow(trigger)!!.overlay.remove(menu)
 					val selected = menu.getSelected()
@@ -86,7 +86,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 				originalMousePointerLocation = mouseCursor.getPosition()
 
 				val surfaceLocation = window.surfaceLocation
-				mouseCursor.setPosition(Point(surfaceLocation.x + window.screenWidth / 2f, surfaceLocation.y + window.screenHeight / 2f))
+				mouseCursor.setPosition(MutablePoint(surfaceLocation.x + window.layoutWidth / 2f, surfaceLocation.y + window.layoutHeight / 2f))
 
 				mouseCursor.hide()
 			}

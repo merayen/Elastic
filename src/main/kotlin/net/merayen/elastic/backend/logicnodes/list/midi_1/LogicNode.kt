@@ -28,12 +28,10 @@ class LogicNode : BaseLogicNode() {
 	 */
 	private var dirty = true
 
-	override fun onCreate() {
+	override fun onInit() {
 		createInputPort("in")
 		createOutputPort("out", Format.MIDI)
 	}
-
-	override fun onInit() {}
 
 	override fun onParameterChange(instance: BaseNodeProperties) {
 		updateProperties(instance)

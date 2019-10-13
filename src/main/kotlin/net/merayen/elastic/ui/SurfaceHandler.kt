@@ -19,7 +19,7 @@ class SurfaceHandler {
 	@Volatile
 	private var drawing = false
 
-	private val lock = Any()
+	private val lock = Any() // TODO soon: Remove
 
 	fun end() {
 		for (s in surfaces.values)

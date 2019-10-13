@@ -11,24 +11,24 @@ import net.merayen.elastic.ui.event.MouseEvent;
  */
 public class MouseHandler {
 	public static abstract class Handler {
-		public void onMouseDown(net.merayen.elastic.util.Point position) {} // Mouse down on the hitbox
-		public void onMouseUp(net.merayen.elastic.util.Point position) {} // Mouse up (if inside the hitbox)
-		public void onMouseClick(net.merayen.elastic.util.Point position) {} // Mouse clicked down and up in the hitbox
+		public void onMouseDown(net.merayen.elastic.util.MutablePoint position) {} // Mouse down on the hitbox
+		public void onMouseUp(net.merayen.elastic.util.MutablePoint position) {} // Mouse up (if inside the hitbox)
+		public void onMouseClick(net.merayen.elastic.util.MutablePoint position) {} // Mouse clicked down and up in the hitbox
 		public void onMouseOver() {} // Mouse enters the hitbox
 		public void onMouseOut() {} // Mouse leaves the hitbox
-		public void onMouseMove(net.merayen.elastic.util.Point position) {} // Mouse moves over the hitbox
-		public void onMouseDrag(net.merayen.elastic.util.Point position, net.merayen.elastic.util.Point offset) {} // Mouse down on hitbox and is now moving
-		public void onMouseDrop(net.merayen.elastic.util.Point position, net.merayen.elastic.util.Point offset) {} // Mouse has dragged item but now drops it
-		public void onGlobalMouseMove(net.merayen.elastic.util.Point global_position) {} // Mouse has been moved anywhere. TODO add others too? Like click
-		public void onGlobalMouseUp(net.merayen.elastic.util.Point global_position) {}
-		public void onMouseOutsideDown(net.merayen.elastic.util.Point global_position) {} // Mouse down outside
+		public void onMouseMove(net.merayen.elastic.util.MutablePoint position) {} // Mouse moves over the hitbox
+		public void onMouseDrag(net.merayen.elastic.util.MutablePoint position, net.merayen.elastic.util.MutablePoint offset) {} // Mouse down on hitbox and is now moving
+		public void onMouseDrop(net.merayen.elastic.util.MutablePoint position, net.merayen.elastic.util.MutablePoint offset) {} // Mouse has dragged item but now drops it
+		public void onGlobalMouseMove(net.merayen.elastic.util.MutablePoint global_position) {} // Mouse has been moved anywhere. TODO add others too? Like click
+		public void onGlobalMouseUp(net.merayen.elastic.util.MutablePoint global_position) {}
+		public void onMouseOutsideDown(net.merayen.elastic.util.MutablePoint global_position) {} // Mouse down outside
 	}
 
 	private Handler handler_class;
 	protected UIObject uiobject;
 
-	private net.merayen.elastic.util.Point drag_start;
-	private net.merayen.elastic.util.Point current_absolute;
+	private net.merayen.elastic.util.MutablePoint drag_start;
+	private net.merayen.elastic.util.MutablePoint current_absolute;
 
 	private boolean mouse_down = false;
 	private boolean mouse_over = false;
@@ -63,8 +63,8 @@ public class MouseHandler {
 			if(button != null && e.button != null && e.button != button)
 				return;
 
-			net.merayen.elastic.util.Point p_relative = uiobject.getRelativeFromAbsolute(e.x, e.y);
-			net.merayen.elastic.util.Point p_absolute = new net.merayen.elastic.util.Point(e.x, e.y);
+			net.merayen.elastic.util.MutablePoint p_relative = uiobject.getRelativeFromAbsolute(e.x, e.y);
+			net.merayen.elastic.util.MutablePoint p_absolute = new net.merayen.elastic.util.MutablePoint(e.x, e.y);
 
 			boolean hit = e.isHit(uiobject); // XXX doing this for absolute every uiobject, ouch!
 
@@ -73,7 +73,7 @@ public class MouseHandler {
 					mouse_down = true;
 					handler_class.onMouseDown(p_relative);
 
-					drag_start = new net.merayen.elastic.util.Point(p_relative);
+					drag_start = new net.merayen.elastic.util.MutablePoint(p_relative);
 				} else {
 					handler_class.onMouseOutsideDown(p_absolute);
 				}
@@ -81,7 +81,7 @@ public class MouseHandler {
 			else if(e.action == MouseEvent.Action.UP) {
 				if(mouse_dragging && mouse_down) {
 					mouse_dragging = false;
-					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.util.Point(p_relative.getX() - drag_start.getX(), p_relative.getY() - drag_start.getY()));
+					handler_class.onMouseDrop(p_relative, new net.merayen.elastic.util.MutablePoint(p_relative.getX() - drag_start.getX(), p_relative.getY() - drag_start.getY()));
 				}
 
 				if(hit) {
@@ -113,7 +113,7 @@ public class MouseHandler {
 
 				if(mouse_down) {
 					mouse_dragging = true;
-					handler_class.onMouseDrag(p_relative, new net.merayen.elastic.util.Point(p_relative.getX() - drag_start.getX(), p_relative.getY() - drag_start.getY()));
+					handler_class.onMouseDrag(p_relative, new net.merayen.elastic.util.MutablePoint(p_relative.getX() - drag_start.getX(), p_relative.getY() - drag_start.getY()));
 				}
 			}
 		}

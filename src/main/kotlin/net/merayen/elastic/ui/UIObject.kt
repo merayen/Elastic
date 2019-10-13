@@ -3,10 +3,10 @@ package net.merayen.elastic.ui
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.UINodeUtil
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import java.util.*
 
-open class UIObject {
+open class  UIObject {
 	var parent: UIObject? = null
 		private set
 	internal val children: MutableList<UIObject> = ArrayList()
@@ -32,11 +32,11 @@ open class UIObject {
 
 	val search = Search(this)
 
-	val absolutePosition: Point?
+	val absolutePosition: MutablePoint?
 		get() {
 			val td = absoluteTranslation
 			if (td != null)
-				return Point(td.x, td.y)
+				return MutablePoint(td.x, td.y)
 
 			return null
 		}
@@ -129,7 +129,7 @@ open class UIObject {
 			o.isAttached = true
 	}
 
-	fun remove(uiobject: UIObject) {
+	open fun remove(uiobject: UIObject) {
 		if (!children.contains(uiobject))
 			throw RuntimeException("UIObject is not a child of us")
 
@@ -145,7 +145,7 @@ open class UIObject {
 			o.isAttached = false
 	}
 
-	fun removeAll() {
+	open fun removeAll() {
 		for(o in children) {
 			if (o.parent !== this)
 				throw RuntimeException("Should not happen")
@@ -168,20 +168,20 @@ open class UIObject {
 
 	internal fun updateDraw(draw: Draw) = onDraw(draw)
 
-	fun getAbsolutePosition(offset_x: Float, offset_y: Float): Point? {
+	fun getAbsolutePosition(offset_x: Float, offset_y: Float): MutablePoint? {
 		val td = absoluteTranslation ?: return null
 
-		return Point((td.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
+		return MutablePoint((td.x + offset_x / td.scaleX).toInt().toFloat(), (td.y + offset_y / td.scaleY).toInt().toFloat()) // Pixel perfect
 	}
 
 	/**
 	 * Returns the relative position of the object "obj" to this object.
 	 */
-	fun getRelativePosition(obj: UIObject): Point? {
+	fun getRelativePosition(obj: UIObject): MutablePoint? {
 		if (obj.absoluteTranslation == null)
 			return null // Haven't drawn anything yet
 
-		return Point(
+		return MutablePoint(
 				(obj.absoluteTranslation!!.x - absoluteTranslation!!.x) * absoluteTranslation!!.scaleX,
 				(obj.absoluteTranslation!!.y - absoluteTranslation!!.y) * absoluteTranslation!!.scaleY
 		)
@@ -190,15 +190,15 @@ open class UIObject {
 	/**
 	 * Get our internal (relative) position from absolute position.
 	 */
-	fun getRelativeFromAbsolute(x: Float, y: Float): Point {
+	fun getRelativeFromAbsolute(x: Float, y: Float): MutablePoint {
 		val td = absoluteTranslation
-		return Point((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
+		return MutablePoint((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
 	}
 
-	fun getAbsoluteDimension(width: Float, height: Float): Dimension? {
+	fun getAbsoluteDimension(width: Float, height: Float): MutableDimension? {
 		val td = absoluteTranslation ?: return null
 
-		return Dimension((width / td.scaleX).toInt().toFloat(), (height / td.scaleY).toInt().toFloat())
+		return MutableDimension((width / td.scaleX).toInt().toFloat(), (height / td.scaleY).toInt().toFloat())
 	}
 
 	/**

@@ -6,7 +6,7 @@ import net.merayen.elastic.util.AverageStat;
 /**
  * Helper that synchronizes and calls a callback when needing to process more data.
  * Can use input-device clock, output-device clock, or just its own, internal clock if no external clock is available.
- * 
+ *
  * The class focuses on keeping synchronized, outputting silence and draining input buffers if you are not able to
  * process in the expected timeframe.
  */
@@ -31,7 +31,7 @@ public class Synchronization {
 		/**
 		 * Called when you are not able to process fast enough for next frame.
 		 * Synchronization will automatically fill the output buffers and read the input buffers to resync.
-		 * You will need cancel 
+		 * You will need cancel
 		 */
 		void behind();
 	}
@@ -43,8 +43,13 @@ public class Synchronization {
 		public void run() {
 			running = true;
 
-			internal_clock_start = System.nanoTime();
-			sample_count = 0;
+			long internalClockStart = System.nanoTime();
+			sampleCount = 0;
+
+			// Start initial processing
+			processing = true;
+			handler.needData();
+			waitForData();
 
 			while(running) {
 				int in_available = Integer.MAX_VALUE;
@@ -61,32 +66,32 @@ public class Synchronization {
 					throw new RuntimeException("Should not happen");
 
 				if(in_available != Integer.MAX_VALUE) { // We have active input-source, we use that as a time-source
-					if(in_available >= buffer_size) {
+					if(in_available >= bufferSize) {
 						processing = true;
-						start_waiting_data = System.currentTimeMillis();
+						startWaitingData = System.currentTimeMillis();
 						handler.needData();
 						waitForData();
 						continue;
 					}
 				} else if(out_available != Integer.MAX_VALUE) { // Only output, using that as clock, where the output buffer blocking actually keeps us in in pace
 					processing = true;
-					start_waiting_data = System.currentTimeMillis();
+					startWaitingData = System.currentTimeMillis();
 					handler.needData();
 					waitForData();
 					continue;
 				} else { // No input or outputs. Gotta use our own clock
-					if(internal_clock_start == 0) {
-						internal_clock_start = System.nanoTime();
+					if(internalClockStart == 0) {
+						internalClockStart = System.nanoTime();
 						continue;
 					}
 
-					long duration = (System.nanoTime() - internal_clock_start) / 1000; // in microseconds
-					long samples = (duration * sample_rate) / 1000000;
-					long sample_lag = samples - sample_count;
+					long duration = (System.nanoTime() - internalClockStart) / 1000; // in microseconds
+					long samples = (duration * sampleRate) / 1000000;
+					long sample_lag = samples - sampleCount;
 
 					if(sample_lag > 0) { // TODO calculate a bit better, perhaps
 						processing = true;
-						start_waiting_data = System.currentTimeMillis();
+						startWaitingData = System.currentTimeMillis();
 						handler.needData();
 						waitForData();
 						continue;
@@ -120,25 +125,20 @@ public class Synchronization {
 		}
 	}
 
-	public final Mixer mixer;
+	private final Mixer mixer;
 	public final Statistics statistics = new Statistics();
 	private volatile boolean processing; // Set to true when we have fired Handler.needData(). It will go back to false when notified by the Synchronization.push() call.
-	private final Poller poller;
-	private final int sample_rate; // Only used when using the internal timer, as we then need to know the duration of the buffer
+	private final Poller poller = new Poller();
 	private final Handler handler;
-	private int buffer_size;
-	private long internal_clock_start;
-	private volatile long sample_count; // samples from start. Counts upwards
-	private boolean reported_behind;
-	private long start_waiting_data;
+	private int sampleRate; // Only used when using the internal timer, as we then need to know the duration of the buffer
+	private int bufferSize;
+	private volatile long sampleCount; // samples from start. Counts upwards
+	private boolean reportedBehind;
+	private long startWaitingData;
 
-	public Synchronization(Mixer mixer, int sample_rate, int buffer_size, Handler handler) {
+	public Synchronization(Mixer mixer, Handler handler) {
 		this.mixer = mixer;
 		this.handler = handler;
-		this.buffer_size = buffer_size;
-		this.sample_rate = sample_rate;
-
-		poller = new Poller();
 	}
 
 	public void start() {
@@ -149,20 +149,21 @@ public class Synchronization {
 	 * Tells us that a frame has been processed.
 	 * We will acknowledge that and plan next call.
 	 */
-	public synchronized void push() {
+	public synchronized void push(int sampleRate, int bufferSize) {
+		this.bufferSize = bufferSize;
+		this.sampleRate = sampleRate;
+
 		if(!poller.running)
 			return;
 
 		if(!processing)
 			throw new RuntimeException("Calling push() when not been requested is not allowed");
 
-		statistics.awaiting_data.add((System.currentTimeMillis() - start_waiting_data) / 1000f);
+		statistics.awaiting_data.add((System.currentTimeMillis() - startWaitingData) / 1000f);
 		processing = false;
-		reported_behind = false;
+		reportedBehind = false;
 
-		sample_count += buffer_size;
-
-		//System.out.printf("Process time: %d ms\n", System.currentTimeMillis() - poller.last_request);
+		sampleCount += bufferSize;
 
 		synchronized (poller) {
 			poller.notifyAll();
@@ -183,16 +184,16 @@ public class Synchronization {
 	 */
 	private synchronized void dropFrame() {
 		for(AbstractDevice ad : mixer.getOpenDevices())
-			ad.spool(buffer_size);
+			ad.spool(bufferSize);
 
-		sample_count += buffer_size;
+		sampleCount += bufferSize;
 	}
 
 	private void behind() {
-		if(reported_behind)
+		if(reportedBehind)
 			return;
 
-		reported_behind = true;
+		reportedBehind = true;
 		handler.behind();
 	}
 }

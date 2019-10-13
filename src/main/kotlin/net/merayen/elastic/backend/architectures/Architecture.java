@@ -2,8 +2,7 @@ package net.merayen.elastic.backend.architectures;
 
 public enum Architecture {
 	LOCAL(net.merayen.elastic.backend.architectures.local.Info.class),
-	REMOTE(net.merayen.elastic.backend.architectures.remote.Info.class),
-	OPENCL(net.merayen.elastic.backend.architectures.opencl.Info.class);
+	REMOTE(net.merayen.elastic.backend.architectures.remote.Info.class);
 
 	public final IArchitecture instance;
 

@@ -8,6 +8,9 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties
  * @param length How many beats that the
  */
 data class Properties(
+	var bufferSize: Int? = null, // TODO soon: implement support onto group_1-node
+	var depth: Int? = null, // TODO soon: implement support onto group_1-node
+	var sampleRate: Int? = null, // TODO soon: implement support onto group_1-node
 	var bpm: Int? = null,
 	var bpmCurve: FloatArray? = null,
 	var length: Int? = null

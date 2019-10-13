@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDot
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDotDragable
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
 import kotlin.math.min
@@ -32,9 +32,9 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 			for (i in points.indices) {
 				val bp = points[i]
 				result[i] = BezierCurve.Dot(
-						Point(bp.position.translation.x, bp.position.translation.y),
-						Point(bp.left_dot.translation.x, bp.left_dot.translation.y),
-						Point(bp.right_dot.translation.x, bp.right_dot.translation.y)
+						MutablePoint(bp.position.translation.x, bp.position.translation.y),
+						MutablePoint(bp.left_dot.translation.x, bp.left_dot.translation.y),
+						MutablePoint(bp.right_dot.translation.x, bp.right_dot.translation.y)
 				)
 			}
 

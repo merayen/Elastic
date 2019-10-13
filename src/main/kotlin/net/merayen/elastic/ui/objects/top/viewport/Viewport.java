@@ -23,7 +23,6 @@ public class Viewport extends UIObject {
 	float ratio; // Value from 0 to 1, telling how much of the layoutWidth or layoutHeight this viewport takes from the view
 	public View view; // The view to draw. Set this and we will change to it on next onUpdate()
 
-	//private final ViewportContainer viewport_container;
 	private View current_view; // Actual view
 	private UIClip clip = new UIClip();
 	private ViewportDrag drag;
@@ -106,6 +105,10 @@ public class Viewport extends UIObject {
 
 		drag.width = width - BORDER_WIDTH * 2;
 		drag.height = height - BORDER_WIDTH * 2;
+	}
+
+	public View getCurrentView() {
+		return current_view;
 	}
 
 	public String toString() {

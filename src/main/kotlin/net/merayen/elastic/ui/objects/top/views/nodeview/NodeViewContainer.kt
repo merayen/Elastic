@@ -24,10 +24,8 @@ class NodeViewContainer(val nodeView: NodeView) : UIObject() {
 			val nodeId = nodeView.currentNodeId
 
 			if (nodeId != null) {
-				for (file in event.files) {
-					val position = getRelativeFromAbsolute(event.x.toFloat(), event.y.toFloat())
-					sendMessage(ImportFileIntoNodeGroupMessage(arrayOf(file), nodeId, position.x, position.y))
-				}
+				val position = getRelativeFromAbsolute(event.x.toFloat(), event.y.toFloat())
+				sendMessage(ImportFileIntoNodeGroupMessage(event.files, nodeId, position.x, position.y))
 			}
 		}
 	}

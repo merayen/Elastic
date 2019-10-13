@@ -10,7 +10,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class EventTimeLineGraph : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -38,13 +38,13 @@ class EventTimeLineGraph : UIObject(), FlexibleDimension {
 		contextMenu.addMenuItem(EmptyContextMenuItem())
 		contextMenu.addMenuItem(closeMenuItem)
 		contextMenu.handler = object : ContextMenu.Handler {
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				when (item) {
 					closeMenuItem -> handler?.onHide()
 				}
 			}
 
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 		}
 	}
 

@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 internal class TitleBarContextMenu(titlebar: UIObject) : UIObject() {
 	private val menu: ContextMenu
@@ -20,9 +20,9 @@ internal class TitleBarContextMenu(titlebar: UIObject) : UIObject() {
 		menu = ContextMenu(titlebar, MouseEvent.Button.RIGHT)
 
 		menu.handler = object : ContextMenu.Handler {
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				if (item === deleteNode) {
 					val nodeId = search.parentByType(UINode::class.java)?.nodeId
 					if(nodeId != null)

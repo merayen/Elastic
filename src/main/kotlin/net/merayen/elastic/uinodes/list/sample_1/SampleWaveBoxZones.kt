@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class SampleWaveBoxZones(private val handler: Handler) : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -26,7 +26,7 @@ class SampleWaveBoxZones(private val handler: Handler) : UIObject(), FlexibleDim
 
 	override fun onInit() {
 		mouse.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseMove(position: Point?) {
+			override fun onMouseMove(position: MutablePoint?) {
 				pointX = position!!.x / layoutWidth
 			}
 
@@ -34,7 +34,7 @@ class SampleWaveBoxZones(private val handler: Handler) : UIObject(), FlexibleDim
 				pointX = null
 			}
 
-			override fun onMouseDown(position: Point?) {
+			override fun onMouseDown(position: MutablePoint?) {
 				val pointX = pointX
 				if(pointX != null) {
 					lateinit var sampleWaveZone: SampleWaveZone
@@ -54,7 +54,7 @@ class SampleWaveBoxZones(private val handler: Handler) : UIObject(), FlexibleDim
 				}
 			}
 
-			override fun onMouseDrag(position: Point?, offset: Point?) {
+			override fun onMouseDrag(position: MutablePoint?, offset: MutablePoint?) {
 				zones[zones.size - 1].stop = zones[zones.size - 1].start + offset!!.x / layoutWidth
 				handler.onZoneChange(zones[zones.size - 1])
 			}

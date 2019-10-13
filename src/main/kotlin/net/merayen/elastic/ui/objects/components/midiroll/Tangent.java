@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 class Tangent extends UIObject {
 	interface Handler {
@@ -32,7 +32,7 @@ class Tangent extends UIObject {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onMouseDown(Point position) {
+			public void onMouseDown(MutablePoint position) {
 				active = true;
 				handler.onDown();
 			}
@@ -54,7 +54,7 @@ class Tangent extends UIObject {
 			}
 
 			@Override
-			public void onGlobalMouseUp(Point global_position) {
+			public void onGlobalMouseUp(MutablePoint global_position) {
 				if(active) {
 					active = false;
 					handler.onUp();

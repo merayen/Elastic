@@ -5,7 +5,7 @@ import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
 	private val mouseCursorManager: MouseCursorManager by lazy {
@@ -41,7 +41,7 @@ abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
 				currentItem = null
 			}
 
-			override fun onMouseUp(position: Point?) {
+			override fun onMouseUp(position: MutablePoint?) {
 				val item = currentItem
 
 				if(item != null) {
@@ -53,7 +53,7 @@ abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
 				currentItem = null
 			}
 
-			override fun onGlobalMouseMove(global_position: Point?) {
+			override fun onGlobalMouseMove(global_position: MutablePoint?) {
 				if(interested || !mouseDown)
 					return
 
@@ -64,7 +64,7 @@ abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
 				}
 			}
 
-			override fun onGlobalMouseUp(global_position: Point?) {
+			override fun onGlobalMouseUp(global_position: MutablePoint?) {
 				mouseDown = false
 				if(interested) {
 					interested = false
@@ -73,7 +73,7 @@ abstract class TargetItem(val target: UIObject) : MouseHandler(target) {
 				}
 			}
 
-			override fun onMouseOutsideDown(global_position: Point?) {
+			override fun onMouseOutsideDown(global_position: MutablePoint?) {
 				mouseDown = true
 			}
 		})

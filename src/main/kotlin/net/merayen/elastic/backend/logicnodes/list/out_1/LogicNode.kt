@@ -6,11 +6,10 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
-	override fun onCreate() {
+	override fun onInit() {
 		createInputPort("in")
 	}
 
-	override fun onInit() {}
 	override fun onParameterChange(instance: BaseNodeProperties) = updateProperties(instance)
 	override fun onData(data: NodeDataMessage) {}
 	override fun onConnect(port: String) {}

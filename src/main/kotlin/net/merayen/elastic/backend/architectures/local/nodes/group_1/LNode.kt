@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.local.nodes.group_1
 
+import net.merayen.elastic.Temporary
 import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
@@ -8,6 +9,10 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java), GroupLNode {
+	private var sampleRate: Int? = null
+	private var depth: Int? = null
+	private var bufferSize: Int? = null
+
 	private var currentBeatPosition = 0.0
 
 	private var currentCursorBeatPosition = 0.0
@@ -16,6 +21,17 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	private var bpm = 120.0
 
 	private var playing = false
+
+	override fun getBufferSize(): Int {
+		val parent = parent as? GroupLNode
+		if (parent != null)
+			return parent.getBufferSize()
+
+		return Temporary.bufferSize // FIXME should be received from our LogicNode
+	}
+
+	override fun getSampleRate() = Temporary.sampleRate
+	override fun getDepth() = Temporary.depth
 
 	override fun getCurrentBarDivision(): Int {
 		val parent = parent as? GroupLNode

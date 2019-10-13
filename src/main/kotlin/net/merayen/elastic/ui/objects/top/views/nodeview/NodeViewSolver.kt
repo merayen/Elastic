@@ -5,7 +5,7 @@ import net.merayen.elastic.ui.objects.node.UINode
 /**
  * Re-arranges nodes
  */
-class NodeViewSolver(private val uinodes: Array<UINode>) {
+class NodeViewSolver(private val uinodes: Collection<UINode>) {
 	fun solve() {
 		sillySolve()
 	}

@@ -1,16 +1,15 @@
 package net.merayen.elastic.backend.nodes;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.merayen.elastic.backend.analyzer.NodeProperties;
-import net.merayen.elastic.backend.logicnodes.Environment;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static net.merayen.elastic.backend.nodes.UtilKt.createLogicNode;
 
-class LogicNodeList {
+public class LogicNodeList {
 	private final Supervisor supervisor;
 	private final Map<String, BaseLogicNode> nodes = new HashMap<>();
 
@@ -19,7 +18,7 @@ class LogicNodeList {
 	}
 
 	void addAsLogicNode(Node node) {
-		NetList netlist = ((Environment)supervisor.env).project.getNetList();
+		NetList netlist = supervisor.getEnv().getProject().getNetList();
 
 		NodeProperties np = new NodeProperties(netlist);
 		String name = np.getName(node);
@@ -40,5 +39,9 @@ class LogicNodeList {
 
 	BaseLogicNode get(String node_id) {
 		return nodes.get(node_id);
+	}
+
+	public void clear() {
+		nodes.clear();
 	}
 }

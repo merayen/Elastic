@@ -1,10 +1,10 @@
 package net.merayen.elastic.ui.util;
 
 import net.merayen.elastic.ui.Rect;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class HitTester {
-	public static boolean inside(Point point, Rect rect) {
+	public static boolean inside(MutablePoint point, Rect rect) {
 		return inside(point.getX(), point.getY(), rect.getX1(), rect.getY1(), rect.getX2(), rect.getY2());
 	}
 

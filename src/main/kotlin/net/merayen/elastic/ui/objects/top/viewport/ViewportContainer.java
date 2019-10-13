@@ -6,11 +6,11 @@ import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
 import net.merayen.elastic.ui.objects.top.views.View;
-import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
+import net.merayen.elastic.ui.objects.top.views.splashview.SplashView;
 import net.merayen.elastic.ui.util.HitTester;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 import net.merayen.elastic.util.TaskExecutor;
 
 import java.util.*;
@@ -59,7 +59,7 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private void defaultView() { // Testing purposes probably
-		Viewport a = createViewport(new NodeView());
+		Viewport a = createViewport(new SplashView());
 		layout = new Layout(a);
 
 		sendMessage(new ViewportHelloMessage(this));
@@ -76,7 +76,7 @@ public class ViewportContainer extends UIObject {
 			private boolean vertical;
 
 			@Override
-			public void onMouseDown(Point position) {
+			public void onMouseDown(MutablePoint position) {
 				for(Viewport v : viewports)
 					if(HitTester.inside(position, new Rect(
 						v.getTranslation().x + v.width - 4,
@@ -102,7 +102,7 @@ public class ViewportContainer extends UIObject {
 			}
 
 			@Override
-			public void onMouseDrag(Point position, Point offset) {
+			public void onMouseDrag(MutablePoint position, MutablePoint offset) {
 				if(moving == null)
 					return;
 
@@ -114,7 +114,7 @@ public class ViewportContainer extends UIObject {
 			}
 
 			@Override
-			public void onGlobalMouseUp(Point position) {
+			public void onGlobalMouseUp(MutablePoint position) {
 				me = false;
 				moving = null;
 
@@ -151,19 +151,7 @@ public class ViewportContainer extends UIObject {
 
 	@Override
 	public void onUpdate() {
-		// TODO Remove. Requires defaultView to have been called
-		int i = 0;
-		for(Viewport v : viewports) {
-			v.getTranslation().x = (width / viewports.size()) * i;
-			v.width = width - (width / viewports.size()) * i;
-
-			v.getTranslation().y = (height / viewports.size()) * i;
-			v.height = height / viewports.size();
-			i++;
-		}
-
 		updateLayout();
-
 		task_executor.update();
 	}
 
@@ -183,20 +171,24 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private Viewport createViewport(View view) {
-		final Map<String, Object> m = new HashMap<>();
+		class omgJava {
+			Viewport newViewport;
+		}
+
+		omgJava omgJava = new omgJava();
 
 		ViewportContainer self = this;
 
 		Viewport v = new Viewport(new Viewport.Handler() {
 			@Override
 			public void onNewViewport(boolean vertical) { // TODO refuse creation if we are too small
-				Viewport v = createViewport(view.cloneView());
+				Viewport v = createViewport(omgJava.newViewport.view.cloneView());
 				if(vertical) {
-					layout.splitVertical(m.get("viewport"), v);
+					layout.splitVertical(omgJava.newViewport, v);
 				} else { // Horizontal
-					layout.splitHorizontal(m.get("viewport"), v);
+					layout.splitHorizontal(omgJava.newViewport, v);
 				}
-				dragging_viewport = (Viewport)m.get("viewport");
+				dragging_viewport = omgJava.newViewport;
 			}
 
 			@Override
@@ -209,9 +201,9 @@ public class ViewportContainer extends UIObject {
 
 				// TODO refuse smaller than a certain value
 				if(vertical)
-					layout.resizeWidth(m.get("viewport"), new_size / width);
+					layout.resizeWidth(omgJava.newViewport, new_size / width);
 				else
-					layout.resizeHeight(m.get("viewport"), new_size / height);
+					layout.resizeHeight(omgJava.newViewport, new_size / height);
 
 				UINodeUtil.INSTANCE.getWindow(self).getDebug().set("ViewContainer new_size", new_size / (vertical ? width : height));
 			}
@@ -220,7 +212,7 @@ public class ViewportContainer extends UIObject {
 		v.view = view;
 		add(v);
 		viewports.add(v);
-		m.put("viewport", v);
+		omgJava.newViewport = v; // Hack
 		return v;
 	}
 }

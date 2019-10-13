@@ -32,10 +32,10 @@ object NetListMessages { // TODO silly name, fix
 			for (port in netlist.getPorts(node)) {
 				val p = netlist.getPort(node, port)
 				result.add(CreateNodePortMessage(
-						node.id,
-						port,
-						np.isOutput(p),
-						np.getFormat(p)
+					node.id,
+					port,
+					np.isOutput(p),
+					np.getFormat(p)
 				))
 			}
 		}
@@ -61,8 +61,7 @@ object NetListMessages { // TODO silly name, fix
 		val filtered = netlist.copy()
 		val np = NodeProperties(filtered)
 
-		for (node in netlist.nodes)
-		// Remove nodes that are not in the group group_id
+		for (node in netlist.nodes) // Remove nodes that are not in the group group_id
 			if (np.getParent(node) !== parent_node_id)
 				filtered.remove(node)
 
@@ -115,8 +114,6 @@ object NetListMessages { // TODO silly name, fix
 
 			node.properties.clear()
 			node.properties.putAll(updatedProperties)
-
-		} else if (message is BeginResetNetListMessage)
-			netlist.clear()
+		}
 	}
 }

@@ -1,8 +1,7 @@
 package net.merayen.elastic.backend.architectures;
 
+import net.merayen.elastic.Temporary;
 import net.merayen.elastic.system.intercom.ElasticMessage;
-import net.merayen.elastic.system.intercom.backend.InitBackendMessage;
-import net.merayen.elastic.util.Postmaster;
 
 public abstract class AbstractExecutor {
 	public interface Handler {
@@ -15,14 +14,12 @@ public abstract class AbstractExecutor {
 
 	protected final int sample_rate, sample_buffer_size;
 
-	public AbstractExecutor(InitBackendMessage message) {
-		sample_rate = message.sample_rate;
-		sample_buffer_size = message.buffer_size;
+	public AbstractExecutor() {
+		sample_rate = Temporary.sampleRate;
+		sample_buffer_size = Temporary.bufferSize;
 	}
 
 	private Handler handler;
-
-	final Postmaster<ElasticMessage> to_processing = new Postmaster<>(); // Messages queued to be read from the processing architecture
 
 	protected abstract void onMessage(ElasticMessage message);
 
@@ -32,7 +29,10 @@ public abstract class AbstractExecutor {
 	 */
 	public abstract void stop();
 
-	protected void sendFromProcessing(ElasticMessage message) {
+	/**
+	 * Send message to backend
+	 */
+	protected void sendMessage(ElasticMessage message) {
 		handler.onMessageFromProcessor(message);
 	}
 

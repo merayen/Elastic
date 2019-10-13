@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class ViewportDrag extends UIObject {
 	public interface Handler {
@@ -29,7 +29,7 @@ public class ViewportDrag extends UIObject {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onMouseDrag(Point start, Point offset) {
+			public void onMouseDrag(MutablePoint start, MutablePoint offset) {
 				if(!drag_x && !drag_y) {
 					if(offset.getX() <= -10) {
 						drag_x = true;
@@ -58,7 +58,7 @@ public class ViewportDrag extends UIObject {
 			}
 
 			@Override
-			public void onMouseDrop(Point start, Point offset) {
+			public void onMouseDrop(MutablePoint start, MutablePoint offset) {
 				if(drag_x)
 					handler.onDrop(offset.getX(), true);
 				else if(drag_y)

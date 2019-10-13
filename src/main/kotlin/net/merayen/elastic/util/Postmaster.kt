@@ -1,5 +1,6 @@
 package net.merayen.elastic.util
 
+import net.merayen.elastic.system.intercom.BackendReadyMessage
 import java.util.*
 
 /**
@@ -12,55 +13,53 @@ import java.util.*
 class Postmaster<T> {
 	private val queue = ArrayDeque<T>()
 
-	val isEmpty: Boolean
-		get() = synchronized(queue) {
-			return queue.isEmpty()
-		}
+	@Synchronized
+	fun isEmpty() = queue.isEmpty()
 
+	@Synchronized
 	fun send(message: T) {
-		synchronized(queue) {
-			queue.add(message)
-		}
+		queue.add(message)
+		if (queue.isEmpty())
+			throw RuntimeException("Should not happen")
 	}
 
+	@Synchronized
 	fun send(messages: Collection<T>) {
-		synchronized(queue) {
-			queue.addAll(messages)
-		}
+		queue.addAll(messages)
 	}
 
+	@Synchronized
 	fun send(messages: Array<T>) {
-		synchronized(queue) {
-			queue.addAll(messages)
-		}
+		queue.addAll(messages)
 	}
 
+	@Synchronized
 	fun receive(): T? {
-		synchronized(queue) {
-			return queue.poll()
-		}
+		val message = queue.poll()
+		if (message is BackendReadyMessage)
+			System.currentTimeMillis()
+		return message
 	}
 
+	@Synchronized
 	fun receiveAll(): Collection<T> {
 		val result = ArrayList<T>()
 
-		synchronized(queue) {
-			while (queue.isNotEmpty())
-				result.add(queue.removeFirst())
-		}
+		while (queue.isNotEmpty())
+			result.add(queue.removeFirst())
+
+		for (message in result)
+			if (message is BackendReadyMessage)
+				System.currentTimeMillis()
 
 		return result
 	}
 
+	@Synchronized
 	fun clear() {
-		synchronized(queue) {
-			queue.clear()
-		}
+		queue.clear()
 	}
 
-	fun size(): Int {
-		synchronized(queue) {
-			return queue.size
-		}
-	}
+	@Synchronized
+	fun size() = queue.size
 }

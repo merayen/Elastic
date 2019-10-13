@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class UIPortTemporary extends UIPort {
 	/*
@@ -35,13 +35,13 @@ public class UIPortTemporary extends UIPort {
 		mouse = new MouseHandler(this, Button.LEFT);
 		mouse.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onGlobalMouseUp(Point global_position) {
+			public void onGlobalMouseUp(MutablePoint global_position) {
 				tryConnect();
 				removeTempPort();
 			}
 
 			@Override
-			public void onGlobalMouseMove(Point position) {
+			public void onGlobalMouseMove(MutablePoint position) {
 				moveTempPort(source_port.getRelativeFromAbsolute(position.getX(), position.getY()));
 			}
 		});
@@ -53,7 +53,7 @@ public class UIPortTemporary extends UIPort {
 		getParent().remove(this);
 	}
 
-	private void moveTempPort(Point position) { // Relative coordinates
+	private void moveTempPort(MutablePoint position) { // Relative coordinates
 		getTranslation().x = position.getX();// - original.x;
 		getTranslation().y = position.getY();// - original.y;
 	}
@@ -73,7 +73,7 @@ public class UIPortTemporary extends UIPort {
 		super.onUpdate();
 		// Sets the initial offset
 		if(destination_port != null) {
-			Point pos = getRelativePosition(destination_port);
+			MutablePoint pos = getRelativePosition(destination_port);
 			getTranslation().x = pos.getX();
 			getTranslation().y = pos.getY();
 			destination_port = null;

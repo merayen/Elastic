@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class MenuListItem extends UIObject {
 	public interface Handler {
@@ -28,7 +28,7 @@ public class MenuListItem extends UIObject {
 		mouse_handler = new MouseHandler(this);
 		mouse_handler.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onMouseUp(Point position) {
+			public void onMouseUp(MutablePoint position) {
 				handler.onClick();
 			}
 

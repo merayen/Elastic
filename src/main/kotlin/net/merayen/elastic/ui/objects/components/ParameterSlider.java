@@ -5,7 +5,7 @@ import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.components.buttons.Button;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class ParameterSlider extends UIObject {
 	float width = 80f;
@@ -56,7 +56,7 @@ public class ParameterSlider extends UIObject {
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onMouseDrag(Point start_point, Point offset) {
+			public void onMouseDrag(MutablePoint start_point, MutablePoint offset) {
 				setValue(drag_value + (offset.getX() / width) * scale);
 				if(handler != null) {
 					handler.onChange(value, false);
@@ -65,7 +65,7 @@ public class ParameterSlider extends UIObject {
 			}
 
 			@Override
-			public void onMouseDown(Point position) {
+			public void onMouseDown(MutablePoint position) {
 				drag_value = value;
 			}
 		});

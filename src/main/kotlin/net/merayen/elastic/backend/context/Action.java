@@ -1,19 +1,17 @@
 package net.merayen.elastic.backend.context;
 
-import net.merayen.elastic.backend.logicnodes.Environment;
-
 public abstract class Action {
-	protected BackendContext backendContext;
-	protected Environment env;
+	protected JavaBackend javaBackend;
+	protected JavaBackend.Environment env;
 
 	protected Action() {}
 
 	protected abstract void run();
 
-	public final void start(BackendContext backendContext) {
-		synchronized (backendContext.env.project) {
-			this.backendContext = backendContext;
-			env = backendContext.env;
+	public final void start(JavaBackend javaBackend) {
+		synchronized (javaBackend.getEnvironment().getProject()) {
+			this.javaBackend = javaBackend;
+			env = javaBackend.getEnvironment();
 			run();
 		}
 	}

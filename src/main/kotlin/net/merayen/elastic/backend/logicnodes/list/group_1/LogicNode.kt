@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.group_1
 
+import net.merayen.elastic.Temporary
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.backend.nodes.GroupLogicNode
@@ -16,7 +17,10 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 	private var cursorBeatPosition: Double? = null
 	private var bpm = 120.0
 
-	override fun onCreate() {}
+	private var sampleRate: Int = Temporary.sampleRate
+	private var bufferSize: Int = Temporary.bufferSize
+	private var depth: Int = Temporary.depth
+
 	override fun onInit() {}
 	override fun onConnect(port: String) {}
 	override fun onDisconnect(port: String) {}
@@ -49,7 +53,10 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 			startPlaying = startPlaying,
 			stopPlaying = stopPlaying,
 			cursorBeatPosition = cursorBeatPosition,
-			bpm = bpm // TODO remove this and use a curve instead
+			bpm = bpm, // TODO remove this and use a curve instead
+			sampleRate = sampleRate,
+			bufferSize = bufferSize,
+			depth = depth
 		)
 
 		startPlaying = false

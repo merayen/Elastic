@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.event.MouseEvent.Button;
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout;
 import net.merayen.elastic.ui.util.MouseHandler;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 public class Tabs extends AutoLayout {
 	public interface Handler {
@@ -31,7 +31,7 @@ public class Tabs extends AutoLayout {
 			mouse_handler = new MouseHandler(this, Button.LEFT);
 			mouse_handler.setHandler(new MouseHandler.Handler() {
 				@Override
-				public void onMouseClick(Point position) {
+				public void onMouseClick(MutablePoint position) {
 					handler.onClick();
 				}
 			});

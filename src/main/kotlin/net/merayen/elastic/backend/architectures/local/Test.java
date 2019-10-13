@@ -12,7 +12,8 @@ import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 import net.merayen.elastic.system.intercom.ElasticMessage;
 import net.merayen.elastic.system.intercom.InputFrameData;
-import net.merayen.elastic.system.intercom.ProcessMessage;
+import net.merayen.elastic.system.intercom.ProcessRequestMessage;
+import net.merayen.elastic.system.intercom.ProcessResponseMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,11 +100,11 @@ public class Test {
 	}
 
 	private static void check(Supervisor supervisor) {
-		ProcessMessage message = new ProcessMessage();
+		ProcessRequestMessage message = new ProcessRequestMessage();
 		if(supervisor.processor_list.getAllProcessors().size() != 1) // Only main-session is running
 			no();
 
-		ProcessMessage response = supervisor.process(message); // This will make MiddleNode create a session for its children, and then process a frame
+		ProcessResponseMessage response = supervisor.process(message); // This will make MiddleNode create a session for its children, and then process a frame
 
 		if(supervisor.processor_list.getAllProcessors().size() != 9) // main-session with 2 processors and the additional session with 3
 			no();
@@ -111,7 +112,7 @@ public class Test {
 		// Check that the output data is good
 		float[] expected = new float[] {0,1,2,3,4,10,12,14,16,18};
 		int i = 0;
-		for(Object x : response.getInput().values()) {
+		for(Object x : response.getOutput().values()) {
 			float[][] data = (float[][])((Map)x).get("output");
 			if(data != null) {
 				for(float s : expected)

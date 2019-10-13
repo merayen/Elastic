@@ -19,7 +19,6 @@ import java.util.*
  * Holds track of all the windows (called surfaces), and which to draw in which context.
  */
 class Top(private val surfaceHandler: SurfaceHandler) : UIObject(), TopNode {
-
 	val mouseCursorManager = MouseCursorManager()
 	private val windows = ArrayList<Window>()
 
@@ -33,6 +32,7 @@ class Top(private val surfaceHandler: SurfaceHandler) : UIObject(), TopNode {
 	init {
 		add(mouseCursorManager)
 
+		controllers.add(SplashViewController(this))
 		controllers.add(NetListController(this))
 		controllers.add(ViewportController(this))
 		controllers.add(NodeViewController(this))
@@ -80,10 +80,8 @@ class Top(private val surfaceHandler: SurfaceHandler) : UIObject(), TopNode {
 
 		val messages = messagesToUI.receiveAll()
 
-		if (messages.isNotEmpty()) {
+		if (messages.isNotEmpty())
 			updateNetList(messages)
-			updateControllers(messages)
-		}
 	}
 
 	override fun onDraw(draw: Draw) {
@@ -111,7 +109,7 @@ class Top(private val surfaceHandler: SurfaceHandler) : UIObject(), TopNode {
 	/**
 	 * Called by e.g UIBridge
 	 */
-	override fun sendMessagesToUI(messages: Collection<ElasticMessage>) = messagesToUI.send(messages = messages)
+	override fun sendMessageToUI(message: ElasticMessage) = messagesToUI.send(message)
 
 	private fun updateNetList(messages: Collection<ElasticMessage>) {
 		for (message in messages) {
@@ -119,11 +117,6 @@ class Top(private val surfaceHandler: SurfaceHandler) : UIObject(), TopNode {
 
 			for (c in controllers)
 				c.onMessageFromBackend(message)
-
 		}
-	}
-
-	private fun updateControllers(messages: Collection<ElasticMessage>) {
-
 	}
 }

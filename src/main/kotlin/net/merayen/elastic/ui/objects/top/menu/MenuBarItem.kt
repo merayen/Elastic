@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class MenuBarItem(label: String) : UIObject() {
 
@@ -48,7 +48,7 @@ class MenuBarItem(label: String) : UIObject() {
 				over = false
 			}
 
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				toggleMenu()
 			}
 		})

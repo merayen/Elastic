@@ -1,11 +1,5 @@
 package net.merayen.elastic.backend.data.project;
 
-import java.io.File;
-import java.util.Set;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
 import net.merayen.elastic.backend.data.dependencygraph.DependencyGraph;
 import net.merayen.elastic.backend.data.revision.RevisionTree;
 import net.merayen.elastic.backend.data.storage.FileSystemStorage;
@@ -13,6 +7,11 @@ import net.merayen.elastic.backend.data.storage.Storage;
 import net.merayen.elastic.backend.data.storage.StorageFile;
 import net.merayen.elastic.backend.data.storage.StorageView;
 import net.merayen.elastic.netlist.NetList;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.util.Set;
 
 public class ProjectData {
 	final Project project;
@@ -21,14 +20,13 @@ public class ProjectData {
 	public final RevisionTree revision_tree;
 	public final DependencyGraph dependencyGraph;
 	private NetList netlist = new NetList();
-
-	private final boolean new_project;
+	private boolean newProject = false;
 
 	ProjectData(Project project) {
 		this.project = project;
 
-		if(!(new File(project.path)).exists()) {
-			storage = new FileSystemStorage(project.path);
+		if (!(new File(project.getPath())).exists()) {
+			storage = new FileSystemStorage(project.getPath());
 			revision_tree = new RevisionTree();
 			dependencyGraph = new DependencyGraph();
 
@@ -38,9 +36,9 @@ public class ProjectData {
 				save(sv);
 			}
 
-			new_project = true;
+			newProject = true;
 		} else { // Project exists
-			storage = new FileSystemStorage(project.path);
+			storage = new FileSystemStorage(project.getPath());
 
 			try (StorageView sv = storage.createView()) {
 				JSONObject json_project;
@@ -50,10 +48,8 @@ public class ProjectData {
 					throw new RuntimeException(e);
 				}
 
-				revision_tree = net.merayen.elastic.backend.data.revision.Serializer.load((JSONObject)json_project.get("revisions")); // TODO restore from file
-				dependencyGraph = net.merayen.elastic.backend.data.dependencygraph.Serializer.load((JSONObject)json_project.get("dependencygraph")); // TODO restore from file
-
-				new_project = false;
+				revision_tree = net.merayen.elastic.backend.data.revision.Serializer.load((JSONObject) json_project.get("revisions")); // TODO restore from file
+				dependencyGraph = net.merayen.elastic.backend.data.dependencygraph.Serializer.load((JSONObject) json_project.get("dependencygraph")); // TODO restore from file
 			}
 		}
 
@@ -61,8 +57,9 @@ public class ProjectData {
 	}
 
 	void init() {
-		if(new_project)
-			project.checkpoint.create();
+		if (newProject)
+			project.getCheckpoint().create();
+		newProject = false;
 	}
 
 	/**
@@ -76,7 +73,7 @@ public class ProjectData {
 		JSONObject project;
 
 		try {
-			project = (JSONObject)new org.json.simple.parser.JSONParser().parse(new String(sf.read()));
+			project = (JSONObject) new org.json.simple.parser.JSONParser().parse(new String(sf.read()));
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -108,13 +105,13 @@ public class ProjectData {
 	 * Returned NetList is always a new instance.
 	 */
 	public NetList getRawNetList() {
-		if(revision_tree.getCurrent() == null)
+		if (revision_tree.getCurrent() == null)
 			return new NetList();
 
 		String path = "netlists/" + revision_tree.getCurrent().id + ".json";
 		try (StorageView sv = storage.createView()) {
 			String s = new String(sv.readFile(path).read());
-			return net.merayen.elastic.netlist.Serializer.restore((JSONObject)new org.json.simple.parser.JSONParser().parse(s));
+			return net.merayen.elastic.netlist.Serializer.restore((JSONObject) new org.json.simple.parser.JSONParser().parse(s));
 		} catch (ParseException e) {
 			throw new RuntimeException("Failed to load NetList from project: " + path);
 		}
@@ -124,9 +121,9 @@ public class ProjectData {
 		Set<String> resources = dependencyGraph.getAll().keySet();
 
 		try (StorageView sv = storage.createView()) {
-			for(String m : sv.listAll(".")) {
-				if(!resources.contains(m) && !m.equals("project.json")) {
-					String p = project.path + "/" + m;
+			for (String m : sv.listAll(".")) {
+				if (!resources.contains(m) && !m.equals("project.json")) {
+					String p = project.getPath() + "/" + m;
 					System.out.println("Tidying file " + p);
 					new File(p).delete();
 				}
@@ -145,6 +142,7 @@ public class ProjectData {
 	/**
 	 * Store a new file into the project.
 	 * Automatically puts a dependency to another object.
+	 *
 	 * @param file
 	 * @param dependsOn
 	 */
@@ -154,8 +152,8 @@ public class ProjectData {
 
 	private void loadLinks() {
 		StorageView sv = storage.createView();
-		String links_dir = project.path + "/links/";
-		for(String v : sv.list(links_dir)) {
+		String links_dir = project.getPath() + "/links/";
+		for (String v : sv.list(links_dir)) {
 			StorageFile sf = sv.readFile(v);
 			System.out.println("Link: " + v + " Linking to: " + new String(sf.read()));
 		}

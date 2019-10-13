@@ -14,7 +14,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.UniqueID
 
 class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
@@ -105,7 +105,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		contextMenu.addMenuItem(contextMenuItemLine)
 
 		contextMenu.handler = object : ContextMenu.Handler {
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				when (item) {
 					contextMenuItemCreateNote -> {
 						toolMode = ToolModes.Create
@@ -122,7 +122,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 				}
 			}
 
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				selectionRectangle.cancel()
 			}
 		}
@@ -130,7 +130,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
 			private val ghostNote = notes.Note("ghostNote", 0.0, 0.0, 0, 1f)
 
-			override fun onMouseMove(position: Point) {
+			override fun onMouseMove(position: MutablePoint) {
 				if (toolMode == ToolModes.Create) {
 					if (ghostNote.parent == null)
 						notes.add(ghostNote)
@@ -151,7 +151,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 				handler?.onGhostNoteOff()
 			}
 
-			override fun onMouseClick(position: Point?) {
+			override fun onMouseClick(position: MutablePoint?) {
 				if (ghostNote.parent != null) {
 					notes.remove(ghostNote)
 					if (toolMode == ToolModes.Create) {

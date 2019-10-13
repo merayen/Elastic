@@ -13,7 +13,7 @@ import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.views.nodeview.addnode.AddNodePopup
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class NodeViewContextMenu(background: UIObject, private val node_id: String?) : UIObject() {
 	interface Handler {
@@ -34,9 +34,9 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 		menu = ContextMenu(background, 8, MouseEvent.Button.RIGHT)
 
 		menu.handler = object : ContextMenu.Handler {
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 
-			override fun onSelect(item: ContextMenuItem?, position: Point) { // TODO move stuff below out to a separate class
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) { // TODO move stuff below out to a separate class
 				if (item === addNodeItem) {
 					AddNodePopup(self) { info -> createNode(info, position) }
 				} else if (item === autoArrangeItem) {
@@ -49,7 +49,7 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 		menu.addMenuItem(autoArrangeItem)
 	}
 
-	private fun createNode(info: BaseInfo, position: Point) {
+	private fun createNode(info: BaseInfo, position: MutablePoint) {
 		val path = info.javaClass.name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 		val name = path[path.size - 2]
 

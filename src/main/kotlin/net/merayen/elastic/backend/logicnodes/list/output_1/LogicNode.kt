@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.logicnodes.list.output_1
 
+import net.merayen.elastic.backend.context.JavaBackend
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
-import net.merayen.elastic.backend.logicnodes.Environment
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
@@ -18,12 +18,10 @@ class LogicNode : BaseLogicNode() {
 	}
 	private var output_device: String? = null
 
-	override fun onCreate() {
-		createInputPort("input")
-	}
-
 	override fun onInit() {
-		val env = env as Environment
+		createInputPort("input")
+
+		val env = env as JavaBackend.Environment
 		for (ad in env.mixer.availableDevices)
 			if (ad is AudioDevice)
 				if (ad.isOutput)
@@ -40,28 +38,25 @@ class LogicNode : BaseLogicNode() {
 	}
 
 	override fun onFinishFrame(data: OutputFrameData?) {
-		val output = data as OutputNodeOutputData
+ 		val output = data as Output1NodeOutputData
 
 		// Count max channels
-		val channel_count = output.audio.size
+		val channelCount = output.audio.size
 
-		if (channel_count == 0)
+		if (channelCount == 0)
 			return  // Don't bother
 
-		val sample_count = this.env.buffer_size
+		val sampleCount = output.bufferSize
 
-		val out = arrayOfNulls<FloatArray>(channel_count)/* channel no *//* sample no */
+		val out = arrayOfNulls<FloatArray>(channelCount)/* channel no *//* sample no */
 
-		var i = 0
-		for (channel_no in 0 until channel_count) {
-			val channel = data.audio[channel_no]
+		for (channelNumber in 0 until channelCount) {
+			val channel = data.audio[channelNumber]
 
 			if (channel != null)
-				out[i] = channel
+				out[channelNumber] = channel
 			else
-				out[i] = FloatArray(sample_count)
-
-			i++
+				out[channelNumber] = FloatArray(sampleCount)
 		}
 
 		sendDataToUI(
@@ -72,14 +67,14 @@ class LogicNode : BaseLogicNode() {
 				)
 		)
 
-		val mixer = (env as Environment).mixer
+		val mixer = env.mixer
 
 		mixer.send(output_device, Audio(out))
 
 		val statistics = mixer.statistics[output_device]
 
 		if (statistics != null) {
-			sendMessageToUI(
+			sendMessage(
 					OutputNodeStatisticsData(
 							id,
 							statistics.id,
@@ -93,6 +88,5 @@ class LogicNode : BaseLogicNode() {
 	}
 
 	override fun onRemove() {}
-
 	override fun onData(data: NodeDataMessage) {}
 }

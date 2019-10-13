@@ -9,7 +9,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	interface Handler {
@@ -60,7 +60,7 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 
 		override fun onInit() {
 			mouseHandler.setHandler(object : MouseHandler.Handler() {
-				override fun onMouseClick(position: Point?) {
+				override fun onMouseClick(position: MutablePoint?) {
 					handler?.onSelect(id)
 				}
 			})

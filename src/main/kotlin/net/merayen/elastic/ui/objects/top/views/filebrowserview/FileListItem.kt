@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.components.dragdrop.SourceItem
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import java.io.File
 
 internal open class FileListItem(val file: File, val dragable: Boolean) : UIObject() {
@@ -49,7 +49,7 @@ internal open class FileListItem(val file: File, val dragable: Boolean) : UIObje
 				over = false
 			}
 
-			override fun onMouseClick(position: Point) {
+			override fun onMouseClick(position: MutablePoint) {
 				handler?.onClick()
 			}
 		})

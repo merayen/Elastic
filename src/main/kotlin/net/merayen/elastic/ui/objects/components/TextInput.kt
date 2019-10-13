@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UIClip
 import net.merayen.elastic.ui.objects.dialogs.TextInputDialog
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class TextInput : UIClip(), FlexibleDimension {
 	interface Handler {
@@ -26,7 +26,7 @@ class TextInput : UIClip(), FlexibleDimension {
 	override fun onInit() {
 		super.onInit()
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseClick(position: Point?) {
+			override fun onMouseClick(position: MutablePoint?) {
 				val dialog = TextInputDialog(description, value) {
 					if (it != null) {
 						value = it

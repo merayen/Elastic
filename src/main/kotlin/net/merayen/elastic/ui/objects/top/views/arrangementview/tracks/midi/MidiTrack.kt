@@ -16,7 +16,7 @@ import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.views.arrangementview.Arrangement
 import net.merayen.elastic.ui.objects.top.views.arrangementview.ArrangementTrack
 import net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common.EventTimeLine
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.UniqueID
 
 class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nodeId, arrangement) {
@@ -136,24 +136,24 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 				trackPane.layoutHeight = 200f
 			}
 
-			override fun onSelectionDrag(start: Point, offset: Point) {
+			override fun onSelectionDrag(start: MutablePoint, offset: MutablePoint) {
 				handler?.onSelectionDrag(start, offset)
 			}
 
-			override fun onSelectionDrop(start: Point, offset: Point) {
+			override fun onSelectionDrop(start: MutablePoint, offset: MutablePoint) {
 				handler?.onSelectionDrop(start, offset)
 			}
 		}
 
 		trackPane.contextMenu.addMenuItem(removeTrackMenuItem)
 		trackPane.contextMenu.handler = object : ContextMenu.Handler {
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				when (item) {
 					removeTrackMenuItem -> TODO("Implement!")
 				}
 			}
 
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 		}
 	}
 

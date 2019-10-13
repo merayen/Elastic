@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 class CircularSlider : UIObject() {
 	var size = 30f
@@ -37,7 +37,7 @@ class CircularSlider : UIObject() {
 	override fun onInit() {
 		val mousehandler = MouseHandler(this)
 		mousehandler.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseDrag(start_point: Point, offset: Point) {
+			override fun onMouseDrag(start_point: MutablePoint, offset: MutablePoint) {
 				val prevValue = value
 				value = dragValue - offset.y / (size / dragScale)
 				if(value != prevValue) {
@@ -46,7 +46,7 @@ class CircularSlider : UIObject() {
 				}
 			}
 
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				dragValue = value
 			}
 		})

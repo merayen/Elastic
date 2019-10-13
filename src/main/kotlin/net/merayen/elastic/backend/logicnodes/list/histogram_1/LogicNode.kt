@@ -11,11 +11,10 @@ class LogicNode : BaseLogicNode() {
 		updateProperties(instance)
 	}
 
-	override fun onCreate() {
+	override fun onInit() {
 		createInputPort("data")
 	}
 
-	override fun onInit() {}
 	override fun onData(data: NodeDataMessage?) {}
 	override fun onConnect(port: String?) {}
 	override fun onDisconnect(port: String?) {}

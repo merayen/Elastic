@@ -4,8 +4,6 @@ class Test {
 	companion object {
 		@JvmStatic
 		fun main(args: Array<String>) {
-			for (x in args)
-				println(x)
 			// Doesn't work. Fix!
 			//net.merayen.elastic.backend.nodes.Test.test();
 			//net.merayen.elastic.backend.architectures.Test.test();

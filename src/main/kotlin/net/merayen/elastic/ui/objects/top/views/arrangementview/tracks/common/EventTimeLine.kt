@@ -13,7 +13,7 @@ import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.ui.util.boolean
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.UniqueID
 import kotlin.math.max
 
@@ -82,9 +82,9 @@ class EventTimeLine : BaseTimeLine() {
 		super.onInit()
 
 		contextMenu.handler = object : ContextMenu.Handler {
-			override fun onMouseDown(position: Point) {}
+			override fun onMouseDown(position: MutablePoint) {}
 
-			override fun onSelect(item: ContextMenuItem?, position: Point) {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				when (item) {
 					addEventZoneMenuItem -> handler?.onCreateEvent(UniqueID.create(), position.x / beatWidth, 4f)
 					graphMenuItem -> toggleGraph(true)
@@ -103,15 +103,15 @@ class EventTimeLine : BaseTimeLine() {
 		contextMenu.addMenuItem(graphMenuItem)
 
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
-			override fun onMouseDown(position: Point?) {
+			override fun onMouseDown(position: MutablePoint?) {
 				handler?.onEventSelect()
 			}
 
-			override fun onMouseDrag(position: Point, offset: Point) {
+			override fun onMouseDrag(position: MutablePoint, offset: MutablePoint) {
 				handler?.onSelectionDrag(position, offset)
 			}
 
-			override fun onMouseDrop(position: Point, offset: Point) {
+			override fun onMouseDrop(position: MutablePoint, offset: MutablePoint) {
 				handler?.onSelectionDrop(position, offset)
 			}
 		})

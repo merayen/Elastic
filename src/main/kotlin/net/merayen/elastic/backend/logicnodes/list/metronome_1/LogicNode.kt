@@ -7,12 +7,10 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
-	override fun onCreate() {
+	override fun onInit() {
 		createOutputPort("audio", Format.AUDIO)
 		createOutputPort("midi", Format.MIDI)
 	}
-
-	override fun onInit() {}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {
 		updateProperties(instance)
@@ -30,6 +28,6 @@ class LogicNode : BaseLogicNode() {
 		val currentDivision = data.currentDivision
 
 		if (currentBeat != null && currentDivision != null)
-			sendMessageToUI(MetronomeBeatMessage(id, current = currentBeat, division = currentDivision))
+			sendMessage(MetronomeBeatMessage(id, current = currentBeat, division = currentDivision))
 	}
 }

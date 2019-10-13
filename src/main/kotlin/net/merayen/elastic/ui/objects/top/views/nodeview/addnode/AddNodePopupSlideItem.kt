@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.popupslide.PopupSlideItem
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.uinodes.UINodeInformation
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content()) {
     internal interface Handler {
@@ -48,7 +48,7 @@ internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content(
                             over = false
                         }
 
-                        override fun onMouseClick(position: Point) {
+                        override fun onMouseClick(position: MutablePoint) {
                             handler?.onSelect(text)
                         }
                     })

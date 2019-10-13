@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
-import net.merayen.elastic.system.intercom.NetListRefreshRequestMessage
-import net.merayen.elastic.system.intercom.NodeMessage
+import net.merayen.elastic.backend.analyzer.NetListUtil
+import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.controller.NodeViewController
 import net.merayen.elastic.ui.event.MouseEvent
@@ -12,6 +12,8 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
 // TODO accept NetList as input and rebuild ourselves automatically from that
 // TODO allow forwarding of node messages from and to the backend.
@@ -31,13 +33,15 @@ class NodeView : View() {
 	val container = NodeViewContainer(this)
 	val uiNet: UINet
 	private val movable: Movable
-	private val nodes = ArrayList<UINode>()
+	val nodes = HashMap<String, UINode>()
 	private val nodeViewBar = NodeViewBar(this)
 	var nodeViewController: NodeViewController? = null // Automatically set by NodeViewController
 
 	private var contextMenu: NodeViewContextMenu? = null
 
 	private var dragAndDropTarget = NodeViewDropTarget(this)
+
+	private var loaded = false
 
 	init {
 		add(container)
@@ -60,13 +64,6 @@ class NodeView : View() {
 		})
 	}
 
-	override fun onInit() {
-		super.onInit()
-
-		// Sends a message that will be picked up by NodeViewController, which again will register us
-		sendMessage(NodeViewController.Hello())
-	}
-
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
 
@@ -81,11 +78,89 @@ class NodeView : View() {
 		nodeViewBar.layoutWidth = getWidth()
 	}
 
+	override fun onUpdate() {
+		super.onUpdate()
+
+		// If we do not have any node id to display, we try to fetch top most one
+		if (currentNodeId == null) {
+			val topNodeId = nodeViewController?.topNodeId
+			if (topNodeId != null)
+				swapView(topNodeId)
+		}
+
+		if (!loaded && currentNodeId != null) {
+			loaded = true
+			val nodeViewController = nodeViewController
+			if (nodeViewController != null)
+				for (message in nodeViewController.getNetListRefreshMessages())
+					handleMessage(message)
+
+			attachContextMenu()
+		}
+	}
+
+	fun handleMessage(message: ElasticMessage) {
+		if (!loaded)
+			return // Any message we receive before being loaded are not valid
+
+		val netList = nodeViewController!!.netList
+
+		val netListUtil = NetListUtil(netList)
+
+		// Nodes
+		when (message) {
+			is CreateNodeMessage -> {
+				if (message.parent == currentNodeId)
+					addNode(message.node_id, message.name, message.version)
+			}
+			is RemoveNodeMessage -> {
+				removeNode(message.node_id)
+			}
+			is NodeMessage -> nodes[message.nodeId]?.executeMessage(message)
+		}
+
+		// UINet
+		when (message) {
+			is NodeConnectMessage -> {
+				val nodeAParent = netListUtil.getParent(netList.getNode(message.node_a))
+				val nodeBParent = netListUtil.getParent(netList.getNode(message.node_b))
+
+				if (nodeAParent != nodeBParent)
+					throw RuntimeException("Should not happen")
+
+				if (nodeAParent.id == currentNodeId)
+					uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+			}
+			is NodeDisconnectMessage -> {
+				val nodeAParent = netListUtil.getParent(netList.getNode(message.node_a))
+				val nodeBParent = netListUtil.getParent(netList.getNode(message.node_b))
+
+				if (nodeAParent != nodeBParent)
+					throw RuntimeException("Should not happen")
+
+				if (nodeAParent.id == currentNodeId)
+					uiNet.handleMessage(message) // Forward message regarding the net, from backend to the UINet, to all NodeViews
+			}
+			is RemoveNodeMessage -> {
+				if (currentNodeId == message.nodeId)
+					disable()
+				else
+					uiNet.handleMessage(message) // Send to every uinet anyway
+			}
+			is RemoveNodePortMessage -> {
+				val nodeParent = netListUtil.getParent(netList.getNode(message.nodeId))
+
+				if (nodeParent.id == currentNodeId)
+					uiNet.handleMessage(message)
+			}
+		}
+	}
+
 	/**
 	 * Add a node.
 	 * Node must already be existing in the backend.
 	 */
-	fun addNode(node_id: String, name: String, version: Int?) {
+	private fun addNode(node_id: String, name: String, version: Int?) {
 		val path = String.format(UI_CLASS_PATH, name, version, "UI")
 
 		val uinode: UINode
@@ -97,47 +172,13 @@ class NodeView : View() {
 
 		uinode.nodeId = node_id
 
-		nodes.add(uinode)
+		nodes[node_id] = uinode
 		container.add(uinode)
 	}
 
-	fun removeNode(node_id: String) {
-		val uinode = getNode(node_id)
-		nodes.remove(uinode)
-		container.remove(uinode!!)
-	}
-
-	fun getNodes(): ArrayList<UINode> {
-		return ArrayList(nodes)
-	}
-
-	fun getNode(id: String): UINode? {
-		for (x in nodes)
-			if (x.nodeId == id)
-				return x
-
-		return null
-	}
-
-	fun messageNode(node_id: String, message: NodeMessage) {
-		val node = getNode(node_id)
-
-		if (node == null) {
-			//System.out.printf("WARNING: Node with id %s not found in this NodeView. Out of sync?\n", node_id)
-			return
-		}
-
-		// We listen to messages
-		// TODO not like this. Fix!
-		/*if (message.nodeId == currentNodeId) {
-			if (message is NodeParameterMessage && ) {
-				if (message.instance == "bpm") {
-					nodeViewBar.bpmSlider.setBPM((message.instance as Number).toInt())
-				}
-			}
-		}*/
-
-		node.executeMessage(message)
+	private fun removeNode(node_id: String) {
+		val removedNode = nodes.remove(node_id) ?: return
+		container.remove(removedNode)
 	}
 
 	private fun zoom(newScaleX: Float, newScaleY: Float) {
@@ -179,8 +220,8 @@ class NodeView : View() {
 				}
 
 				zoom(
-						Math.max(Math.min(sX, 10f), 0.1f),
-						Math.max(Math.min(sY, 10f), 0.1f)
+					max(min(sX, 10f), 0.1f),
+					max(min(sY, 10f), 0.1f)
 				)
 			}
 		}
@@ -201,8 +242,8 @@ class NodeView : View() {
 	}
 
 	fun swapView(newNodeId: String) {
+		// TODO Calculate how we should zoom? In or out based on position to current node?
 		currentNodeId = newNodeId
-		sendMessage(NetListRefreshRequestMessage())
 
 		// TODO zoom and translate to cover all the nodes
 		container.zoomTranslateXTarget = 0f
@@ -212,41 +253,39 @@ class NodeView : View() {
 
 		container.translation.x = -getWidth() / 2
 		container.translation.y = -getHeight() / 2
-		container.translation.scaleX = .100f
-		container.translation.scaleY = .100f
+		container.translation.scaleX = .1f
+		container.translation.scaleY = .1f
+
+		clear()
+
+		// Load our self again
+		loaded = false
 	}
 
-	fun reset() {
-		//System.out.printf("NodeView reset(): %s\n", this)
-
-		uiNet.reset()
-
-		for (node in nodes)
-			container.remove(node)
-
-		// Set up context menu when right-clicking on the background
-		if (contextMenu != null)
-			container.remove(contextMenu!!)
-
-		if (container.search.children.size != 1) // Only UINet() should be remaining
-			throw RuntimeException("Should not happen")
-
-		nodes.clear()
-
-		val contextMenu = NodeViewContextMenu(container, currentNodeId)
-		contextMenu.handler = object : NodeViewContextMenu.Handler {
-			override fun onSolveNodes() {
-				NodeViewSolver(nodes.toTypedArray()).solve()
-			}
-
-		}
-		container.add(contextMenu)
-
-		this.contextMenu = contextMenu
+	fun clear() {
+		uiNet.clear()
+		for (node in ArrayList(nodes.keys))
+			removeNode(node)
 	}
 
-	fun disable() {
+	private fun disable() {
 		remove(container)
+	}
+
+	private fun attachContextMenu() {
+		val contextMenu = contextMenu
+		if (contextMenu != null)
+			container.remove(contextMenu)
+
+		val newContextMenu = NodeViewContextMenu(container, currentNodeId)
+		newContextMenu.handler = object : NodeViewContextMenu.Handler {
+			override fun onSolveNodes() {
+				NodeViewSolver(nodes.values).solve()
+			}
+		}
+		container.add(newContextMenu)
+
+		this.contextMenu = newContextMenu
 	}
 
 	companion object {

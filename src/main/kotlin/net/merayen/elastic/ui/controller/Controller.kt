@@ -21,9 +21,7 @@ abstract class Controller(val top: Top) {
 	 */
 	abstract fun onMessageFromUI(message: ElasticMessage)
 
-	fun sendToBackend(messages: Collection<ElasticMessage>) {
-		messagesToBackend.send(messages)
-	}
+	fun sendToBackend(message: ElasticMessage) = messagesToBackend.send(message)
 
 	fun retrieveMessagesToBackend(): Collection<ElasticMessage> {
 		return messagesToBackend.receiveAll()

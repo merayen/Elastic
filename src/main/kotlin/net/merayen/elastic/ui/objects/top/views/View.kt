@@ -2,8 +2,8 @@ package net.merayen.elastic.ui.objects.top.views
 
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.event.MouseEvent
+import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer

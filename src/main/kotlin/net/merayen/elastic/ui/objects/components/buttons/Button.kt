@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
-import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.MutablePoint
 
 open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 	override var layoutWidth = 50f
@@ -29,7 +29,7 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 		mousehandler = MouseHandler(this)
 		mousehandler!!.setHandler(object : MouseHandler.Handler() {
 
-			override fun onMouseUp(position: Point) {
+			override fun onMouseUp(position: MutablePoint) {
 				if (mouseDown && handler != null)
 					handler!!.onClick()
 
@@ -44,11 +44,11 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 				mouseOver = false
 			}
 
-			override fun onMouseDown(position: Point) {
+			override fun onMouseDown(position: MutablePoint) {
 				mouseDown = true
 			}
 
-			override fun onGlobalMouseUp(global_position: Point) {
+			override fun onGlobalMouseUp(global_position: MutablePoint) {
 				mouseDown = false
 			}
 		})

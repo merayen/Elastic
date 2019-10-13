@@ -6,6 +6,15 @@ package net.merayen.elastic.backend.architectures.local
  */
 interface GroupLNode {
 	/**
+	 * Always set by the topmost group_1-node, as audio interface need to have only 1 configuration.
+	 */
+	fun getSampleRate(): Int
+	fun getBufferSize(): Int
+	fun getDepth(): Int
+
+
+
+	/**
 	 * Returns the current BPM for the frame being processed.
 	 *
 	 * We do not support changing of BPM inside a frame, so if buffer is at 1024 samples, all those 1024 samples will

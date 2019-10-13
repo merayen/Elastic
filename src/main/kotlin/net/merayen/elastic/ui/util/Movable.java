@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.util;
 import net.merayen.elastic.ui.TranslationData;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.MouseEvent;
-import net.merayen.elastic.util.Point;
+import net.merayen.elastic.util.MutablePoint;
 
 /*
  * Makes an UIObject moveable by clicking down and dragging it.
@@ -23,8 +23,8 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 	public float drag_scale_x = 1f;
 	public float drag_scale_y = 1f;
 
-	private Point start_absolute_position;
-	private Point start_relative_position;
+	private MutablePoint start_absolute_position;
+	private MutablePoint start_relative_position;
 	private IMoveable handler;
 
 	public Movable(UIObject movable, UIObject trigger) {
@@ -40,7 +40,7 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 
 		super.setHandler(new MouseHandler.Handler() {
 			@Override
-			public void onGlobalMouseUp(Point position) {
+			public void onGlobalMouseUp(MutablePoint position) {
 				if(start_absolute_position != null) {
 					if(handler != null)
 						handler.onDrop();
@@ -50,7 +50,7 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 			}
 
 			@Override
-			public void onGlobalMouseMove(Point global_position) {
+			public void onGlobalMouseMove(MutablePoint global_position) {
 				if(start_absolute_position != null && movable.isInitialized()) {
 					TranslationData td = movable.getAbsoluteTranslation();
 					movable.getTranslation().x = start_relative_position.getX() + (global_position.getX() - start_absolute_position.getX()) * td.scaleX / movable.getTranslation().scaleX * drag_scale_x;
@@ -62,9 +62,9 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 			}
 
 			@Override
-			public void onMouseDown(Point position) {
+			public void onMouseDown(MutablePoint position) {
 				start_absolute_position = trigger.getAbsolutePosition(position.getX(), position.getY());
-				start_relative_position = new Point(movable.getTranslation().x, movable.getTranslation().y);
+				start_relative_position = new MutablePoint(movable.getTranslation().x, movable.getTranslation().y);
 
 				if(handler != null)
 					handler.onGrab();

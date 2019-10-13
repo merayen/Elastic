@@ -7,6 +7,7 @@ data class Properties(var type: String? = null) : BaseNodeProperties() {
 		SINE,
 		TRIANGLE,
 		SQUARE,
-		NOISE
+		NOISE,
+		SAW
 	}
 }

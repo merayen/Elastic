@@ -1,13 +1,14 @@
 package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.merayen.elastic.backend.architectures.local.GroupLNode;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeOutputData;
+import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeOutputData;
 import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LNode extends LocalNode {
 	public LNode() {
@@ -79,7 +80,15 @@ public class LNode extends LocalNode {
 			}
 		}
 
-		outgoing = new OutputNodeOutputData(getID(), channels, amplitude, offset.clone());
+		GroupLNode parent = (GroupLNode)getParent();
+		outgoing = new Output1NodeOutputData(
+				getID(),
+				channels,
+				amplitude,
+				offset.clone(),
+				parent.getSampleRate(),
+				parent.getDepth(),
+				parent.getBufferSize());
 	}
 
 	private int countChannels() {

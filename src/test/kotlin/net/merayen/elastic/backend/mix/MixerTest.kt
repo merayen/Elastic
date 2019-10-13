@@ -55,7 +55,7 @@ class MixerTest {
 
 		lateinit var sync: Synchronization
 
-		sync = Synchronization(mixer, 44100, BUFFER_SIZE, object : Synchronization.Handler {
+		sync = Synchronization(mixer, object : Synchronization.Handler {
 
 			private var last = System.currentTimeMillis()
 			private val start = System.currentTimeMillis()
@@ -78,7 +78,7 @@ class MixerTest {
 
 				mixer.dispatch(BUFFER_SIZE)
 
-				sync.push()
+				sync.push(44100, BUFFER_SIZE)
 				//if(asked % 5 != 0) sync.push();
 			}
 
