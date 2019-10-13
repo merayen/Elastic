@@ -21,7 +21,7 @@ class UI : UINode() {
             }
 
             override fun onChange(value: Double, programatic: Boolean) {
-                self.sendParameter(Properties(delayTime = value.toFloat()))
+                self.sendProperties(Properties(delayTime = value.toFloat()))
             }
 
             override fun onButton(offset: Int) {
@@ -54,7 +54,7 @@ class UI : UINode() {
 
     override fun onData(message: NodeDataMessage) {}
 
-    override fun onMessage(instance: BaseNodeProperties) {
+    override fun onProperties(instance: BaseNodeProperties) {
         if (instance is Properties) {
             val delayTimeData = instance.delayTime
             if (delayTimeData != null)

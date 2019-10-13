@@ -4,7 +4,7 @@ import net.merayen.elastic.backend.logicnodes.list.adsr_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.UIClip
-import net.merayen.elastic.ui.objects.components.CircularSlider
+import net.merayen.elastic.ui.objects.components.Knob
 import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -13,10 +13,10 @@ class UI : UINode() {
 	private val clip: UIClip
 	private val adsrgraph: ADSRGraph
 
-	private val attack_slider: CircularSlider
-	private val decay_slider: CircularSlider
-	private val sustain_slider: CircularSlider
-	private val release_slider: CircularSlider
+	private val attack_slider: Knob
+	private val decay_slider: Knob
+	private val sustain_slider: Knob
+	private val release_slider: Knob
 
 	init {
 		titlebar.title = "ADSR"
@@ -40,12 +40,12 @@ class UI : UINode() {
 		label.align = Label.Align.CENTER
 		add(label)
 
-		attack_slider = CircularSlider()
+		attack_slider = Knob()
 		attack_slider.translation.x = 20f
 		attack_slider.translation.y = 190f
-		attack_slider.handler = object : CircularSlider.Handler {
+		attack_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Properties(attack = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				sendProperties(Properties(attack = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.attack_time = Math.pow(attack_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -58,12 +58,12 @@ class UI : UINode() {
 		label.align = Label.Align.CENTER
 		add(label)
 
-		decay_slider = CircularSlider()
+		decay_slider = Knob()
 		decay_slider.translation.x = 60f
 		decay_slider.translation.y = 190f
-		decay_slider.handler = object : CircularSlider.Handler {
+		decay_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Properties(decay = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				sendProperties(Properties(decay = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.decay_time = Math.pow(decay_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -76,12 +76,12 @@ class UI : UINode() {
 		label.align = Label.Align.CENTER
 		add(label)
 
-		sustain_slider = CircularSlider()
+		sustain_slider = Knob()
 		sustain_slider.translation.x = 100f
 		sustain_slider.translation.y = 190f
-		sustain_slider.handler = object : CircularSlider.Handler {
+		sustain_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Properties(sustain = value))
+				sendProperties(Properties(sustain = value))
 				adsrgraph.sustain_value = sustain_slider.value
 			}
 		}
@@ -94,12 +94,12 @@ class UI : UINode() {
 		label.align = Label.Align.CENTER
 		add(label)
 
-		release_slider = CircularSlider()
+		release_slider = Knob()
 		release_slider.translation.x = 140f
 		release_slider.translation.y = 190f
-		release_slider.handler = object : CircularSlider.Handler {
+		release_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendParameter(Properties(release = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				sendProperties(Properties(release = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.release_time = Math.pow(release_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -139,7 +139,7 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeProperties) {
+	override fun onProperties(message: BaseNodeProperties) {
 		val data = message as Properties
 		val attack = data.attack
 		val decay = data.decay

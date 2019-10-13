@@ -34,7 +34,7 @@ class UI : UINode() {
 		unison.setHandler(object : ParameterSlider.IHandler {
 			override fun onLabelUpdate(value: Double) = String.format("%d", Math.round(value * 31) + 1)
 
-			override fun onChange(value: Double, programatic: Boolean) = sendParameter(Properties(unison = (value * 31).roundToInt() + 1))
+			override fun onChange(value: Double, programatic: Boolean) = sendProperties(Properties(unison = (value * 31).roundToInt() + 1))
 
 			override fun onButton(offset: Int) {
 				unison.value = unison.value + offset / 31.0
@@ -60,7 +60,7 @@ class UI : UINode() {
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onMessage(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		if (instance is Properties) {
 			val unisonData = instance.unison
 			if (unisonData != null)

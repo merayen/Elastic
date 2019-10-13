@@ -24,7 +24,7 @@ class UI : UINode() {
             }
 
             override fun onChange(value: Double, programmatic: Boolean) {
-                sendParameter(Properties(mix=value.toFloat()))
+                sendProperties(Properties(mix=value.toFloat()))
             }
         })
     }
@@ -63,7 +63,7 @@ class UI : UINode() {
 
     override fun onData(message: NodeDataMessage) {}
 
-    override fun onMessage(instance: BaseNodeProperties) {
+    override fun onProperties(instance: BaseNodeProperties) {
         if (instance is Properties) {
             val mixData = instance.mix
             if (mixData != null)

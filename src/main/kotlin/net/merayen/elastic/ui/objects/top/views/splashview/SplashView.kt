@@ -19,10 +19,6 @@ class SplashView : View() {
 	private val fgColor = Color(1f, 1f, 1f)
 	override fun cloneView() = SplashView()
 
-	init {
-		System.currentTimeMillis()
-	}
-
 	override fun onInit() {
 		super.onInit()
 

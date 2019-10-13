@@ -1,7 +1,7 @@
 package net.merayen.elastic.uinodes.list.eq_1
 
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.CircularSlider
+import net.merayen.elastic.ui.objects.components.Knob
 import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
@@ -23,8 +23,8 @@ class MultiParameterEqEditPanel : UIObject() {
 		override fun onChange(selected: DropDown.Item) {}
 	})
 
-	private val frequency = CircularSlider()
-	private val amplitude = CircularSlider()
+	private val frequency = Knob()
+	private val amplitude = Knob()
 
 	override fun onInit() {
 		for ( (name,_) in algorithms)
@@ -34,7 +34,7 @@ class MultiParameterEqEditPanel : UIObject() {
 		algorithm.layoutWidth = 50f
 		add(algorithm)
 
-		frequency.handler = object : CircularSlider.Handler {
+		frequency.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {}
 		}
 		frequency.label.text = "Frequency"
@@ -42,7 +42,7 @@ class MultiParameterEqEditPanel : UIObject() {
 		frequency.size = 20f
 		add(frequency)
 
-		amplitude.handler = object : CircularSlider.Handler {
+		amplitude.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
 				amplitude.valueLabel
 			}

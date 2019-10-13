@@ -29,7 +29,7 @@ class UI : UINode(), INodeEditable {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeProperties) {}
+	override fun onProperties(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {}
 

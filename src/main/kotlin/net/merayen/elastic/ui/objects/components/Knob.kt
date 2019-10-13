@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.MutablePoint
 
-class CircularSlider : UIObject() {
+class Knob : UIObject() {
 	var size = 30f
 	var dragScale = 0.25f
 	var handler: Handler? = null

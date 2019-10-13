@@ -31,7 +31,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
-	protected abstract fun onMessage(message: BaseNodeProperties)
+	protected abstract fun onProperties(properties: BaseNodeProperties)
 	protected abstract fun onData(message: NodeDataMessage)
 
 	val UINet
@@ -78,7 +78,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		return null
 	}
 
-	fun sendParameter(instance: BaseNodeProperties) {
+	fun sendProperties(instance: BaseNodeProperties) {
 		sendMessage(NodePropertyMessage(nodeId, instance))
 	}
 
@@ -105,7 +105,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 					}
 			}
 
-			onMessage(message.instance)
+			onProperties(message.instance)
 
 		} else if (message is NodeDataMessage) {
 			onData(message)
@@ -128,7 +128,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	private fun sendUiData() {
 		val data = newNodeData()
 		data.uiTranslation = BaseNodeProperties.UITranslation(targetLocation.x, targetLocation.y)
-		sendParameter(data)
+		sendProperties(data)
 	}
 
 	protected fun newNodeData(): BaseNodeProperties {

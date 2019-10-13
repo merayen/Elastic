@@ -2,31 +2,35 @@ package net.merayen.elastic.backend.architectures.local.nodes.cutoff_1
 
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
+import net.merayen.elastic.backend.logicnodes.list.cutoff_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java) {
-	override fun onInit() {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	var frequency = 1f
+		private set
 
-	override fun onSpawnProcessor(lp: LocalProcessor?) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	var damping = 2f
+		private set
 
-	override fun onProcess(data: InputFrameData?) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun onInit() {}
+	override fun onSpawnProcessor(lp: LocalProcessor?) {}
+
+	override fun onProcess(data: InputFrameData?) {}
 
 	override fun onParameter(instance: BaseNodeProperties?) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		instance as Properties
+
+		val frequency = instance.frequency
+		val damping = instance.damping
+
+		if (frequency != null)
+			this.frequency = frequency
+
+		if (damping != null)
+			this.damping = damping
 	}
 
-	override fun onFinishFrame() {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
-
-	override fun onDestroy() {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun onFinishFrame() {}
+	override fun onDestroy() {}
 }

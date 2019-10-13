@@ -197,7 +197,7 @@ public abstract class LocalProcessor {
 	 * Checks all connected input-ports and returns the minimum available samples.
 	 * Function is based on synchronous processing of the input-ports.
 	 * If you are not doing that, then don't use this.
-	 * If not inlets are connected at all, we return the full buffer size, as we are not dependent on any inlets.
+	 * If no inlets are connected at all, we return the full buffer size, as we are not dependent on any inlets.
 	 */
 	protected int available() {
 		int available = buffer_size;

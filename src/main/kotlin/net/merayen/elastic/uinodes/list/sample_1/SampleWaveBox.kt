@@ -4,14 +4,14 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.buttons.Button
-import net.merayen.elastic.ui.objects.components.CircularSlider
+import net.merayen.elastic.ui.objects.components.Knob
 
 class SampleWaveBox : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
-	private val startKnob = CircularSlider()
-	private val lengthKnob = CircularSlider()
+	private val startKnob = Knob()
+	private val lengthKnob = Knob()
 
 	private val deleteZoneButton = Button()
 
@@ -45,7 +45,7 @@ class SampleWaveBox : UIObject(), FlexibleDimension {
 
 		deleteZoneButton.label = "Remove zone"
 
-		startKnob.handler = object : CircularSlider.Handler {
+		startKnob.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
 				val selectedZone = selectedZone
 				if(selectedZone != null)
@@ -53,7 +53,7 @@ class SampleWaveBox : UIObject(), FlexibleDimension {
 			}
 		}
 
-		lengthKnob.handler = object : CircularSlider.Handler {
+		lengthKnob.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
 				val selectedZone = selectedZone
 				if(selectedZone != null)

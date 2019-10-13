@@ -18,7 +18,7 @@ class UI : UINode() {
 		typeDropDown = DropDown(object : DropDown.Handler {
 			override fun onChange(selected: DropDown.Item) {
 				selected as DropDownItem
-				sendParameter(Properties(type = selected.type.name))
+				sendProperties(Properties(type = selected.type.name))
 			}
 		})
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.SINE, "Sine"))
@@ -52,7 +52,7 @@ class UI : UINode() {
 	override fun onRemovePort(port: UIPort) {}
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onMessage(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		instance as Properties
 
 		val type = instance.type

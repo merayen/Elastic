@@ -73,7 +73,7 @@ class UI : UINode() {
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onMessage(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		val data = instance as Properties
 		val transposeData = data.transpose
 		if (transposeData != null)
@@ -81,7 +81,7 @@ class UI : UINode() {
 	}
 
 	private fun sendTransposeParameters() {
-		sendParameter(
+		sendProperties(
 				Properties(
 						transpose = ((toneSlider.value * 48) - 24).roundToInt()
 				)
