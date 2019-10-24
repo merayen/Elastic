@@ -43,10 +43,10 @@ class LProcessor : LocalProcessor() {
 
 			if (audioBeepPosition < beepLength)
 				for (i in 0 until buffer_size)
-					audio.audio[0][i] = sin(audioBeepPosition++ / sample_rate.toDouble() * PI * 2 * hz).toFloat() * (1 - audioBeepPosition / beepLength).pow(2);
+					audio.audio[0][i] = sin(audioBeepPosition++ / sample_rate.toDouble() * PI * 2 * hz).toFloat() * (1 - audioBeepPosition / beepLength).pow(2)
 			else
 				for (i in 0 until buffer_size)
-					audio.audio[0][i] = 0f;
+					audio.audio[0][i] = 0f
 
 			audio.written = buffer_size
 			audio.push()

@@ -74,6 +74,6 @@ internal class Piano(private val octave_count: Int, private val handler: Handler
 
 	fun unmarkAllTangents() {
 		for (tangent in tangents.values)
-			tangent.marked = false;
+			tangent.marked = false
 	}
 }

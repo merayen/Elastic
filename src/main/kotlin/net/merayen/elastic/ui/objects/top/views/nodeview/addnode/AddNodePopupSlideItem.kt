@@ -35,8 +35,8 @@ internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content(
 
         private fun addCategory(text: String) {
             list.add(object : UIObject() {
-                internal var mouse = MouseHandler(this)
-                internal var over: Boolean = false
+                var mouse = MouseHandler(this)
+                var over: Boolean = false
 
                 override fun onInit() {
                     mouse.setHandler(object : MouseHandler.Handler() {

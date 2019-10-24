@@ -36,7 +36,7 @@ object Tokens {
 		override fun onProcess() = "[$expressionList]"
 	}
 
-	abstract class JSStatement(/*val expressions: JSExpressionList*/) : JSToken()
+	abstract class JSStatement : JSToken()
 
 	class JSExpressionStatement(val expressionList: JSExpressionList) : JSStatement() {
 		override fun onProcess() = "${process(expressionList)};"

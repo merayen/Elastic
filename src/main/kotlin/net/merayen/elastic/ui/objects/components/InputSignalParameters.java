@@ -95,7 +95,6 @@ public class InputSignalParameters extends UIObject {
 		offset.label.setText(String.format("Offset: %.3f", getOffset()));
 	}
 
-	@SuppressWarnings("serial")
 	private void sendParameters() {
 		if (handler != null) {
 			handler.onChange(getAmplitude(), getOffset());

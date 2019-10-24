@@ -62,7 +62,7 @@ class EditNodeView : View() {
 		nodeEditor?.onMessage(message)
 
 		if (message is NodePropertyMessage) {
-			nodeEditor?.onParameter(message.instance);
+			nodeEditor?.onParameter(message.instance)
 		}
 	}
 

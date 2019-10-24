@@ -15,8 +15,8 @@ class JSONObjectMapper {
 	class AnonymousClassesNotSupportedException : RuntimeException()
 	class ClassNotRegistered(val className: String) : RuntimeException("Class '$className' not registered")
 	class ClassAlreadyRegistered(val className: String) : RuntimeException(className)
-	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
-	class MissingClassNameDefinitionInObject() : RuntimeException()
+	class GenericListsLimitedSupport : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
+	class MissingClassNameDefinitionInObject : RuntimeException()
 	class ClassMemberIsReadOnly(val className: String, val member: String) : RuntimeException("Can not apply value to '$member' on class '$className' as it is read-only")
 	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class '$className' constructor missing default value for parameter $parameter")
 

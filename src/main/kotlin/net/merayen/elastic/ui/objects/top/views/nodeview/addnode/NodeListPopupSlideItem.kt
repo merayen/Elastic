@@ -41,8 +41,8 @@ internal class NodeListPopupSlideItem(category: String, handler: Handler) : Popu
 
         private fun addNode(info: BaseInfo) {
             list.add(object : UIObject() {
-                internal var mouse = MouseHandler(this)
-                internal var over: Boolean = false
+                var mouse = MouseHandler(this)
+                var over: Boolean = false
 
                 override fun onInit() {
                     mouse.setHandler(object : MouseHandler.Handler() {

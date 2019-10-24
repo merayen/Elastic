@@ -18,8 +18,8 @@ class LProcessor : LocalProcessor() {
 	override fun onProcess() {
 		val audioIn = getInlet("in") as? AudioInlet
 		val audioOut = getOutlet("out") as? AudioOutlet
-		val frequencyIn = getInlet("frequency") as Inlet? // Can be AudioInlet and SignalInlet
-		val dampingIn = getInlet("damping") as Inlet?
+		val frequencyIn = getInlet("frequency") // Can be AudioInlet and SignalInlet
+		val dampingIn = getInlet("damping")
 
 		val available = available()
 

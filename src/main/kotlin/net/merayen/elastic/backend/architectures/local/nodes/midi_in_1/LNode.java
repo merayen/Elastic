@@ -30,7 +30,7 @@ public class LNode extends LocalNode {
 	protected void onProcess(InputFrameData data) {
 		MidiIn1InputFrameData input = (MidiIn1InputFrameData) data;
 		if (input.getMidi() != null)
-			buffer.addAll(Arrays.asList((short[][]) input.getMidi()));
+			buffer.addAll(Arrays.asList(input.getMidi()));
 	}
 
 	@Override

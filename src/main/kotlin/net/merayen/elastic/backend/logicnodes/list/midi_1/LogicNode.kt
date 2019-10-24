@@ -57,8 +57,8 @@ class LogicNode : BaseLogicNode() {
 
 					temporaryMidi = if (buffer.size > 0) {
 						// TODO remove cancellations?
-						val r = buffer.toTypedArray();
-						buffer.clear();
+						val r = buffer.toTypedArray()
+						buffer.clear()
 						r
 					} else {
 						null

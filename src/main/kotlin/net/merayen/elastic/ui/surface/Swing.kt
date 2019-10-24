@@ -132,7 +132,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 				throw RuntimeException("Called by another thread, not expected")
 
 			graphics as Graphics2D
-			val rh = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			val rh = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 			//(graphics as Graphics2D).setRenderingHints(rh);
 
 			if (bufferRendering) {
