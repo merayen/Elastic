@@ -25,5 +25,6 @@ object NodeRegistry {
 		nodes.add("wave_1")
 		nodes.add("metronome_1")
 		nodes.add("cutoff_1")
+		nodes.add("autocorrelation_1")
 	}
 }
