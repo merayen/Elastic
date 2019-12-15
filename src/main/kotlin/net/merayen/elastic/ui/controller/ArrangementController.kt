@@ -11,6 +11,11 @@ class ArrangementController internal constructor(top: Top) : Controller(top) {
 	 */
 	class Hello : ElasticMessage
 
+	private val arrangementViews: List<ArrangementView>
+	get() {
+		return getViews(ArrangementView::class.java).map { it.arrangementViewController = this; it }.toList()
+	}
+
 	override fun onInit() {}
 
 	override fun onMessageFromBackend(message: ElasticMessage) {
@@ -19,6 +24,7 @@ class ArrangementController internal constructor(top: Top) : Controller(top) {
 	}
 
 	override fun onMessageFromUI(message: ElasticMessage) {
-
+		if (message is Hello)
+			arrangementViews
 	}
 }

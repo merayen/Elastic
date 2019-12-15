@@ -102,7 +102,7 @@ class HorizontalResizableBox : UIObject(), FlexibleDimension {
 		if (!resizing) {
 			left.translation.x = 0f
 			left.translation.y = 0f
-			right.translation.x = layoutWidth - 10
+			right.translation.x = layoutWidth - 5
 			right.translation.y = 0f
 		}
 	}

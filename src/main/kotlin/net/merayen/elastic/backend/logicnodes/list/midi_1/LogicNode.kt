@@ -77,8 +77,18 @@ class LogicNode : BaseLogicNode() {
 				println("Adding midi message $data")
 				midiData.merge(data.midiData)
 				dirty = true
-				TODO("Send a Data() with all the events and their contents")
-				//updateProperties(Data(midiData = midiData.clone()))
+				val properties = properties as Properties
+
+				val eventZone = properties.eventZones?.first { it.id == data.eventZoneId }
+				if (eventZone == null) {
+					println("EventZone ${data.eventZoneId} not found")
+					return
+				}
+
+				eventZone.midi!!.merge(data.midiData)
+
+				// Mark eventZone as have being updated
+				updateProperties(Properties(eventZones = properties.eventZones))
 			}
 			is PushTangentMessage -> {
 				buffer.add(shortArrayOf(144.toShort(), data.tangent, 64))

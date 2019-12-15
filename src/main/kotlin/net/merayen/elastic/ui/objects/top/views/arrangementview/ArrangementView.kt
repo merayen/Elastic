@@ -8,6 +8,10 @@ class ArrangementView : View() {
 	private val bar = ArrangementViewBar()
 	private val arrangement = Arrangement()
 
+	var arrangementViewController: ArrangementController? = null  // Automatically set by ArrangementViewController
+
+	private var loaded = false
+
 	override fun onInit() {
 		super.onInit()
 
@@ -23,6 +27,14 @@ class ArrangementView : View() {
 		super.onUpdate()
 		arrangement.layoutWidth = layoutWidth
 		arrangement.layoutHeight = layoutHeight - 20
+
+		val arrangementViewController = arrangementViewController
+		if (!loaded && arrangementViewController != null) {
+			for (message in arrangementViewController.getNetListRefreshMessages())
+				handleMessage(message)
+
+			loaded = true
+		}
 	}
 
 	override fun cloneView(): View {
@@ -30,4 +42,14 @@ class ArrangementView : View() {
 	}
 
 	fun handleMessage(message: ElasticMessage) = arrangement.handleMessage(message)
+
+	fun load(messages: ArrayList<ElasticMessage>) {
+		if (loaded)
+			return
+
+		loaded = true
+
+		for (message in messages)
+			handleMessage(message)
+	}
 }

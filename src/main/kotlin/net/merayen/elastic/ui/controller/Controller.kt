@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.controller
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.views.View
+import net.merayen.elastic.util.NetListMessages
 import net.merayen.elastic.util.Postmaster
 import java.util.*
 
@@ -38,4 +39,9 @@ abstract class Controller(val top: Top) {
 
 		return result
 	}
+
+	/**
+	 * Use by NodeView to restore itself from the current NetList.
+	 */
+	fun getNetListRefreshMessages() = NetListMessages.disassemble(top.netlist)
 }
