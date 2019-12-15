@@ -35,7 +35,7 @@ internal class MidiRollEventZone(val eventZoneId: String, private val midiRollEv
 			private var originalLength = 0f
 
 			override fun onChange(offsetPosition: Float, offsetLength: Float) {
-				handler?.onResize(offsetPosition, offsetLength)
+				handler?.onResize(offsetPosition / beatWidth, offsetLength / beatWidth)
 			}
 		}
 		add(bar)
@@ -59,6 +59,7 @@ internal class MidiRollEventZone(val eventZoneId: String, private val midiRollEv
 
 	override fun onUpdate() {
 		layoutWidth = beatWidth * length
+		translation.x = beatWidth * start
 		bar.layoutWidth = layoutWidth
 		net.beatWidth = beatWidth
 		net.beatCount = length

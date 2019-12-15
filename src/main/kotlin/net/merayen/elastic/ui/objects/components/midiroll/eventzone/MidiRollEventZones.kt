@@ -11,6 +11,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.util.MutablePoint
+import kotlin.math.max
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	interface Handler {
@@ -67,7 +68,7 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 				m.length = newZone.length!!
 				m.handler = object: MidiRollEventZone.Handler {
 					override fun onResize(offsetPosition: Float, offsetLength: Float) {
-						handler?.onChangeEventZone(newZoneId, m.start + offsetPosition / beatWidth, m.length + offsetLength / beatWidth)
+						handler?.onChangeEventZone(newZoneId, max(0f, m.start + offsetPosition), max(0f, m.length + offsetLength))
 					}
 				}
 
