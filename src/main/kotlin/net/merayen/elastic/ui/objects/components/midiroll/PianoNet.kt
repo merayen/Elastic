@@ -42,7 +42,14 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		Drag, Select, Create, Line
 	}
 
+	/**
+	 * Width of the piano net. Do not set. It gets automatically set based on beatCount.
+	 */
 	override var layoutWidth = 100f
+
+	/**
+	 * Do not set the height. It gets set automatically based on octaveWidth.
+	 */
 	override var layoutHeight = 100f
 
 	var handler: Handler? = null
@@ -71,6 +78,11 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	 * How many width units one beat is
 	 */
 	var beatWidth = 10f
+
+	/**
+	 * Width in beats.
+	 */
+	var beatCount = 0f
 
 	/**
 	 * How notes should snap.
@@ -176,6 +188,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	}
 
 	override fun onUpdate() {
+		layoutWidth = beatWidth * beatCount
 		notes.layoutWidth = layoutWidth
 		notes.layoutHeight = layoutHeight
 
