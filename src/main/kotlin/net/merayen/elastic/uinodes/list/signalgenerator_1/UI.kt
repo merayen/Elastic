@@ -22,7 +22,7 @@ class UI : UINode(), INodeEditable {
 
 	init {
 		layoutWidth = 200f
-		layoutHeight = 150f
+		layoutHeight = 170f
 
 		titlebar.title = "Signal generator"
 
@@ -44,12 +44,10 @@ class UI : UINode(), INodeEditable {
 
 			if (frequencyData != null) {
 				(frequency_port_parameter!!.not_connected as PopupParameter1D).value = (Math.pow(frequencyData.toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
-				updateFrequencyText()
 			}
 
 			if (curveData != null)
 				curve.bezier.setPoints(curveData)
-
 
 			// TODO should probably fix this...? What does it do? Why are we not just using frequency? Due to amplitude?
 			//	instance.key == "data.InputSignalParameters:frequency" ->
@@ -67,14 +65,15 @@ class UI : UINode(), INodeEditable {
 			frequency_port_parameter!!.translation.y = 20f
 			add(frequency_port_parameter!!)
 
-			(frequency_port_parameter!!.not_connected as PopupParameter1D).setHandler(object : PopupParameter1D.Handler {
+			(frequency_port_parameter!!.not_connected as PopupParameter1D).handler = object : PopupParameter1D.Handler {
 				override fun onMove(value: Float) {
-					updateFrequencyText()
 					sendProperties(Properties(frequency = frequency))
 				}
 
 				override fun onChange(value: Float) {}
-			})
+
+				override fun onLabel(value: Float) = String.format("Frequency: %.3f", frequency)
+			}
 
 			(frequency_port_parameter!!.not_connected as PopupParameter1D).drag_scale = 0.5f
 
@@ -90,7 +89,7 @@ class UI : UINode(), INodeEditable {
 	private fun createBezierWave() {
 		val bwb = SignalBezierCurveBoxControlFrame()
 		bwb.translation.x = 20f
-		bwb.translation.y = 40f
+		bwb.translation.y = 60f
 		bwb.layoutWidth = 160f
 		bwb.layoutHeight = 100f
 		add(bwb)
@@ -112,12 +111,6 @@ class UI : UINode(), INodeEditable {
 	}
 
 	override fun onData(message: NodeDataMessage) {}
-
 	override fun onRemovePort(port: UIPort) {}
-
-	private fun updateFrequencyText() {
-		(frequency_port_parameter!!.not_connected as PopupParameter1D).label.text = String.format("Frequency: %.3f", frequency)
-	}
-
 	override fun getNodeEditor() = Editor(nodeId)
 }

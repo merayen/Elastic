@@ -91,7 +91,7 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		g2d.color = java.awt.Color(r, g, b, a)
 	}
 
-	fun setColor(color: Color) {
+	fun setColor(color: MutableColor) {
 		g2d.color = java.awt.Color(color.red, color.green, color.blue, color.alpha)
 	}
 

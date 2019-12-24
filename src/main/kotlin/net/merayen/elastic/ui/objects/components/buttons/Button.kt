@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.components.buttons
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -13,8 +13,8 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 	override var layoutHeight = 15f
 	var autoDimension = true
 	var fontSize = 10f
-	var textColor = Color()
-	var backgroundColor = Color(0.5f, 0.5f, 0.5f)
+	var textColor = MutableColor()
+	var backgroundColor = MutableColor(0.5f, 0.5f, 0.5f)
 
 	var handler: IHandler? = null
 	private var mousehandler: MouseHandler? = null

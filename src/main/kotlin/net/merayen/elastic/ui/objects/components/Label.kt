@@ -1,9 +1,11 @@
 package net.merayen.elastic.ui.objects.components
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
 
 class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObject() {
+	val color = MutableColor(0.8f, 0.8f, 0.8f)
 	var fontSize = 10f
 	var font_name = "Geneva"
 	var align: Align? = null
@@ -30,9 +32,9 @@ class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObj
 		else if (align == Align.RIGHT)
 			x_offset = -labelWidth
 
-		draw.setColor(50, 50, 50)
+		draw.setColor(color.red / 2f, color.green / 2f, color.blue / 2)
 		draw.text(text, x_offset - fontSize / 10f, fontSize - fontSize / 10f)
-		draw.setColor(200, 200, 200)
+		draw.setColor(color)
 		draw.text(text, x_offset, fontSize)
 	}
 

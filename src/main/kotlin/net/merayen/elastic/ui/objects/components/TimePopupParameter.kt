@@ -4,6 +4,9 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.framework.PopupParameter
 
+/**
+ * Not fully implemented yet (no use for it yet)
+ */
 class TimePopupParameter : UIObject() {
 	var seconds = 0f
 	set(value) {
@@ -39,6 +42,7 @@ class TimePopupParameter : UIObject() {
 			//draw.setColor()
 		}
 	}
+
 	private val popupParameter = PopupParameter(minified, popup)
 
 	override fun onInit() {
