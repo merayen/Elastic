@@ -40,7 +40,7 @@ class Playhead : UIObject(), FlexibleDimension {
 	}
 
 	override fun onDraw(draw: Draw) {
-		draw.setColor(1f, 0f, 1f)
+		draw.setColor(0.1f, 0.1f, 0.1f)
 		draw.polygon(floatArrayOf(
 			0f, 0f,
 			layoutWidth, 0f,

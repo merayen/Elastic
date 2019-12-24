@@ -6,6 +6,10 @@ import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 
 class EventList : UIObject(), FlexibleDimension {
+	interface Handler {
+		fun onPlayheadMoved(position: Float)
+	}
+
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
@@ -25,6 +29,12 @@ class EventList : UIObject(), FlexibleDimension {
 		arrangementEventTracks.translation.y = 20f
 		arrangementGrid.translation.y = 20f
 		eventPane.translation.y = 20f
+
+		playhead.handler = object : Playhead.Handler {
+			override fun onMoved(position: Float) {
+
+			}
+		}
 	}
 
 	override fun onUpdate() {

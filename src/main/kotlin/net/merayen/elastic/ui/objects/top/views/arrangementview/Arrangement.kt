@@ -45,6 +45,7 @@ class Arrangement : UIObject() {
 						TODO("Ask user which type of track to create and send a message to backend")
 					}
 				}
+				disabled = true // For now
 			}
 		})
 	}
