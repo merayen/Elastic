@@ -41,7 +41,11 @@ class Playhead : UIObject(), FlexibleDimension {
 
 	override fun onDraw(draw: Draw) {
 		draw.setColor(1f, 0f, 1f)
-		draw.fillRect(0f, 0f, layoutWidth, 20f)
+		draw.polygon(floatArrayOf(
+			0f, 0f,
+			layoutWidth, 0f,
+			layoutWidth / 2, 20f
+		))
 
 		draw.disableOutline()
 

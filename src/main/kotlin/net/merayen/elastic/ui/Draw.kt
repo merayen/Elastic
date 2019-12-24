@@ -115,6 +115,44 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		g2d.drawRect(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
 
+	fun polygon(points: FloatArray) {
+		val length = points.size
+
+		if (length < 4)
+			return // Nothing to draw
+
+		if ((length / 2) * 2 != length)
+			throw RuntimeException("Points array must be dividable by 2")
+
+		val xs = IntArray(length / 2)
+		val ys = IntArray(length / 2)
+
+		var xmin = Float.MAX_VALUE
+		var ymin = Float.MAX_VALUE
+		var xmax = Float.MIN_VALUE
+		var ymax = Float.MIN_VALUE
+
+		for (i in 0 until length step 2) {
+			if (points[i] < xmin)
+				xmin = points[i]
+			if (points[i+1] < ymin)
+				ymin = points[i+1]
+
+			if (points[i] > xmax)
+				xmax = points[i]
+			if (points[i+1] > ymax)
+				ymax = points[i+1]
+
+			val point = uiobject.getAbsolutePosition(points[i], points[i+1]) ?: return
+			xs[i / 2] = point.x.toInt()
+			ys[i / 2] = point.y.toInt()
+		}
+
+		reg(xmin, ymin, xmax - xmin, ymax - ymin)
+
+		g2d.fillPolygon(xs, ys, length / 2)
+	}
+
 	fun setStroke(width: Float) {
 		g2d.stroke = java.awt.BasicStroke(uiobject.convertUnitToAbsolute(width).toFloat())
 	}
