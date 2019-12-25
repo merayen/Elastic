@@ -13,9 +13,9 @@ class Playhead : UIObject(), FlexibleDimension {
 	interface Handler {
 		/**
 		 * Called when the playhead has been moved (user released it).
-		 * @param position The current position in beats
+		 * @param beat The current position in beats
 		 */
-		fun onMoved(position: Float)
+		fun onMoved(beat: Float)
 	}
 
 	var handler: Handler? = null
@@ -29,11 +29,16 @@ class Playhead : UIObject(), FlexibleDimension {
 	override fun onInit() {
 		movable.setHandler(object : Movable.IMoveable {
 			override fun onGrab() {}
+
 			override fun onMove() {
+				if (translation.x < -layoutWidth / 2)
+					translation.x = -layoutWidth / 2
+
 				translation.y = 0f
 			}
+
 			override fun onDrop() {
-				handler?.onMoved(translation.x / beatWidth)
+				handler?.onMoved((translation.x + layoutWidth / 2) / beatWidth)
 			}
 
 		})
@@ -57,5 +62,9 @@ class Playhead : UIObject(), FlexibleDimension {
 
 	override fun onEvent(event: UIEvent) {
 		movable.handle(event)
+	}
+
+	fun setPosition(beat: Float) {
+		translation.x = beatWidth * beat - layoutWidth / 2
 	}
 }

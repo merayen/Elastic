@@ -13,5 +13,11 @@ data class Properties(
 	var sampleRate: Int? = null, // TODO soon: implement support onto group_1-node
 	var bpm: Int? = null,
 	var bpmCurve: FloatArray? = null,
-	var length: Int? = null
+	var length: Int? = null,
+
+	/**
+	 * Position of the playhead, in beats.
+	 */
+	var playheadPosition: Float? = null
+
 ) : BaseNodeProperties()

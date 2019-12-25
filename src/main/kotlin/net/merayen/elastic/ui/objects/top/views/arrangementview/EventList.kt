@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 
 class EventList : UIObject(), FlexibleDimension {
 	interface Handler {
-		fun onPlayheadMoved(position: Float)
+		fun onPlayheadMoved(beat: Float)
 	}
 
 	override var layoutWidth = 100f
@@ -15,24 +15,26 @@ class EventList : UIObject(), FlexibleDimension {
 
 	var beatWidth = 20f
 
+	var handler: Handler? = null
+
 	private val arrangementGrid = ArrangementGrid()
 	private val arrangementEventTracks = UIObject()
-	private val eventPane = AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox())
+	private val eventPanes = AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox())
 	private val playhead = Playhead()
 
 	override fun onInit() {
 		add(arrangementEventTracks)
 		add(arrangementGrid)
-		add(eventPane)
+		add(eventPanes)
 		add(playhead) // Always on top
 
 		arrangementEventTracks.translation.y = 20f
 		arrangementGrid.translation.y = 20f
-		eventPane.translation.y = 20f
+		eventPanes.translation.y = 20f
 
 		playhead.handler = object : Playhead.Handler {
-			override fun onMoved(position: Float) {
-
+			override fun onMoved(beat: Float) {
+				handler?.onPlayheadMoved(beat)
 			}
 		}
 	}
@@ -41,18 +43,23 @@ class EventList : UIObject(), FlexibleDimension {
 		arrangementGrid.layoutWidth = layoutWidth
 		arrangementGrid.layoutHeight = layoutHeight
 
-		for (obj in eventPane.search.children) {
+		for (obj in eventPanes.search.children) {
 			if (obj is EventPane) {
 				obj.layoutWidth = layoutWidth
 				obj.beatWidth = beatWidth
 			}
 		}
 
-		eventPane.placement.maxWidth = layoutWidth
+		eventPanes.placement.maxWidth = layoutWidth
 
 		playhead.layoutHeight = layoutHeight
+		playhead.beatWidth = beatWidth
 	}
 
-	fun addEventPane(eventPane: EventPane) = this.eventPane.add(eventPane)
-	fun removeEventPane(eventPane: EventPane) = this.eventPane.remove(eventPane)
+	fun addEventPane(eventPane: EventPane) = this.eventPanes.add(eventPane)
+	fun removeEventPane(eventPane: EventPane) = this.eventPanes.remove(eventPane)
+
+	fun setPlayheadPosition(beat: Float) {
+		playhead.setPosition(beat)
+	}
 }

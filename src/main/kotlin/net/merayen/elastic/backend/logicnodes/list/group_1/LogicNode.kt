@@ -40,9 +40,15 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 
 	override fun onParameterChange(instance: BaseNodeProperties) {
 		instance as Properties
+
 		val bpm = instance.bpm
+		val playheadPosition = instance.playheadPosition
+
 		if (bpm != null)
 			this.bpm = bpm.toDouble()
+
+		if (playheadPosition != null)
+			println("New playhead position: $playheadPosition")
 
 		updateProperties(instance)
 	}
