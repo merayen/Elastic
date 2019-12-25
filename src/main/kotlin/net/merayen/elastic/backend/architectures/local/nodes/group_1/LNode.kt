@@ -18,6 +18,8 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	private var currentCursorBeatPosition = 0.0
 	private var currentCursorTimePosition = 0.0
 
+	private var playCount = 0L
+
 	private var bpm = 120.0
 
 	private var playing = false
@@ -71,9 +73,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	override fun isPlaying() = playing
 
-	override fun playStartedCount(): Long {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun playStartedCount() = playCount
 
 	override fun onInit() {}
 	override fun onSpawnProcessor(lp: LocalProcessor) {}
@@ -83,7 +83,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 		val startPlaying = data.startPlaying ?: false
 		val stopPlaying = data.stopPlaying ?: false
-		val cursorBeatPosition = data.cursorBeatPosition
+		val playheadPosition = data.playheadPosition
 		val bpm = data.bpm
 
 		if (startPlaying && !stopPlaying)
@@ -92,8 +92,11 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		if (stopPlaying)
 			playing = false
 
-		if (cursorBeatPosition != null)
-			currentBeatPosition = cursorBeatPosition
+		if (playheadPosition != null) {
+			this.currentBeatPosition = playheadPosition.toDouble()
+			playCount++
+			println("Playhead position moved: $playheadPosition")
+		}
 
 		if (bpm != null)
 			this.bpm = bpm

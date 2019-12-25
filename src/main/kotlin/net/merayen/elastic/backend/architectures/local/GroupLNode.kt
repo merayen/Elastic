@@ -67,7 +67,7 @@ interface GroupLNode {
 	fun isPlaying(): Boolean
 
 	/**
-	 * Returns how many times play has started.
+	 * Returns how many times play has started, playback cursor moved etc.
 	 * Nodes should check if this number has changed. If yes, read getTimePosition(), getBeatPosition() etc to set
 	 * correct inner state.
 	 */
