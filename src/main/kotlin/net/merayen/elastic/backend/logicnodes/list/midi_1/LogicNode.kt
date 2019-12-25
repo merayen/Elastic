@@ -74,7 +74,6 @@ class LogicNode : BaseLogicNode() {
 	override fun onData(data: NodeDataMessage) {
 		when (data) {
 			is AddMidiMessage -> {
-				println("Adding midi message $data")
 				midiData.merge(data.midiData)
 				dirty = true
 				val properties = properties as Properties
@@ -97,8 +96,6 @@ class LogicNode : BaseLogicNode() {
 				buffer.add(shortArrayOf(128.toShort(), data.tangent, 64))
 			}
 			is AddEventZoneMessage -> {
-				println("Adding EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
-
 				val eventZones = (properties as Properties).eventZones ?: ArrayList()
 
 				eventZones.add(Properties.EventZone(
@@ -111,8 +108,6 @@ class LogicNode : BaseLogicNode() {
 				updateProperties(Properties(eventZones = eventZones))
 			}
 			is ChangeEventZoneMessage -> {
-				println("Changing EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
-
 				val eventZones = (properties as Properties).eventZones
 
 				val eventZone = eventZones?.find { it.id == data.eventZoneId }
