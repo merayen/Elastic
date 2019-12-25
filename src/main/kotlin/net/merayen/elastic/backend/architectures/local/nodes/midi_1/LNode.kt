@@ -8,7 +8,14 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
 class LNode : LocalNode(LProcessor::class.java) {
+	/**
+	 * Midi made by the user, like when clicking a tangent on the piano roll or playing a note on the midi keyboard.
+	 */
 	internal var inputMidi: Array<ShortArray>? = null
+
+	/**
+	 * The midi data in the score.
+	 */
 	internal var midiData: MidiData? = null
 
 	override fun onInit() {}
@@ -22,6 +29,7 @@ class LNode : LocalNode(LProcessor::class.java) {
 
 		if (input.temporaryMidi != null)
 			inputMidi = input.temporaryMidi
+
 	}
 
 	override fun onParameter(instance: BaseNodeProperties) {}

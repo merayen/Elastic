@@ -1,14 +1,14 @@
 package net.merayen.elastic.backend.architectures.local.nodes.midi_in_1;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.logicnodes.list.midi_in_1.MidiIn1InputFrameData;
 import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class LNode extends LocalNode {
 	List<short[]> buffer = new ArrayList<>();

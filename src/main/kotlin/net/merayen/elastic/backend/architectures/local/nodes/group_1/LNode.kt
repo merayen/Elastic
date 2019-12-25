@@ -73,7 +73,13 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	override fun isPlaying() = playing
 
-	override fun playStartedCount() = playCount
+	override fun playStartedCount(): Long {
+		val parent = parent as? GroupLNode
+		if (parent != null)
+			playCount = parent.playStartedCount()
+
+		return playCount
+	}
 
 	override fun onInit() {}
 	override fun onSpawnProcessor(lp: LocalProcessor) {}
