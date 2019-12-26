@@ -6,6 +6,8 @@ data class MidiData(
 	var midi: MutableList<MidiChunk>? = ArrayList()
 ) : Cloneable, Iterable<MidiData.MidiChunk> {
 
+	class DuplicateID(id: String) : RuntimeException(id)
+
 	val size: Int
 		get() {
 			return midi!!.size
@@ -46,20 +48,31 @@ data class MidiData(
 	}
 
 	fun add(midiChunk: MidiChunk) {
+		if (midi!!.any { it.id == midiChunk.id })
+			throw DuplicateID(midiChunk.id!!)
+
 		midi?.add(midiChunk)
 		revision++
 
 		midi!!.sortBy { it.start }
 	}
 
-	fun addAll(midiChunk: Array<MidiChunk>) {
-		midi?.addAll(midiChunk)
+	fun addAll(midiChunks: Array<MidiChunk>) {
+		for (midiChunk in midiChunks)
+			if (midi!!.any { it.id == midiChunk.id })
+				throw DuplicateID(midiChunk.id!!)
+
+		midi?.addAll(midiChunks)
 		revision++
 
 		midi!!.sortBy { it.start }
 	}
 
 	fun merge(midiData: MidiData) {
+		for (midiChunk in midiData.midi!!)
+			if (midi!!.any { it.id == midiChunk.id })
+				throw DuplicateID(midiChunk.id!!)
+
 		for (midiPacket in midiData.midi!!)
 			midi!!.add(midiPacket)
 
