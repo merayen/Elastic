@@ -26,7 +26,7 @@ internal class MidiRollEventZone(val eventZoneId: String, private val midiRollEv
 
 	private val notes = PianoNotes(midiRollEventZones.octaveCount)
 	private val bar = HorizontalResizableBox()
-	private lateinit var net: PianoNet
+	private val net = PianoNet(midiRollEventZones.octaveCount)
 
 	override fun onInit() {
 		bar.layoutHeight = 10f
@@ -40,7 +40,6 @@ internal class MidiRollEventZone(val eventZoneId: String, private val midiRollEv
 		}
 		add(bar)
 
-		net = PianoNet(midiRollEventZones.octaveCount)
 		net.handler = object : PianoNet.Handler {
 			override fun onRemoveMidi(id: String) {
 				midiRollEventZones.handler?.onRemoveMidi(eventZoneId, id)

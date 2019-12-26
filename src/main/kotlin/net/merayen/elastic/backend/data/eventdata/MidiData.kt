@@ -8,11 +8,6 @@ data class MidiData(
 
 	class DuplicateID(id: String) : RuntimeException(id)
 
-	val size: Int
-		get() {
-			return midi!!.size
-		}
-
 	/**
 	 * A chunk of midi packets.
 	 * They can happen at the same time, but are ensured to be in the correct order.
@@ -33,7 +28,6 @@ data class MidiData(
 	 * Increased every time a change has been made.
 	 */
 	var revision = 0L
-		private set
 
 	fun iterator(start: Double): MidiDataIterator {
 		return MidiDataIterator(this, start)

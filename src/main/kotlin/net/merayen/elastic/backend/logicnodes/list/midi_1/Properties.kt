@@ -1,7 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.midi_1
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
-import net.merayen.elastic.backend.data.eventdata.MidiDataPacket
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 
 data class Properties(
@@ -20,6 +19,7 @@ data class Properties(
 
 	init {
 		classRegistry.add(EventZone::class)
-		classRegistry.add(MidiDataPacket::class)
+		classRegistry.add(MidiData::class)
+		classRegistry.add(MidiData.MidiChunk::class)
 	}
 }

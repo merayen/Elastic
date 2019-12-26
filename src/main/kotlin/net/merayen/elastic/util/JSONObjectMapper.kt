@@ -1,7 +1,10 @@
 package net.merayen.elastic.util
 
 import org.json.simple.JSONArray
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
