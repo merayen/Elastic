@@ -171,12 +171,12 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 						midiData.add(MidiData.MidiChunk(
 								UniqueID.create(),
 								ghostNote.start,
-								arrayOf(MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f))
+								MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f)
 						))
 						midiData.add(MidiData.MidiChunk(
 								UniqueID.create(),
 								ghostNote.start + ghostNote.length,
-								arrayOf(MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f))
+								MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f)
 						))
 						handler?.onAddMidi(midiData)
 					}
@@ -244,7 +244,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		contextMenu.handle(event)
 	}
 
-	fun loadMidi(midiChunk: MidiData.MidiChunk) {
-
+	fun loadMidi(midiChunk: MidiData) {
+		TODO("Implement this soon!")
 	}
 }

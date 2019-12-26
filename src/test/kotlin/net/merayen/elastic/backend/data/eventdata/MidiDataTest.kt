@@ -10,9 +10,9 @@ class MidiDataTest {
 	@BeforeEach
 	fun setUp() {
 		val midiData = MidiData()
-		midiData.add(MidiData.MidiChunk("0", 0.0, arrayOf(shortArrayOf(0))))
-		midiData.add(MidiData.MidiChunk("2", 2.0, arrayOf(shortArrayOf(2))))
-		midiData.add(MidiData.MidiChunk("1", 1.0, arrayOf(shortArrayOf(1))))
+		midiData.add(MidiData.MidiChunk("0", 0.0, shortArrayOf(0)))
+		midiData.add(MidiData.MidiChunk("2", 2.0, shortArrayOf(2)))
+		midiData.add(MidiData.MidiChunk("1", 1.0, shortArrayOf(1)))
 
 		this.midiData = midiData
 	}
@@ -37,9 +37,9 @@ class MidiDataTest {
 
 		val midiChunks = midiData.getMidiChunks()
 
-		midiChunks[0].midi[0] = shortArrayOf(1337)
+		midiChunks[0].midi!![0] = 1337
 
-		assertEquals(0, clonedMidiData.getMidiChunks()[0].midi[0][0])
+		assertEquals(0, clonedMidiData.getMidiChunks()[0].midi!![0])
 	}
 
 	@Test
@@ -48,9 +48,9 @@ class MidiDataTest {
 
 		val newMidiData = MidiData()
 
-		newMidiData.add(MidiData.MidiChunk("10", 1.0, arrayOf(shortArrayOf(10))))
-		newMidiData.add(MidiData.MidiChunk("11", 1.5, arrayOf(shortArrayOf(10))))
-		newMidiData.add(MidiData.MidiChunk("12", 2.1, arrayOf(shortArrayOf(10))))
+		newMidiData.add(MidiData.MidiChunk("10", 1.0, shortArrayOf(10)))
+		newMidiData.add(MidiData.MidiChunk("11", 1.5, shortArrayOf(10)))
+		newMidiData.add(MidiData.MidiChunk("12", 2.1, shortArrayOf(10)))
 
 		midiData.merge(newMidiData)
 

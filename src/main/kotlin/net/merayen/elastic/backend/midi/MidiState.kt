@@ -115,9 +115,8 @@ abstract class MidiState {
 	}
 
 	fun handle(midiChunk: MidiData.MidiChunk) {
-		time = midiChunk.start
-		for (midi in midiChunk.midi)
-			handle(midi)
+		time = midiChunk.start!!
+		handle(midiChunk.midi!!)
 	}
 
 	private fun dataEntryUpdate() {

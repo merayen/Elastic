@@ -2,9 +2,15 @@ package net.merayen.elastic.backend.data.eventdata
 
 
 // TODO split data from functions?
-class MidiData(
-	private val midi: MutableList<MidiChunk> = ArrayList()
-): Cloneable, Iterable<MidiData.MidiChunk> {
+data class MidiData(
+	var midi: MutableList<MidiChunk>? = ArrayList()
+) : Cloneable, Iterable<MidiData.MidiChunk> {
+
+	val size: Int
+		get() {
+			return midi!!.size
+		}
+
 	/**
 	 * A chunk of midi packets.
 	 * They can happen at the same time, but are ensured to be in the correct order.
@@ -14,21 +20,12 @@ class MidiData(
 	 * @param midi Array of midi packets
 	 */
 	class MidiChunk(
-			val id: String,
-			val start: Double,
-			val midi: Array<ShortArray>
+		var id: String? = null,
+		var start: Double? = null,
+		var midi: ShortArray? = null
 	) : Cloneable {
-		public override fun clone(): MidiChunk {
-			return MidiChunk(id, start, midi.map { it.clone() }.toTypedArray())
-		}
+		public override fun clone() = MidiChunk(id, start, midi!!.clone())
 	}
-
-	private var dirty = false
-
-	val size: Int
-		get() {
-			return midi.size
-		}
 
 	/**
 	 * Increased every time a change has been made.
@@ -45,36 +42,34 @@ class MidiData(
 	}
 
 	public override fun clone(): MidiData {
-		return MidiData(midi.map { it.clone() } as MutableList<MidiChunk>)
+		return MidiData(midi!!.map { it.clone() } as ArrayList<MidiChunk>)
 	}
 
 	fun add(midiChunk: MidiChunk) {
-		midi.add(midiChunk)
-		dirty = true
+		midi?.add(midiChunk)
 		revision++
 
-		midi.sortBy { it.start }
+		midi!!.sortBy { it.start }
 	}
 
 	fun addAll(midiChunk: Array<MidiChunk>) {
-		midi.addAll(midiChunk)
-		dirty = true
+		midi?.addAll(midiChunk)
 		revision++
 
-		midi.sortBy { it.start }
+		midi!!.sortBy { it.start }
 	}
 
 	fun merge(midiData: MidiData) {
-		for (midiPacket in midiData.midi)
-			midi.add(midiPacket)
+		for (midiPacket in midiData.midi!!)
+			midi!!.add(midiPacket)
 
 		revision++
 
-		midi.sortBy { it.start }
+		midi!!.sortBy { it.start }
 	}
 
 	fun remove(id: String): Boolean {
-		val removed = midi.removeIf { it.id == id }
+		val removed = midi!!.removeIf { it.id == id }
 
 		revision++
 
@@ -82,7 +77,7 @@ class MidiData(
 	}
 
 	fun remove(midiChunk: MidiChunk): Boolean {
-		val removed = midi.remove(midiChunk)
+		val removed = midi!!.remove(midiChunk)
 
 		revision++
 
@@ -123,5 +118,13 @@ class MidiData(
 		revision++
 	}*/
 
-	fun getMidiChunks() = ArrayList(midi)
+	fun getMidiChunks() = midi!!.map {
+		it.clone()
+	}.toTypedArray()
+
+	companion object {
+		fun load(midiDataPackets: Array<MidiDataPacket>) = MidiData(midiDataPackets.map {
+			MidiChunk(it.id!!, it.start!!.toDouble(), it.midi!!.map { it.toShort() }.toShortArray())
+		}.toMutableList())
+	}
 }

@@ -22,7 +22,7 @@ class MidiDataIterator(private val midiData: MidiData, private var position: Dou
 		if (position != midi[index].start)
 			playedAtCurrentTime.clear()
 
-		position = midi[index].start
+		position = midi[index].start!!
 
 		lastMidiChunk = midi[index]
 
@@ -50,20 +50,18 @@ class MidiDataIterator(private val midiData: MidiData, private var position: Dou
 		// Couldn't relocate based on last MidiChunk, so we need to find next one based on time
 		// If two or more MidiChunk shares the exact same start-time, we may drop one or more MidiChunks
 		// This only happens if user changes the midi data on the same part that is getting played
-		var newIndex = 0
-		for (midiChunk in midi) {
+		for ((newIndex, midiChunk) in midi.withIndex()) {
 			if (midiChunk.start == position) {
 				if (midiChunk !in playedAtCurrentTime) {
 					index = newIndex
 					iteratorRevision = midiData.revision
 					return
 				}
-			} else if (midiChunk.start > position) {
+			} else if (midiChunk.start!! > position) {
 				index = newIndex
 				iteratorRevision = midiData.revision
 				return
 			}
-			newIndex++
 		}
 
 		// Couldn't relocate. Give up

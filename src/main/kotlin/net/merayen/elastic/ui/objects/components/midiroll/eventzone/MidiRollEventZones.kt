@@ -72,6 +72,8 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 					}
 				}
 
+				m.loadMidi(newZone.midi!!)
+
 				eventZones.add(m)
 				add(m)
 			}

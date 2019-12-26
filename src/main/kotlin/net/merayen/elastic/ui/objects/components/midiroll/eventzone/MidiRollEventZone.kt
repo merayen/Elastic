@@ -69,4 +69,8 @@ internal class MidiRollEventZone(val eventZoneId: String, private val midiRollEv
 		draw.setColor(1f, 0f, 1f)
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 	}
+
+	fun loadMidi(midiData: MidiData) {
+		net.loadMidi(midiData)
+	}
 }
