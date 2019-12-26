@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.*
 import net.merayen.elastic.ui.surface.Swing
 import net.merayen.elastic.ui.util.DrawContext
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -158,24 +158,24 @@ internal class UIClipTest {
 
 		innerObject.translation.x = 4f
 		innerObject.translation.y = 2f
-		assertEquals(true, innerObject.isVisible())
+		assertTrue(innerObject.isVisible())
 
 		innerObject.translation.x = 2f
 		innerObject.translation.y = 4f
-		assertEquals(true, innerObject.isVisible())
+		assertTrue(innerObject.isVisible())
 
 		innerObject.translation.x = 5f
 		innerObject.translation.y = 5f
-		assertEquals(false, innerObject.isVisible())
+		assertFalse(innerObject.isVisible())
 
 		innerObject.translation.x = -10f
 		innerObject.translation.y = -10f
-		assertEquals(true, innerObject.isVisible())
+		assertTrue(innerObject.isVisible())
 
 		innerObject.translation.x = -19f
 		innerObject.translation.y = -19f
 		Thread.sleep(10000)
-		assertEquals(true, innerObject.isVisible())
+		assertTrue(innerObject.isVisible())
 
 	}
 }
