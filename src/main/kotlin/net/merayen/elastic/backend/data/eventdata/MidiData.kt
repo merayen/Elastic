@@ -19,15 +19,19 @@ data class MidiData(
 	class MidiChunk(
 		var id: String? = null,
 		var start: Double? = null,
-		var midi: ShortArray? = null
+		var midi: MutableList<Short>? = null
 	) : Cloneable {
-		public override fun clone() = MidiChunk(id, start, midi!!.clone())
+		public override fun clone() = MidiChunk(id, start, ArrayList(midi!!))
 	}
 
 	/**
 	 * Increased every time a change has been made.
 	 */
 	var revision = 0L
+
+	init {
+		midi!!.sortBy { it.start }
+	}
 
 	fun iterator(start: Double): MidiDataIterator {
 		return MidiDataIterator(this, start)
@@ -128,10 +132,4 @@ data class MidiData(
 	fun getMidiChunks() = midi!!.map {
 		it.clone()
 	}.toTypedArray()
-
-	companion object {
-		fun load(midiDataPackets: Array<MidiDataPacket>) = MidiData(midiDataPackets.map {
-			MidiChunk(it.id!!, it.start!!.toDouble(), it.midi!!.map { it.toShort() }.toShortArray())
-		}.toMutableList())
-	}
 }

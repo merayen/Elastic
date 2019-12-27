@@ -171,12 +171,12 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 						midiData.add(MidiData.MidiChunk(
 								UniqueID.create(),
 								ghostNote.start,
-								MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f)
+								MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f).toMutableList()
 						))
 						midiData.add(MidiData.MidiChunk(
 								UniqueID.create(),
 								ghostNote.start + ghostNote.length,
-								MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f)
+								MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f).toMutableList()
 						))
 						handler?.onAddMidi(midiData)
 					}
@@ -244,7 +244,22 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		contextMenu.handle(event)
 	}
 
-	fun loadMidi(midiChunk: MidiData) {
-		TODO("Implement this soon!")
+	fun loadMidi(midiData: MidiData) {
+		val midiState = object : MidiState() {
+			override fun onKeyUp(tangent: Short) {
+				val activeTangent = activeKeys[tangent]
+
+				if (activeTangent?.id == null) {
+					println("WARNING: KeyUp on a key not pushed, or missing id")
+					return
+				}
+
+				val note = notes.Note(activeTangent.id, activeTangent.start, midiState.time, activeTangent.tangent, activeTangent.velocity)
+				notes.add(note)
+			}
+		}
+
+		for (midiChunk in midiData)
+			midiState.handle(midiChunk)
 	}
 }

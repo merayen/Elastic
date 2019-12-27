@@ -1,13 +1,13 @@
 package net.merayen.elastic.ui.objects.top;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class Debug extends UIObject {
-	private static final double SCALE = 10; 
+	private static final double SCALE = 10;
 	HashMap<String,String> list = new HashMap<>();
 	HashMap<String,Double> updated = new HashMap<>();
 
@@ -43,11 +43,11 @@ public class Debug extends UIObject {
 			float fac = 1 - (float)(Math.min(b, SCALE) / SCALE);
 			fac = Math.max(Math.min(fac, 1), 0);
 
-			String text = String.format("%s: %s", x, list.get(x)); 
+			String text = String.format("%s: %s", x, list.get(x));
 			draw.setFont("Arial", 1.3f);
 			draw.setColor(100, 100, 100);
 			draw.text(text, 0.2f, 0.1f + 1.2f * i);
-			draw.setColor((int)(100 + 154 * fac), (int)(100 + 154 * fac), (int)(100 + 154 * fac));
+			draw.setColor(1f, 1f, 1f, fac);
 			draw.text(text, 0f, 1.2f * i);
 		}
 	}

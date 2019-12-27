@@ -22,6 +22,7 @@ class JSONObjectMapper {
 	class MissingClassNameDefinitionInObject : RuntimeException()
 	class ClassMemberIsReadOnly(val className: String, val member: String) : RuntimeException("Can not apply value to '$member' on class '$className' as it is read-only")
 	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class '$className' constructor missing default value for parameter $parameter")
+	class TypeNotSupportedException(type: String) : java.lang.RuntimeException(type)
 
 	private val registry = HashMap<String, KClass<out Any>>()
 	private val listConverters = HashMap<String, Map<String, (it: Any?) -> Any?>>()
@@ -143,11 +144,12 @@ class JSONObjectMapper {
 			val arr = JSONArray()
 			arr.addAll(value.map { valueToJSON(it) })
 			return arr
-		} else if (registry[value::class.simpleName] === value::class) {
+		} else if (registry[value::class.simpleName] == value::class) {
 			return toMap(value)
 		}
 
-		return UNDEFINED
+		throw TypeNotSupportedException(value::class.simpleName ?: value.toString().substring(0, 100))
+		//return UNDEFINED
 	}
 
 	/**

@@ -18,14 +18,14 @@ class MidiDataIteratorTest {
 				MidiData.MidiChunk(
 					i.toString(),
 					1 - (1 / (i+1).toDouble()),
-					shortArrayOf(i.toShort())
+					mutableListOf(i.toShort())
 				)
 			)
 		}
 
 		// Add notes at the same exact place, order should be kept (100 before 101)
-		midiData.add(MidiData.MidiChunk("100", 1.0, shortArrayOf(100)))
-		midiData.add(MidiData.MidiChunk("101", 1.0, shortArrayOf(101)))
+		midiData.add(MidiData.MidiChunk("100", 1.0, mutableListOf(100)))
+		midiData.add(MidiData.MidiChunk("101", 1.0, mutableListOf(101)))
 
 		this.midiData = midiData
 	}
