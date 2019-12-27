@@ -63,12 +63,6 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	private val contextMenuItemDrag = TextContextMenuItem("Drag tool")
 	private val contextMenuItemLine = TextContextMenuItem("Line tool")
 
-	private val midiState = object : MidiState() {
-		override fun onKeyDown(tangent: Short, velocity: Float) {
-			TODO()
-		}
-	}
-
 	/**
 	 * Vertical size of 1 octave, in height units
 	 */
@@ -254,7 +248,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 					return
 				}
 
-				val note = notes.Note(activeTangent.id, activeTangent.start, midiState.time, activeTangent.tangent, activeTangent.velocity)
+				val note = notes.Note(activeTangent.id, activeTangent.start, time - activeTangent.start, activeTangent.tangent, activeTangent.velocity)
 				notes.add(note)
 			}
 		}
