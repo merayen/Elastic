@@ -89,16 +89,17 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 
 	private val BLACK_TANGENTS = arrayOf(false, true, false, true, false, true, false, false, true, false, true, false)
 
-	private val notes = PianoNetNotes(octaveCount)
+	private val notes = PianoNetNotes(octaveCount, this)
+
 
 	override fun onInit() {
 		selectionRectangle.handler = object : SelectionRectangle.Handler {
 			override fun onDrag() {
-
+				println("Yapp!")
 			}
 
 			override fun onDrop() {
-
+				println("Yop")
 			}
 		}
 		add(selectionRectangle)
@@ -129,7 +130,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onMouseDown(position: MutablePoint) {
-				selectionRectangle.cancel()
+				//selectionRectangle.cancel()
 			}
 		}
 

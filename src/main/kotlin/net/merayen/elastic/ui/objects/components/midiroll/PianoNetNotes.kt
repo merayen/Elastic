@@ -8,10 +8,11 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
+import net.merayen.elastic.ui.objects.selection.Selection
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.MutablePoint
 
-class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimension {
+class PianoNetNotes(private val octaveCount: Int, private val pianoNet: PianoNet) : UIObject(), FlexibleDimension {
 	interface Handler {
 		fun onSelect(id: String)
 		fun onChange(id: String)
@@ -38,6 +39,8 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 	 * If dirty, rearranges all the notes.
 	 */
 	private var dirty = true
+
+	private val selection = Selection(this, pianoNet)
 
 	/**
 	 * A note, represented as a simple colored bar in the UI.
@@ -87,12 +90,33 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 		}
 	}
 
+	override fun onInit() {
+		selection.handler = object : Selection.Handler {
+			override fun onSelect(uiobject: UIObject) {
+				println("Select $uiobject")
+				if (uiobject is Note)
+					uiobject.selected = true
+			}
+
+			override fun onUnselect(uiobject: UIObject) {
+				println("Unselect $uiobject")
+				if (uiobject is Note)
+					uiobject.selected = false
+			}
+
+			override fun onStartDragging() {
+				println("Start dragging")
+			}
+
+			override fun onDrop() {
+				println("Dropped")
+			}
+		}
+	}
+
 	override fun add(uiobject: UIObject) {
 		if (uiobject.parent != null)
 			throw RuntimeException("Note should not have a parent")
-
-		if (uiobject !is Note)
-			throw RuntimeException("Only Note()-instances can be added to PianoNetNotes")
 
 		super.add(uiobject)
 	}
@@ -111,5 +135,13 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 				obj.layoutHeight = octaveWidth / 12f
 			}
 		}
+	}
+
+	override fun onEvent(event: UIEvent) {
+		selection.handle(event)
+	}
+
+	fun select(note: Note) {
+
 	}
 }

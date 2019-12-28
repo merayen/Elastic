@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.MutablePoint
 
-class SelectionRectangle(private val trigger: UIObject? = null) : UIObject(), FlexibleDimension {
+class SelectionRectangle(private val trigger: UIObject? = null, private val button: MouseEvent.Button = MouseEvent.Button.LEFT) : UIObject(), FlexibleDimension {
 	interface Handler {
 		fun onDrag()
 		fun onDrop()
@@ -27,7 +27,7 @@ class SelectionRectangle(private val trigger: UIObject? = null) : UIObject(), Fl
 		if (trigger != null) {
 			shown = false // Hide ourself
 
-			val mouseHandler = MouseHandler(trigger, MouseEvent.Button.LEFT)
+			val mouseHandler = MouseHandler(trigger, button)
 
 			mouseHandler.setHandler(object : MouseHandler.Handler() {
 				private var startPosition: MutablePoint? = null
