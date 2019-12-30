@@ -67,7 +67,12 @@ class Selection(private val uiobject: UIObject, private val trigger: UIObject, b
 	private fun check() {
 		val handler = handler ?: return
 
-		val selection = Rect(selectionRectangle.translation.x, selectionRectangle.translation.y, selectionRectangle.getWidth(), selectionRectangle.getHeight())
+		val selection = Rect(
+			selectionRectangle.translation.x,
+			selectionRectangle.translation.y,
+			selectionRectangle.translation.x + selectionRectangle.getWidth(),
+			selectionRectangle.translation.y + selectionRectangle.getHeight()
+		)
 
 		for (obj in uiobject.children) {
 			if (obj === selectionRectangle)
@@ -79,7 +84,7 @@ class Selection(private val uiobject: UIObject, private val trigger: UIObject, b
 
 			val collision = boolean(
 				selection,
-				Rect(pos.x, pos.y, obj.getWidth(), obj.getHeight())
+				Rect(pos.x, pos.y, pos.x + obj.getWidth(), pos.y + obj.getHeight())
 			)
 
 			if (collision.width > 0 && collision.height > 0) {
