@@ -83,7 +83,7 @@ class Selection(private val uiobject: UIObject, private val trigger: UIObject, b
 			// TODO take care of scaling of obj
 
 			val collision = boolean(
-				selection,
+				Rect(0f, 0f, selectionRectangle.getWidth(), selectionRectangle.getHeight()),
 				Rect(pos.x, pos.y, pos.x + obj.getWidth(), pos.y + obj.getHeight())
 			)
 
