@@ -10,7 +10,20 @@ import net.merayen.elastic.util.MutablePoint
 
 class SelectionRectangle(private val trigger: UIObject? = null, private val button: MouseEvent.Button = MouseEvent.Button.LEFT) : UIObject(), FlexibleDimension {
 	interface Handler {
+		/**
+		 * When user holds down the mouse button.
+		 * All items should be unselected (if no SHIFT-modifier is set)
+		 */
+		fun onMouseDown()
+
+		/**
+		 * User is dragging the selection rectangle.
+		 */
 		fun onDrag()
+
+		/**
+		 * User is done dragging the selection rectangle.
+		 */
 		fun onDrop()
 	}
 
@@ -31,6 +44,10 @@ class SelectionRectangle(private val trigger: UIObject? = null, private val butt
 
 			mouseHandler.setHandler(object : MouseHandler.Handler() {
 				private var startPosition: MutablePoint? = null
+
+				override fun onMouseDown(position: MutablePoint?) {
+					handler?.onMouseDown()
+				}
 
 				override fun onMouseDrag(position: MutablePoint, offset: MutablePoint) {
 					shown = true

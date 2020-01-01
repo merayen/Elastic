@@ -46,6 +46,16 @@ class Selection(private val uiobject: UIObject, private val trigger: UIObject, b
 		selectionRectangle.handler = object : SelectionRectangle.Handler {
 			private var dragging = false
 
+			override fun onMouseDown() {
+				if (dragging)
+					return
+
+				for (obj in selected)
+					handler?.onUnselect(obj)
+
+				selected.clear()
+			}
+
 			override fun onDrag() {
 				if (!dragging) {
 					dragging = true
@@ -66,13 +76,6 @@ class Selection(private val uiobject: UIObject, private val trigger: UIObject, b
 
 	private fun check() {
 		val handler = handler ?: return
-
-		val selection = Rect(
-			selectionRectangle.translation.x,
-			selectionRectangle.translation.y,
-			selectionRectangle.translation.x + selectionRectangle.getWidth(),
-			selectionRectangle.translation.y + selectionRectangle.getHeight()
-		)
 
 		for (obj in uiobject.children) {
 			if (obj === selectionRectangle)

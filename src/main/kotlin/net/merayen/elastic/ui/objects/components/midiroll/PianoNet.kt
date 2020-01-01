@@ -91,9 +91,12 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 
 	private val notes = PianoNetNotes(octaveCount, this)
 
-
 	override fun onInit() {
 		selectionRectangle.handler = object : SelectionRectangle.Handler {
+			override fun onMouseDown() {
+				println("To remove all selections")
+			}
+
 			override fun onDrag() {
 				println("Yapp!")
 			}
