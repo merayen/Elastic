@@ -183,6 +183,15 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 			}
 		})
 		add(notes)
+
+		notes.handler = object : PianoNetNotes.Handler {
+			override fun onSelect(id: String) {
+				TODO("Unselect all other notes if no SHIFT-modifier is being pressed")
+			}
+
+			override fun onChange(id: String) {
+			}
+		}
 	}
 
 	override fun onUpdate() {

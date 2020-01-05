@@ -187,14 +187,14 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 		override fun keyPressed(e: KeyEvent) {
 			if (!active_key_codes.contains(e.keyCode)) {
 				active_key_codes.add(e.keyCode)
-				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, KeyboardEvent.Action.DOWN))
+				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, true))
 			}
 		}
 
 		override fun keyReleased(e: KeyEvent) {
 			if (active_key_codes.contains(e.keyCode)) {
 				active_key_codes.remove(e.keyCode)
-				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, KeyboardEvent.Action.UP))
+				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, false))
 			}
 		}
 	}

@@ -4,6 +4,8 @@ import net.merayen.elastic.Config
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.KeyboardEvent
+import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
@@ -129,6 +131,11 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 		val windowSize = nativeUI.window.size
 		viewportContainer.width = windowSize.width
 		viewportContainer.height = windowSize.height
+	}
+
+	override fun onEvent(event: UIEvent) {
+		if (event is KeyboardEvent)
+			println("${event.pushed} ${event.character} ${event.keyCode} ${event.key}")
 	}
 
 	/**
