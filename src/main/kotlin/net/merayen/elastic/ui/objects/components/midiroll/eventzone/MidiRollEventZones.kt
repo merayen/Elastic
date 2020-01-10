@@ -11,6 +11,7 @@ import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.util.MutablePoint
+import kotlin.math.max
 
 class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	interface Handler {
@@ -31,6 +32,8 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	var layoutHeight = 0f
 
 	var handler: Handler? = null
+
+	var beatWidth = 10f
 
 	private val eventZones = ArrayList<MidiRollEventZone>()
 
@@ -59,9 +62,17 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 			eventZones.clear()
 
 			for (newZone in newEventZones) {
-				val m = MidiRollEventZone(newZone.id!!, this)
+				val newZoneId = newZone.id!!
+				val m = MidiRollEventZone(newZoneId, this)
 				m.start = newZone.start!!
 				m.length = newZone.length!!
+				m.handler = object: MidiRollEventZone.Handler {
+					override fun onResize(offsetPosition: Float, offsetLength: Float) {
+						handler?.onChangeEventZone(newZoneId, max(0f, m.start + offsetPosition), max(0f, m.length + offsetLength))
+					}
+				}
+
+				m.loadMidi(newZone.midi!!)
 
 				eventZones.add(m)
 				add(m)
@@ -72,13 +83,15 @@ class MidiRollEventZones(val octaveCount: Int) : UIObject() {
 	}
 
 	override fun onDraw(draw: Draw) {
-		draw.setColor(0f, 0f, 0f)
+		draw.setColor(0f, 0f, 1f)
 		draw.fillRect(0f, 0f, 100f, layoutHeight)
 	}
 
 	override fun onUpdate() {
-		for (zone in eventZones)
+		for (zone in eventZones) {
 			zone.layoutHeight = layoutHeight
+			zone.beatWidth = beatWidth
+		}
 	}
 
 	override fun onEvent(event: UIEvent) {

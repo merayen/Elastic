@@ -13,25 +13,25 @@ fun testMidiData() {
 		MidiData.MidiChunk(
 			UniqueID.create(),
 			0.0,
-			arrayOf(MidiMessagesCreator.keyDown(10, 1f))
+			MidiMessagesCreator.keyDown(10, 1f).toMutableList()
 		)
 	)
 
 	midiData.add(MidiData.MidiChunk(
 		UniqueID.create(),
 		0.0,
-		arrayOf(MidiMessagesCreator.keyDown(11, 0.8f))
+		MidiMessagesCreator.keyDown(11, 0.8f).toMutableList()
 	))
 
 	midiData.add(MidiData.MidiChunk( // Overlaps tangent 10, so this should be discarded
 		UniqueID.create(),
 		0.1,
-		arrayOf(MidiMessagesCreator.keyDown(10, 0.5f))
+		MidiMessagesCreator.keyDown(10, 0.5f).toMutableList()
 	))
 
 	midiData.add(MidiData.MidiChunk( // Releases a tangent that isn't pressed. Should be discarded
 		UniqueID.create(),
 		0.1,
-		arrayOf(MidiMessagesCreator.keyDown(12, 0.5f))
+		MidiMessagesCreator.keyDown(12, 0.5f).toMutableList()
 	))
 }

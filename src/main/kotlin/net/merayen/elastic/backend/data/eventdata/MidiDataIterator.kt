@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.data.eventdata
 class MidiDataIterator(private val midiData: MidiData, private var position: Double = Double.NEGATIVE_INFINITY) : Iterator<MidiData.MidiChunk> {
 	private var iteratorRevision = -1L
 	private var index = 0
-	private var lastMidiChunk: MidiData.MidiChunk? = null
+	private var lastMidiChunkId: String? = null
 	private val playedAtCurrentTime = ArrayList<MidiData.MidiChunk>() // Guard to not repeat any MidiChunk at the same position
 	private var midi = midiData.getMidiChunks()
 
@@ -22,9 +22,9 @@ class MidiDataIterator(private val midiData: MidiData, private var position: Dou
 		if (position != midi[index].start)
 			playedAtCurrentTime.clear()
 
-		position = midi[index].start
+		position = midi[index].start!!
 
-		lastMidiChunk = midi[index]
+		lastMidiChunkId = midi[index].id
 
 		return midi[index++]
 	}
@@ -37,9 +37,9 @@ class MidiDataIterator(private val midiData: MidiData, private var position: Dou
 		midi = midiData.getMidiChunks()
 
 		// Try to relocate based on previous sent MidiChunk
-		val lastMidiChunk = lastMidiChunk
-		if (lastMidiChunk != null) {
-			val newIndex = midi.indexOf(lastMidiChunk)
+		val lastMidiChunkId = lastMidiChunkId
+		if (lastMidiChunkId != null) {
+			val newIndex = midi.indexOfFirst { it.id == lastMidiChunkId }
 			if (newIndex > -1) {
 				index = newIndex + 1
 				iteratorRevision = midiData.revision
@@ -50,20 +50,18 @@ class MidiDataIterator(private val midiData: MidiData, private var position: Dou
 		// Couldn't relocate based on last MidiChunk, so we need to find next one based on time
 		// If two or more MidiChunk shares the exact same start-time, we may drop one or more MidiChunks
 		// This only happens if user changes the midi data on the same part that is getting played
-		var newIndex = 0
-		for (midiChunk in midi) {
+		for ((newIndex, midiChunk) in midi.withIndex()) {
 			if (midiChunk.start == position) {
 				if (midiChunk !in playedAtCurrentTime) {
 					index = newIndex
 					iteratorRevision = midiData.revision
 					return
 				}
-			} else if (midiChunk.start > position) {
+			} else if (midiChunk.start!! > position) {
 				index = newIndex
 				iteratorRevision = midiData.revision
 				return
 			}
-			newIndex++
 		}
 
 		// Couldn't relocate. Give up

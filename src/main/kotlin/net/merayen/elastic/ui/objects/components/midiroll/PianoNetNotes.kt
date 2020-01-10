@@ -8,10 +8,13 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
 import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
+import net.merayen.elastic.ui.objects.selection.Selection
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.MutablePoint
+import kotlin.math.min
+import kotlin.math.pow
 
-class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimension {
+class PianoNetNotes(private val octaveCount: Int, private val pianoNet: PianoNet) : UIObject(), FlexibleDimension {
 	interface Handler {
 		fun onSelect(id: String)
 		fun onChange(id: String)
@@ -39,6 +42,8 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 	 */
 	private var dirty = true
 
+	private val selection = Selection(this, pianoNet)
+
 	/**
 	 * A note, represented as a simple colored bar in the UI.
 	 * @param id The id of the note
@@ -61,6 +66,11 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 		override fun onInit() {
 			mouseHandler.setHandler(object : MouseHandler.Handler() {
 				override fun onMouseClick(position: MutablePoint?) {
+					for (obj in this@PianoNetNotes.children)
+						if (obj is Note)
+							obj.selected = false
+
+					selected = true
 					handler?.onSelect(id)
 				}
 			})
@@ -74,12 +84,18 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 			if (alpha < 1f)
 				draw.disableOutline()
 
-			draw.setColor(weight, if (selected) 0.7f else 0.5f, if (selected) 0.7f else 0.5f, alpha)
+			val red = min(weight / 0.8f + 0.2f, 1f)
+			val green = if (selected) 0.7f else 0.5f
+			val blue = weight - if (selected) 0.5f else 0.7f
+
+			draw.setColor(red, green, blue, alpha)
 			draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
-			draw.setColor(weight, 0.7f, 0.7f, alpha)
-			draw.setStroke(1f)
-			draw.rect(0f, 0f, layoutWidth, layoutHeight)
+			if (selected) {
+				draw.setColor(red.pow(2), green.pow(2), blue.pow(2), alpha)
+				draw.setStroke(1f)
+				draw.rect(0f, 0f, layoutWidth, layoutHeight)
+			}
 		}
 
 		override fun onEvent(event: UIEvent) {
@@ -87,12 +103,27 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 		}
 	}
 
+	override fun onInit() {
+		selection.handler = object : Selection.Handler {
+			override fun onSelect(uiobject: UIObject) {
+				if (uiobject is Note)
+					uiobject.selected = true
+			}
+
+			override fun onUnselect(uiobject: UIObject) {
+				if (uiobject is Note)
+					uiobject.selected = false
+			}
+
+			override fun onStartDragging() {}
+
+			override fun onDrop() {}
+		}
+	}
+
 	override fun add(uiobject: UIObject) {
 		if (uiobject.parent != null)
 			throw RuntimeException("Note should not have a parent")
-
-		if (uiobject !is Note)
-			throw RuntimeException("Only Note()-instances can be added to PianoNetNotes")
 
 		super.add(uiobject)
 	}
@@ -111,5 +142,13 @@ class PianoNetNotes(private val octaveCount: Int) : UIObject(), FlexibleDimensio
 				obj.layoutHeight = octaveWidth / 12f
 			}
 		}
+	}
+
+	override fun onEvent(event: UIEvent) {
+		selection.handle(event)
+	}
+
+	fun select(note: Note) {
+
 	}
 }

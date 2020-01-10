@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.components
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -13,7 +13,7 @@ class Meter : UIObject(), FlexibleDimension {
 	enum class Direction { UP, RIGHT, DOWN, LEFT }
 	inner class Content : UIClip() {
 		var text = ""
-		var textColor = Color(0.8f, 0.8f, 0.8f)
+		var textColor = MutableColor(0.8f, 0.8f, 0.8f)
 
 		override fun onDraw(draw: Draw) {
 			super.onDraw(draw)
@@ -38,7 +38,7 @@ class Meter : UIObject(), FlexibleDimension {
 
 	private val pacer = Pacer()
 
-	var color = Color(0.2f, 0.8f, 0.2f)
+	var color = MutableColor(0.2f, 0.8f, 0.2f)
 	var value = 0f
 		set(value) {
 			field = max(0f, min(1f, value))

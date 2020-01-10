@@ -140,6 +140,14 @@ public abstract class LocalNode {
 		return supervisor.getLocalNode(parent.getID());
 	}
 
+	public GroupLNode getParentGroupNode() {
+		LocalNode parent = getParent();
+		if (parent != null)
+			return (GroupLNode) parent;
+		else
+			return null;
+	}
+
 	void init() {
 		onInit();
 	}

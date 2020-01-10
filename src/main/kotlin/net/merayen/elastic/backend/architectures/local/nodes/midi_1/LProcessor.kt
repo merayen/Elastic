@@ -5,6 +5,9 @@ import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet
 
 class LProcessor : LocalProcessor() {
+	private var playStartedCount: Long = 0
+	private var midiDataRevision = 0L
+
 	override fun onInit() {}
 
 	override fun onPrepare() {}
@@ -15,6 +18,10 @@ class LProcessor : LocalProcessor() {
 			val parent = localNode.parent as GroupLNode
 
 			val startBeat = parent.getCursorPosition()
+
+			val newPlayStartedCount = parent.playStartedCount()
+			if (newPlayStartedCount != playStartedCount)
+				playStartedCount = newPlayStartedCount
 
 			val stopBeat = if (parent.isPlaying()) {
 				startBeat + (parent.getCurrentFrameBPM() * (buffer_size / sample_rate.toDouble())) / 60.0
@@ -31,6 +38,13 @@ class LProcessor : LocalProcessor() {
 
 			if (inputMidi != null) // TODO write any note from MidiData too
 				outlet.putMidi(0, inputMidi) // TODO shouldn't quantize to beginning of frame
+
+			if (midiData != null) {
+				if (midiData.revision != midiDataRevision) {
+					println("Midi data received!")
+					midiDataRevision = midiData.revision
+				}
+			}
 
 			outlet.written = buffer_size
 			outlet.push()

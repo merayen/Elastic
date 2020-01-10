@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -120,7 +120,7 @@ class EventZone(val id: String) : UIObject(), FlexibleDimension {
 			}
 		}
 
-		contextMenu.backgroundColor = Color(0.3f, 0.3f, .5f)
+		contextMenu.backgroundColor = MutableColor(0.3f, 0.3f, .5f)
 
 		contextMenu.addMenuItem(EmptyContextMenuItem())
 		contextMenu.addMenuItem(EmptyContextMenuItem())

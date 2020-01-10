@@ -56,6 +56,9 @@ public class MouseHandler {
 	 * Call this from your UIObject to handle event
 	 */
 	public void handle(UIEvent event) { // XXX Should we ensure UIObject is initialized before
+		if (!uiobject.isInitialized())
+			return;
+
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
 			currentMouseEvent = e;

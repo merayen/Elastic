@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview.tracks.common
 
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.Rect
 import net.merayen.elastic.ui.UIObject
@@ -92,7 +92,7 @@ class EventTimeLine : BaseTimeLine() {
 			}
 		}
 
-		contextMenu.backgroundColor = Color(0.3f, 0.3f, 0.3f)
+		contextMenu.backgroundColor = MutableColor(0.3f, 0.3f, 0.3f)
 
 		contextMenu.addMenuItem(addEventZoneMenuItem)
 		contextMenu.addMenuItem(EmptyContextMenuItem())

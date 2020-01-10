@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.contextmenu
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import java.util.*
@@ -9,7 +9,7 @@ import kotlin.math.min
 internal class Menu(private val count: Int) : UIObject() {
     var radius = 150f
     var selectionRadius = 50f
-    var backgroundColor = Color(0.1f, 0.1f, 0.1f)
+    var backgroundColor = MutableColor(0.1f, 0.1f, 0.1f)
 
     private var currentRadius = 10f // For animation
 

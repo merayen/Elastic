@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.contextmenu
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
@@ -19,7 +19,7 @@ class ContextMenu(trigger: UIObject, count: Int, button: MouseEvent.Button) {
 	}
 
 	var handler: Handler? = null
-	var backgroundColor: Color
+	var backgroundColor: MutableColor
 		set(value) {
 			menu.backgroundColor = value
 		}

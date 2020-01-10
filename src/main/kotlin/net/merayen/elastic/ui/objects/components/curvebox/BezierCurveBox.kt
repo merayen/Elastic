@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.components.curvebox
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.Rect
 import net.merayen.elastic.ui.UIObject
@@ -95,7 +95,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	}
 
 	inner class BezierDotDragable internal constructor(private val point: BezierDot) : UIObject() {
-		val color = Color(255, 200, 0)
+		val color = MutableColor(255, 200, 0)
 		var radius = 0.05f
 
 		lateinit var movable: Movable

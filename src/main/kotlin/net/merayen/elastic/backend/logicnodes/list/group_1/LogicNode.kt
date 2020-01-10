@@ -14,7 +14,7 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 class LogicNode : BaseLogicNode(), GroupLogicNode {
 	private var startPlaying = false
 	private var stopPlaying = false
-	private var cursorBeatPosition: Double? = null
+	private var playheadPosition: Float? = null
 	private var bpm = 120.0
 
 	private var sampleRate: Int = Temporary.sampleRate
@@ -34,15 +34,20 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 			}
 			is TransportStartPlaybackMessage -> startPlaying = true
 			is TransportStopPlaybackMessage -> stopPlaying = true
-			is MovePlaybackCursorMessage -> cursorBeatPosition = message.beatPosition
 		}
 	}
 
 	override fun onParameterChange(instance: BaseNodeProperties) {
 		instance as Properties
+
 		val bpm = instance.bpm
+		val playheadPosition = instance.playheadPosition
+
 		if (bpm != null)
 			this.bpm = bpm.toDouble()
+
+		if (playheadPosition != null)
+			this.playheadPosition = playheadPosition
 
 		updateProperties(instance)
 	}
@@ -52,7 +57,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 			id,
 			startPlaying = startPlaying,
 			stopPlaying = stopPlaying,
-			cursorBeatPosition = cursorBeatPosition,
+			playheadPosition = playheadPosition,
 			bpm = bpm, // TODO remove this and use a curve instead
 			sampleRate = sampleRate,
 			bufferSize = bufferSize,
@@ -61,6 +66,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 
 		startPlaying = false
 		stopPlaying = false
+		playheadPosition = null
 
 		return data
 	}

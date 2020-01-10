@@ -1,7 +1,10 @@
 package net.merayen.elastic.util
 
 import org.json.simple.JSONArray
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -19,6 +22,7 @@ class JSONObjectMapper {
 	class MissingClassNameDefinitionInObject : RuntimeException()
 	class ClassMemberIsReadOnly(val className: String, val member: String) : RuntimeException("Can not apply value to '$member' on class '$className' as it is read-only")
 	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class '$className' constructor missing default value for parameter $parameter")
+	class TypeNotSupportedException(type: String) : java.lang.RuntimeException(type)
 
 	private val registry = HashMap<String, KClass<out Any>>()
 	private val listConverters = HashMap<String, Map<String, (it: Any?) -> Any?>>()
@@ -140,11 +144,12 @@ class JSONObjectMapper {
 			val arr = JSONArray()
 			arr.addAll(value.map { valueToJSON(it) })
 			return arr
-		} else if (registry[value::class.simpleName] === value::class) {
+		} else if (registry[value::class.simpleName] == value::class) {
 			return toMap(value)
 		}
 
-		return UNDEFINED
+		throw TypeNotSupportedException(value::class.simpleName ?: value.toString().substring(0, 100))
+		//return UNDEFINED
 	}
 
 	/**

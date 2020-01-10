@@ -1,8 +1,8 @@
 package net.merayen.elastic.ui.objects.components.buttons
 
-import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.MouseHandler
@@ -13,8 +13,10 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 	override var layoutHeight = 15f
 	var autoDimension = true
 	var fontSize = 10f
-	var textColor = Color()
-	var backgroundColor = Color(0.5f, 0.5f, 0.5f)
+	var textColor = MutableColor()
+	var backgroundColor = MutableColor(0.5f, 0.5f, 0.5f)
+
+	var disabled = false
 
 	var handler: IHandler? = null
 	private var mousehandler: MouseHandler? = null
@@ -63,21 +65,22 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 			layoutHeight = fontSize * 1.5f
 		}
 
-		draw.setColor(0.2f, 0.2f, 0.2f)
+		draw.setColor(0.2f, 0.2f, 0.2f, if (disabled) 0.5f else 1f)
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
 		if (mouseDown && mouseOver)
 			draw.setColor(
-					backgroundColor.red + (1f - backgroundColor.red) * 0.5f,
-					backgroundColor.green + (1f - backgroundColor.green) * 0.5f,
-					backgroundColor.blue + (1f - backgroundColor.blue) * 0.5f
+				backgroundColor.red + (1f - backgroundColor.red) * 0.5f,
+				backgroundColor.green + (1f - backgroundColor.green) * 0.5f,
+				backgroundColor.blue + (1f - backgroundColor.blue) * 0.5f,
+				if (disabled) 0.5f else 1f
 			)
 		else
-			draw.setColor(backgroundColor)
+			draw.setColor(backgroundColor.red, backgroundColor.green, backgroundColor.blue, if (disabled) 0.5f else 1f)
 
 		draw.fillRect(1f, 1f, layoutWidth - 2f, layoutHeight - 2f)
 
-		draw.setColor(textColor)
+		draw.setColor(textColor.red, textColor.green, textColor.blue, if (disabled) 0.5f else 1f)
 		if (mouseDown && mouseOver)
 			draw.text(label, layoutWidth / 2 - textWidth / 2, fontSize + fontSize / 5)
 		else
@@ -85,6 +88,11 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 	}
 
 	override fun onEvent(event: UIEvent) {
-		mousehandler!!.handle(event)
+		if (!disabled) {
+			mousehandler!!.handle(event)
+		} else {
+			mouseDown = false
+			mouseOver = false
+		}
 	}
 }

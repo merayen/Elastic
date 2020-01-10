@@ -19,5 +19,7 @@ data class Properties(
 
 	init {
 		classRegistry.add(EventZone::class)
+		classRegistry.add(MidiData::class)
+		classRegistry.add(MidiData.MidiChunk::class)
 	}
 }

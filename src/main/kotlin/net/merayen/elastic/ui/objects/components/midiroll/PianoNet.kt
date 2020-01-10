@@ -42,7 +42,14 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		Drag, Select, Create, Line
 	}
 
+	/**
+	 * Width of the piano net. Do not set. It gets automatically set based on beatCount.
+	 */
 	override var layoutWidth = 100f
+
+	/**
+	 * Do not set the height. It gets set automatically based on octaveWidth.
+	 */
 	override var layoutHeight = 100f
 
 	var handler: Handler? = null
@@ -56,12 +63,6 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	private val contextMenuItemDrag = TextContextMenuItem("Drag tool")
 	private val contextMenuItemLine = TextContextMenuItem("Line tool")
 
-	private val midiState = object : MidiState() {
-		override fun onKeyDown(tangent: Short, velocity: Float) {
-			TODO()
-		}
-	}
-
 	/**
 	 * Vertical size of 1 octave, in height units
 	 */
@@ -71,6 +72,11 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 	 * How many width units one beat is
 	 */
 	var beatWidth = 10f
+
+	/**
+	 * Width in beats.
+	 */
+	var beatCount = 0f
 
 	/**
 	 * How notes should snap.
@@ -83,16 +89,20 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 
 	private val BLACK_TANGENTS = arrayOf(false, true, false, true, false, true, false, false, true, false, true, false)
 
-	private val notes = PianoNetNotes(octaveCount)
+	private val notes = PianoNetNotes(octaveCount, this)
 
 	override fun onInit() {
 		selectionRectangle.handler = object : SelectionRectangle.Handler {
-			override fun onDrag() {
+			override fun onMouseDown() {
+				println("To remove all selections")
+			}
 
+			override fun onDrag() {
+				println("Yapp!")
 			}
 
 			override fun onDrop() {
-
+				println("Yop")
 			}
 		}
 		add(selectionRectangle)
@@ -123,7 +133,7 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 			}
 
 			override fun onMouseDown(position: MutablePoint) {
-				selectionRectangle.cancel()
+				//selectionRectangle.cancel()
 			}
 		}
 
@@ -159,12 +169,12 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 						midiData.add(MidiData.MidiChunk(
 								UniqueID.create(),
 								ghostNote.start,
-								arrayOf(MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f))
+								MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f).toMutableList()
 						))
 						midiData.add(MidiData.MidiChunk(
 								UniqueID.create(),
 								ghostNote.start + ghostNote.length,
-								arrayOf(MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f))
+								MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f).toMutableList()
 						))
 						handler?.onAddMidi(midiData)
 					}
@@ -173,9 +183,19 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 			}
 		})
 		add(notes)
+
+		notes.handler = object : PianoNetNotes.Handler {
+			override fun onSelect(id: String) {
+				TODO("Unselect all other notes if no SHIFT-modifier is being pressed")
+			}
+
+			override fun onChange(id: String) {
+			}
+		}
 	}
 
 	override fun onUpdate() {
+		layoutWidth = beatWidth * beatCount
 		notes.layoutWidth = layoutWidth
 		notes.layoutHeight = layoutHeight
 
@@ -231,7 +251,22 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 		contextMenu.handle(event)
 	}
 
-	fun loadMidi(midiChunk: MidiData.MidiChunk) {
+	fun loadMidi(midiData: MidiData) {
+		val midiState = object : MidiState() {
+			override fun onKeyUp(tangent: Short) {
+				val activeTangent = activeKeys[tangent]
 
+				if (activeTangent?.id == null) {
+					println("WARNING: KeyUp on a key not pushed, or missing id")
+					return
+				}
+
+				val note = notes.Note(activeTangent.id, activeTangent.start, time - activeTangent.start, activeTangent.tangent, activeTangent.velocity)
+				notes.add(note)
+			}
+		}
+
+		for (midiChunk in midiData)
+			midiState.handle(midiChunk)
 	}
 }

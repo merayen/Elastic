@@ -6,7 +6,6 @@ import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage
 import net.merayen.elastic.system.intercom.backend.ImportFileIntoNodeGroupMessage
 import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
-import net.merayen.elastic.util.NetListMessages
 import java.util.*
 
 /**
@@ -64,9 +63,4 @@ class NodeViewController internal constructor(top: Top) : Controller(top) {
 			is ImportFileIntoNodeGroupMessage -> sendToBackend(message)
 		}
 	}
-
-	/**
-	 * Use by NodeView to restore itself from the current NetList.
-	 */
-	fun getNetListRefreshMessages() = NetListMessages.disassemble(top.netlist)
 }

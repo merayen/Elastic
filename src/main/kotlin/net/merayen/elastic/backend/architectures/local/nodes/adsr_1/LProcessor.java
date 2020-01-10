@@ -95,9 +95,7 @@ public class LProcessor extends LocalProcessor {
 				// Reading and handle/forward incoming MIDI data
 				for (short[] midiPacket : midiFrame) {
 					handledMidiPacket = false;
-					midiState.handle(midiPacket);
-
-					//if(midiState)
+					midiState.handle(midiPacket, null);
 				}
 			}
 

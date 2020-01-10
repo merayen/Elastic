@@ -4,6 +4,7 @@ import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.controller.ArrangementController
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
@@ -45,8 +46,15 @@ class Arrangement : UIObject() {
 						TODO("Ask user which type of track to create and send a message to backend")
 					}
 				}
+				disabled = true // For now
 			}
 		})
+
+		eventList.handler = object : EventList.Handler {
+			override fun onPlayheadMoved(beat: Float) {
+				sendMessage(ArrangementController.PlayheadPositionChange(beat))
+			}
+		}
 	}
 
 	override fun onUpdate() {
@@ -70,7 +78,7 @@ class Arrangement : UIObject() {
 					val midiTrack = MidiTrack(message.nodeId, this)
 					midiTrack.handler = object : MidiTrack.Handler {
 						override fun onEventSelect() {
-							for (track in tracks) // TODO check for modifer-key. If user is holding SHIFT, do not unselect everything
+							for (track in tracks) // TODO check for modifier-key. If user is holding SHIFT, do not unselect everything
 								track.clearSelections()
 						}
 
@@ -115,9 +123,17 @@ class Arrangement : UIObject() {
 		}
 
 		for (track in tracks) {
-			if (message is NodePropertyMessage)
+			if (message is NodePropertyMessage) {
+				val instance = message.instance
+				if (instance is net.merayen.elastic.backend.logicnodes.list.group_1.Properties) {
+					val playheadPosition = instance.playheadPosition
+					if (playheadPosition != null)
+						eventList.setPlayheadPosition(playheadPosition)
+				}
+
 				if (message.nodeId == track.nodeId)
 					track.onParameter(message.instance)
+			}
 		}
 	}
 
