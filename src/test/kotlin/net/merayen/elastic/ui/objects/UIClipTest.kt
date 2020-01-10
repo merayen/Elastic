@@ -149,6 +149,7 @@ internal class UIClipTest {
 	}
 
 	@Test
+	@Timeout(10)
 	fun testIsVisibleWithScaling() {
 		val intermediateObject = intermediateObject!!
 		val innerObject = innerObject!!
