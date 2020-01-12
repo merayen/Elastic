@@ -47,7 +47,7 @@ tasks.withType<Test> {
 
 application {
 	// Define the main class for the application.
-	mainClassName = "net.merayen.elastic.Test"
+	mainClassName = "net.merayen.elastic.Main"
 }
 
 sourceSets["main"].java.srcDirs(arrayOf("src/main/kotlin"))
