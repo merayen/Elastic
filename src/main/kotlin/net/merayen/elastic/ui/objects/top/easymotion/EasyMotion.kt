@@ -9,11 +9,18 @@ import net.merayen.elastic.ui.util.KeyboardState
 class EasyMotion {
 	private val keyboardState = KeyboardState()
 
+	init {
+		keyboardState.handler = object : KeyboardState.Handler {
+			override fun onType(keysDown: KeyboardState.KeyStroke) {
+				println("Those keys are down for what: $keysDown")
+			}
+		}
+	}
+
 	/**
 	 * Pass all keyboard events to us. We will send them to the correct EasyMotion Control for processing.
 	 */
 	fun handle(event: KeyboardEvent) {
-		//if (event.key == KeyboardEvent.Keys.)
 		keyboardState.handle(event)
 	}
 }

@@ -9,7 +9,6 @@ internal class KeyboardStateTest {
 	private var ks: KeyboardState? = null
 	private val typed = ArrayList<KeyboardState.KeyStroke>()
 
-
 	@BeforeEach
 	fun setUp() {
 		typed.clear()

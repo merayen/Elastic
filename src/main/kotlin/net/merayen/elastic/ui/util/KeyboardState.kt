@@ -38,7 +38,7 @@ class KeyboardState {
 		if (event.pushed) {
 			keysDown.add(event.key)
 			if (!event.key.isModifier) {
-				val keyStroke = KeyStroke(keysDown)
+				val keyStroke = KeyStroke(keysDown.filter { it.isModifier || it.key == event.key.key }.toSet())
 				typingEvents.add(keyStroke)
 				handler?.onType(keyStroke)
 			}
