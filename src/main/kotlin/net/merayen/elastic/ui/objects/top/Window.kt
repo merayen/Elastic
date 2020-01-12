@@ -6,7 +6,10 @@ import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.top.easymotion.Control
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotion
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionControllable
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionMaster
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
@@ -16,7 +19,7 @@ import net.merayen.elastic.util.ImmutablePoint
  * The very topmost UIObject for a Window, containing all the UI for that window.
  * Represents a certain UIData in a certain Node-group where it gets all the properties from, like window-size.
  */
-class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
+class Window(private val surface: Surface) : UIObject(), FlexibleDimension, EasyMotionMaster, EasyMotionControllable {
 	override var layoutWidth: Float
 		get() = nativeUI.window.size.width
 		set(value) {
@@ -56,10 +59,24 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 	 */
 	val overlay = UIObject()
 
+	override val easyMotionControl = object : Control(this) {
+		override fun onSelect() {
+			println("EasyMotion has selected Window's Control!")
+		}
+
+		override fun onUnselect() { }
+
+		override fun onEnter(control: Control) {
+			println("EasyMotion has entered Window's control!")
+		}
+
+		override val trigger = setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.T)
+	}
+
 	/**
 	 * EasyMotion support is Window-global.
 	 */
-	val easymotion = EasyMotion()
+	override val easyMotion = EasyMotion(this, easyMotionControl)
 
 	val surfaceMouseCursors = SurfaceMouseCursors()
 	val debug = Debug()
@@ -100,7 +117,7 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 
 	override fun onEvent(event: UIEvent) {
 		if (event is KeyboardEvent)
-			easymotion.handle(event)
+			easyMotion.handle(event)
 	}
 
 	/**

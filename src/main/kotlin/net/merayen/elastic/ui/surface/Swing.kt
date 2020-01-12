@@ -33,8 +33,6 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	 */
 	private var dimension = Dimension()
 
-	private val this_Swing = this
-
 	private var isDecorated = true
 
 	private var internalThreadId: Long? = null
@@ -357,11 +355,11 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 				}
 
 			override var isDecorated: Boolean
-				get() = this_Swing.isDecorated
+				get() = this@Swing.isDecorated
 				set(value) {
-					if (value != this_Swing.isDecorated) {
+					if (value != this@Swing.isDecorated) {
 						// Swing requires us to create a new window to change the decoration
-						this_Swing.isDecorated = value
+						this@Swing.isDecorated = value
 						createWindow()
 					}
 				}

@@ -10,7 +10,7 @@ class KeyboardState {
 		 * - &lt;SHIFT&gt; + A
 		 * - &lt;CTRL&gt; + &lt;SHIFT&gt; + &lt;ALT&gt; + L
 		 */
-		fun onType(keysDown: KeyboardState.KeyStroke)
+		fun onType(keyStroke: KeyboardState.KeyStroke)
 	}
 
 	var handler: Handler? = null
@@ -20,6 +20,14 @@ class KeyboardState {
 	 */
 	data class KeyStroke(val keys: Set<KeyboardEvent.Key>) {
 		val modifiers = keys.filter { it.isModifier }
+
+		/**
+		 * Checks if the keys are identical to this KeyStroke.
+		 * KeyStroke can not contain any additional keys than this KeyStroke gets compared against.
+		 *
+		 * @param keys a set of keys
+		 */
+		fun equalsKeys(keys: Collection<KeyboardEvent.Keys>) = this.keys.map { it.key }.toSet() == keys.toSet()
 	}
 
 	/**

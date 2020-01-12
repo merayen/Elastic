@@ -40,7 +40,8 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 		NUM_9(57),
 		SHIFT(16),
 		CONTROL(17),
-		ALT(18);
+		ALT(18),
+		ESCAPE(27);
 	}
 
 	data class Key(val character: Char, val keyCode: Int, val key: Keys?) {

@@ -15,8 +15,8 @@ internal class KeyboardStateTest {
 
 		val ks = KeyboardState()
 		ks.handler = object : KeyboardState.Handler {
-			override fun onType(keysDown: KeyboardState.KeyStroke) {
-				typed.add(keysDown)
+			override fun onType(keyStroke: KeyboardState.KeyStroke) {
+				typed.add(keyStroke)
 			}
 		}
 
@@ -80,7 +80,7 @@ internal class KeyboardStateTest {
 		var ran = false
 
 		ks.handler = object : KeyboardState.Handler {
-			override fun onType(keysDown: KeyboardState.KeyStroke) {
+			override fun onType(keyStroke: KeyboardState.KeyStroke) {
 				ran = true
 				//Assertions.assertEquals(keysDown., 4)
 			}
@@ -113,6 +113,33 @@ internal class KeyboardStateTest {
 			),
 			typed[1]
 		)
+	}
+
+	@Test
+	fun testKeyStrokeEqualsKeys() {
+		val ks = KeyboardState.KeyStroke(setOf(
+			KeyboardEvent.Key('A', 65, KeyboardEvent.Keys.SHIFT),
+			KeyboardEvent.Key('A', 65, KeyboardEvent.Keys.CONTROL),
+			KeyboardEvent.Key('A', 65, KeyboardEvent.Keys.A)
+		))
+
+		Assertions.assertFalse(ks.equalsKeys(setOf(
+			KeyboardEvent.Keys.CONTROL,
+			KeyboardEvent.Keys.ALT,
+			KeyboardEvent.Keys.A,
+			KeyboardEvent.Keys.SHIFT
+		)))
+
+		Assertions.assertFalse(ks.equalsKeys(setOf(
+			KeyboardEvent.Keys.A,
+			KeyboardEvent.Keys.SHIFT
+		)))
+
+		Assertions.assertTrue(ks.equalsKeys(setOf(
+			KeyboardEvent.Keys.A,
+			KeyboardEvent.Keys.SHIFT,
+			KeyboardEvent.Keys.CONTROL
+		)))
 	}
 
 	private fun push(events: ArrayList<KeyboardEvent>): Set<KeyboardEvent> {
