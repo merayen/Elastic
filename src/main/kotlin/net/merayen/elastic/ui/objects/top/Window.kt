@@ -64,7 +64,9 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 			println("EasyMotion has selected Window's Control!")
 		}
 
-		override fun onUnselect() { }
+		override fun onUnselect() {
+			println("EasyMotion left")
+		}
 
 		override fun onEnter(control: Control) {
 			println("EasyMotion has entered Window's control!")
