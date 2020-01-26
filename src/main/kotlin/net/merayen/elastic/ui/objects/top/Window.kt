@@ -60,7 +60,7 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	 */
 	val overlay = UIObject()
 
-	override val easyMotionControl = object : Control(this) {
+	override val easyMotionControl = object : Control(this@Window) {
 		override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 			println("EasyMotion has selected Window's Control!")
 		}
@@ -109,6 +109,7 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 		val windowSize = nativeUI.window.size
 		viewportContainer.width = windowSize.width
 		viewportContainer.height = windowSize.height
+		easyMotion.update()
 	}
 
 	override fun onEvent(event: UIEvent) {

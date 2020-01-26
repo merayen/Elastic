@@ -80,4 +80,14 @@ abstract class Control(val uiobject: UIObject) {
 
 		return result
 	}
+
+	companion object {
+		fun create(uiobject: UIObject, keys: Set<KeyboardEvent.Keys>, func: (keyStroke: KeyboardState.KeyStroke) -> Unit): UIObject = object : UIObject(), EasyMotionControllable {
+			override val easyMotionControl = object : Control(uiobject) {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) = func(keyStroke)
+				override fun onLeave() {}
+				override val trigger = keys
+			}
+		}
+	}
 }

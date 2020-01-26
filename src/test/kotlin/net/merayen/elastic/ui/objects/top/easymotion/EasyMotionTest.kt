@@ -36,7 +36,8 @@ internal class EasyMotionTest {
 		result.clear()
 
 		top = object : NamedUIObject("top"), EasyMotionMaster, EasyMotionControllable {
-			override val easyMotionControl = object : Control(this) {
+			val self = this
+			override val easyMotionControl = object : Control(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -61,7 +62,8 @@ internal class EasyMotionTest {
 
 		addBackButton(top!!)
 		child1 = object : NamedUIObject("child1"), EasyMotionControllable {
-			override val easyMotionControl = object : Control(this) {
+			val self = this
+			override val easyMotionControl = object : Control(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -81,7 +83,8 @@ internal class EasyMotionTest {
 		top!!.add(child2!!)
 
 		child11 = object : NamedUIObject("child11"), EasyMotionControllable {
-			override val easyMotionControl = object : Control(this) {
+			val self = this
+			override val easyMotionControl = object : Control(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -97,7 +100,8 @@ internal class EasyMotionTest {
 
 
 		child4 = object : NamedUIObject("child4"), EasyMotionControllable {
-			override val easyMotionControl = object : Control(this) {
+			val self = this
+			override val easyMotionControl = object : Control(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -114,7 +118,8 @@ internal class EasyMotionTest {
 
 
 		child41 = object : NamedUIObject("child41"), EasyMotionControllable {
-			override val easyMotionControl = object : Control(this) {
+			val self = this
+			override val easyMotionControl = object : Control(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -130,7 +135,8 @@ internal class EasyMotionTest {
 
 
 		child42 = object : NamedUIObject("child42"), EasyMotionControllable {
-			override val easyMotionControl = object : Control(this) {
+			val self = this
+			override val easyMotionControl = object : Control(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -175,6 +181,22 @@ internal class EasyMotionTest {
 				Pair("back", child1)
 			),
 			result
+		)
+	}
+
+	@Test
+	fun testBackstepping() {
+		pushKeys(Keys.CONTROL, Keys.T)
+		pushKeys(Keys.A)
+		pushKeys(Keys.Q)
+
+		update()
+
+		Assertions.assertEquals(
+			arrayListOf(
+				(top as EasyMotionControllable).easyMotionControl
+			),
+			(top as EasyMotionMaster).easyMotion.getCurrentStack()
 		)
 	}
 
@@ -287,8 +309,9 @@ internal class EasyMotionTest {
 	private fun addBackButton(uiobject: NamedUIObject) {
 		val control = (uiobject as EasyMotionControllable).easyMotionControl
 		val obj = object : NamedUIObject("back:${uiobject.name}"), EasyMotionControllable {
+			val self = this
 			override val easyMotionControl: Control
-				get() = object : Control(this) {
+				get() = object : Control(self) {
 					override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 						result.add(Pair("back", control.uiobject))
 						(top as EasyMotionMaster).easyMotion.select(control.parent!!.easyMotionControl)
