@@ -12,54 +12,72 @@ import java.util.*
  * @param uiobject The object that is
  */
 abstract class Control(val uiobject: UIObject) {
-	protected val easyMotion = uiobject.search.parentByInterface(EasyMotionMaster::class.java)
+	private var easyMotion: EasyMotion? = null
+		private set
+		get() {
+			if (field == null) {
+				val obj = uiobject.search.parentByInterface(EasyMotionMaster::class.java)
+					?: throw RuntimeException("EasyMotion not found")
+
+				field = obj.easyMotion
+			}
+
+			return field
+		}
+
+	val parent: EasyMotionControllable?
+		get() = uiobject.search.parentByInterface(EasyMotionControllable::class.java)
 
 	/**
-	 * When user types a key to choose this Control or comes back from child Control
+	 * When user types a key to choose this Control
 	 */
-	abstract fun onSelect()
+	abstract fun onSelect(keyStroke: KeyboardState.KeyStroke)
 
 	/**
-	 * When user leaves this Control by going upward.
+	 * When user leaves this Control and enter its parent.
+	 * Use it e.g close a dialog etc.
 	 */
-	abstract fun onUnselect()
-
-	/** // TODO DELETE?
-	 * When user enters a child of this Control.
-	 * @param control The Control being entered
-	 */
-	abstract fun onEnter(control: Control)
+	abstract fun onLeave()
 
 	/**
 	 * Define the keystroke that selects this Control.
+	 * Leave the Set empty to capture all keys that are not captured by other Controls.
 	 */
 	abstract val trigger: Set<KeyboardEvent.Keys>
 
-	val keyboardState = KeyboardState()
+	private val keyboardState = KeyboardState()
 
 	fun handle(key: KeyboardEvent) {
 		keyboardState.handle(key)
 	}
 
 	/**
+	 * Make this the active EasyMotion control.
+	 */
+	fun select() {
+		val easyMotion = easyMotion ?: throw RuntimeException("This Control is not in the tree below EasyMotion")
+
+		easyMotion.select(this)
+	}
+
+	/**
 	 * Retrieves all controls available under this
 	 */
-	val children: List<Control>
-		get() {
-			val result = ArrayList<Control>()
+	fun getChildren(): List<Control> {
+		val result = ArrayList<Control>()
 
-			val stack = ArrayDeque<UIObject>()
-			stack.addAll(uiobject.children)
+		val stack = ArrayDeque<UIObject>()
+		stack.addAll(uiobject.children)
 
-			while (!stack.isEmpty()) {
-				val child = stack.pop()
+		while (!stack.isEmpty()) {
+			val child = stack.pop()
 
-				if (child is EasyMotionControllable)
-					result.add(child.easyMotionControl)
-				else
-					stack.addAll(child.children)
-			}
-
-			return result
+			if (child is EasyMotionControllable)
+				result.add(child.easyMotionControl)
+			else
+				stack.addAll(child.children)
 		}
+
+		return result
+	}
 }

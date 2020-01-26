@@ -74,22 +74,6 @@ internal class KeyboardStateTest {
 	}
 
 	@Test
-	fun testModifierReading() {
-		val ks = ks!!
-
-		var ran = false
-
-		ks.handler = object : KeyboardState.Handler {
-			override fun onType(keyStroke: KeyboardState.KeyStroke) {
-				ran = true
-				//Assertions.assertEquals(keysDown., 4)
-			}
-		}
-
-		//push()
-	}
-
-	@Test
 	fun testModifiersPushAndThenAnotherPush() {
 		val pushed = arrayListOf(
 			KeyboardEvent("", '\u0000', 16, true),
@@ -140,6 +124,11 @@ internal class KeyboardStateTest {
 			KeyboardEvent.Keys.SHIFT,
 			KeyboardEvent.Keys.CONTROL
 		)))
+	}
+
+	@Test
+	fun testEmptyEqualsKeys() {
+		Assertions.assertTrue(KeyboardState.KeyStroke(setOf()).equalsKeys(setOf()))
 	}
 
 	private fun push(events: ArrayList<KeyboardEvent>): Set<KeyboardEvent> {

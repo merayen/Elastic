@@ -13,6 +13,7 @@ import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionMaster
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
+import net.merayen.elastic.ui.util.KeyboardState
 import net.merayen.elastic.util.ImmutablePoint
 
 /**
@@ -60,18 +61,11 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	val overlay = UIObject()
 
 	override val easyMotionControl = object : Control(this) {
-		override fun onSelect() {
+		override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 			println("EasyMotion has selected Window's Control!")
 		}
 
-		override fun onUnselect() {
-			println("EasyMotion left")
-		}
-
-		override fun onEnter(control: Control) {
-			println("EasyMotion has entered Window's control!")
-		}
-
+		override fun onLeave() {}
 		override val trigger = setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.T)
 	}
 

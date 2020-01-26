@@ -9,31 +9,42 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class EasyMotionTest {
+	open class NamedUIObject(val name: String) : UIObject()
 	val result = ArrayList<Pair<String, Any>>()
 
-	private var top: UIObject? = null
-	private var child1: UIObject? = null
-	private var child11: UIObject? = null
-	private var child2: UIObject? = null
-	private var child3: UIObject? = null
-	private var child31: UIObject? = null
-	private var child311: UIObject? = null
+	private var top: NamedUIObject? = null
+	private var child1: NamedUIObject? = null
+	private var child11: NamedUIObject? = null
+	private var child2: NamedUIObject? = null
+	private var child4: NamedUIObject? = null
+	private var child41: NamedUIObject? = null
+	private var child42: NamedUIObject? = null
 
 	private val nothing = Any()
 
 	@BeforeEach
 	fun setUp() {
+		/* Tree:
+
+		CTRL-T
+			A
+				F
+			P
+				G
+				<ANY>
+		 */
 		result.clear()
 
-		top = object : UIObject(), EasyMotionMaster, EasyMotionControllable {
+		top = object : NamedUIObject("top"), EasyMotionMaster, EasyMotionControllable {
 			override val easyMotionControl = object : Control(this) {
-				override fun onSelect() {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
 
-				override fun onUnselect() { }
+				override fun onLeave() {
+					//result.add(Pair("leaving", uiobject))
+				}
 
-				override fun onEnter(control: Control) {}
 				override val trigger = setOf(Keys.CONTROL, Keys.T)
 			}
 
@@ -44,80 +55,95 @@ internal class EasyMotionTest {
 					override fun onMistype(keyStroke: KeyboardState.KeyStroke) {
 						result.add(Pair("mistype", keyStroke))
 					}
-
-					override fun onEnter() {
-						result.add(Pair("enter", nothing))
-					}
-
-					override fun onLeave() {
-						result.add(Pair("leave", nothing))
-					}
 				}
 			}
 		}
 
-		child1 = object : UIObject(), EasyMotionControllable {
+		addBackButton(top!!)
+		child1 = object : NamedUIObject("child1"), EasyMotionControllable {
 			override val easyMotionControl = object : Control(this) {
-				override fun onSelect() {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
 
-				override fun onUnselect() { }
+				override fun onLeave() {
+					result.add(Pair("leaving", uiobject))
+				}
 
-				override fun onEnter(control: Control) {}
 				override val trigger = setOf(Keys.A)
 			}
 		}
 		top!!.add(child1!!)
+		addBackButton(child1!!)
 
 		// Dead end
-		child2 = UIObject()
+		child2 = NamedUIObject("child2")
 		top!!.add(child2!!)
 
-		child11 = object : UIObject(), EasyMotionControllable {
+		child11 = object : NamedUIObject("child11"), EasyMotionControllable {
 			override val easyMotionControl = object : Control(this) {
-				override fun onSelect() {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
 
-				override fun onUnselect() { }
+				override fun onLeave() {
+					result.add(Pair("leaving", uiobject))
+				}
 
-				override fun onEnter(control: Control) {}
 				override val trigger = setOf(Keys.F)
 			}
 		}
 		child1!!.add(child11!!)
 
-		child3 = UIObject()
-		top!!.add(child3!!)
 
-		child31 = object : UIObject(), EasyMotionControllable {
+		child4 = object : NamedUIObject("child4"), EasyMotionControllable {
 			override val easyMotionControl = object : Control(this) {
-				override fun onSelect() {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
 
-				override fun onUnselect() { }
+				override fun onLeave() {
+					result.add(Pair("leaving", uiobject))
+				}
 
-				override fun onEnter(control: Control) {}
-				override val trigger = setOf(Keys.S)
+				override val trigger = setOf(Keys.P)
 			}
 		}
-		child3!!.add(child31!!)
+		top!!.add(child4!!)
+		addBackButton(child4!!)
 
-		child311 = object : UIObject(), EasyMotionControllable {
+
+		child41 = object : NamedUIObject("child41"), EasyMotionControllable {
 			override val easyMotionControl = object : Control(this) {
-				override fun onSelect() {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
 
-				override fun onUnselect() { }
+				override fun onLeave() {
+					result.add(Pair("leaving", uiobject))
+				}
 
-				override fun onEnter(control: Control) {}
-				override val trigger = setOf(Keys.U)
+				override val trigger = setOf(Keys.G)
 			}
 		}
-		child31!!.add(child311!!)
+		child4!!.add(child41!!)
+
+
+		child42 = object : NamedUIObject("child42"), EasyMotionControllable {
+			override val easyMotionControl = object : Control(this) {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
+					result.add(Pair("selected", uiobject))
+				}
+
+				override fun onLeave() {
+					result.add(Pair("leaving", uiobject))
+				}
+
+				override val trigger = setOf<Keys>()  // captures every key but the keys defined by sibling Controls
+			}
+		}
+		child4!!.add(child42!!)
+		addBackButton(child42!!)
 	}
 
 	@Test
@@ -125,10 +151,11 @@ internal class EasyMotionTest {
 		pushKeys(Keys.CONTROL, Keys.T)
 		pushKeys(Keys.A)
 
+		update()
+
 		// Should now have selected top and child31
 		Assertions.assertEquals(
 			arrayListOf(
-				Pair("enter", nothing),
 				Pair("selected", top),
 				Pair("selected", child1)
 			),
@@ -138,13 +165,14 @@ internal class EasyMotionTest {
 		// Go back one step by pushing Q
 		pushKeys(Keys.Q)
 
+		update()
+
 		// Assert that we are back on the first Control
 		Assertions.assertEquals(
 			arrayListOf(
-				Pair("enter", nothing),
 				Pair("selected", top),
 				Pair("selected", child1),
-				Pair("selected", top)
+				Pair("back", child1)
 			),
 			result
 		)
@@ -158,7 +186,6 @@ internal class EasyMotionTest {
 
 		Assertions.assertEquals(
 			arrayListOf(
-				Pair("enter", nothing),
 				Pair("selected", top),
 				Pair("mistype", KeyboardState.KeyStroke(setOf(KeyboardEvent.Key(' ', 77, Keys.M)))),
 				Pair("selected", child1)
@@ -168,20 +195,20 @@ internal class EasyMotionTest {
 	}
 
 	@Test
-	fun testEscaping() {
+	fun testAnyReceiver() {
 		pushKeys(Keys.CONTROL, Keys.T)
-		pushKeys(Keys.A)
-		pushKeys(Keys.ESCAPE) // We escape, leaving EasyMotion
-		pushKeys(Keys.CONTROL, Keys.T)  // Then we enter EasyMotion again
+		pushKeys(Keys.P)
+		pushKeys(Keys.G)
+		pushKeys(Keys.X)
+
+		update()
 
 		Assertions.assertEquals(
 			arrayListOf(
-				Pair("enter", nothing),
 				Pair("selected", top),
-				Pair("selected", child1),
-				Pair("leave", nothing),
-				Pair("enter", nothing),
-				Pair("selected", top)
+				Pair("selected", child4),
+				Pair("selected", child41),
+				Pair("selected", child42)
 			),
 			result
 		)
@@ -190,38 +217,90 @@ internal class EasyMotionTest {
 	@Test
 	fun testOptions() {
 		pushKeys(Keys.CONTROL, Keys.T)
-		pushKeys(Keys.S) // This works
-		pushKeys(Keys.A) // This is mistyping
-		pushKeys(Keys.U) // This works, hit it twice, as it has no child, it should jump back
-		pushKeys(Keys.U) // This works, hit it twice, as it has no child, it should jump back
-		pushKeys(Keys.Q) // Go 1 back
-		pushKeys(Keys.A) // This works
-		pushKeys(Keys.F) // This works
-		pushKeys(Keys.Q) // Go 1 back
-		pushKeys(Keys.Q) // Leaves EasyMotion
-		pushKeys(Keys.Q) // No-op. Should do nothing
+		pushKeys(Keys.A) // This is correct
+		pushKeys(Keys.F) // This works, hit it twice, as it has no child, it should jump back
+		pushKeys(Keys.F) // This works, hit it twice, as it has no child, it should jump back
+
+		update()
 
 		Assertions.assertEquals(
 			arrayListOf(
-				Pair("enter", nothing),
-				Pair("selected", top),
-				Pair("selected", child31),
-				Pair("mistype", KeyboardState.KeyStroke(setOf(
-					KeyboardEvent.Key(' ', KeyboardEvent.Keys.A.code, KeyboardEvent.Keys.A)
-				))),
-				Pair("selected", child311),
-				Pair("selected", child31),
-				Pair("selected", child311),
-				Pair("selected", child31),
 				Pair("selected", top),
 				Pair("selected", child1),
 				Pair("selected", child11),
-				Pair("selected", child1),
-				Pair("selected", top),
-				Pair("leave", nothing)
+				Pair("selected", child11)
 			),
 			result
 		)
+	}
+
+	@Test
+	fun testRemovingUIObject() {
+		pushKeys(Keys.CONTROL, Keys.T)
+		pushKeys(Keys.A)
+
+		update()
+
+		top!!.remove(child1!!)
+
+		update()
+
+		Assertions.assertEquals(
+			arrayListOf(
+				(top as EasyMotionControllable).easyMotionControl
+			),
+			(top as EasyMotionMaster).easyMotion.getCurrentStack()
+		)
+	}
+
+	@Test
+	fun testSelect() {
+		(child1 as EasyMotionControllable).easyMotionControl.select()
+
+		Assertions.assertEquals(
+			arrayListOf(
+				(top as EasyMotionControllable).easyMotionControl,
+				(child1 as EasyMotionControllable).easyMotionControl
+			),
+			(top as EasyMotionMaster).easyMotion.getCurrentStack()
+		)
+	}
+
+	@Test
+	fun testSelectChildrenlessControl() {
+		(child41 as EasyMotionControllable).easyMotionControl.select()
+
+		Assertions.assertEquals(
+			arrayListOf(
+				(top as EasyMotionControllable).easyMotionControl,
+				(child4 as EasyMotionControllable).easyMotionControl
+			),
+			(top as EasyMotionMaster).easyMotion.getCurrentStack()
+		)
+	}
+
+
+	private fun update() {
+		(top as EasyMotionMaster).easyMotion.update()
+	}
+
+	private fun addBackButton(uiobject: NamedUIObject) {
+		val control = (uiobject as EasyMotionControllable).easyMotionControl
+		val obj = object : NamedUIObject("back:${uiobject.name}"), EasyMotionControllable {
+			override val easyMotionControl: Control
+				get() = object : Control(this) {
+					override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
+						result.add(Pair("back", control.uiobject))
+						(top as EasyMotionMaster).easyMotion.select(control.parent!!.easyMotionControl)
+					}
+
+					override fun onLeave() {}
+
+					override val trigger = setOf(Keys.Q)
+				}
+		}
+
+		control.uiobject.add(obj)
 	}
 
 	private fun pushKeys(vararg keys: Keys) {

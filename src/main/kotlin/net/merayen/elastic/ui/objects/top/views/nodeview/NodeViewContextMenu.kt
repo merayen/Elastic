@@ -14,6 +14,7 @@ import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.top.easymotion.Control
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionControllable
 import net.merayen.elastic.ui.objects.top.views.nodeview.addnode.AddNodePopup
+import net.merayen.elastic.ui.util.KeyboardState
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.NodeUtil
@@ -29,7 +30,6 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 
 	private val addNodeItem = TextContextMenuItem("Add node")
 	private val autoArrangeItem = TextContextMenuItem("Auto-arrange")
-
 
 	init {
 		if (node_id == null)
@@ -56,14 +56,11 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 		add(object : UIObject(), EasyMotionControllable {
 
 			override val easyMotionControl = object : Control(this) {
-				override fun onSelect() {
+				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					menu.handler?.onSelect(addNodeItem, MutablePoint()) // TODO do not call the handler directly?
 				}
 
-				override fun onUnselect() { }
-
-				override fun onEnter(control: Control) { }
-
+				override fun onLeave() {}
 				override val trigger = setOf(KeyboardEvent.Keys.A)
 			}
 		})

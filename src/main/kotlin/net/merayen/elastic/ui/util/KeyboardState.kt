@@ -19,6 +19,11 @@ class KeyboardState {
 	 * A keyboard event consist of e.g a single letter typed, backspace, escape, SHIFT+a, CTRL+SHIFT+ALT+L etc.
 	 */
 	data class KeyStroke(val keys: Set<KeyboardEvent.Key>) {
+		init {
+			if (keys.isEmpty())
+				throw RuntimeException("KeyStroke must contain one or more keys pressed")
+		}
+
 		val modifiers = keys.filter { it.isModifier }
 
 		/**
