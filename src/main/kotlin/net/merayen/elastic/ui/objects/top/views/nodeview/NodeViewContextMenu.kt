@@ -51,12 +51,8 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 		menu.addMenuItem(autoArrangeItem)
 
 		// Add node EasyMotion action
-		add(Control.create(this, setOf(KeyboardEvent.Keys.A)) {
+		add(Control.create(addNodeItem, setOf(KeyboardEvent.Keys.A)) {
 			menu.handler?.onSelect(addNodeItem, MutablePoint()) // TODO do not call the handler directly?
-		})
-
-		add(Control.create(this, setOf(KeyboardEvent.Keys.Q)) {
-			println("Ja!")
 		})
 	}
 

@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.easymotion
 
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
+import net.merayen.elastic.ui.objects.top.Window
 import net.merayen.elastic.ui.util.KeyboardState
 import java.util.*
 
@@ -75,10 +76,12 @@ class EasyMotion(uiObject: UIObject, private val initialControl: Control) {
 
 		var hit: Control? = null
 		for (child in children) {
-			if (child.trigger in checked)
-
-				if (keyStroke.equalsKeys(child.trigger))
+			if (child.trigger in checked) {
+				if (keyStroke.equalsKeys(child.trigger)) {
 					hit = child
+					break
+				}
+			}
 		}
 
 		if (hit == null) {  // See if there are any ANY-receivers that takes all the keys that are not set
@@ -110,6 +113,8 @@ class EasyMotion(uiObject: UIObject, private val initialControl: Control) {
 			return
 
 		stack.removeLast()
+
+		printDebug()
 	}
 
 	/**
@@ -168,5 +173,9 @@ class EasyMotion(uiObject: UIObject, private val initialControl: Control) {
 		stack.add(control)
 
 		control.onSelect(keyStroke)
+	}
+
+	private fun printDebug() {
+		(initialControl.uiobject as Window).debug.set("EasyMotion", stack.map { it.uiobject.javaClass.simpleName })
 	}
 }

@@ -188,6 +188,17 @@ internal class EasyMotionTest {
 	fun testBackstepping() {
 		pushKeys(Keys.CONTROL, Keys.T)
 		pushKeys(Keys.A)
+
+		update()
+
+		Assertions.assertEquals(
+			arrayListOf(
+				(top as EasyMotionControllable).easyMotionControl,
+				(child1 as EasyMotionControllable).easyMotionControl
+			),
+			(top as EasyMotionMaster).easyMotion.getCurrentStack()
+		)
+
 		pushKeys(Keys.Q)
 
 		update()
@@ -314,7 +325,7 @@ internal class EasyMotionTest {
 				get() = object : Control(self) {
 					override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 						result.add(Pair("back", control.uiobject))
-						(top as EasyMotionMaster).easyMotion.select(control.parent!!.easyMotionControl)
+						(top as EasyMotionMaster).easyMotion.select(control)
 					}
 
 					override fun onLeave() {}

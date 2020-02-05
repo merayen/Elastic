@@ -4,11 +4,13 @@ import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.controller.NodeViewController
+import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.MouseWheelEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
+import net.merayen.elastic.ui.objects.top.easymotion.Control
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
 import java.util.*
@@ -44,6 +46,14 @@ class NodeView : View() {
 	private var loaded = false
 
 	init {
+		add(Control.create(container, setOf(KeyboardEvent.Keys.N)) {
+			println("Ja, da er vi inne i NodeViewContainer!")
+		})
+
+		add(Control.create(container, setOf(KeyboardEvent.Keys.Q)) {
+
+		})
+
 		add(container)
 		add(nodeViewBar)
 
