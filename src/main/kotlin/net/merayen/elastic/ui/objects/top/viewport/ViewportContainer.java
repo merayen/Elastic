@@ -156,7 +156,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 		draw.fillRect(0, 0, width, height);
 
 		if (blink > System.currentTimeMillis()) {
-			draw.setColor(1f, 0.2f, 0.2f, 0.5f);
+			draw.setColor(1f, 0.0f, 0.0f);
 			draw.fillRect(0, 0, width, height);
 		}
 	}
@@ -230,16 +230,25 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 		return v;
 	}
 
+	public void blinkRed() {
+		blink = System.currentTimeMillis() + 100;
+	}
+
+	// EASYMOTION
 	private Branch branch = new Branch(this) {
 		{
 			for (int i = 0; i < 10; i++) {
 				int paneNumber = i;
 
 				Control control = new Control(() -> {
-					if (paneNumber < viewports.size())
-						return viewports.get(paneNumber);
-					else
-						return null;
+					if (paneNumber < viewports.size()) {
+						if (easyMotionMode.equals(EasyMotionMode.ENTER)) {
+							return viewports.get(paneNumber).getCurrentView();
+						} else if (easyMotionMode.equals(EasyMotionMode.CHANGE)) {
+							System.out.println("ViewportContainer is supposed to show a dialog with alternative view to swap current view with");
+						}
+					}
+					return null;
 				});
 
 				HashSet<KeyboardEvent.Keys> keys = new HashSet<>();
@@ -265,7 +274,10 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 		return branch;
 	}
 
-	public void blinkRed() {
-		blink = System.currentTimeMillis() + 100;
+	public enum EasyMotionMode {
+		ENTER,
+		CHANGE
 	}
+
+	public EasyMotionMode easyMotionMode;
 }

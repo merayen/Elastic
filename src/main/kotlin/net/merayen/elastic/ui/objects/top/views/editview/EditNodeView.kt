@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.EditNodeController
 import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 
 class EditNodeView : View() {
@@ -85,4 +86,6 @@ class EditNodeView : View() {
 			}
 		}
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.splashview
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.util.Pacer
 import kotlin.math.PI
@@ -74,4 +75,6 @@ class SplashView : View() {
 		draw.setFont("", 24f)
 		draw.text(loadingDescription, 50f + 140f * (1 - initPos), layoutHeight / 2 + 90f)
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

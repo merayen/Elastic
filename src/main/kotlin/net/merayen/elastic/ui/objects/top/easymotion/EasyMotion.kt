@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.easymotion
 
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.top.Window
 import net.merayen.elastic.ui.util.KeyboardState
@@ -63,7 +64,6 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 
 				current.easyMotionBranch.handler?.onEnter()
 
-
 				val result = control.select()
 
 				if (result == Branch.Control.STEP_BACK) {
@@ -75,10 +75,11 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 				} else {
 					val child = control.child
 
-					if (child != null) {
+					if (child != null && child.easyMotionBranch.controls.isNotEmpty()) {
 						handler?.onEnter(child)
 						if (child in stack)
 							throw AlreadyInStackException()
+
 
 						stack.add(child)
 					}
@@ -103,7 +104,7 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 		var removing = false
 
 		stack.removeIf {
-			if(it == branch)
+			if (it == branch)
 				removing = true;
 
 			removing
@@ -138,6 +139,6 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 	}
 
 	private fun printDebug() {
-		(initialBranch.easyMotionBranch.uiobject as Window).debug.set("EasyMotion", stack.map { it.easyMotionBranch.uiobject.javaClass.simpleName })
+		(initialBranch.easyMotionBranch.uiobject as Window).debug.set("EasyMotion", stack.map { (it as? UIObject)?.javaClass?.simpleName })
 	}
 }
