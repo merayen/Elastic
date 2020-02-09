@@ -54,6 +54,19 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 			Keys.SHIFT,
 			Keys.ALT
 		)
+
+		val numbers = arrayOf(
+			Keys.NUM_0,
+			Keys.NUM_1,
+			Keys.NUM_2,
+			Keys.NUM_3,
+			Keys.NUM_4,
+			Keys.NUM_5,
+			Keys.NUM_6,
+			Keys.NUM_7,
+			Keys.NUM_8,
+			Keys.NUM_9
+		)
 	}
 
 	val key = Key(character, keyCode, Keys.values().firstOrNull { it.code == keyCode })

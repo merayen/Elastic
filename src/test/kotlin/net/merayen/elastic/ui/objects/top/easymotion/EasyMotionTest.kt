@@ -35,9 +35,9 @@ internal class EasyMotionTest {
 		 */
 		result.clear()
 
-		top = object : NamedUIObject("top"), EasyMotionMaster, EasyMotionControllable {
+		top = object : NamedUIObject("top"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl = object : Control(self) {
+			override val easyMotionBranch = object : Branch(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -49,7 +49,7 @@ internal class EasyMotionTest {
 				override val trigger = setOf(Keys.CONTROL, Keys.T)
 			}
 
-			override val easyMotion = EasyMotion(this, easyMotionControl)
+			override val easyMotion = EasyMotion(this)
 
 			init {
 				easyMotion.handler = object : EasyMotion.Handler {
@@ -61,9 +61,9 @@ internal class EasyMotionTest {
 		}
 
 		addBackButton(top!!)
-		child1 = object : NamedUIObject("child1"), EasyMotionControllable {
+		child1 = object : NamedUIObject("child1"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl = object : Control(self) {
+			override val easyMotionBranch = object : Branch(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -82,9 +82,9 @@ internal class EasyMotionTest {
 		child2 = NamedUIObject("child2")
 		top!!.add(child2!!)
 
-		child11 = object : NamedUIObject("child11"), EasyMotionControllable {
+		child11 = object : NamedUIObject("child11"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl = object : Control(self) {
+			override val easyMotionBranch = object : Branch(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -99,9 +99,9 @@ internal class EasyMotionTest {
 		child1!!.add(child11!!)
 
 
-		child4 = object : NamedUIObject("child4"), EasyMotionControllable {
+		child4 = object : NamedUIObject("child4"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl = object : Control(self) {
+			override val easyMotionBranch = object : Branch(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -117,9 +117,9 @@ internal class EasyMotionTest {
 		addBackButton(child4!!)
 
 
-		child41 = object : NamedUIObject("child41"), EasyMotionControllable {
+		child41 = object : NamedUIObject("child41"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl = object : Control(self) {
+			override val easyMotionBranch = object : Branch(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -134,9 +134,9 @@ internal class EasyMotionTest {
 		child4!!.add(child41!!)
 
 
-		child42 = object : NamedUIObject("child42"), EasyMotionControllable {
+		child42 = object : NamedUIObject("child42"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl = object : Control(self) {
+			override val easyMotionBranch = object : Branch(self) {
 				override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 					result.add(Pair("selected", uiobject))
 				}
@@ -193,8 +193,8 @@ internal class EasyMotionTest {
 
 		Assertions.assertEquals(
 			arrayListOf(
-				(top as EasyMotionControllable).easyMotionControl,
-				(child1 as EasyMotionControllable).easyMotionControl
+				(top as EasyMotionBranch).easyMotionBranch,
+				(child1 as EasyMotionBranch).easyMotionBranch
 			),
 			(top as EasyMotionMaster).easyMotion.getCurrentStack()
 		)
@@ -205,7 +205,7 @@ internal class EasyMotionTest {
 
 		Assertions.assertEquals(
 			arrayListOf(
-				(top as EasyMotionControllable).easyMotionControl
+				(top as EasyMotionBranch).easyMotionBranch
 			),
 			(top as EasyMotionMaster).easyMotion.getCurrentStack()
 		)
@@ -280,7 +280,7 @@ internal class EasyMotionTest {
 
 		Assertions.assertEquals(
 			arrayListOf(
-				(top as EasyMotionControllable).easyMotionControl
+				(top as EasyMotionBranch).easyMotionBranch
 			),
 			(top as EasyMotionMaster).easyMotion.getCurrentStack()
 		)
@@ -288,12 +288,12 @@ internal class EasyMotionTest {
 
 	@Test
 	fun testSelect() {
-		(child1 as EasyMotionControllable).easyMotionControl.select()
+		(child1 as EasyMotionBranch).easyMotionBranch.select()
 
 		Assertions.assertEquals(
 			arrayListOf(
-				(top as EasyMotionControllable).easyMotionControl,
-				(child1 as EasyMotionControllable).easyMotionControl
+				(top as EasyMotionBranch).easyMotionBranch,
+				(child1 as EasyMotionBranch).easyMotionBranch
 			),
 			(top as EasyMotionMaster).easyMotion.getCurrentStack()
 		)
@@ -301,12 +301,12 @@ internal class EasyMotionTest {
 
 	@Test
 	fun testSelectChildrenlessControl() {
-		(child41 as EasyMotionControllable).easyMotionControl.select()
+		(child41 as EasyMotionBranch).easyMotionBranch.select()
 
 		Assertions.assertEquals(
 			arrayListOf(
-				(top as EasyMotionControllable).easyMotionControl,
-				(child4 as EasyMotionControllable).easyMotionControl
+				(top as EasyMotionBranch).easyMotionBranch,
+				(child4 as EasyMotionBranch).easyMotionBranch
 			),
 			(top as EasyMotionMaster).easyMotion.getCurrentStack()
 		)
@@ -318,11 +318,11 @@ internal class EasyMotionTest {
 	}
 
 	private fun addBackButton(uiobject: NamedUIObject) {
-		val control = (uiobject as EasyMotionControllable).easyMotionControl
-		val obj = object : NamedUIObject("back:${uiobject.name}"), EasyMotionControllable {
+		val control = (uiobject as EasyMotionBranch).easyMotionBranch
+		val obj = object : NamedUIObject("back:${uiobject.name}"), EasyMotionBranch {
 			val self = this
-			override val easyMotionControl: Control
-				get() = object : Control(self) {
+			override val easyMotionBranch: Branch
+				get() = object : Branch(self) {
 					override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
 						result.add(Pair("back", control.uiobject))
 						(top as EasyMotionMaster).easyMotion.select(control)

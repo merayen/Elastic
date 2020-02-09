@@ -6,10 +6,9 @@ import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.UIEvent
-import net.merayen.elastic.ui.objects.top.easymotion.Control
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotion
-import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionControllable
-import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionMaster
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
@@ -20,7 +19,7 @@ import net.merayen.elastic.util.ImmutablePoint
  * The very topmost UIObject for a Window, containing all the UI for that window.
  * Represents a certain UIData in a certain Node-group where it gets all the properties from, like window-size.
  */
-class Window(private val surface: Surface) : UIObject(), FlexibleDimension, EasyMotionMaster, EasyMotionControllable {
+class Window(private val surface: Surface) : UIObject(), FlexibleDimension, EasyMotionBranch {
 	override var layoutWidth: Float
 		get() = nativeUI.window.size.width
 		set(value) {
@@ -50,7 +49,9 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 
 	var isDecorated: Boolean
 		get() = nativeUI.window.isDecorated
-		set(value) {nativeUI.window.isDecorated = value}
+		set(value) {
+			nativeUI.window.isDecorated = value
+		}
 
 	val nativeUI = surface.nativeUI
 
@@ -60,19 +61,19 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	 */
 	val overlay = UIObject()
 
-	override val easyMotionControl = object : Control(this@Window) {
-		override fun onSelect(keyStroke: KeyboardState.KeyStroke) {
-			println("EasyMotion has selected Window's Control!")
+	override val easyMotionBranch = object : Branch(this@Window) {
+		init {
+			controls[setOf(KeyboardEvent.Keys.P)] = Control {
+				println("You pushed P")
+				viewportContainer
+			}
 		}
-
-		override fun onLeave() {}
-		override val trigger = setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.T)
 	}
 
 	/**
 	 * EasyMotion support is Window-global.
 	 */
-	override val easyMotion = EasyMotion(this, easyMotionControl)
+	val easyMotion = EasyMotion(this)
 
 	val surfaceMouseCursors = SurfaceMouseCursors()
 	val debug = Debug()
@@ -91,6 +92,20 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 
 		add(overlay)
 		add(surfaceMouseCursors)
+
+		easyMotion.handler = object : EasyMotion.Handler {
+			override fun onMistype(keyStroke: KeyboardState.KeyStroke) {
+				viewportContainer.blinkRed()
+			}
+
+			override fun onEnter(branch: EasyMotionBranch) {
+				println("Inn ${branch}")
+			}
+
+			override fun onLeave(branch: EasyMotionBranch) {
+				println("Out ${branch}")
+			}
+		}
 	}
 
 	override fun onInit() {
