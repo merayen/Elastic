@@ -4,6 +4,7 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
@@ -12,7 +13,7 @@ import net.merayen.elastic.util.UniqueID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-abstract class View : UIObject {
+abstract class View : UIObject, EasyMotionBranch {
 	val id: String
 	var layoutWidth = 100f // Set by EditNodeView
 	var layoutHeight = 100f // Set by EditNodeView

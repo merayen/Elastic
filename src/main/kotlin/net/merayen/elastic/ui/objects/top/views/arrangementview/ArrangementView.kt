@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.arrangementview
 
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.ui.controller.ArrangementController
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 
 class ArrangementView : View() {
@@ -36,6 +37,8 @@ class ArrangementView : View() {
 			loaded = true
 		}
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 
 	override fun cloneView(): View {
 		return ArrangementView()

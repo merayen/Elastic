@@ -28,7 +28,7 @@ public class AddNodePopup {
 	}
 
 	private void openAddNodePopup() {
-		popup.openPopup(new AddNodePopupSlideItem(category -> openNodeList(category)));
+		popup.openPopup(new AddNodePopupSlideItem(this::openNodeList));
 	}
 
 	private void openNodeList(String category) {

@@ -6,7 +6,7 @@ import net.merayen.elastic.ui.util.UINodeUtil
 import net.merayen.elastic.util.MutablePoint
 import java.util.*
 
-open class  UIObject {
+open class UIObject {
 	var parent: UIObject? = null
 		private set
 	internal val children: MutableList<UIObject> = ArrayList()
@@ -27,8 +27,11 @@ open class  UIObject {
 	 */
 	var isInitialized = false
 		private set
-	var isAttached: Boolean = false
-		private set // Attached to the tree (reachable from Top) or not
+
+	/**
+	 * Cached version of the topmost parent of this UIObject
+	 */
+	var topMost: UIObject = this
 
 	val search = Search(this)
 
@@ -120,13 +123,16 @@ open class  UIObject {
 		if (uiobject.parent != null)
 			throw RuntimeException("UIObject already has a parent")
 
+
 		uiobject.parent = this
 		children.add(index, uiobject)
 
+		topMost = calculateTopMost()
+
 		// Mark every child as attached to the tree
-		uiobject.isAttached = true
+		uiobject.topMost = topMost
 		for (o in uiobject.search.allChildren)
-			o.isAttached = true
+			o.topMost = topMost
 	}
 
 	open fun remove(uiobject: UIObject) {
@@ -136,26 +142,27 @@ open class  UIObject {
 		if (uiobject.parent !== this)
 			throw RuntimeException("Should not happen")
 
+
 		children.remove(uiobject)
 		uiobject.parent = null
 
 		// Mark every child to be detached
-		uiobject.isAttached = false
+		uiobject.topMost = uiobject
 		for (o in uiobject.search.allChildren)
-			o.isAttached = false
+			o.topMost = uiobject
 	}
 
 	open fun removeAll() {
-		for(o in children) {
+		for (o in children) {
 			if (o.parent !== this)
 				throw RuntimeException("Should not happen")
 
 			o.parent = null
 
 			// Mark every child to be detached
-			o.isAttached = false
+			o.topMost = o
 			for (oc in o.search.allChildren)
-				oc.isAttached = false
+				oc.topMost = o
 		}
 
 		children.clear()
@@ -182,8 +189,8 @@ open class  UIObject {
 			return null // Haven't drawn anything yet
 
 		return MutablePoint(
-				(obj.absoluteTranslation!!.x - absoluteTranslation!!.x) * absoluteTranslation!!.scaleX,
-				(obj.absoluteTranslation!!.y - absoluteTranslation!!.y) * absoluteTranslation!!.scaleY
+			(obj.absoluteTranslation!!.x - absoluteTranslation!!.x) * absoluteTranslation!!.scaleX,
+			(obj.absoluteTranslation!!.y - absoluteTranslation!!.y) * absoluteTranslation!!.scaleY
 		)
 	}
 
@@ -233,6 +240,18 @@ open class  UIObject {
 	open fun sendMessage(message: ElasticMessage) {
 		val top = UINodeUtil.getTop(this)
 		top?.sendMessage(message)
-				?: System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", javaClass.name)
+			?: System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", javaClass.name)
+	}
+
+	/**
+	 * Retrieves the topmost parent of this object.
+	 * If no parents, we are the topmost object.
+	 */
+	private fun calculateTopMost(): UIObject {
+		var topMost = this
+		while (true)
+			topMost = topMost.parent ?: break
+
+		return topMost
 	}
 }

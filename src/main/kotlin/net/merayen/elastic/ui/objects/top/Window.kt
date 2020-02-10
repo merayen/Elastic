@@ -6,58 +6,20 @@ import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotion
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
+import net.merayen.elastic.ui.util.KeyboardState
 import net.merayen.elastic.util.ImmutablePoint
 
 /**
  * The very topmost UIObject for a Window, containing all the UI for that window.
  * Represents a certain UIData in a certain Node-group where it gets all the properties from, like window-size.
  */
-class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
-	class Overlay : UIObject() {
-		private val items = HashMap<UIObject, Long>()
-		private var nextPurge = 0L
-
-		override fun add(uiobject: UIObject) = throw RuntimeException("Use register() instead")
-		override fun add(uiobject: UIObject, index: Int) = throw RuntimeException("Use register() instead")
-
-		/**
-		 * Adds your UIObject to the overlay.
-		 * You need to call this method often, as your UIObject will get removed after a certain amount of time
-		 * without `use` being called.
-		 * This is implemented in case of issues and to prevent blocking overlaying elements.
-		 */
-		fun use(obj: UIObject) {
-			if (obj !in items)
-				super.add(obj)
-
-			items[obj] = System.currentTimeMillis()
-		}
-
-		/**
-		 * Remove your UIObject immediately. It is is not attached (e.g timed out), operation is ignored.
-		 */
-		override fun remove(uiobject: UIObject) {
-			items.remove(uiobject)
-			if (uiobject.parent == this)
-				remove(uiobject)
-		}
-
-		override fun onUpdate() {
-			if (nextPurge < System.currentTimeMillis()) {
-				val t = System.currentTimeMillis()
-				nextPurge = t + 1000
-
-				items.filter { it.value + 1000 < t }.forEach { (k, _) ->
-					remove(k)
-					items.remove(k)
-				}
-			}
-		}
-	}
-
+class Window(private val surface: Surface) : UIObject(), FlexibleDimension, EasyMotionBranch {
 	override var layoutWidth: Float
 		get() = nativeUI.window.size.width
 		set(value) {
@@ -87,7 +49,9 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 
 	var isDecorated: Boolean
 		get() = nativeUI.window.isDecorated
-		set(value) {nativeUI.window.isDecorated = value}
+		set(value) {
+			nativeUI.window.isDecorated = value
+		}
 
 	val nativeUI = surface.nativeUI
 
@@ -96,6 +60,27 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 	 * UIObjects put here are put on top of everything.
 	 */
 	val overlay = UIObject()
+
+	override val easyMotionBranch = object : Branch(this@Window) {
+		init {
+			controls[setOf(KeyboardEvent.Keys.P)] = Control {
+				println("You pushed P")
+				viewportContainer.easyMotionMode = ViewportContainer.EasyMotionMode.ENTER
+				viewportContainer
+			}
+			controls[setOf(KeyboardEvent.Keys.C)] = Control {
+				println("You are about to swap the view")
+				viewportContainer.easyMotionMode = ViewportContainer.EasyMotionMode.CHANGE
+				viewportContainer
+			}
+		}
+	}
+
+	/**
+	 * EasyMotion support is Window-global.
+	 */
+	val easyMotion = EasyMotion(this)
+
 	val surfaceMouseCursors = SurfaceMouseCursors()
 	val debug = Debug()
 
@@ -113,6 +98,20 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 
 		add(overlay)
 		add(surfaceMouseCursors)
+
+		easyMotion.handler = object : EasyMotion.Handler {
+			override fun onMistype(keyStroke: KeyboardState.KeyStroke) {
+				viewportContainer.blinkRed()
+			}
+
+			override fun onEnter(branch: EasyMotionBranch) {
+				println("Inn ${branch}")
+			}
+
+			override fun onLeave(branch: EasyMotionBranch) {
+				println("Out ${branch}")
+			}
+		}
 	}
 
 	override fun onInit() {
@@ -131,11 +130,12 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension {
 		val windowSize = nativeUI.window.size
 		viewportContainer.width = windowSize.width
 		viewportContainer.height = windowSize.height
+		easyMotion.update()
 	}
 
 	override fun onEvent(event: UIEvent) {
 		if (event is KeyboardEvent)
-			println("${event.pushed} ${event.character} ${event.keyCode} ${event.key}")
+			easyMotion.handle(event)
 	}
 
 	/**

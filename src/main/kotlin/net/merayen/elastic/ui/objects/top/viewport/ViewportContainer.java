@@ -3,8 +3,11 @@ package net.merayen.elastic.ui.objects.top.viewport;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.Rect;
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.event.KeyboardEvent;
 import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.intercom.ViewportHelloMessage;
+import net.merayen.elastic.ui.objects.top.easymotion.Branch;
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch;
 import net.merayen.elastic.ui.objects.top.views.View;
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView;
 import net.merayen.elastic.ui.util.HitTester;
@@ -12,22 +15,27 @@ import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.MutablePoint;
 import net.merayen.elastic.util.TaskExecutor;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Contains all the viewports.
  */
-public class ViewportContainer extends UIObject {
+public class ViewportContainer extends UIObject implements EasyMotionBranch {
 	public float width, height;
 	List<Viewport> viewports = new ArrayList<>(); // Flat list of all the viewports
 	private Layout layout;
 	private Viewport dragging_viewport;
 	private TaskExecutor task_executor = new TaskExecutor();
 	private MouseHandler mouse_handler;
+	private long blink;
 
 	public void addViewport(View view) {
-		if(view.getParent() != null)
+		if (view.getParent() != null)
 			throw new RuntimeException("View is already in use");
 
 		Viewport viewport = createViewport(view);
@@ -48,7 +56,7 @@ public class ViewportContainer extends UIObject {
 	public void swapView(View old, View view) {
 		Viewport viewport = viewports.stream().filter((x) -> x.view == old).findFirst().get();
 
-		if(viewport == null)
+		if (viewport == null)
 			throw new RuntimeException("Old view does not exist");
 
 		viewport.view = view;
@@ -66,6 +74,7 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private boolean me;
+
 	@Override
 	public void onInit() {
 		ViewportContainer self = this;
@@ -77,22 +86,20 @@ public class ViewportContainer extends UIObject {
 
 			@Override
 			public void onMouseDown(MutablePoint position) {
-				for(Viewport v : viewports)
-					if(HitTester.inside(position, new Rect(
-						v.getTranslation().x + v.width - 4,
-						v.getTranslation().y,
-						v.getTranslation().x + v.width + 4,
-						v.getTranslation().y + v.height)
+				for (Viewport v : viewports)
+					if (HitTester.inside(position, new Rect(
+							v.getTranslation().x + v.width - 4,
+							v.getTranslation().y,
+							v.getTranslation().x + v.width + 4,
+							v.getTranslation().y + v.height)
 					)) {
 						moving = v;
 						vertical = true;
-					}
-
-					else if(HitTester.inside(position, new Rect(
-						v.getTranslation().x,
-						v.getTranslation().y + v.height - 4,
-						v.getTranslation().x + v.width,
-						v.getTranslation().y + v.height + 4)
+					} else if (HitTester.inside(position, new Rect(
+							v.getTranslation().x,
+							v.getTranslation().y + v.height - 4,
+							v.getTranslation().x + v.width,
+							v.getTranslation().y + v.height + 4)
 					)) {
 						moving = v;
 						vertical = false;
@@ -103,10 +110,10 @@ public class ViewportContainer extends UIObject {
 
 			@Override
 			public void onMouseDrag(MutablePoint position, MutablePoint offset) {
-				if(moving == null)
+				if (moving == null)
 					return;
 
-				if(vertical) {
+				if (vertical) {
 					layout.resizeWidth(moving, (position.getX() - moving.getTranslation().x) / width);
 				} else {
 					layout.resizeHeight(moving, (position.getY() - moving.getTranslation().y) / height);
@@ -126,10 +133,10 @@ public class ViewportContainer extends UIObject {
 			 * Happens when user minimizes a Viewport and let go off the mouse --> remove Viewport.
 			 */
 			private void clean() {
-				for(int i = viewports.size() - 1; i > -1; i--) {
+				for (int i = viewports.size() - 1; i > -1; i--) {
 					Viewport v = viewports.get(i);
 
-					if(v.width <= 10 || v.height <= 10) {
+					if (v.width <= 10 || v.height <= 10) {
 						self.remove(v);
 						viewports.remove(v);
 						layout.remove(v);
@@ -142,11 +149,16 @@ public class ViewportContainer extends UIObject {
 
 	@Override
 	public void onDraw(Draw draw) {
-		if(me)
-			draw.setColor(255,  0,  255);
+		if (me)
+			draw.setColor(255, 0, 255);
 		else
 			draw.setColor(100, 100, 100);
 		draw.fillRect(0, 0, width, height);
+
+		if (blink > System.currentTimeMillis()) {
+			draw.setColor(1f, 0.0f, 0.0f);
+			draw.fillRect(0, 0, width, height);
+		}
 	}
 
 	@Override
@@ -161,8 +173,8 @@ public class ViewportContainer extends UIObject {
 	}
 
 	private void updateLayout() {
-		for(Layout.CalculatedPosition p : layout.getLayout()) {
-			Viewport v = ((Viewport)p.obj);
+		for (Layout.CalculatedPosition p : layout.getLayout()) {
+			Viewport v = ((Viewport) p.obj);
 			v.getTranslation().x = p.x * width;
 			v.getTranslation().y = p.y * height;
 			v.width = p.width * width;
@@ -183,24 +195,26 @@ public class ViewportContainer extends UIObject {
 			@Override
 			public void onNewViewport(boolean vertical) { // TODO refuse creation if we are too small
 				Viewport v = createViewport(omgJava.newViewport.view.cloneView());
-				if(vertical) {
+
+				if (vertical) {
 					layout.splitVertical(omgJava.newViewport, v);
 				} else { // Horizontal
 					layout.splitHorizontal(omgJava.newViewport, v);
 				}
+
 				dragging_viewport = omgJava.newViewport;
 			}
 
 			@Override
 			public void onNewViewportResize(float new_size, boolean vertical) {
-				if(dragging_viewport == null)
+				if (dragging_viewport == null)
 					throw new RuntimeException("Should not happen");
 
-				if(width == 0 || height == 0)
+				if (width == 0 || height == 0)
 					return;
 
 				// TODO refuse smaller than a certain value
-				if(vertical)
+				if (vertical)
 					layout.resizeWidth(omgJava.newViewport, new_size / width);
 				else
 					layout.resizeHeight(omgJava.newViewport, new_size / height);
@@ -215,4 +229,55 @@ public class ViewportContainer extends UIObject {
 		omgJava.newViewport = v; // Hack
 		return v;
 	}
+
+	public void blinkRed() {
+		blink = System.currentTimeMillis() + 100;
+	}
+
+	// EASYMOTION
+	private Branch branch = new Branch(this) {
+		{
+			for (int i = 0; i < 10; i++) {
+				int paneNumber = i;
+
+				Control control = new Control(() -> {
+					if (paneNumber < viewports.size()) {
+						if (easyMotionMode.equals(EasyMotionMode.ENTER)) {
+							return viewports.get(paneNumber).getCurrentView();
+						} else if (easyMotionMode.equals(EasyMotionMode.CHANGE)) {
+							System.out.println("ViewportContainer is supposed to show a dialog with alternative view to swap current view with");
+						}
+					}
+					return null;
+				});
+
+				HashSet<KeyboardEvent.Keys> keys = new HashSet<>();
+				keys.add(KeyboardEvent.Companion.getNumbers()[i]);
+
+				getControls().put(keys, control);
+			}
+		}
+
+		{
+			Control control = new Control(Control.Companion::getSTEP_BACK);
+
+			HashSet<KeyboardEvent.Keys> keys = new HashSet<>();
+			keys.add(KeyboardEvent.Keys.Q);
+
+			getControls().put(keys, control);
+		}
+	};
+
+	@NotNull
+	@Override
+	public Branch getEasyMotionBranch() {
+		return branch;
+	}
+
+	public enum EasyMotionMode {
+		ENTER,
+		CHANGE
+	}
+
+	public EasyMotionMode easyMotionMode;
 }

@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatistics
 import net.merayen.elastic.system.intercom.StatisticsReportMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.Meter
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import kotlin.math.roundToInt
 
@@ -79,4 +80,6 @@ class StatisticsView : View() {
 		availableAfterAvg = data.availableAfterAvg
 		availableAfterMin = data.availableAfterMin
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

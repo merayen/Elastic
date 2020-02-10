@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.filebrowserview
 
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import java.io.File
 
@@ -34,4 +35,6 @@ class FileBrowserView : View() {
 	override fun cloneView(): View {
 		return FileBrowserView()
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

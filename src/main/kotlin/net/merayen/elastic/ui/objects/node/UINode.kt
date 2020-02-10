@@ -50,7 +50,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		inited = true
 	}
 
-
 	override fun onDraw(draw: Draw) {
 		if (!inited)
 			throw RuntimeException("Forgotten super.onInit() ?")

@@ -4,12 +4,15 @@ import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.controller.NodeViewController
+import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.MouseWheelEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
+import net.merayen.elastic.ui.objects.top.views.nodeview.find.FindNodeWindow
 import net.merayen.elastic.ui.util.Movable
 import java.util.*
 import kotlin.math.max
@@ -42,6 +45,8 @@ class NodeView : View() {
 	private var dragAndDropTarget = NodeViewDropTarget(this)
 
 	private var loaded = false
+
+	private var findNodeWindow: FindNodeWindow? = null
 
 	init {
 		add(container)
@@ -288,7 +293,43 @@ class NodeView : View() {
 		this.contextMenu = newContextMenu
 	}
 
+	private fun showFindNode(): FindNodeWindow {
+		val findNodeWindow = findNodeWindow
+		if (findNodeWindow == null) {
+			val newWindow = FindNodeWindow()
+			newWindow.handler = object : FindNodeWindow.Handler {
+				override fun onClose() {
+					if (newWindow.parent != null) {
+						remove(newWindow)
+						this@NodeView.findNodeWindow = null
+					}
+				}
+			}
+
+			newWindow.translation.y = 20f
+			add(newWindow)
+
+			this.findNodeWindow = newWindow
+
+			return newWindow
+		} else {
+			return findNodeWindow
+		}
+	}
+
 	companion object {
 		private const val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
+	}
+
+	// EASYMOTION
+	override val easyMotionBranch = object : Branch(this) {
+		init {
+			controls[setOf(KeyboardEvent.Keys.F)] = Control {
+				println("Supposed to show add-node-view in NodeView")
+				showFindNode()
+			}
+			controls[setOf(KeyboardEvent.Keys.A)] = Control { println("Supposed to show a search box to find a node"); null }
+			controls[setOf(KeyboardEvent.Keys.Q)] = Control { Control.STEP_BACK }
+		}
 	}
 }
