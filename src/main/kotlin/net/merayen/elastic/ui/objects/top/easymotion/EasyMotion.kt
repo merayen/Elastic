@@ -64,7 +64,7 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 
 				current.easyMotionBranch.handler?.onEnter()
 
-				val result = control.select()
+				val result = control.select(keyStroke)
 
 				if (result == Branch.Control.STEP_BACK) {
 					if (stack.size > 1) {
@@ -136,6 +136,10 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 		}
 
 		printDebug()
+	}
+
+	fun focus(branch: Branch) {
+		println("TODO EasyMotion: Try to rebuild the stack on this branch")
 	}
 
 	private fun printDebug() {

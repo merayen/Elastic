@@ -240,7 +240,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 			for (int i = 0; i < 10; i++) {
 				int paneNumber = i;
 
-				Control control = new Control(() -> {
+				Control control = new Control((keys) -> {
 					if (paneNumber < viewports.size()) {
 						if (easyMotionMode.equals(EasyMotionMode.ENTER)) {
 							return viewports.get(paneNumber).getCurrentView();
@@ -259,7 +259,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 		}
 
 		{
-			Control control = new Control(Control.Companion::getSTEP_BACK);
+			Control control = new Control((keys) -> Control.Companion.getSTEP_BACK());
 
 			HashSet<KeyboardEvent.Keys> keys = new HashSet<>();
 			keys.add(KeyboardEvent.Keys.Q);

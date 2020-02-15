@@ -146,7 +146,7 @@ public class Viewport extends UIObject implements EasyMotionBranch {
 			});
 		}
 		{
-			Control control = new Control(Control.Companion::getSTEP_BACK);
+			Control control = new Control((keyStroke -> Control.Companion.getSTEP_BACK()));
 
 			HashSet<KeyboardEvent.Keys> keys = new HashSet<>();
 			keys.add(KeyboardEvent.Keys.Q);

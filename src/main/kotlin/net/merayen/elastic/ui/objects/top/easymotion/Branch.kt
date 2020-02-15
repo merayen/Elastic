@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.top.easymotion
 
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
+import net.merayen.elastic.ui.util.KeyboardState
 
 /**
  * @param uiobject The owner of this branch. Used for rebuilding the stack in EasyMotion.
@@ -12,7 +13,7 @@ abstract class Branch(val uiobject: UIObject) {
 		fun onLeave()
 	}
 
-	class Control(private val onSelect: () -> EasyMotionBranch?) {
+	class Control(private val onSelect: (key: KeyboardState.KeyStroke?) -> EasyMotionBranch?) {
 		companion object {
 			val STEP_BACK = object : EasyMotionBranch {
 				override val easyMotionBranch = object : Branch(UIObject()) {}
@@ -29,8 +30,8 @@ abstract class Branch(val uiobject: UIObject) {
 		/**
 		 * Called by EasyMotion when this Control gets selected (user typed its keys).
 		 */
-		fun select(): EasyMotionBranch? {
-			val result = onSelect()
+		fun select(keys: KeyboardState.KeyStroke?): EasyMotionBranch? {
+			val result = onSelect(keys)
 
 			child = if (result == Control.STEP_BACK)
 				null
@@ -44,4 +45,15 @@ abstract class Branch(val uiobject: UIObject) {
 	var handler: Handler? = null
 
 	val controls = HashMap<Set<KeyboardEvent.Keys>, Control>()
+
+	/**
+	 * Tells EasyMotion to focus here.
+	 * EasyMotion will try to rebuild its stack from this element.
+	 */
+	fun focus() {
+		val obj = uiobject.search.parentByInterface(EasyMotionMaster::class.java)
+		if (obj != null) {
+			obj.easyMotion.focus(this)
+		}
+	}
 }

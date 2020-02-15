@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview.find
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
+import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
@@ -15,6 +16,7 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 	var handler: Handler? = null
 
 	private val window = InlineWindow()
+	private val textInput = DirectTextInput()
 
 	init {
 		window.title = "Find node"
@@ -27,6 +29,18 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 				draw.oval(0f, 0f, 100f, 100f)
 			}
 		})
+
+		textInput.translation.x = 2f
+		textInput.translation.y = 2f
+		textInput.layoutWidth = 100f
+		textInput.layoutHeight = 20f
+		window.content.add(textInput)
+
+		window.handler = object : InlineWindow.Handler {
+			override fun onClose() {
+				handler?.onClose()
+			}
+		}
 	}
 
 	override val easyMotionBranch = object : Branch(this) {
