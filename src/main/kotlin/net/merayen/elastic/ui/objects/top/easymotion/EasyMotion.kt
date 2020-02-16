@@ -5,6 +5,7 @@ import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.top.Window
 import net.merayen.elastic.ui.util.KeyboardState
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * EasyMotion is a feature that is similar to vim's EasyMotion plugin (vim = command line text editor for g33ks).
@@ -38,6 +39,9 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 	private val stack = ArrayDeque<EasyMotionBranch>()
 
 	init {
+		if (initialBranch !is UIObject)
+			throw RuntimeException("initialBranch must be an UIObject")
+
 		keyboardState.handler = object : KeyboardState.Handler {
 			override fun onType(keyStroke: KeyboardState.KeyStroke) {
 				enterControl(keyStroke)
@@ -61,35 +65,46 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 
 		for ((key, control) in current.easyMotionBranch.controls) {
 			if (keyStroke.equalsKeys(key)) {
-
-				current.easyMotionBranch.handler?.onEnter()
-
-				val result = control.select(keyStroke)
-
-				if (result == Branch.Control.STEP_BACK) {
-					if (stack.size > 1) {
-						current.easyMotionBranch.handler?.onLeave()
-						handler?.onLeave(current)
-						stack.removeLast()
-					}
-				} else {
-					val child = control.child
-
-					if (child != null && child.easyMotionBranch.controls.isNotEmpty()) {
-						handler?.onEnter(child)
-						if (child in stack)
-							throw AlreadyInStackException()
-
-
-						stack.add(child)
-					}
-				}
-
+				enterControl(control, keyStroke)
 				return
 			}
 		}
 
+		// Capture keys for control that takes every other key not defined by the other Controls, if any present
+		val everything = current.easyMotionBranch.controls[setOf()]
+		if (everything != null) {
+			enterControl(everything, keyStroke)
+			return
+		}
+
 		handler?.onMistype(keyStroke)
+	}
+
+	private fun enterControl(control: Branch.Control, keyStroke: KeyboardState.KeyStroke) {
+		val current = stack.last
+
+		current.easyMotionBranch.handler?.onEnter()
+
+		val result = control.select(keyStroke)
+
+		if (result == Branch.Control.STEP_BACK) {
+			if (stack.size > 1) {
+				current.easyMotionBranch.handler?.onLeave()
+				handler?.onLeave(current)
+				stack.removeLast()
+			}
+		} else {
+			val child = control.child
+
+			if (child != null && child.easyMotionBranch.controls.isNotEmpty()) {
+				handler?.onEnter(child)
+				if (child in stack)
+					throw AlreadyInStackException()
+
+				stack.add(child)
+			}
+		}
+
 	}
 
 	/**
@@ -97,7 +112,7 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 	 */
 	private fun leave(branch: EasyMotionBranch) {
 		if (branch !in stack)
-			throw RuntimeException("${branch} is not in the EasyMotion stack")
+			throw RuntimeException("$branch is not in the EasyMotion stack")
 
 		val index = stack.indexOf(branch)
 
@@ -105,7 +120,7 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 
 		stack.removeIf {
 			if (it == branch)
-				removing = true;
+				removing = true
 
 			removing
 		}
@@ -124,7 +139,7 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 	fun update() {
 		var isRemoving = false
 		stack.removeIf {
-			val isAChildOfUs = it.easyMotionBranch.uiobject.topMost === initialBranch.easyMotionBranch.uiobject.topMost
+			val isAChildOfUs = (it as UIObject).topMost === (initialBranch as UIObject).topMost
 
 			if (isAChildOfUs && isRemoving) // This is just a sanity check
 				throw RuntimeException("Should not happen that a child is attached to the UIObject-tree while its parent is not")
@@ -138,11 +153,48 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 		printDebug()
 	}
 
-	fun focus(branch: Branch) {
-		println("TODO EasyMotion: Try to rebuild the stack on this branch")
+	fun focus(branch: EasyMotionBranch) {
+		// Tries to rebuild the stack by walking from branch in reverse
+		if (branch is UIObject) {
+			val stack = ArrayList<EasyMotionBranch>()
+
+			var current = branch as UIObject
+			var i = 0
+			while (i++ < 1000) {  // We walk backwards
+				if (current is EasyMotionBranch)
+					stack.add(current as EasyMotionBranch)
+
+				current = current.parent ?: break
+			}
+
+			if (i == 1000)
+				throw RuntimeException("Should not happen")
+
+			stack.reversed()
+
+			if (stack.last() !== initialBranch) {
+				println("EasyMotion ERROR: Could not find initialBranch on top")
+				return
+			}
+
+			this.stack.clear()
+			this.stack.addAll(stack.reversed())
+		} else {
+			println("EasyMotion ERROR: Could not focus element $branch")
+		}
 	}
 
+	/**
+	 * Returns true if object is directly focused.
+	 */
+	fun isFocused(branch: EasyMotionBranch) = stack.last === branch
+
+	/**
+	 * Returns true if object is directly focused or one of its childs are.
+	 */
+	fun isActive(branch: EasyMotionBranch) = branch in stack
+
 	private fun printDebug() {
-		(initialBranch.easyMotionBranch.uiobject as Window).debug.set("EasyMotion", stack.map { (it as? UIObject)?.javaClass?.simpleName })
+		(initialBranch as Window).debug.set("EasyMotion", stack.map { (it as? UIObject)?.javaClass?.simpleName })
 	}
 }

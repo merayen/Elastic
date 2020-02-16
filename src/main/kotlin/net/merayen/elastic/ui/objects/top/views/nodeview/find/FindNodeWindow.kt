@@ -26,14 +26,15 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 			override fun onDraw(draw: Draw) {
 				draw.setColor(1f, 0f, 1f)
 				draw.setStroke(2f)
-				draw.oval(0f, 0f, 100f, 100f)
+				draw.empty(0f, 0f, 100f, 100f)
 			}
 		})
 
 		textInput.translation.x = 2f
 		textInput.translation.y = 2f
-		textInput.layoutWidth = 100f
-		textInput.layoutHeight = 20f
+		textInput.color.red = 1f
+		textInput.color.green = 1f
+		textInput.color.blue = 1f
 		window.content.add(textInput)
 
 		window.handler = object : InlineWindow.Handler {

@@ -7,22 +7,29 @@ import net.merayen.elastic.ui.util.KeyboardState
 /**
  * @param uiobject The owner of this branch. Used for rebuilding the stack in EasyMotion.
  */
-abstract class Branch(val uiobject: UIObject) {
+abstract class Branch(private val uiobject: UIObject) {
 	interface Handler {
 		fun onEnter()
 		fun onLeave()
 	}
 
-	class Control(private val onSelect: (key: KeyboardState.KeyStroke?) -> EasyMotionBranch?) {
+	val inFocus: Boolean
+		get() = getEasyMotionMaster()?.isFocused(uiobject as EasyMotionBranch) ?: false
+
+	val isActive: Boolean
+		get() = getEasyMotionMaster()?.isActive(uiobject as EasyMotionBranch) ?: false
+
+	class Control(private val onSelect: (key: KeyboardState.KeyStroke) -> EasyMotionBranch?) {
 		companion object {
-			val STEP_BACK = object : EasyMotionBranch {
-				override val easyMotionBranch = object : Branch(UIObject()) {}
-			}
+			val STEP_BACK = object : UIObject(), EasyMotionBranch {
+				override val easyMotionBranch = object : Branch(this) {}
+			} as EasyMotionBranch
 		}
 
 		/**
 		 * The EasyMotionBranch returned by onSelect-function on this Control.
 		 * EasyMotion uses this variables to backtrace and rebuild its stack.
+		 * No, it does not.
 		 */
 		var child: EasyMotionBranch? = null
 			private set
@@ -30,16 +37,21 @@ abstract class Branch(val uiobject: UIObject) {
 		/**
 		 * Called by EasyMotion when this Control gets selected (user typed its keys).
 		 */
-		fun select(keys: KeyboardState.KeyStroke?): EasyMotionBranch? {
+		fun select(keys: KeyboardState.KeyStroke): EasyMotionBranch? {
 			val result = onSelect(keys)
 
-			child = if (result == Control.STEP_BACK)
+			child = if (result == STEP_BACK)
 				null
 			else
 				result
 
 			return result
 		}
+	}
+
+	init {
+		if (uiobject !is EasyMotionBranch)
+			throw RuntimeException("Branch must have a UIObject implementing EasyMotionBranch")
 	}
 
 	var handler: Handler? = null
@@ -51,9 +63,8 @@ abstract class Branch(val uiobject: UIObject) {
 	 * EasyMotion will try to rebuild its stack from this element.
 	 */
 	fun focus() {
-		val obj = uiobject.search.parentByInterface(EasyMotionMaster::class.java)
-		if (obj != null) {
-			obj.easyMotion.focus(this)
-		}
+		getEasyMotionMaster()?.focus(this.uiobject as EasyMotionBranch)
 	}
+
+	private fun getEasyMotionMaster() = uiobject.search.parentByInterface(EasyMotionMaster::class.java)?.easyMotion
 }

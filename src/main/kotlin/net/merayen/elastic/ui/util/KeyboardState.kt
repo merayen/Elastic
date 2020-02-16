@@ -18,7 +18,7 @@ class KeyboardState {
 	/**
 	 * A keyboard event consist of e.g a single letter typed, backspace, escape, SHIFT+a, CTRL+SHIFT+ALT+L etc.
 	 */
-	data class KeyStroke(val keys: Set<KeyboardEvent.Key>) {
+	data class KeyStroke(val keys: Set<KeyboardEvent.Key>, val character: Char?) {
 		init {
 			if (keys.isEmpty())
 				throw RuntimeException("KeyStroke must contain one or more keys pressed")
@@ -33,6 +33,8 @@ class KeyboardState {
 		 * @param keys a set of keys
 		 */
 		fun equalsKeys(keys: Collection<KeyboardEvent.Keys>) = this.keys.map { it.key }.toSet() == keys.toSet()
+
+		fun hasKey(key: KeyboardEvent.Keys) = this.keys.firstOrNull { it.key == key } != null
 	}
 
 	/**
@@ -51,7 +53,7 @@ class KeyboardState {
 		if (event.pushed) {
 			keysDown.add(event.key)
 			if (!event.key.isModifier) {
-				val keyStroke = KeyStroke(keysDown.filter { it.isModifier || it.key == event.key.key }.toSet())
+				val keyStroke = KeyStroke(keysDown.filter { it.isModifier || it.key == event.key.key }.toSet(), event.character)
 				typingEvents.add(keyStroke)
 				handler?.onType(keyStroke)
 			}

@@ -41,7 +41,15 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 		SHIFT(16),
 		CONTROL(17),
 		ALT(18),
-		ESCAPE(27);
+		ESCAPE(27),
+		BACKSPACE(8),
+		ENTER(10),
+		UP(38),
+		RIGHT(39),
+		DOWN(40),
+		LEFT(37),
+		HOME(36),
+		END(35);
 	}
 
 	data class Key(val character: Char, val keyCode: Int, val key: Keys?) {
@@ -70,4 +78,6 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 	}
 
 	val key = Key(character, keyCode, Keys.values().firstOrNull { it.code == keyCode })
+
+	//init { println(keyCode) }
 }
