@@ -26,7 +26,7 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 		val stopY: Int
 	) {
 		init {
-			if (startY > stopY)
+			if (startX < 0 || startY < 0 || startY > stopY)
 				throw RuntimeException("Should not happen")
 
 			if (startY == stopY && startX > stopX)
@@ -145,7 +145,15 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 				}
 
 			} else if (keyStroke.equalsKeys(setOf(KeyboardEvent.Keys.ENTER))) {
-				lines.add(++cursorPositionY, "")
+				val bringOverText = if (cursorPositionX < lines[cursorPositionY].length) // TODO Not working!
+					lines[cursorPositionY].substring(cursorPositionX)
+				else
+					""
+
+				lines[cursorPositionY] = lines[cursorPositionY].substring(0, bringOverText.length)
+
+				lines.add(++cursorPositionY, bringOverText)
+
 				cursorPositionX = 0
 
 			} else if (keyStroke.hasKey(KeyboardEvent.Keys.LEFT)) {
@@ -188,7 +196,7 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 					cursorPositionY++
 				}
 
-			} else if (keyStroke.equalsKeys(setOf(KeyboardEvent.Keys.HOME))) {
+			} else if (keyStroke.hasKey(KeyboardEvent.Keys.HOME)) {
 				if (keyStroke.hasKey(KeyboardEvent.Keys.SHIFT))
 					enableMarking()
 				else
@@ -196,7 +204,7 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 
 				cursorPositionX = 0
 
-			} else if (keyStroke.equalsKeys(setOf(KeyboardEvent.Keys.END))) {
+			} else if (keyStroke.hasKey(KeyboardEvent.Keys.END)) {
 				if (keyStroke.hasKey(KeyboardEvent.Keys.SHIFT))
 					enableMarking()
 				else
@@ -204,20 +212,16 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 
 				cursorPositionX = lines[cursorPositionY].length
 
-			} else if (keyStroke.character != null) {
-				if (marking)
-					println("DirectTextInput TODO: Remove all marked text")
+			} else if (keyStroke.character != null) { // User types an actual letter to push into the text field
+				if (marking) {
+					removeText(getSelectionRange())
+				}
 
 				val text = lines[cursorPositionY]
 				lines[cursorPositionY] = text.substring(0, cursorPositionX) + keyStroke.character + text.substring(cursorPositionX, text.length)
 				cursorPositionX++
 			}
-
-			println("$marking, ($cursorPositionX, $cursorPositionY), ($markerBeginX, $markerBeginY)")
 		}
-
-		if (marking && keyStrokeQueue.isNotEmpty())
-			println("Marking!")
 
 		keyStrokeQueue.clear()
 	}
@@ -263,6 +267,33 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 		val stopY = max(cursorPositionY, markerBeginY)
 
 		return SelectionRange(startX, startY, stopX, stopY)
+	}
+
+	fun removeText(selectionRange: SelectionRange) {
+		if (selectionRange.startY >= lines.size || selectionRange.stopY >= lines.size)
+			throw RuntimeException("Invalid selection")
+
+		if (selectionRange.startX >= lines[selectionRange.startY].length)
+			throw RuntimeException("Invalid selection")
+
+		if (selectionRange.stopX >= lines[selectionRange.stopY].length)
+			throw RuntimeException("Invalid selection")
+
+		// Trim the first and last line (they could be the same line for 1 line selection)
+		val startText = lines[selectionRange.startY].substring(0, selectionRange.startX)
+		val stopText = lines[selectionRange.stopY].substring(selectionRange.stopX)
+
+		// Delete all lines in selection
+		for (i in selectionRange.startY..selectionRange.stopY)
+			lines.removeAt(selectionRange.startY)
+
+		// Add back a final line with the merged texts
+		lines.add(selectionRange.startY, startText + stopText)
+
+		marking = false
+
+		cursorPositionX = selectionRange.startX
+		cursorPositionY = selectionRange.startY
 	}
 
 	override fun onEvent(event: UIEvent) {
