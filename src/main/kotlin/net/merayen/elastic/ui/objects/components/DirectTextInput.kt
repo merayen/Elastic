@@ -307,6 +307,10 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 		cursorPositionY = selectionRange.startY
 	}
 
+	fun focus() {
+		easyMotionBranch.focus()
+	}
+
 	override fun onEvent(event: UIEvent) {
 		mouseHandler.handle(event)
 	}

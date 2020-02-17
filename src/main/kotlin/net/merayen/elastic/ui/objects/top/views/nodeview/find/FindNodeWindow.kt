@@ -18,7 +18,7 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 	private val window = InlineWindow()
 	private val textInput = DirectTextInput()
 
-	init {
+	override fun onInit() {
 		window.title = "Find node"
 		add(window)
 
@@ -41,6 +41,16 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 			override fun onClose() {
 				handler?.onClose()
 			}
+		}
+
+	}
+
+	private var focused = false
+
+	override fun onUpdate() {
+		if (!focused) {
+			textInput.focus()
+			focused = true
 		}
 	}
 
