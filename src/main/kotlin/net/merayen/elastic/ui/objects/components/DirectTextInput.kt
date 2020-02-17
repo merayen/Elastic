@@ -17,6 +17,10 @@ import kotlin.math.min
  * Text input using EasyMotion. Probably to replace TextInput soon.
  */
 class DirectTextInput : UIObject(), EasyMotionBranch {
+	interface Handler {
+		fun onType(keyStroke: KeyboardState.KeyStroke): Boolean
+	}
+
 	class LineSelectionRange(val start: Int, val stop: Int)
 
 	inner class SelectionRange(
@@ -42,6 +46,8 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 			else -> LineSelectionRange(0, lines[y].length) // One of the middle lines
 		}
 	}
+
+	var handler: Handler? = null
 
 	var maxWidth = 50f
 
@@ -128,6 +134,9 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 	private fun handleKeyStrokeQueue(draw: Draw) {
 		for (keyStroke in keyStrokeQueue) {
 			if (keyStroke.hasKey(KeyboardEvent.Keys.CONTROL) || keyStroke.hasKey(KeyboardEvent.Keys.ALT))
+				continue
+
+			if (handler?.onType(keyStroke) == false)
 				continue
 
 			// This should receive any keys
@@ -229,6 +238,7 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 					removeText(getSelectionRange())
 
 				val text = lines[cursorPositionY]
+
 				lines[cursorPositionY] = text.substring(0, cursorPositionX) + keyStroke.character + text.substring(cursorPositionX, text.length)
 				cursorPositionX++
 			}

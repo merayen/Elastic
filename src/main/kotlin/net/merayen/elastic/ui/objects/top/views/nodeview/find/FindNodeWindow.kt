@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
+import net.merayen.elastic.ui.util.KeyboardState
 
 class FindNodeWindow : UIObject(), EasyMotionBranch {
 	interface Handler {
@@ -43,6 +44,14 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 			}
 		}
 
+		textInput.handler = object : DirectTextInput.Handler {
+			override fun onType(keyStroke: KeyboardState.KeyStroke): Boolean {
+				if (keyStroke.hasKey(KeyboardEvent.Keys.ENTER))
+					return false // Suppress multiline
+
+				return true
+			}
+		}
 	}
 
 	private var focused = false
