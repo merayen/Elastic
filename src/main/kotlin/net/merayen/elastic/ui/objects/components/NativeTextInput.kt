@@ -9,7 +9,7 @@ import net.merayen.elastic.ui.objects.dialogs.TextInputDialog
 import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.util.MutablePoint
 
-class TextInput : UIClip(), FlexibleDimension {
+class NativeTextInput : UIClip(), FlexibleDimension {
 	interface Handler {
 		fun onChange(text: String)
 	}

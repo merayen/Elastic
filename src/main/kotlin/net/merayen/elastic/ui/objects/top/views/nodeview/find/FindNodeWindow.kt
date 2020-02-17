@@ -5,6 +5,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
+import net.merayen.elastic.ui.objects.components.TextInputBox
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.util.KeyboardState
@@ -17,7 +18,7 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 	var handler: Handler? = null
 
 	private val window = InlineWindow()
-	private val textInput = DirectTextInput()
+	private val textInput = TextInputBox()
 
 	override fun onInit() {
 		window.title = "Find node"
@@ -33,9 +34,9 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 
 		textInput.translation.x = 2f
 		textInput.translation.y = 2f
-		textInput.color.red = 1f
-		textInput.color.green = 1f
-		textInput.color.blue = 1f
+		textInput.directTextInput.color.red = 1f
+		textInput.directTextInput.color.green = 1f
+		textInput.directTextInput.color.blue = 1f
 		window.content.add(textInput)
 
 		window.handler = object : InlineWindow.Handler {
@@ -44,14 +45,21 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 			}
 		}
 
-		textInput.handler = object : DirectTextInput.Handler {
+		textInput.directTextInput.handler = object : DirectTextInput.Handler {
 			override fun onType(keyStroke: KeyboardState.KeyStroke): Boolean {
 				if (keyStroke.hasKey(KeyboardEvent.Keys.ENTER))
 					return false // Suppress multiline
 
 				return true
 			}
+
+			override fun onChange() {
+				println("FindNodeWindow TODO search for nodes by ${textInput.directTextInput.text}")
+			}
 		}
+
+		textInput.layoutWidth = 200f
+		textInput.layoutHeight = 15f
 	}
 
 	private var focused = false

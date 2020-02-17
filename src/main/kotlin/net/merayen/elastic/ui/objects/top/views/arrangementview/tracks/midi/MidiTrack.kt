@@ -7,7 +7,7 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.TextInput
+import net.merayen.elastic.ui.objects.components.NativeTextInput
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.buttons.StateButton
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
@@ -26,7 +26,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 
 	private val soloButton: StateButton
 	private val recordButton: StateButton
-	private val trackName = TextInput()
+	private val trackName = NativeTextInput()
 
 	private val eventTimeLine = EventTimeLine()
 
@@ -89,7 +89,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		trackName.translation.x = 5f
 		trackName.translation.y = 25f
 		trackName.description = "Name of the track"
-		trackName.handler = object : TextInput.Handler {
+		trackName.handler = object : NativeTextInput.Handler {
 			override fun onChange(text: String) {
 				sendParameter(Properties(trackName = text))
 			}

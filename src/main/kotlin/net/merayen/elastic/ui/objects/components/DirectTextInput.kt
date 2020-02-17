@@ -19,6 +19,7 @@ import kotlin.math.min
 class DirectTextInput : UIObject(), EasyMotionBranch {
 	interface Handler {
 		fun onType(keyStroke: KeyboardState.KeyStroke): Boolean
+		fun onChange()
 	}
 
 	class LineSelectionRange(val start: Int, val stop: Int)
@@ -55,6 +56,10 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 	val color = MutableColor()
 	var lineSpace = 2f
 
+	var text = ""
+		private set // TODO allow setting text
+		get() = lines.joinToString("\n")
+
 	private val lines = ArrayList<String>()
 	private var cursorPositionX = 0
 	private var cursorPositionY = 0
@@ -74,7 +79,7 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 	override fun onInit() {
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
 			override fun onMouseClick(position: MutablePoint?) {
-				easyMotionBranch.focus()
+				//easyMotionBranch.focus()
 			}
 		})
 	}
@@ -82,9 +87,6 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
 		draw.setStroke(1f)
-
-		draw.setColor(0.2f, 0.2f, 0.2f)
-		draw.fillRect(0f, 0f, maxWidth, lines.size * (fontSize + lineSpace))
 
 		draw.setFont("", 10f)
 
@@ -143,12 +145,18 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 			if (keyStroke.equalsKeys(setOf(KeyboardEvent.Keys.BACKSPACE))) {
 				if (marking) {
 					removeText(getSelectionRange())
+
+					handler?.onChange()
+
 				} else {
 					if (cursorPositionX > 0) {
 						cursorPositionX--
 
 						val text = lines[cursorPositionY]
 						lines[cursorPositionY] = text.substring(0, cursorPositionX) + text.substring(cursorPositionX + 1, text.length)
+
+						handler?.onChange()
+
 					} else if (cursorPositionY > 0) {
 						val targetLineLengthBeforeMerging = lines[cursorPositionY - 1].length
 
@@ -157,6 +165,8 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 
 						cursorPositionX = targetLineLengthBeforeMerging
 						cursorPositionY--
+
+						handler?.onChange()
 					}
 				}
 
@@ -176,6 +186,8 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 
 				cursorPositionX = 0
 				cursorPositionY++
+
+				handler?.onChange()
 
 			} else if (keyStroke.hasKey(KeyboardEvent.Keys.LEFT)) {
 				if (keyStroke.hasKey(KeyboardEvent.Keys.SHIFT))
@@ -241,6 +253,8 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 
 				lines[cursorPositionY] = text.substring(0, cursorPositionX) + keyStroke.character + text.substring(cursorPositionX, text.length)
 				cursorPositionX++
+
+				handler?.onChange()
 			}
 		}
 
