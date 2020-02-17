@@ -150,11 +150,13 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 				else
 					""
 
-				lines[cursorPositionY] = lines[cursorPositionY].substring(0, bringOverText.length)
+				lines.add(cursorPositionY + 1, bringOverText)
 
-				lines.add(++cursorPositionY, bringOverText)
+				if (bringOverText.isNotEmpty())
+					lines[cursorPositionY] = lines[cursorPositionY].substring(0, min(cursorPositionX, lines[cursorPositionY].length))
 
 				cursorPositionX = 0
+				cursorPositionY++
 
 			} else if (keyStroke.hasKey(KeyboardEvent.Keys.LEFT)) {
 				if (keyStroke.hasKey(KeyboardEvent.Keys.SHIFT))
