@@ -132,19 +132,29 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 
 			// This should receive any keys
 			if (keyStroke.equalsKeys(setOf(KeyboardEvent.Keys.BACKSPACE))) {
-				if (lines[cursorPositionY].isNotEmpty()) {
+				if (marking) {
+					removeText(getSelectionRange())
+				} else {
 					if (cursorPositionX > 0) {
 						cursorPositionX--
+
 						val text = lines[cursorPositionY]
 						lines[cursorPositionY] = text.substring(0, cursorPositionX) + text.substring(cursorPositionX + 1, text.length)
 					} else if (cursorPositionY > 0) {
+						val targetLineLengthBeforeMerging = lines[cursorPositionY - 1].length
+
 						lines[cursorPositionY - 1] += lines[cursorPositionY]
 						lines.removeAt(cursorPositionY)
+
+						cursorPositionX = targetLineLengthBeforeMerging
 						cursorPositionY--
 					}
 				}
 
 			} else if (keyStroke.equalsKeys(setOf(KeyboardEvent.Keys.ENTER))) {
+				if (marking)
+					removeText(getSelectionRange())
+
 				val bringOverText = if (cursorPositionX < lines[cursorPositionY].length) // TODO Not working!
 					lines[cursorPositionY].substring(cursorPositionX)
 				else
@@ -215,9 +225,8 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 				cursorPositionX = lines[cursorPositionY].length
 
 			} else if (keyStroke.character != null) { // User types an actual letter to push into the text field
-				if (marking) {
+				if (marking)
 					removeText(getSelectionRange())
-				}
 
 				val text = lines[cursorPositionY]
 				lines[cursorPositionY] = text.substring(0, cursorPositionX) + keyStroke.character + text.substring(cursorPositionX, text.length)
@@ -275,10 +284,10 @@ class DirectTextInput : UIObject(), EasyMotionBranch {
 		if (selectionRange.startY >= lines.size || selectionRange.stopY >= lines.size)
 			throw RuntimeException("Invalid selection")
 
-		if (selectionRange.startX >= lines[selectionRange.startY].length)
+		if (selectionRange.startX > lines[selectionRange.startY].length)
 			throw RuntimeException("Invalid selection")
 
-		if (selectionRange.stopX >= lines[selectionRange.stopY].length)
+		if (selectionRange.stopX > lines[selectionRange.stopY].length)
 			throw RuntimeException("Invalid selection")
 
 		// Trim the first and last line (they could be the same line for 1 line selection)
