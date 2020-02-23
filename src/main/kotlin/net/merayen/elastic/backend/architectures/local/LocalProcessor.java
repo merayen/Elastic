@@ -153,10 +153,6 @@ public abstract class LocalProcessor {
 	}
 
 	boolean frameFinished() {
-		for(Inlet inlet : inlets.values())
-			if(!inlet.satisfied())
-				return false;
-
 		for(Outlet outlet : outlets.values())
 			if(!outlet.satisfied())
 				return false;
@@ -184,10 +180,10 @@ public abstract class LocalProcessor {
 		process_count = 0;
 		// Jump the buffers to the offset when the voice was created
 		for(Inlet inlet : inlets.values())
-			inlet.reset(sample_offset);
+			inlet.reset();
 
 		for(Outlet outlet : outlets.values())
-			outlet.reset(sample_offset);
+			outlet.reset();
 
 		onPrepare();
 	}
@@ -199,13 +195,12 @@ public abstract class LocalProcessor {
 	 * If you are not doing that, then don't use this.
 	 * If no inlets are connected at all, we return the full buffer size, as we are not dependent on any inlets.
 	 */
-	protected int available() {
-		int available = buffer_size;
-
+	protected boolean available() {
 		for(Inlet inlet : inlets.values())
-			available = Math.min(available, inlet.available());
+			if (!inlet.outlet.satisfied())
+				return false;
 
-		return available;
+		return true;
 	}
 
 	/**

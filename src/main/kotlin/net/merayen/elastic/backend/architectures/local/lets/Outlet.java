@@ -1,14 +1,23 @@
 package net.merayen.elastic.backend.architectures.local.lets;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.logicnodes.Format;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Outlet extends Portlet {
-	public int written; // Number of samples written yet. Readers must respect this
+	/**
+	 * if the Outlet has been written to and ready to be read from.
+	 */
+	private boolean written;
+
 	public final List<LocalProcessor> connected_processors = new ArrayList<>();
+
+	/**
+	 * Size of the output, in samples.
+	 * TODO Maybe remove if already known by the session?
+	 */
 	public final int buffer_size;
 
 	public Outlet(int buffer_size) {
@@ -16,23 +25,25 @@ public abstract class Outlet extends Portlet {
 	}
 
 	@Override
-	public void reset(int sample_offset) {
-		written = sample_offset;
+	public void reset() {
+		written = false;
 	}
 
 	/**
-	 * Notifies receiving ports about new data.
+	 * Notifies receiving ports that node has written its data.
 	 */
 	public void push() {
-		if(written > buffer_size)
-			throw new RuntimeException("LocalProcessor has written too much into the Outlet");
+		written = true;
 
 		for(LocalProcessor lp : connected_processors)
 			lp.schedule();
 	}
 
-	public boolean satisfied() {
-		return written == buffer_size;
+	/**
+	 * Returns true if the Outlet has been written to.
+	 */
+	public boolean available() {
+		return written;
 	}
 
 	public abstract Format getFormat();
@@ -40,4 +51,8 @@ public abstract class Outlet extends Portlet {
 	public abstract Class<? extends Inlet> getInletClass();
 
 	public abstract void forwardFromOutlet(Outlet source);
+
+	public boolean satisfied() {
+		return written;
+	}
 }

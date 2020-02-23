@@ -10,7 +10,7 @@ class LProcessor : LocalProcessor() {
 	override fun onProcess() {
 		val input = getInlet("in")
 
-		if (input is AudioInlet && input.available() == buffer_size) {
+		if (input is AudioInlet && input.available()) {
 			val channels: Array<FloatArray?> = arrayOfNulls(input.outlet.audio.size)
 			for (channel in channels.indices) {
 				var step = 32

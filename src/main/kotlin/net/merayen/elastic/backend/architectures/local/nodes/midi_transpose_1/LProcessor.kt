@@ -22,13 +22,9 @@ class LProcessor : LocalProcessor() {
 
 		if (input is MidiInlet) {
 			val available = available()
-			if (available > 0) {
-				var midiFrame: MidiOutlet.MidiFrame? = null
-
+			if (available) {
 				while (true) {
-					midiFrame = input.getNextMidiFrame(available)
-					if (midiFrame == null)
-						break
+					val midiFrame = input.nextMidiFrame ?: break
 
 					if (output != null) {
 						for (midiPacket in midiFrame) {
@@ -52,9 +48,7 @@ class LProcessor : LocalProcessor() {
 					}
 				}
 
-				input.read += available
-
-				if (input.read == buffer_size && output != null) {
+				if (output != null) {
 					val localNode = localNode as LNode
 
 					if (localNode.transpose != transpose) {
@@ -67,19 +61,9 @@ class LProcessor : LocalProcessor() {
 					}
 				}
 
-				output?.written = input.read
-
 				output?.push()
-			}/* else {
-				input.read += available
-				output?.written = buffer_size
-
-				output?.push()
-			}*/
+			}
 		} else {
-			input?.read = buffer_size
-			output?.written = buffer_size
-
 			output?.push()
 		}
 	}

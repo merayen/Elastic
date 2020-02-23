@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.delay_1;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 	private Delay[] delays;
@@ -21,10 +20,7 @@ public class LProcessor extends LocalProcessor {
 
 		if(output != null) {
 			if(input != null) {
-				int start = input.read;
-				int stop = input.outlet.written;
-				if(stop - start > 0) {
-
+				if(available()) {
 					int channelCount = input.outlet.getChannelCount();
 
 					ensureDelayBuffers(channelCount);
@@ -32,21 +28,16 @@ public class LProcessor extends LocalProcessor {
 					output.setChannelCount(channelCount);
 
 					for (int channel = 0; channel < channelCount; channel++) {
-						int position = delays[channel].process(input.outlet.audio[channel], start, stop);
-						for (int i = start; i < stop; i++)
+						int position = delays[channel].process(input.outlet.audio[channel], 0, buffer_size);
+						for (int i = 0; i < buffer_size; i++)
 							output.audio[channel][i] = delays[channel].buffer[position++ % delays[channel].buffer.length];
 					}
 
-					output.written = stop;
-					input.read = stop;
 					output.push();
 				}
 			} else {
-				output.written = buffer_size;
 				output.push();
 			}
-		} else if(input != null) {
-			input.read = input.outlet.written;
 		}
 	}
 

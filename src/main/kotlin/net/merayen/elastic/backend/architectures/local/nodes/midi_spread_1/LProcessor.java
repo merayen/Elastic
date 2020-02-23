@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.midi.MidiMessagesCreator;
 import net.merayen.elastic.backend.midi.MidiState;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 	private MidiInlet input;
@@ -63,28 +62,21 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		if(input != null) {
-			int avail = input.available();
-			if(output != null && avail > 0) {
-				processMidi(avail);
-				output.written += input.read;
+			if(output != null && input.available()) {
+				processMidi(buffer_size);
 				output.push();
 			}
-
-			input.read += avail;
 		}
 	}
 
 	private void processMidi(int avail) {
-		int start = input.read;
-		int stop = start + avail;
-
 		// We send initial midi to set up
 		if(!inited) {
 			sendInitialMidi();
 			inited = true;
 		}
 
-		while((midiFrame = input.getNextMidiFrame(stop)) != null) {
+		while((midiFrame = input.getNextMidiFrame()) != null) {
 			for(short[] midiPacket : midiFrame) {
 				midiHandled = false;
 				midiState.handle(midiPacket);
@@ -94,10 +86,9 @@ public class LProcessor extends LocalProcessor {
 		float newPitch = (basePitch + midiPitch) / (midiState.getBendRange() * 2);
 		if(currentPitch != newPitch) { // Pitch offset has been updated. We need to send a new basePitch now.
 			currentPitch = newPitch;
-			output.putMidi(stop - 1, MidiMessagesCreator.INSTANCE.changePitch(newPitch));
+			output.putMidi(buffer_size - 1, MidiMessagesCreator.INSTANCE.changePitch(newPitch));
 		}
 
-		output.written += avail;
 		output.push();
 	}
 

@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet
 import net.merayen.elastic.backend.midi.MidiMessagesCreator
-import net.merayen.elastic.system.intercom.ElasticMessage
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sin
@@ -48,7 +47,6 @@ class LProcessor : LocalProcessor() {
 				for (i in 0 until buffer_size)
 					audio.audio[0][i] = 0f
 
-			audio.written = buffer_size
 			audio.push()
 		}
 
@@ -64,7 +62,6 @@ class LProcessor : LocalProcessor() {
 
 			midiBeepPosition += buffer_size
 
-			midi.written = buffer_size
 			midi.push()
 		}
 	}

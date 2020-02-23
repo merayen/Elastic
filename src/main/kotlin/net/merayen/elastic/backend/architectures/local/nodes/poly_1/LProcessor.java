@@ -7,7 +7,6 @@ import net.merayen.elastic.backend.architectures.local.lets.*;
 import net.merayen.elastic.backend.architectures.local.nodes.poly_1.PolySessions.Session;
 import net.merayen.elastic.backend.midi.MidiControllers;
 import net.merayen.elastic.backend.midi.MidiStatuses;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +29,6 @@ public class LProcessor extends LocalProcessor {
 	private short[] current_pitch;// = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
 	private short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
 
-	/**
-	 * How many samples that has been processed.
-	 * Used to compare with inlets so that we can decide if we can process from the Inlets.
-	 */
-	private int samples_processed;
-
 	@Override
 	protected void onInit() {
 		Inlet input = getInlet("input");
@@ -55,7 +48,7 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onPrepare() {
 		resetOutlets();
-		samples_processed = 0;
+
 		if(output != null && !sessions.isEmpty()) {
 			for(int channel = 0; channel < output.getChannelCount(); channel++)
 				for (int i = 0; i < buffer_size; i++)
@@ -65,37 +58,35 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
+		if (!available())
+			return;
+
 		if(input != null) {
-			int avail = input.available();
-			int stop = input.outlet.written;
-			if(avail > 0) {
-				int position = stop - avail;
-				MidiOutlet.MidiFrame midiFrame;
-				while((midiFrame = input.getNextMidiFrame(stop)) != null) {
-					for(short[] n : midiFrame) {
-						if((n[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
-							push_tangent(n[1], n[2], midiFrame.framePosition);
-						} else if((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
-							release_tangent(n[1], position);
-						} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) {
-							current_sustain = n;
-							sendMidi(n, position);
-						} else if((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
-							current_pitch = n;
-							sendMidi(n, position);
-						} else {
-							sendMidi(n, position); // TODO support multiple midi packets on the same sample (???)
-						}
+			int position = 0;
+			MidiOutlet.MidiFrame midiFrame;
+			while((midiFrame = input.getNextMidiFrame()) != null) {
+				for(short[] n : midiFrame) {
+					if((n[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
+						push_tangent(n[1], n[2], midiFrame.framePosition);
+					} else if((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
+						release_tangent(n[1], position);
+					} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) {
+						current_sustain = n;
+						sendMidi(n, position);
+					} else if((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
+						current_pitch = n;
+						sendMidi(n, position);
+					} else {
+						sendMidi(n, position); // TODO support multiple midi packets on the same sample (???)
 					}
 				}
-				spool("trigger", stop); // Ensure ports are spooled to the same position
-				input.read = input.outlet.written;
 			}
+			spool("trigger"); // Ensure ports are spooled to the same position
 		}
 
 		forwardOutputData();
 
-		if(input != null && input.read == buffer_size)
+		if(input != null)
 			removeInactiveSessions();
 	}
 
@@ -129,7 +120,6 @@ public class LProcessor extends LocalProcessor {
 
 			midi_outlet.putMidi(position, current_sustain);
 
-			midi_outlet.written = position;
 			midi_outlet.push();
 		}
 	}
@@ -173,13 +163,9 @@ public class LProcessor extends LocalProcessor {
 	 * Spools all outlets to a certain position.
 	 * TODO distinguish on forward name, and session in case of deep voices
 	 */
-	private void spool(String forward_port, int position) {
-		for(Outlet outlet : sessions.getOutlets()) {
-			if(outlet.written < position) {
-				outlet.written = position;
-				outlet.push();
-			}
-		}
+	private void spool(String forward_port) {
+		for(Outlet outlet : sessions.getOutlets())
+			outlet.push();
 	}
 
 	private void forwardOutputData() {
@@ -188,30 +174,11 @@ public class LProcessor extends LocalProcessor {
 		if(outputNodes.isEmpty()) {
 			Outlet output_outlet = getOutlet("output");
 			if(output_outlet != null) {
-				output_outlet.written = buffer_size;
 				output_outlet.push();
 			}
 
 			return; // No out-nodes. Nothing to do
 		}
-
-		int sample_position = Integer.MAX_VALUE;
-
-		for(Session session : sessions.getSessions()) {
-			for (OutputInterfaceNode oin : outputNodes) {
-				Inlet inlet = oin.getOutputInlet(session.session_id);
-				if(inlet instanceof AudioInlet) {
-					AudioInlet audioInlet = (AudioInlet)inlet;
-					if (audioInlet.outlet.written < sample_position)
-						sample_position = audioInlet.outlet.written;
-
-					audioInlet.read = audioInlet.outlet.written; // We do spool the inlet always, as we keep track of position ourselves with samples_processed.
-				}
-			}
-		}
-
-		if(sample_position <= samples_processed)
-			return; // There is not new data on all inlet voices, can not process. Come back later.
 
 		if(output != null) {
 			float[][] out = output.audio;
@@ -225,17 +192,14 @@ public class LProcessor extends LocalProcessor {
 
 						for (int channel = 0; channel < channelDistribution.length; channel++)
 							if(channelDistribution[channel] != 0)
-								for (int i = samples_processed; i < sample_position; i++)
+								for (int i = 0; i < buffer_size; i++)
 									out[channel][i] += in[i] * channelDistribution[channel];
 					}
 				}
 
-				output.written = sample_position;
 				output.push();
 			}
 		}
-
-		samples_processed = sample_position;
 	}
 
 	private List<OutputInterfaceNode> getOutputNodes() { // TODO implement caching
@@ -253,7 +217,7 @@ public class LProcessor extends LocalProcessor {
 
 	private void resetOutlets() {
 		for(Outlet outlet : sessions.getOutlets())
-			outlet.reset(0);
+			outlet.reset();
 	}
 
 	private void removeInactiveSessions() {

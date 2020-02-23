@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.midi_in_1;
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 import java.util.List;
 
@@ -24,7 +23,6 @@ public class LProcessor extends LocalProcessor {
 			if(!buffer.isEmpty())
 				outlet.putMidi(0, buffer.toArray(new short[buffer.size()][]));
 
-			outlet.written = buffer_size;
 			outlet.push();
 		}
 	}

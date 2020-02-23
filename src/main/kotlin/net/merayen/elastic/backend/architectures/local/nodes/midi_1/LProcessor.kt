@@ -46,7 +46,6 @@ class LProcessor : LocalProcessor() {
 				}
 			}
 
-			outlet.written = buffer_size
 			outlet.push()
 		}
 	}

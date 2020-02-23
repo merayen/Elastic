@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 
@@ -22,7 +21,7 @@ public class LProcessor extends LocalProcessor {
 		Inlet fac = getInlet("fac");
 		Outlet out = getOutlet("out");
 
-		int available = available();
+		boolean available = available();
 
 		if(out != null) {
 			if (a instanceof AudioInlet && b instanceof AudioInlet) {
@@ -35,13 +34,11 @@ public class LProcessor extends LocalProcessor {
 
 				float[][] out_buffer = ((AudioOutlet) out).audio;
 
-				int stop = out.written + available;
-
 				if (fac instanceof AudioInlet) {
 					float[][] fac_buffer = ((AudioOutlet) fac.outlet).audio;
 
 					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
-						for (int i = out.written; i < stop; i++) {
+						for (int i = 0; i < buffer_size; i++) {
 							float af = (a_buffer[channel_no] != null ? a_buffer[channel_no][i] : 0);
 							float bf = (b_buffer[channel_count] != null ? b_buffer[channel_no][i] : 0);
 
@@ -51,23 +48,17 @@ public class LProcessor extends LocalProcessor {
 							out_buffer[channel_no][i] = (af * volume_a) + (bf * volume_b);
 						}
 					}
-
-					fac.read = stop;
-
 				} else {
 					float mix = ((LNode) getLocalNode()).mix;
 					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
 						float[] a_channel = a_buffer[channel_no];
 						float[] b_channel = b_buffer[channel_no];
 
-						for (int i = out.written; i < stop; i++)
+						for (int i = 0; i < buffer_size; i++)
 							out_buffer[channel_no][i] = (a_channel != null ? a_channel[i] : 0) * (1 - mix) + (b_channel != null ? b_channel[i] : 0) * mix;
 					}
 				}
 
-				out.written = stop;
-				a.read = stop;
-				b.read = stop;
 				out.push();
 
 			} else if(a instanceof AudioInlet) {
@@ -79,25 +70,20 @@ public class LProcessor extends LocalProcessor {
 
 				float[][] out_buffer = ((AudioOutlet) out).audio;
 
-				int stop = out.written + available;
-
 				if (fac instanceof AudioInlet) {
 					float[][] fac_buffer = ((AudioOutlet) fac.outlet).audio;
 
 					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
-						for (int i = out.written; i < stop; i++) {
+						for (int i = 0; i < buffer_size; i++) {
 							float volume_a = 1 - Math.max(0, Math.min(1, fac_buffer[0][i]));
 							out_buffer[channel_no][i] = a_buffer[channel_no][i] * volume_a;
 						}
 					}
 
-					fac.read = stop;
 				} else {
-					mixNoFac(a, out, a_buffer, channel_count, out_buffer, stop, Math.max(0, Math.min(1, 1 - ((LNode) getLocalNode()).mix)));
+					mixNoFac(a, out, a_buffer, channel_count, out_buffer, Math.max(0, Math.min(1, 1 - ((LNode) getLocalNode()).mix)));
 				}
 
-				a.read = stop;
-				out.written = stop;
 				out.push();
 
 			} else if(b instanceof AudioInlet) {
@@ -109,48 +95,31 @@ public class LProcessor extends LocalProcessor {
 
 				float[][] out_buffer = ((AudioOutlet) out).audio;
 
-				int stop = out.written + available;
-
 				if (fac instanceof AudioInlet && fac.outlet instanceof AudioOutlet) {
 					float[][] fac_buffer = ((AudioOutlet) fac.outlet).audio;
 
 					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
-						for (int i = out.written; i < stop; i++) {
+						for (int i = 0; i < buffer_size; i++) {
 							float volume_b = 1 - Math.max(0, Math.min(1, fac_buffer[0][i] * -1));
 							out_buffer[channel_no][i] = b_buffer[channel_no][i] * volume_b;
 						}
 					}
 
-					fac.read = stop;
-
 				} else {
-					mixNoFac(b, out, b_buffer, channel_count, out_buffer, stop, Math.max(0, Math.min(1, ((LNode) getLocalNode()).mix)));
+					mixNoFac(b, out, b_buffer, channel_count, out_buffer, Math.max(0, Math.min(1, ((LNode) getLocalNode()).mix)));
 				}
 
-				b.read = stop;
-				out.written = stop;
 				out.push();
 
 			} else {
-				if(fac != null)
-					fac.read = fac.outlet.written;
-
-				out.written = buffer_size;
 				out.push();
 			}
-		} else { // No output connected. No processing is done. We just forward input ports
-			if(fac != null)
-				fac.read = fac.outlet.written;
-			if(a != null)
-				a.read = a.outlet.written;
-			if(b != null)
-				b.read = b.outlet.written;
 		}
 	}
 
-	private void mixNoFac(Inlet a, Outlet out, float[][] buffer, int channel_count, float[][] out_buffer, int stop, float mix) {
+	private void mixNoFac(Inlet a, Outlet out, float[][] buffer, int channel_count, float[][] out_buffer, float mix) {
 		for (int channel_no = 0; channel_no < channel_count; channel_no++)
-			for (int i = out.written; i < stop; i++)
+			for (int i = 0; i < buffer_size; i++)
 				out_buffer[channel_no][i] = buffer[channel_no][i] * mix;
 	}
 

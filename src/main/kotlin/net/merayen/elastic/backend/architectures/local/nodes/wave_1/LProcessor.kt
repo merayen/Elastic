@@ -6,7 +6,6 @@ import net.merayen.elastic.backend.architectures.local.lets.MidiInlet
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.backend.midi.MidiState
 import net.merayen.elastic.backend.util.AudioUtil
-import net.merayen.elastic.system.intercom.ElasticMessage
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -56,19 +55,13 @@ class LProcessor : LocalProcessor() {
 			out as AudioOutlet
 			out.channelCount = 1
 
-			val start = out.written
-			val available: Int
 			if (frequency is MidiInlet) {
-				available = frequency.available()
 				while (true) {
-					val midiFrame = frequency.getNextMidiFrame(available) ?: break
+					val midiFrame = frequency.nextMidiFrame ?: break
 					midiState.framePosition = midiFrame.framePosition
 					for (midiPacket in midiFrame)
 						midiState.handle(midiPacket)
 				}
-				frequency.read += available
-			} else {
-				available = buffer_size
 			}
 
 			val factor = 440f / sample_rate // TODO take frequency from input
@@ -77,16 +70,16 @@ class LProcessor : LocalProcessor() {
 
 			val type = type
 			when (type) {
-				Properties.Type.NOISE -> for (i in start until start + available) {
+				Properties.Type.NOISE -> for (i in 0 until buffer_size) {
 					val c = frequencyCoefficients[i]
 					audio[i] = if (c > 0) (Math.random().toFloat() - 0.5f) * 0.1f else 0f //noise[(pos % noise.size).toInt()] * 0.1f
 				}
-				Properties.Type.SINE -> for (i in start until start + available) {
+				Properties.Type.SINE -> for (i in 0 until buffer_size) {
 					val c = frequencyCoefficients[i]
 					audio[i] = if (c > 0) sin(pos * PI * 2).toFloat() * 0.1f else 0f // Should we use a wavetable + resampler for performance? Or?
 					pos += c
 				}
-				Properties.Type.SQUARE -> for (i in start until start + available) {
+				Properties.Type.SQUARE -> for (i in 0 until buffer_size) {
 					val c = frequencyCoefficients[i]
 					if (c > 0)
 						audio[i] = if (pos % 2 < 1f) 0.1f else -0.1f
@@ -94,7 +87,7 @@ class LProcessor : LocalProcessor() {
 						audio[i] = 0f
 					pos += c
 				}
-				Properties.Type.TRIANGLE -> for (i in start until start + available) {
+				Properties.Type.TRIANGLE -> for (i in 0 until buffer_size) {
 					val c = frequencyCoefficients[i]
 					if (c > 0) {
 						val p = (pos + 0.25) % 1.0
@@ -104,7 +97,7 @@ class LProcessor : LocalProcessor() {
 					}
 					pos += c
 				}
-				Properties.Type.SAW -> for (i in start until start + available) {
+				Properties.Type.SAW -> for (i in 0 until buffer_size) {
 					val c = frequencyCoefficients[i]
 					if (c > 0) {
 						val p = (pos + 0.5) % 1
@@ -118,12 +111,7 @@ class LProcessor : LocalProcessor() {
 					audio[i] = 0f
 			}
 
-			out.written += available
 			out.push()
-		} else {
-			if (frequency != null) {
-				frequency.read = frequency.outlet.written
-			}
 		}
 	}
 

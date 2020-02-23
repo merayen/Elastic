@@ -8,7 +8,6 @@ import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.midi.MidiStatuses;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class LProcessor extends LocalProcessor {
@@ -37,10 +36,7 @@ public class LProcessor extends LocalProcessor {
 
 		@Override
 		protected void onKeyUp(short tangent) {
-			Iterator<Short> iter = keys_down.iterator();
-			while (iter.hasNext())
-				if (iter.next() == getCurrentMidiPacket()[1])
-					iter.remove();
+			keys_down.removeIf(aShort -> aShort == getCurrentMidiPacket()[1]);
 
 			if (keys_down.isEmpty() && current_tangent_up == null) {
 				current_tangent_up = getCurrentMidiPacket();
@@ -88,9 +84,7 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		if(input != null && output != null) {
-			int stop = input.outlet.written;
-
-			while((midiFrame = input.getNextMidiFrame(stop)) != null) {
+			while((midiFrame = input.getNextMidiFrame()) != null) {
 
 				// Reading and handle/forward incoming MIDI data
 				for (short[] midiPacket : midiFrame) {
@@ -99,7 +93,7 @@ public class LProcessor extends LocalProcessor {
 				}
 			}
 
-			for(ADSR.Entry entry : getADSR().process(input.available()))
+			for(ADSR.Entry entry : getADSR().process(buffer_size))
 				output.putMidi((int) (entry.position - position), new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, (short) (entry.state * input_volume)}); // FIXME set the correct position
 
 			if(current_tangent_up != null && getADSR().isNeutral()) {
@@ -107,14 +101,10 @@ public class LProcessor extends LocalProcessor {
 				current_tangent_up = null;
 			}
 
-			input.read = stop;
-			output.written = stop;
 			output.push();
 
-		} else if(input != null) {
-			input.read = input.outlet.written;
 		} else if(output != null) {
-			output.written = buffer_size;
+			output.push();
 		}
 	}
 
