@@ -5,7 +5,6 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
-import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.TextInputBox
 import net.merayen.elastic.ui.objects.components.listbox.GridListBox
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
@@ -58,9 +57,9 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 			}
 
 			override fun onChange() {
-				resultListBox.items.removeAll()
+				//resultListBox.items.removeAll()
 				for (i in 0 until Random.nextInt(2, 10)) {
-					resultListBox.items.add(Label("Node nummer $i", eventTransparent = false))
+					//resultListBox.items.add(Label("Node nummer $i", eventTransparent = false))
 				}
 			}
 		}
