@@ -180,6 +180,17 @@ public class LProcessor extends LocalProcessor {
 			return; // No out-nodes. Nothing to do
 		}
 
+		// Ensure that all out-nodes has something
+		for (Session session : sessions.getSessions()) {
+			for (OutputInterfaceNode oin : outputNodes) {
+				Inlet inlet = oin.getOutputInlet(session.session_id);
+				if(inlet instanceof AudioInlet) {
+					if (!inlet.available())
+						return; // One of the out-nodes has not finished processing yet
+				}
+			}
+		}
+
 		if(output != null) {
 			float[][] out = output.audio;
 

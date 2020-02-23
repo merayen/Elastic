@@ -58,7 +58,7 @@ public class MidiOutlet extends Outlet {
 			throw new RuntimeException("Negative write position not allowed");
 
 		if(position >= buffer_size)
-			throw new RuntimeException("Write position out of bound. Only 0 - buffer_size-1 is allowed");
+			throw new RuntimeException("Write position out of bound. Only 0 - buffer_size-1 is allowed. Got " + position);
 
 		if (last == null || last.framePosition != position)
 			midi.add(last = new MidiFrame(position));

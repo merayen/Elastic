@@ -152,7 +152,7 @@ public abstract class LocalProcessor {
 		process_time += System.nanoTime() - t;
 	}
 
-	boolean frameFinished() {
+	public boolean frameFinished() {
 		for(Outlet outlet : outlets.values())
 			if(!outlet.satisfied())
 				return false;

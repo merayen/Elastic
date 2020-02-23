@@ -83,6 +83,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
+		if (!available() || frameFinished())
+			return;
+
 		if(input != null && output != null) {
 			while((midiFrame = input.getNextMidiFrame()) != null) {
 

@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.in_1;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 /**
  * TODO support more than just MIDI. Will probably crash and explode if anything else is given to it.
@@ -20,6 +19,9 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onProcess() {
 		Outlet outlet = getOutlet("output");
+		if (outlet.satisfied())
+			return;
+
 		if(outlet != null && sourceOutlet != null)
 			outlet.forwardFromOutlet(sourceOutlet);
 	}
