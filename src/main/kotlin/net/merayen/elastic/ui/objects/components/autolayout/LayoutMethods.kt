@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.components.autolayout
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
+import kotlin.math.max
 
 object LayoutMethods {
 
@@ -124,5 +125,31 @@ object LayoutMethods {
 				}
 			}
 		}
+	}
+
+	class ListBox : AutoLayout.Placement {
+		private var width = 0f
+		private var height = 0f
+
+		override fun place(objects: MutableList<UIObject>?) {
+			objects!!
+
+			var width = 0f
+			var height = 0f
+
+			for (obj in objects) {
+				obj.translation.x = 0f
+				obj.translation.y = height
+
+				width = max(width, obj.getWidth())
+				height += obj.getHeight()
+			}
+
+			this.width = width
+			this.height = height
+		}
+
+		override fun getWidth() = width
+		override fun getHeight() = height
 	}
 }

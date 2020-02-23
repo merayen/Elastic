@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui
 
 import net.merayen.elastic.ui.util.DrawContext
-import net.merayen.elastic.util.MutablePoint
+import net.merayen.elastic.util.Point
 import java.awt.Font
 import java.awt.FontMetrics
 import java.awt.geom.Path2D
@@ -91,7 +91,7 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		g2d.color = java.awt.Color(r, g, b, a)
 	}
 
-	fun setColor(color: MutableColor) {
+	fun setColor(color: Color) {
 		g2d.color = java.awt.Color(color.red, color.green, color.blue, color.alpha)
 	}
 
@@ -196,7 +196,7 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		g2d.drawOval(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
 
-	fun bezier(x: Float, y: Float, points: Array<MutablePoint>) {
+	fun bezier(x: Float, y: Float, points: Array<Point>) {
 		val point = uiobject.getAbsolutePosition(x, y) ?: return
 
 		if (points.size == 0)

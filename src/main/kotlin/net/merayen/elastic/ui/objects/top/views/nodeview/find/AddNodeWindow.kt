@@ -5,12 +5,15 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
+import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.TextInputBox
+import net.merayen.elastic.ui.objects.components.listbox.GridListBox
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.util.KeyboardState
+import kotlin.random.Random
 
-class FindNodeWindow : UIObject(), EasyMotionBranch {
+class AddNodeWindow : UIObject(), EasyMotionBranch {
 	interface Handler {
 		fun onClose()
 	}
@@ -19,6 +22,7 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 
 	private val window = InlineWindow()
 	private val textInput = TextInputBox()
+	private val resultListBox = GridListBox()
 
 	override fun onInit() {
 		window.title = "Find node"
@@ -54,17 +58,27 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 			}
 
 			override fun onChange() {
-				println("FindNodeWindow TODO search for nodes by ${textInput.directTextInput.text}")
+				resultListBox.items.removeAll()
+				for (i in 0 until Random.nextInt(2, 10)) {
+					resultListBox.items.add(Label("Node nummer $i", eventTransparent = false))
+				}
 			}
 		}
 
 		textInput.layoutWidth = 200f
 		textInput.layoutHeight = 15f
+
+		resultListBox.translation.x = 2f
+		resultListBox.translation.y = 27f
+		resultListBox.layoutWidth = 100f
+		resultListBox.layoutHeight = 100f
+		window.content.add(resultListBox)
 	}
 
 	private var focused = false
 
 	override fun onUpdate() {
+
 		if (!focused) {
 			textInput.focus()
 			focused = true
@@ -74,7 +88,7 @@ class FindNodeWindow : UIObject(), EasyMotionBranch {
 	override val easyMotionBranch = object : Branch(this) {
 		init {
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control {
-				this@FindNodeWindow.handler?.onClose()
+				this@AddNodeWindow.handler?.onClose()
 				null
 			}
 		}

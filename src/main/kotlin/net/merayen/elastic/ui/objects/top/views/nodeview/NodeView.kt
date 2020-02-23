@@ -12,7 +12,7 @@ import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
-import net.merayen.elastic.ui.objects.top.views.nodeview.find.FindNodeWindow
+import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
 import net.merayen.elastic.ui.util.Movable
 import java.util.*
 import kotlin.math.max
@@ -46,7 +46,7 @@ class NodeView : View() {
 
 	private var loaded = false
 
-	private var findNodeWindow: FindNodeWindow? = null
+	private var addNodeWindow: AddNodeWindow? = null
 
 	init {
 		add(container)
@@ -293,15 +293,15 @@ class NodeView : View() {
 		this.contextMenu = newContextMenu
 	}
 
-	private fun showFindNode(): FindNodeWindow {
-		val findNodeWindow = findNodeWindow
+	private fun showFindNode(): AddNodeWindow {
+		val findNodeWindow = addNodeWindow
 		if (findNodeWindow == null) {
-			val newWindow = FindNodeWindow()
-			newWindow.handler = object : FindNodeWindow.Handler {
+			val newWindow = AddNodeWindow()
+			newWindow.handler = object : AddNodeWindow.Handler {
 				override fun onClose() {
 					if (newWindow.parent != null) {
 						remove(newWindow)
-						this@NodeView.findNodeWindow = null
+						this@NodeView.addNodeWindow = null
 					}
 				}
 			}
@@ -309,7 +309,7 @@ class NodeView : View() {
 			newWindow.translation.y = 20f
 			add(newWindow)
 
-			this.findNodeWindow = newWindow
+			this.addNodeWindow = newWindow
 
 			return newWindow
 		} else {
