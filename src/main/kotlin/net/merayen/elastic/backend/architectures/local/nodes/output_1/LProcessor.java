@@ -14,7 +14,6 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		// TODO some protection against processing multiple times on one frame?
 		Inlet inlet = getInlet("input");
 
 		if(inlet instanceof AudioInlet) {

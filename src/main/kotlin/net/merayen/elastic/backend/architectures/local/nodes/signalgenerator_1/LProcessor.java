@@ -105,6 +105,9 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 	@Override
 	public void onProcess() {
+		if (frameFinished())
+			return;
+
 		if(mode == Mode.RAW)
 			generateRaw();
 		else if(mode == Mode.FREQUENCY)

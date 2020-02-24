@@ -16,7 +16,11 @@ class LProcessor : LocalProcessor() {
 	}
 
 	override fun onPrepare() {}
+
 	override fun onProcess() {
+		if (frameFinished())
+			return
+
 		val input: Inlet? = getInlet("in")
 		val output = getOutlet("out") as? MidiOutlet
 

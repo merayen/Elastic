@@ -61,6 +61,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
+		if (frameFinished())
+			return;
+
 		if(input != null) {
 			if(output != null && input.available()) {
 				processMidi(buffer_size);

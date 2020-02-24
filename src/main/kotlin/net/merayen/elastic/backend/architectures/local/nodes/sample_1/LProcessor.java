@@ -15,6 +15,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
+		if (frameFinished())
+			return;
+
 		Inlet control = getInlet("control");
 		AudioOutlet out = (AudioOutlet) getOutlet("out");
 

@@ -47,72 +47,73 @@ class LProcessor : LocalProcessor() {
 	}
 
 	override fun onProcess() {
-		val out = getOutlet("audio")
+		if (frameFinished())
+			return
+
+		val out = getOutlet("audio") ?: return
 
 		val frequency = getInlet("frequency")
 
-		if (out != null) {
-			out as AudioOutlet
-			out.channelCount = 1
+		out as AudioOutlet
+		out.channelCount = 1
 
-			if (frequency is MidiInlet) {
-				while (true) {
-					val midiFrame = frequency.nextMidiFrame ?: break
-					midiState.framePosition = midiFrame.framePosition
-					for (midiPacket in midiFrame)
-						midiState.handle(midiPacket)
-				}
+		if (frequency is MidiInlet) {
+			while (true) {
+				val midiFrame = frequency.nextMidiFrame ?: break
+				midiState.framePosition = midiFrame.framePosition
+				for (midiPacket in midiFrame)
+					midiState.handle(midiPacket)
 			}
-
-			val factor = 440f / sample_rate // TODO take frequency from input
-
-			val audio = out.audio[0]
-
-			val type = type
-			when (type) {
-				Properties.Type.NOISE -> for (i in 0 until buffer_size) {
-					val c = frequencyCoefficients[i]
-					audio[i] = if (c > 0) (Math.random().toFloat() - 0.5f) * 0.1f else 0f //noise[(pos % noise.size).toInt()] * 0.1f
-				}
-				Properties.Type.SINE -> for (i in 0 until buffer_size) {
-					val c = frequencyCoefficients[i]
-					audio[i] = if (c > 0) sin(pos * PI * 2).toFloat() * 0.1f else 0f // Should we use a wavetable + resampler for performance? Or?
-					pos += c
-				}
-				Properties.Type.SQUARE -> for (i in 0 until buffer_size) {
-					val c = frequencyCoefficients[i]
-					if (c > 0)
-						audio[i] = if (pos % 2 < 1f) 0.1f else -0.1f
-					else
-						audio[i] = 0f
-					pos += c
-				}
-				Properties.Type.TRIANGLE -> for (i in 0 until buffer_size) {
-					val c = frequencyCoefficients[i]
-					if (c > 0) {
-						val p = (pos + 0.25) % 1.0
-						audio[i] = ((if (p % 1 >= 0.5) p else 1.0 - p).toFloat() * 4 - 3) * 0.1f
-					} else {
-						audio[i] = 0f
-					}
-					pos += c
-				}
-				Properties.Type.SAW -> for (i in 0 until buffer_size) {
-					val c = frequencyCoefficients[i]
-					if (c > 0) {
-						val p = (pos + 0.5) % 1
-						audio[i] = (p * 2 - 1).toFloat() * 0.1f
-					} else {
-						audio[i] = 0f
-					}
-					pos += c
-				}
-				else -> for (i in 0 until buffer_size)
-					audio[i] = 0f
-			}
-
-			out.push()
 		}
+
+		val factor = 440f / sample_rate // TODO take frequency from input
+
+		val audio = out.audio[0]
+
+		val type = type
+		when (type) {
+			Properties.Type.NOISE -> for (i in 0 until buffer_size) {
+				val c = frequencyCoefficients[i]
+				audio[i] = if (c > 0) (Math.random().toFloat() - 0.5f) * 0.1f else 0f //noise[(pos % noise.size).toInt()] * 0.1f
+			}
+			Properties.Type.SINE -> for (i in 0 until buffer_size) {
+				val c = frequencyCoefficients[i]
+				audio[i] = if (c > 0) sin(pos * PI * 2).toFloat() * 0.1f else 0f // Should we use a wavetable + resampler for performance? Or?
+				pos += c
+			}
+			Properties.Type.SQUARE -> for (i in 0 until buffer_size) {
+				val c = frequencyCoefficients[i]
+				if (c > 0)
+					audio[i] = if (pos % 2 < 1f) 0.1f else -0.1f
+				else
+					audio[i] = 0f
+				pos += c
+			}
+			Properties.Type.TRIANGLE -> for (i in 0 until buffer_size) {
+				val c = frequencyCoefficients[i]
+				if (c > 0) {
+					val p = (pos + 0.25) % 1.0
+					audio[i] = ((if (p % 1 >= 0.5) p else 1.0 - p).toFloat() * 4 - 3) * 0.1f
+				} else {
+					audio[i] = 0f
+				}
+				pos += c
+			}
+			Properties.Type.SAW -> for (i in 0 until buffer_size) {
+				val c = frequencyCoefficients[i]
+				if (c > 0) {
+					val p = (pos + 0.5) % 1
+					audio[i] = (p * 2 - 1).toFloat() * 0.1f
+				} else {
+					audio[i] = 0f
+				}
+				pos += c
+			}
+			else -> for (i in 0 until buffer_size)
+				audio[i] = 0f
+		}
+
+		out.push()
 	}
 
 	override fun onDestroy() {}
