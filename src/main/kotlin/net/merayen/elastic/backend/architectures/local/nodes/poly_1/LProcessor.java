@@ -25,6 +25,8 @@ public class LProcessor extends LocalProcessor {
 	private final PolySessions sessions = new PolySessions();
 	private final List<InterfaceNode> interfaces = new ArrayList<>();
 
+	private boolean frameDone;
+
 	// MIDI states
 	private short[] current_pitch;// = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
 	private short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
@@ -54,11 +56,16 @@ public class LProcessor extends LocalProcessor {
 				for (int i = 0; i < buffer_size; i++)
 					output.audio[channel][i] = 0;
 		}
+
+		frameDone = false;
 	}
 
 	@Override
 	protected void onProcess() {
 		if (!available())
+			return;
+
+		if(frameDone)
 			return;
 
 		if(input != null) {
@@ -82,6 +89,7 @@ public class LProcessor extends LocalProcessor {
 				}
 			}
 			spool("trigger"); // Ensure ports are spooled to the same position
+			frameDone = true;
 		}
 
 		forwardOutputData();
@@ -120,7 +128,7 @@ public class LProcessor extends LocalProcessor {
 
 			midi_outlet.putMidi(position, current_sustain);
 
-			midi_outlet.push();
+			//midi_outlet.push();
 		}
 	}
 

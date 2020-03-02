@@ -33,6 +33,9 @@ public abstract class Outlet extends Portlet {
 	 * Notifies receiving ports that node has written its data.
 	 */
 	public void push() {
+		if (written)
+			throw new RuntimeException("Already pushed data to Outlet");
+
 		written = true;
 
 		for(LocalProcessor lp : connected_processors)

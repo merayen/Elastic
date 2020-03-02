@@ -22,7 +22,7 @@ public class LProcessor extends LocalProcessor {
 		if (outlet.satisfied())
 			return;
 
-		if(outlet != null && sourceOutlet != null)
+		if(sourceOutlet != null)
 			outlet.forwardFromOutlet(sourceOutlet);
 	}
 
