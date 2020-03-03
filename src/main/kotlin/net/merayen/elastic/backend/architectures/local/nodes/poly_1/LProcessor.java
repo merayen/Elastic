@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class LProcessor extends LocalProcessor {
 	private MidiInlet input;
-	private AudioOutlet output;
+	private AudioOutlet output;  // The single output port of this poly-node, for now
 	private final PolySessions sessions = new PolySessions();
 	private final List<InterfaceNode> interfaces = new ArrayList<>();
 
@@ -68,6 +68,8 @@ public class LProcessor extends LocalProcessor {
 		if(frameDone)
 			return;
 
+		frameDone = true;
+
 		if(input != null) {
 			int position = 0;
 			MidiOutlet.MidiFrame midiFrame;
@@ -88,9 +90,10 @@ public class LProcessor extends LocalProcessor {
 					}
 				}
 			}
-			spool("trigger"); // Ensure ports are spooled to the same position
-			frameDone = true;
 		}
+
+		// Push all input ports inside
+		spool();
 
 		forwardOutputData();
 
@@ -139,7 +142,6 @@ public class LProcessor extends LocalProcessor {
 		for(PolySessions.Session session : sessions.getTangentSessions(tangent)) {
 			((MidiOutlet)session.input).putMidi(position, new short[]{MidiStatuses.KEY_UP, tangent, 0});
 
-			session.input.push();
 			session.active = false;
 		}
 	}
@@ -171,10 +173,11 @@ public class LProcessor extends LocalProcessor {
 	 * Spools all outlets to a certain position.
 	 * TODO distinguish on forward name, and session in case of deep voices
 	 */
-	private void spool(String forward_port) {
+	private void spool() {
 		for(Outlet outlet : sessions.getOutlets())
 			outlet.push();
 	}
+
 
 	private void forwardOutputData() {
 		List<OutputInterfaceNode> outputNodes = getOutputNodes();
@@ -215,9 +218,8 @@ public class LProcessor extends LocalProcessor {
 									out[channel][i] += in[i] * channelDistribution[channel];
 					}
 				}
-
-				output.push();
 			}
+			output.push();
 		}
 	}
 

@@ -210,7 +210,7 @@ class Supervisor {
 
 		// Reset all frame-state in the processors
 		for(LocalProcessor x : processor_list)
-			x.prepare(0);
+			x.prepare();
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for (Node node : netlist.getNodes()) {

@@ -1,10 +1,10 @@
 package net.merayen.elastic.backend.architectures.local.nodes.poly_1;
 
+import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 
 class PolySessions {
 	static class Session {
@@ -44,7 +44,6 @@ class PolySessions {
 			}
 		}
 
-		System.out.println(sessions.size());
 		return result;
 	}
 

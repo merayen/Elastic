@@ -176,7 +176,7 @@ public abstract class LocalProcessor {
 		return inlets.get(name);
 	}
 
-	void prepare(int sample_offset) {
+	void prepare() {
 		process_count = 0;
 		// Jump the buffers to the offset when the voice was created
 		for (Inlet inlet : inlets.values())
@@ -219,7 +219,7 @@ public abstract class LocalProcessor {
 
 		for (LocalProcessor lp : localnode.supervisor.processor_list.getProcessors(new_session_id)) {
 			lp.parent = this;
-			lp.prepare(sample_offset);
+			lp.prepare();
 		}
 
 		return new_session_id;
