@@ -10,6 +10,8 @@ import net.merayen.elastic.backend.midi.MidiStatuses;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Creates sessions of is children group when a tangent is pressed.
@@ -65,35 +67,33 @@ public class LProcessor extends LocalProcessor {
 		if (!available())
 			return;
 
-		if(frameDone)
-			return;
-
-		frameDone = true;
-
 		if(input != null) {
-			int position = 0;
-			MidiOutlet.MidiFrame midiFrame;
-			while((midiFrame = input.getNextMidiFrame()) != null) {
-				for(short[] n : midiFrame) {
-					if((n[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
-						push_tangent(n[1], n[2], midiFrame.framePosition);
-					} else if((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
-						release_tangent(n[1], position);
-					} else if((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) {
-						current_sustain = n;
-						sendMidi(n, position);
-					} else if((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
-						current_pitch = n;
-						sendMidi(n, position);
-					} else {
-						sendMidi(n, position); // TODO support multiple midi packets on the same sample (???)
+			if (!frameDone) {
+				frameDone = true;
+				int position = 0;
+				for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : input.outlet.midi.entrySet()) {
+					for (short[] n : entry.getValue()) {
+						if ((n[0] & 0b11110000) == MidiStatuses.KEY_DOWN) {
+							push_tangent(n[1], n[2], entry.getKey());
+						} else if ((n[0] & 0b11110000) == MidiStatuses.KEY_UP) { // Also detect KEY_DOWN with 0 velocity!
+							release_tangent(n[1], position);
+						} else if ((n[0] & 0b11110000) == MidiStatuses.MOD_CHANGE && n[1] == MidiControllers.SUSTAIN) {
+							current_sustain = n;
+							sendMidi(n, position);
+						} else if ((n[0] & 0b11110000) == MidiStatuses.PITCH_CHANGE) {
+							current_pitch = n;
+							sendMidi(n, position);
+						} else {
+							sendMidi(n, position); // TODO support multiple midi packets on the same sample (???)
+						}
 					}
 				}
+				// Push all input ports inside
+				pushInNodes();
 			}
+		} else {
+			pushInNodes(); // No data for in-nodes, we push anyway
 		}
-
-		// Push all input ports inside
-		spool();
 
 		forwardOutputData();
 
@@ -106,7 +106,7 @@ public class LProcessor extends LocalProcessor {
 		for(int i = 0; i < unison; i++) {
 			int spawned_session_id;
 			try {
-				spawned_session_id = spawnSession(0); // TODO sample_offset should not be always 0, but rather respect the offset from the midi packet
+				spawned_session_id = spawnSession(); // TODO sample_offset should not be always 0, but rather respect the offset from the midi packet
 			} catch (SpawnLimitException e) {
 				return; // No more voices can be spawned. XXX Should probably kill the oldest one and replace them
 			}
@@ -125,11 +125,11 @@ public class LProcessor extends LocalProcessor {
 
 			sessions.push(spawned_session_id, tangent, midi_outlet, outnodes.toArray(new OutputInterfaceNode[0]));
 
-			midi_outlet.putMidi(position, new short[] {MidiStatuses.KEY_DOWN, tangent, velocity});
+			midi_outlet.addMidi(position, new short[] {MidiStatuses.KEY_DOWN, tangent, velocity});
 			if(current_pitch != null)
-				midi_outlet.putMidi(position, current_pitch);
+				midi_outlet.addMidi(position, current_pitch);
 
-			midi_outlet.putMidi(position, current_sustain);
+			midi_outlet.addMidi(position, current_sustain);
 
 			//midi_outlet.push();
 		}
@@ -140,7 +140,7 @@ public class LProcessor extends LocalProcessor {
 			return;
 
 		for(PolySessions.Session session : sessions.getTangentSessions(tangent)) {
-			((MidiOutlet)session.input).putMidi(position, new short[]{MidiStatuses.KEY_UP, tangent, 0});
+			((MidiOutlet)session.input).addMidi(position, new short[]{MidiStatuses.KEY_UP, tangent, 0});
 
 			session.active = false;
 		}
@@ -151,7 +151,7 @@ public class LProcessor extends LocalProcessor {
 	 */
 	private void sendMidi(short[] midi, int position) {
 		for(Outlet outlet : sessions.getOutlets()) {
-			((MidiOutlet)outlet).putMidi(position, midi);
+			((MidiOutlet)outlet).addMidi(position, midi);
 
 			outlet.push();
 		}
@@ -170,14 +170,13 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	/**
-	 * Spools all outlets to a certain position.
+	 * Spools all outlets (in-nodes)
 	 * TODO distinguish on forward name, and session in case of deep voices
 	 */
-	private void spool() {
+	private void pushInNodes() {
 		for(Outlet outlet : sessions.getOutlets())
 			outlet.push();
 	}
-
 
 	private void forwardOutputData() {
 		List<OutputInterfaceNode> outputNodes = getOutputNodes();
@@ -216,6 +215,8 @@ public class LProcessor extends LocalProcessor {
 							if(channelDistribution[channel] != 0)
 								for (int i = 0; i < buffer_size; i++)
 									out[channel][i] += in[i] * channelDistribution[channel];
+
+						System.out.printf("poly_1 pushing audio out for session %s (%f, channels=%d)\n", session.session_id, out[1][new Random().nextInt(buffer_size)], out.length);
 					}
 				}
 			}

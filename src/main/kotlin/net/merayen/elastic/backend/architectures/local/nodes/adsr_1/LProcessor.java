@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.midi.MidiStatuses;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class LProcessor extends LocalProcessor {
 	private MidiOutlet output;
@@ -22,14 +23,16 @@ public class LProcessor extends LocalProcessor {
 
 	private MidiOutlet.MidiFrame midiFrame;
 
+	private Integer midiInputFramePosition;
+
 	private MidiState midiState = new MidiState() {
 		@Override
 		protected void onKeyDown(short tangent, float velocity) {
 			current_tangent_up = null;
 			current_tangent_down = getCurrentMidiPacket();
-			output.putMidi(midiFrame.framePosition, getCurrentMidiPacket());
-			output.putMidi(midiFrame.framePosition, new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, 0}); // Only if attack is more than 0?
-			getADSR().push(position + midiFrame.framePosition, 1);
+			output.addMidi(midiInputFramePosition, getCurrentMidiPacket());
+			output.addMidi(midiInputFramePosition, new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, 0}); // Only if attack is more than 0?
+			getADSR().push(position + midiInputFramePosition, 1);
 			keys_down.add(getCurrentMidiPacket()[1]);
 			handledMidiPacket = true;
 		}
@@ -40,7 +43,7 @@ public class LProcessor extends LocalProcessor {
 
 			if (keys_down.isEmpty() && current_tangent_up == null) {
 				current_tangent_up = getCurrentMidiPacket();
-				getADSR().push(position + midiFrame.framePosition, -1);
+				getADSR().push(position + midiInputFramePosition, -1);
 			}
 
 			handledMidiPacket = true;
@@ -55,7 +58,7 @@ public class LProcessor extends LocalProcessor {
 		@Override
 		protected void onMidi(short[] midiPacket) {
 			if(!handledMidiPacket)
-				output.putMidi(midiFrame.framePosition, midiPacket);
+				output.addMidi(midiInputFramePosition, midiPacket);
 		}
 	};
 
@@ -87,20 +90,19 @@ public class LProcessor extends LocalProcessor {
 			return;
 
 		if(input != null && output != null) {
-			while((midiFrame = input.getNextMidiFrame()) != null) {
-
-				// Reading and handle/forward incoming MIDI data
-				for (short[] midiPacket : midiFrame) {
+			for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : input.outlet.midi.entrySet()) {
+				midiInputFramePosition = entry.getKey();
+				for (short[] midiPacket : midiFrame) { // Reading and handle/forward incoming MIDI data
 					handledMidiPacket = false;
 					midiState.handle(midiPacket, null);
 				}
 			}
 
 			for(ADSR.Entry entry : getADSR().process(buffer_size))
-				output.putMidi((int) (entry.position - position), new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, (short) (entry.state * input_volume)}); // FIXME set the correct position
+				output.addMidi((int) (entry.position - position), new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.CHANNEL_VOLUME_MSB, (short) (entry.state * input_volume)}); // FIXME set the correct position
 
 			if(current_tangent_up != null && getADSR().isNeutral()) {
-				output.putMidi(buffer_size - 1, new short[]{MidiStatuses.KEY_UP, current_tangent_up[1], 0});
+				output.addMidi(buffer_size - 1, new short[]{MidiStatuses.KEY_UP, current_tangent_up[1], 0});
 				current_tangent_up = null;
 			}
 

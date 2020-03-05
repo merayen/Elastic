@@ -37,7 +37,7 @@ class LProcessor : LocalProcessor() {
 			val midiData = lnode.midiData
 
 			if (inputMidi != null) // TODO write any note from MidiData too
-				outlet.putMidi(0, inputMidi) // TODO shouldn't quantize to beginning of frame
+				outlet.addMidi(0, inputMidi) // TODO shouldn't quantize to beginning of frame
 
 			if (midiData != null) {
 				if (midiData.revision != midiDataRevision) {

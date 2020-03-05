@@ -21,7 +21,7 @@ public class LProcessor extends LocalProcessor {
 			List<short[]>buffer = ((LNode)getLocalNode()).buffer;
 
 			if(!buffer.isEmpty())
-				outlet.putMidi(0, buffer.toArray(new short[buffer.size()][]));
+				outlet.addMidi(0, buffer.toArray(new short[buffer.size()][]));
 
 			outlet.push();
 		}

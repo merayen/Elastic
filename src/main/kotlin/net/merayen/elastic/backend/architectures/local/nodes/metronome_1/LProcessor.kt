@@ -52,11 +52,11 @@ class LProcessor : LocalProcessor() {
 
 		if (midi != null) {
 			if (midiState == 0 && midiBeepPosition == 0) {
-				midi.putMidi(0, MidiMessagesCreator.keyDown(if(lastBeatPosition == 0) 69+12 else 69, 1f))
+				midi.addMidi(0, MidiMessagesCreator.keyDown(if(lastBeatPosition == 0) 69+12 else 69, 1f))
 				midiState++
 			} else if (midiState == 1 && midiBeepPosition > beepLength) {
-				midi.putMidi(0, MidiMessagesCreator.keyUp(69, 0f))
-				midi.putMidi(0, MidiMessagesCreator.keyUp(69+12, 0f))
+				midi.addMidi(0, MidiMessagesCreator.keyUp(69, 0f))
+				midi.addMidi(0, MidiMessagesCreator.keyUp(69+12, 0f))
 				midiState = 0
 			}
 

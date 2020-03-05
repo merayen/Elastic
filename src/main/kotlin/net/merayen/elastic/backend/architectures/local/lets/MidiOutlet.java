@@ -4,21 +4,16 @@ import net.merayen.elastic.backend.logicnodes.Format;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MidiOutlet extends Outlet {
-	public static class MidiFrame extends ArrayList<short[]> {
-		public final int framePosition;
-
-		private MidiFrame(int framePosition) {
-			this.framePosition = framePosition;
-		}
-	}
+	public static class MidiFrame extends ArrayList<short[]> {}
 
 	/**
-	 * Format: midi[<sample offset>][<midi-packet no>][<midi-data>]
+	 * Only owner of the outlet should modify this.
 	 */
-	final List<MidiFrame> midi = new ArrayList<>();
+	public final Map<Integer, MidiFrame> midi = new HashMap<>();
 
 	public MidiOutlet(int buffer_size) {
 		super(buffer_size);
@@ -43,27 +38,25 @@ public class MidiOutlet extends Outlet {
 	 * Write midi to outlet.
 	 * midi parameter is not copied, so don't change it after pushing it.
 	 */
-	public void putMidi(int position, short[] midiPacket) {
-		putMidi(position, new short[][]{midiPacket});
+	public void addMidi(int position, short[] midiPacket) {
+		addMidi(position, new short[][]{midiPacket});
 	}
 
 	/**
 	 * Write midi to outlet.
 	 * midi parameter is not copied, so don't change it after pushing it.
 	 */
-	public void putMidi(int position, short[][] midiPackets) {
-		MidiFrame last = midi.isEmpty() ? null : midi.get(midi.size() - 1);
-
+	public void addMidi(int position, short[][] midiPackets) {
 		if(position < 0)
 			throw new RuntimeException("Negative write position not allowed");
 
 		if(position >= buffer_size)
 			throw new RuntimeException("Write position out of bound. Only 0 - buffer_size-1 is allowed. Got " + position);
 
-		if (last == null || last.framePosition != position)
-			midi.add(last = new MidiFrame(position));
+		if (!midi.containsKey(position))
+			midi.put(position, new MidiFrame());
 
-		last.addAll(Arrays.asList(midiPackets));
+		midi.get(position).addAll(Arrays.asList(midiPackets));
 	}
 
 	@Override
@@ -71,22 +64,16 @@ public class MidiOutlet extends Outlet {
 		if (satisfied())
 			throw new RuntimeException("MidiOutlet already written to");
 
+		if (!source.satisfied())
+			throw new RuntimeException("Outlet must be pushed to, to be forwarded");
+
+		if (!(source instanceof MidiOutlet))
+			throw new RuntimeException("Source must be an MidiOutlet, or it can not be forwarded");
+
 		MidiOutlet outlet = (MidiOutlet)source;
 
-		if(outlet.midi.size() < midi.size())
-			throw new RuntimeException("Can not forward midi, perhaps already forwarded from another port?");
-
-		int i = -1;
-		for(MidiFrame midiFrame : new ArrayList<>(outlet.midi)) {
-			i++;
-
-			if(midi.size() > i) {
-				if(midi.get(i) != midiFrame)
-					throw new RuntimeException("Can not forward midi, perhaps already forwarded from another port?");
-			} else {
-				midi.add(midiFrame);
-			}
-		}
+		for(Map.Entry<Integer, MidiFrame> midiEntry : outlet.midi.entrySet())
+			midi.put(midiEntry.getKey(), midiEntry.getValue());
 
 		push();
 	}

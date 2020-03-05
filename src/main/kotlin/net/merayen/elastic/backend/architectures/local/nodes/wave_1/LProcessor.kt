@@ -58,11 +58,10 @@ class LProcessor : LocalProcessor() {
 		out.channelCount = 1
 
 		if (frequency is MidiInlet) {
-			while (true) {
-				val midiFrame = frequency.nextMidiFrame ?: break
-				midiState.framePosition = midiFrame.framePosition
+			for ((position, midiFrame) in frequency.outlet.midi) {
+				midiState.framePosition = position
 				for (midiPacket in midiFrame)
-					midiState.handle(midiPacket)
+					midiState.handle(midiPacket, null)
 			}
 		}
 

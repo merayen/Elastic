@@ -189,11 +189,8 @@ public abstract class LocalProcessor {
 	}
 
 	/**
-	 * Convenience function to retrieve samples available.
-	 * Checks all connected input-ports and returns the minimum available samples.
-	 * Function is based on synchronous processing of the input-ports.
-	 * If you are not doing that, then don't use this.
-	 * If no inlets are connected at all, we return the full buffer size, as we are not dependent on any inlets.
+	 * Returns true if all inlets has data available, or no inlets are available.
+	 * If node is not dependent on all inlets having data at once, do not use this method.
 	 */
 	protected boolean available() {
 		for (Inlet inlet : inlets.values())
@@ -214,8 +211,8 @@ public abstract class LocalProcessor {
 	 * Spawns a session for this node's children nodes.
 	 * Returns the child session_id created.
 	 */
-	protected int spawnSession(int sample_offset) throws SpawnLimitException {
-		int new_session_id = localnode.supervisor.spawnSession(localnode.node, sample_offset);
+	protected int spawnSession() throws SpawnLimitException {
+		int new_session_id = localnode.supervisor.spawnSession(localnode.node);
 
 		for (LocalProcessor lp : localnode.supervisor.processor_list.getProcessors(new_session_id)) {
 			lp.parent = this;

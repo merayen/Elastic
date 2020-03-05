@@ -7,9 +7,7 @@ import net.merayen.elastic.backend.architectures.local.utils.InputSignalParamete
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.util.AudioUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private enum Mode {
@@ -80,6 +78,8 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 	@Override
 	protected void onInit() {
+		System.out.printf("Signalgenerator spawned: %s\n", this);
+
 		lnode = (LNode)getLocalNode();
 
 		Inlet frequency = getInlet("frequency");
@@ -184,6 +184,8 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 				outlet.audio[0][i] = 0;
 		}
 
+//		System.out.printf("signalgenerator_1 pushing audio out for session %s (%f)\n", getSessionID(), outlet.audio[0][new Random().nextInt(buffer_size)]);
+
 		outlet.push();
 	}
 
@@ -191,9 +193,12 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		MidiInlet inlet = (MidiInlet)getInlet("frequency");
 		if(inlet.available()) {
 			MidiOutlet.MidiFrame midiFrame;
-			while((midiFrame = inlet.getNextMidiFrame()) != null)
-				for (short[] midiPacket : midiFrame)
+			for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : inlet.outlet.midi.entrySet()) {
+				for (short[] midiPacket : entry.getValue()) {
+					System.out.printf("Signalgenerator received %d: %s\n", entry.getKey(), Arrays.toString(midiPacket));
 					midiState.handle(midiPacket);
+				}
+			}
 		}
 	}
 
@@ -209,7 +214,9 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	@Override
-	protected void onDestroy() {}
+	protected void onDestroy() {
+		System.out.printf("Signalgenerator destroyed: %s", this);
+	}
 
 	@Override
 	public boolean isKeepingSessionAlive() {

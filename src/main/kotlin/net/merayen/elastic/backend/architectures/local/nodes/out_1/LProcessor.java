@@ -21,8 +21,10 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		if(inlet != null && inlet.getFormat() == Format.AUDIO && inlet.available())
+		if(inlet != null && inlet.getFormat() == Format.AUDIO && inlet.available()) {
+			//System.out.printf("out_1 sending %s: %f\n", getSessionID(), inlet.outlet.audio[0][new Random().nextInt(buffer_size)]);
 			getParent().schedule(); // We have gotten data. Let's notify our parent
+		}
 	}
 
 	@Override
