@@ -92,7 +92,7 @@ public class LProcessor extends LocalProcessor {
 		if(input != null && output != null) {
 			for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : input.outlet.midi.entrySet()) {
 				midiInputFramePosition = entry.getKey();
-				for (short[] midiPacket : midiFrame) { // Reading and handle/forward incoming MIDI data
+				for (short[] midiPacket : entry.getValue()) { // Reading and handle/forward incoming MIDI data
 					handledMidiPacket = false;
 					midiState.handle(midiPacket, null);
 				}
