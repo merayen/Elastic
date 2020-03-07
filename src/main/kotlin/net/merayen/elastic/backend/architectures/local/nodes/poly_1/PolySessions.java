@@ -73,7 +73,7 @@ class PolySessions {
 		return false;
 	}
 
-	List<Outlet> getOutlets() {
+	List<Outlet> getInputOutlets() {
 		List<Outlet> result = new ArrayList<>();
 
 		for(Session session : sessions)

@@ -66,6 +66,9 @@ public class LProcessor extends LocalProcessor {
 		if (!available())
 			return;
 
+		if (frameFinished())
+			return;
+
 		if (input != null) {
 			if (!frameDone) {
 				frameDone = true;
@@ -149,7 +152,7 @@ public class LProcessor extends LocalProcessor {
 	 * Send MIDI to all voices.
 	 */
 	private void sendMidi(short[] midi, int position) {
-		for (Outlet outlet : sessions.getOutlets()) {
+		for (Outlet outlet : sessions.getInputOutlets()) {
 			((MidiOutlet) outlet).addMidi(position, midi);
 
 			outlet.push();
@@ -174,7 +177,7 @@ public class LProcessor extends LocalProcessor {
 	 * TODO distinguish on forward name, and session in case of deep voices
 	 */
 	private void pushInNodes() {
-		for (Outlet outlet : sessions.getOutlets())
+		for (Outlet outlet : sessions.getInputOutlets())
 			outlet.push();
 	}
 
@@ -182,10 +185,8 @@ public class LProcessor extends LocalProcessor {
 		List<OutputInterfaceNode> outputNodes = getOutputNodes();
 
 		if (outputNodes.isEmpty()) {
-			Outlet output_outlet = getOutlet("output");
-			if (output_outlet != null) {
-				output_outlet.push();
-			}
+			if (output != null)
+				output.push();
 
 			return; // No out-nodes. Nothing to do
 		}
@@ -236,7 +237,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void resetOutlets() {
-		for (Outlet outlet : sessions.getOutlets())
+		for (Outlet outlet : sessions.getInputOutlets())
 			outlet.reset();
 	}
 
