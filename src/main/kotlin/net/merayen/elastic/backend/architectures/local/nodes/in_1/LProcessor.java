@@ -4,9 +4,6 @@ import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.MidiOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 
-import java.util.Arrays;
-import java.util.Map;
-
 /**
  * TODO support more than just MIDI. Will probably crash and explode if anything else is given to it.
  */
@@ -25,13 +22,8 @@ public class LProcessor extends LocalProcessor {
 		if (outlet.satisfied())
 			return;
 
-		if(sourceOutlet != null && sourceOutlet.satisfied()) {
-			if (!sourceOutlet.midi.isEmpty())
-				for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : sourceOutlet.midi.entrySet())
-					for (short[] packet : entry.getValue())
-						System.out.printf("Sent midi %d:%s\n", entry.getKey(), Arrays.toString(packet));
+		if(sourceOutlet != null && sourceOutlet.satisfied())
 			outlet.forwardFromOutlet(sourceOutlet);
-		}
 	}
 
 	@Override

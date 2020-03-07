@@ -11,13 +11,12 @@ import net.merayen.elastic.backend.midi.MidiStatuses;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Creates sessions of is children group when a tangent is pressed.
  * Automatically kills session when tangent is depressed, AND that
  * no processor has notified us that it is active (TODO the messaging part)
- *
+ * <p>
  * TODO support multiple input and output ports
  * TODO rename input and output to in_0 and out_0 for future proofing
  */
@@ -31,17 +30,17 @@ public class LProcessor extends LocalProcessor {
 
 	// MIDI states
 	private short[] current_pitch;// = new short[] {MidiStatuses.PITCH_CHANGE, 0, 64};
-	private short[] current_sustain = new short[] {MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
+	private short[] current_sustain = new short[]{MidiStatuses.MOD_CHANGE, MidiControllers.SUSTAIN, 0};
 
 	@Override
 	protected void onInit() {
 		Inlet input = getInlet("input");
 
-		if(input instanceof MidiInlet)
-			this.input = (MidiInlet)getInlet("input");
+		if (input instanceof MidiInlet)
+			this.input = (MidiInlet) getInlet("input");
 
 		Outlet output = getOutlet("output");
-		if(output != null) { // We made "output". It is guaranteed an AudioOutlet
+		if (output != null) { // We made "output". It is guaranteed an AudioOutlet
 			this.output = (AudioOutlet) output;
 			this.output.setChannelCount(2); // TODO support more than 1 channel
 		}
@@ -53,8 +52,8 @@ public class LProcessor extends LocalProcessor {
 	protected void onPrepare() {
 		resetOutlets();
 
-		if(output != null && !sessions.isEmpty()) {
-			for(int channel = 0; channel < output.getChannelCount(); channel++)
+		if (output != null && !sessions.isEmpty()) {
+			for (int channel = 0; channel < output.getChannelCount(); channel++)
 				for (int i = 0; i < buffer_size; i++)
 					output.audio[channel][i] = 0;
 		}
@@ -67,7 +66,7 @@ public class LProcessor extends LocalProcessor {
 		if (!available())
 			return;
 
-		if(input != null) {
+		if (input != null) {
 			if (!frameDone) {
 				frameDone = true;
 				int position = 0;
@@ -97,13 +96,13 @@ public class LProcessor extends LocalProcessor {
 
 		forwardOutputData();
 
-		if(input != null)
+		if (input != null)
 			removeInactiveSessions();
 	}
 
 	private void push_tangent(short tangent, short velocity, int position) { // TODO support unison, and forwarding of channel number
 		int unison = ((LNode) getLocalNode()).getUnison();
-		for(int i = 0; i < unison; i++) {
+		for (int i = 0; i < unison; i++) {
 			int spawned_session_id;
 			try {
 				spawned_session_id = spawnSession(); // TODO sample_offset should not be always 0, but rather respect the offset from the midi packet
@@ -114,7 +113,7 @@ public class LProcessor extends LocalProcessor {
 			MidiOutlet midi_outlet = new MidiOutlet(buffer_size);
 			List<OutputInterfaceNode> outnodes = new ArrayList<>();
 
-			for(InterfaceNode in : interfaces) { // Add the children node as being connected, push() will then automatically schedule the processor
+			for (InterfaceNode in : interfaces) { // Add the children node as being connected, push() will then automatically schedule the processor
 				if (in instanceof InputInterfaceNode) {
 					((InputInterfaceNode) in).setForwardOutlet(spawned_session_id, midi_outlet);
 				} else if (in instanceof OutputInterfaceNode) {
@@ -125,8 +124,8 @@ public class LProcessor extends LocalProcessor {
 
 			sessions.push(spawned_session_id, tangent, midi_outlet, outnodes.toArray(new OutputInterfaceNode[0]));
 
-			midi_outlet.addMidi(position, new short[] {MidiStatuses.KEY_DOWN, tangent, velocity});
-			if(current_pitch != null)
+			midi_outlet.addMidi(position, new short[]{MidiStatuses.KEY_DOWN, tangent, velocity});
+			if (current_pitch != null)
 				midi_outlet.addMidi(position, current_pitch);
 
 			midi_outlet.addMidi(position, current_sustain);
@@ -136,11 +135,11 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void release_tangent(short tangent, int position) {
-		if(!sessions.isTangentDown(tangent))
+		if (!sessions.isTangentDown(tangent))
 			return;
 
-		for(PolySessions.Session session : sessions.getTangentSessions(tangent)) {
-			((MidiOutlet)session.input).addMidi(position, new short[]{MidiStatuses.KEY_UP, tangent, 0});
+		for (PolySessions.Session session : sessions.getTangentSessions(tangent)) {
+			((MidiOutlet) session.input).addMidi(position, new short[]{MidiStatuses.KEY_UP, tangent, 0});
 
 			session.active = false;
 		}
@@ -150,23 +149,24 @@ public class LProcessor extends LocalProcessor {
 	 * Send MIDI to all voices.
 	 */
 	private void sendMidi(short[] midi, int position) {
-		for(Outlet outlet : sessions.getOutlets()) {
-			((MidiOutlet)outlet).addMidi(position, midi);
+		for (Outlet outlet : sessions.getOutlets()) {
+			((MidiOutlet) outlet).addMidi(position, midi);
 
 			outlet.push();
 		}
 	}
 
 	@Override
-	protected void onDestroy() {}
+	protected void onDestroy() {
+	}
 
 	/**
 	 * Retrieves all interfaces.
 	 */
 	private void retrieveInterfaces() {
-		for(LocalNode ln : getLocalNode().getChildrenNodes())
-			if(ln instanceof InterfaceNode)
-				interfaces.add((InterfaceNode)ln);
+		for (LocalNode ln : getLocalNode().getChildrenNodes())
+			if (ln instanceof InterfaceNode)
+				interfaces.add((InterfaceNode) ln);
 	}
 
 	/**
@@ -174,16 +174,16 @@ public class LProcessor extends LocalProcessor {
 	 * TODO distinguish on forward name, and session in case of deep voices
 	 */
 	private void pushInNodes() {
-		for(Outlet outlet : sessions.getOutlets())
+		for (Outlet outlet : sessions.getOutlets())
 			outlet.push();
 	}
 
 	private void forwardOutputData() {
 		List<OutputInterfaceNode> outputNodes = getOutputNodes();
 
-		if(outputNodes.isEmpty()) {
+		if (outputNodes.isEmpty()) {
 			Outlet output_outlet = getOutlet("output");
-			if(output_outlet != null) {
+			if (output_outlet != null) {
 				output_outlet.push();
 			}
 
@@ -194,29 +194,27 @@ public class LProcessor extends LocalProcessor {
 		for (Session session : sessions.getSessions()) {
 			for (OutputInterfaceNode oin : outputNodes) {
 				Inlet inlet = oin.getOutputInlet(session.session_id);
-				if(inlet instanceof AudioInlet) {
+				if (inlet instanceof AudioInlet) {
 					if (!inlet.available())
 						return; // One of the out-nodes has not finished processing yet
 				}
 			}
 		}
 
-		if(output != null) {
+		if (output != null) {
 			float[][] out = output.audio;
 
 			for (Session session : sessions.getSessions()) {
-				for(OutputInterfaceNode oui : session.outnodes) {
+				for (OutputInterfaceNode oui : session.outnodes) {
 					float[] channelDistribution = oui.getChannelDistribution(session.session_id);
 					Outlet outlet = oui.getOutputInlet(session.session_id).outlet;
-					if(outlet instanceof AudioOutlet) {
-						float[] in = ((AudioOutlet)outlet).audio[0];
+					if (outlet instanceof AudioOutlet) {
+						float[] in = ((AudioOutlet) outlet).audio[0];
 
 						for (int channel = 0; channel < channelDistribution.length; channel++)
-							if(channelDistribution[channel] != 0)
+							if (channelDistribution[channel] != 0)
 								for (int i = 0; i < buffer_size; i++)
 									out[channel][i] += in[i] * channelDistribution[channel];
-
-						System.out.printf("poly_1 pushing audio out for session %s (%f, channels=%d)\n", session.session_id, out[1][new Random().nextInt(buffer_size)], out.length);
 					}
 				}
 			}
@@ -227,9 +225,9 @@ public class LProcessor extends LocalProcessor {
 	private List<OutputInterfaceNode> getOutputNodes() { // TODO implement caching
 		List<OutputInterfaceNode> outnodes = new ArrayList<>();
 
-		for(Session s : sessions.getSessions()) {
-			for(OutputInterfaceNode outnode : s.outnodes) {
-				if(outnode.getOutputInlet(s.session_id) instanceof AudioInlet)
+		for (Session s : sessions.getSessions()) {
+			for (OutputInterfaceNode outnode : s.outnodes) {
+				if (outnode.getOutputInlet(s.session_id) instanceof AudioInlet)
 					outnodes.add(outnode);
 			}
 		}
@@ -238,7 +236,7 @@ public class LProcessor extends LocalProcessor {
 	}
 
 	private void resetOutlets() {
-		for(Outlet outlet : sessions.getOutlets())
+		for (Outlet outlet : sessions.getOutlets())
 			outlet.reset();
 	}
 
@@ -246,23 +244,23 @@ public class LProcessor extends LocalProcessor {
 		List<Session> sessions_objects = new ArrayList<>(sessions.getSessions());
 		List<LocalNode> lnodes = getLocalNode().getChildrenNodes();
 
-		for(Session session : sessions_objects) {
-			if(session.active)
+		for (Session session : sessions_objects) {
+			if (session.active)
 				continue;
 
 			boolean active = false;
 
-			for(LocalNode ln : lnodes) {
+			for (LocalNode ln : lnodes) {
 				LocalProcessor lp = ln.getProcessor(session.session_id);
-				if(lp instanceof SessionKeeper) {
-					if(((SessionKeeper)lp).isKeepingSessionAlive()) {
+				if (lp instanceof SessionKeeper) {
+					if (((SessionKeeper) lp).isKeepingSessionAlive()) {
 						active = true;
 						break;
 					}
 				}
 			}
 
-			if(!active) {
+			if (!active) {
 				sessions.removeSession(session);
 				removeSession(session.session_id);
 				//System.out.println("Poly is killing session " + session.session_id);
@@ -271,8 +269,8 @@ public class LProcessor extends LocalProcessor {
 
 		// When there are no running sessions, clear out output-buffer so that the receiver plays silence
 		// (as we won't write to it anymore, until a tangent is pressed)
-		if(output != null && sessions.isEmpty()) {
-			for(int channel = 0; channel < output.getChannelCount(); channel++) {
+		if (output != null && sessions.isEmpty()) {
+			for (int channel = 0; channel < output.getChannelCount(); channel++) {
 				float[] out = output.audio[channel]; // TODO support more than 1 channel
 				for (int i = 0; i < buffer_size; i++)
 					out[i] = 0;

@@ -70,7 +70,6 @@ public class LProcessor extends LocalProcessor {
 		if(input != null) {
 			if(output != null && input.available()) {
 				processMidi(buffer_size);
-				output.push();
 			}
 		}
 	}
@@ -84,7 +83,7 @@ public class LProcessor extends LocalProcessor {
 
 		for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : input.outlet.midi.entrySet()) {
 			midiInputFramePosition = entry.getKey();
-			for(short[] midiPacket : midiFrame) {
+			for(short[] midiPacket : entry.getValue()) {
 				midiHandled = false;
 				midiState.handle(midiPacket);
 			}

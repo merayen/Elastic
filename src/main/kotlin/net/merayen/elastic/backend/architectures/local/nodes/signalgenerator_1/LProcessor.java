@@ -78,8 +78,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 	@Override
 	protected void onInit() {
-		System.out.printf("Signalgenerator spawned: %s\n", this);
-
 		lnode = (LNode)getLocalNode();
 
 		Inlet frequency = getInlet("frequency");
@@ -195,7 +193,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 			MidiOutlet.MidiFrame midiFrame;
 			for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : inlet.outlet.midi.entrySet()) {
 				for (short[] midiPacket : entry.getValue()) {
-					System.out.printf("Signalgenerator received %d: %s\n", entry.getKey(), Arrays.toString(midiPacket));
 					midiState.handle(midiPacket);
 				}
 			}
@@ -214,9 +211,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	}
 
 	@Override
-	protected void onDestroy() {
-		System.out.printf("Signalgenerator destroyed: %s", this);
-	}
+	protected void onDestroy() {}
 
 	@Override
 	public boolean isKeepingSessionAlive() {
