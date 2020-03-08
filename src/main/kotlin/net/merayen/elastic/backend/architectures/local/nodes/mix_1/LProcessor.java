@@ -21,6 +21,9 @@ public class LProcessor extends LocalProcessor {
 		Inlet fac = getInlet("fac");
 		Outlet out = getOutlet("out");
 
+		if (frameFinished())
+			return;
+
 		boolean available = available();
 
 		if(out != null) {
