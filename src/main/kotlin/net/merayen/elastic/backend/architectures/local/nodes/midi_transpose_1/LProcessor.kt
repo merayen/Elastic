@@ -18,7 +18,7 @@ class LProcessor : LocalProcessor() {
 	override fun onPrepare() {}
 
 	override fun onProcess() {
-		if (frameFinished())
+		if (frameFinished() || !available())
 			return
 
 		val input: Inlet? = getInlet("in")

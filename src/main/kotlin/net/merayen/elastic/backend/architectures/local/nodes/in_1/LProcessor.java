@@ -18,12 +18,11 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		Outlet outlet = getOutlet("output");
-		if (outlet.satisfied())
+		if (frameFinished())
 			return;
 
 		if(sourceOutlet != null && sourceOutlet.satisfied())
-			outlet.forwardFromOutlet(sourceOutlet);
+			getOutlet("output").forwardFromOutlet(sourceOutlet);
 	}
 
 	@Override
