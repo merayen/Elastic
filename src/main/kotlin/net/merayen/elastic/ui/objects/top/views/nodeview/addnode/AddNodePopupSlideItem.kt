@@ -10,6 +10,7 @@ import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.uinodes.UINodeInformation
 import net.merayen.elastic.util.MutablePoint
 
+@Deprecated("Should be replaced by AddNodeWindow")
 internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content()) {
     internal interface Handler {
         fun onSelectCategory(category: String)

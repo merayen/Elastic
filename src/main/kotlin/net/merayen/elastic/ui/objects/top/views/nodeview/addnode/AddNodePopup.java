@@ -6,6 +6,7 @@ import net.merayen.elastic.ui.objects.top.Window;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.uinodes.BaseInfo;
 
+@Deprecated
 public class AddNodePopup {
 	public interface Handler {
 		void onSelectNode(BaseInfo info);

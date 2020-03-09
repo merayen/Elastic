@@ -5,11 +5,13 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
+import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.TextInputBox
 import net.merayen.elastic.ui.objects.components.listbox.GridListBox
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.util.KeyboardState
+import net.merayen.elastic.uinodes.UINodeInformation
 import kotlin.random.Random
 
 class AddNodeWindow : UIObject(), EasyMotionBranch {
@@ -57,10 +59,26 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 			}
 
 			override fun onChange() {
-				//resultListBox.items.removeAll()
-				for (i in 0 until Random.nextInt(2, 10)) {
-					//resultListBox.items.add(Label("Node nummer $i", eventTransparent = false))
+				val text = textInput.directTextInput.text.toLowerCase()
+
+				val nodeInfos = UINodeInformation.getNodeInfos()
+				resultListBox.list.removeAll()
+
+				nodeInfos.filter {
+					text in it.name.toLowerCase() || text in it.description.toLowerCase()
 				}
+
+				nodeInfos.sortBy {
+					val name = it.name.toLowerCase()
+					if (name.startsWith(text))
+						name
+					else
+						"\uFFFF${name}"
+				}
+
+				for (nodeInfo in nodeInfos)
+					if (text in nodeInfo.name.toLowerCase() || text in nodeInfo.description.toLowerCase())
+						resultListBox.list.add(Label(nodeInfo.name, eventTransparent = false))
 			}
 		}
 
@@ -69,7 +87,7 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 
 		resultListBox.translation.x = 2f
 		resultListBox.translation.y = 27f
-		resultListBox.layoutWidth = 100f
+		resultListBox.layoutWidth = 200f
 		resultListBox.layoutHeight = 100f
 		window.content.add(resultListBox)
 	}
@@ -77,7 +95,6 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 	private var focused = false
 
 	override fun onUpdate() {
-
 		if (!focused) {
 			textInput.focus()
 			focused = true
