@@ -11,6 +11,7 @@ import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.uinodes.UINodeInformation
 import net.merayen.elastic.util.MutablePoint
 
+@Deprecated("Should be replaced by AddNodeWindow")
 internal class NodeListPopupSlideItem(category: String, handler: Handler) : PopupSlideItem(Content(category)) {
     internal interface Handler {
         fun onSelect(info: BaseInfo)

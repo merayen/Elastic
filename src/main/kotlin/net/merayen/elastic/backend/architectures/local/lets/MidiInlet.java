@@ -15,16 +15,9 @@ public class MidiInlet extends Inlet {
 		return Format.MIDI;
 	}
 
-	public MidiOutlet.MidiFrame getNextMidiFrame(int maxFramePosition) {
-		if(outlet.midi.size() > lastReadPosition + 1 && outlet.midi.get(lastReadPosition + 1).framePosition <= maxFramePosition)
-			return outlet.midi.get(++lastReadPosition);
-
-		return null;
-	}
-
 	@Override
-	public void reset(int sample_offset) {
-		super.reset(sample_offset);
+	public void reset() {
+		super.reset();
 		lastReadPosition = -1;
 	}
 }

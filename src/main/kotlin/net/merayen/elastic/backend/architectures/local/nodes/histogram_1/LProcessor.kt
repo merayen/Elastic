@@ -54,14 +54,14 @@ class LProcessor : LocalProcessor() {
 
 		val available = dataPort.available()
 
-		if (available == 0)
+		if (!dataPort.available())
 			return
 
 		if (dataPort is AudioInlet) {
 			for (channel in 0 until dataPort.outlet.audio.size) {
 				val audio = dataPort.outlet.audio[channel] ?: continue
 
-				for (i in dataPort.read until dataPort.read + available) {
+				for (i in 0 until buffer_size) {
 					val sample = audio[i]
 					if ((sample > 0.01f || sample < -0.01) && sample >= start && sample < start+width)
 						buckets[((sample - start) / width * (resolution-1)).toInt()] += 1f
@@ -73,8 +73,6 @@ class LProcessor : LocalProcessor() {
 				}
 			}
 		}
-
-		dataPort.read = buffer_size
 	}
 
 	override fun onDestroy() {}

@@ -4,7 +4,6 @@ import net.merayen.elastic.backend.architectures.local.LocalProcessor;
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.logicnodes.Format;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 	AudioInlet inlet;
@@ -22,8 +21,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-		if(inlet != null && inlet.getFormat() == Format.AUDIO && inlet.available() > 0)
+		if(inlet != null && inlet.getFormat() == Format.AUDIO && inlet.available()) {
 			getParent().schedule(); // We have gotten data. Let's notify our parent
+		}
 	}
 
 	@Override

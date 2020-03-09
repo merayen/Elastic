@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.cutoff_1
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet
-import net.merayen.elastic.backend.architectures.local.lets.Inlet
 import net.merayen.elastic.backend.architectures.local.lets.SignalInlet
 import kotlin.math.max
 import kotlin.math.min
@@ -24,10 +23,7 @@ class LProcessor : LocalProcessor() {
 		val available = available()
 
 		if (audioIn != null && audioOut != null) {
-			if (available > 0) {
-				val start = audioOut.written
-				val stop = start + available
-
+			if (available) {
 				val lnode = (localNode as LNode)
 				var frequency = lnode.frequency
 				var damping = lnode.damping
@@ -70,7 +66,7 @@ class LProcessor : LocalProcessor() {
 					var pos = pos[channel]
 					var speed = speed[channel]
 
-					for (i in start until stop) {
+					for (i in 0 until buffer_size) {
 						if (frequencyInData != null) // Slow?
 							frequency = (2 + min(1f, max(-1f, frequencyInData[i]))) * 10
 
@@ -88,27 +84,14 @@ class LProcessor : LocalProcessor() {
 					this.speed[channel] = speed
 				}
 
-				frequencyIn?.read = stop
-				dampingIn?.read = stop
-				audioIn.read = stop
-				audioOut.written = stop
 				audioOut.push()
 			}
 		} else {
 			if (audioOut != null) {
 				audioOut.channelCount = 1
-				if (audioOut.written != buffer_size) {
-					audioOut.written = buffer_size
+				if (!audioOut.available())
 					audioOut.push()
-				}
 			}
-
-			if (audioIn != null) {
-				audioIn.read = audioIn.outlet.written
-			}
-
-			frequencyIn?.read = frequencyIn?.outlet?.written
-			dampingIn?.read = dampingIn?.outlet?.written
 		}
 	}
 

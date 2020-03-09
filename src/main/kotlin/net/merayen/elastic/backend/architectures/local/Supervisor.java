@@ -133,8 +133,8 @@ class Supervisor {
 			lp.init();
 	}
 
-	int spawnSession(Node node, int sample_offset) throws SpawnLimitException {
-		spawnSession(node, ++session_id_counter, sample_offset);
+	int spawnSession(Node node) throws SpawnLimitException {
+		spawnSession(node, ++session_id_counter);
 		return session_id_counter;
 	}
 
@@ -143,7 +143,7 @@ class Supervisor {
 	 * sample_offset is the offset into the process frame which the session gets spawned.
 	 * If node is null, the topmost node's session gets started.
 	 */
-	synchronized private void spawnSession(Node node, int session_id, int sample_offset) throws SpawnLimitException {
+	synchronized private void spawnSession(Node node, int session_id) throws SpawnLimitException {
 		List<LocalNode> lnodes = new ArrayList<>(); // LocalNodes to create sessions on
 		for(Node n : netlist.getNodes())
 			if((node == null && node_properties.getParent(n) == null) || (node != null && node.equals(netlist_util.getParent(n))))
@@ -210,7 +210,7 @@ class Supervisor {
 
 		// Reset all frame-state in the processors
 		for(LocalProcessor x : processor_list)
-			x.prepare(0);
+			x.prepare();
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for (Node node : netlist.getNodes()) {
@@ -240,7 +240,7 @@ class Supervisor {
 		for(LocalProcessor lp : processor_list.getAllProcessors()) {
 			if(!lp.frameFinished()) {
 				failed = true;
-				System.out.printf("Node failed to process: %s, session_id=%d. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.getClass(), lp.session_id);
+				System.out.printf("Node failed to process: %s, session_id=%d. Frame has not been completely processed. Forgotten to call Outlet.push()?\n", lp.getClass(), lp.session_id);
 			}
 		}
 

@@ -68,7 +68,7 @@ abstract class MidiState {
 	var bendRange = 2f
 		private set
 
-	var currentMidiPacket: ShortArray? = null
+	var currentMidiPacket: ShortArray = ShortArray(0)
 		private set
 
 	var volume = 1f

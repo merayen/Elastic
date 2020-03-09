@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.MidiInlet;
 import net.merayen.elastic.backend.architectures.local.lets.SignalInlet;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 	@Override
@@ -16,6 +15,9 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
+		if (frameFinished())
+			return;
+
 		Inlet control = getInlet("control");
 		AudioOutlet out = (AudioOutlet) getOutlet("out");
 
@@ -31,27 +33,13 @@ public class LProcessor extends LocalProcessor {
 				processWithNothing(out);
 			}
 		}
-
-		if (control != null) {
-			control.read = buffer_size;
-		}
 	}
 
 	private void processWithMidi(MidiInlet control, AudioOutlet out) {
-		int start = out.written;
-		int stop = control.outlet.written;
-
-		control.read = stop;
-		out.written = stop;
 		out.push();
 	}
 
 	private void processWithSignal(SignalInlet control, AudioOutlet out) {
-		int start = out.written;
-		int stop = control.outlet.written;
-
-		control.read = stop;
-		out.written = stop;
 		out.push();
 	}
 
@@ -59,7 +47,6 @@ public class LProcessor extends LocalProcessor {
 	 * Just plays the sample as it is.
 	 */
 	private void processWithNothing(AudioOutlet out) {
-		out.written = buffer_size;
 		out.push();
 	}
 

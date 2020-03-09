@@ -16,72 +16,52 @@ class LProcessor : LocalProcessor() {
 	}
 
 	override fun onPrepare() {}
+
 	override fun onProcess() {
+		if (frameFinished() || !available())
+			return
+
 		val input: Inlet? = getInlet("in")
 		val output = getOutlet("out") as? MidiOutlet
 
-		if (input is MidiInlet) {
-			val available = available()
-			if (available > 0) {
-				var midiFrame: MidiOutlet.MidiFrame? = null
+		if (input is MidiInlet && output != null && available()) {
+			for ((position, midiFrame) in input.outlet.midi) {
+				for (midiPacket in midiFrame) {
+					when {
+						midiPacket[0] == MidiStatuses.KEY_DOWN -> {
+							val alteredMidiPacket = midiPacket.copyOf()
 
-				while (true) {
-					midiFrame = input.getNextMidiFrame(available)
-					if (midiFrame == null)
-						break
+							alteredMidiPacket[1] = transposeKey(midiPacket[1])
 
-					if (output != null) {
-						for (midiPacket in midiFrame) {
-							when {
-								midiPacket[0] == MidiStatuses.KEY_DOWN -> {
-									val alteredMidiPacket = midiPacket.copyOf()
+							keysDown.add(midiPacket[1])
 
-									alteredMidiPacket[1] = transposeKey(midiPacket[1])
-
-									keysDown.add(midiPacket[1])
-
-									output.putMidi(midiFrame.framePosition, alteredMidiPacket)
-								}
-								midiPacket[0] == MidiStatuses.KEY_UP -> {
-									keysDown.remove(midiPacket[1])
-									output.putMidi(midiFrame.framePosition, shortArrayOf(MidiStatuses.KEY_UP, transposeKey(midiPacket[1])))
-								}
-								else -> output.putMidi(midiFrame.framePosition, midiPacket)
-							}
+							output.addMidi(position, alteredMidiPacket)
 						}
+
+						midiPacket[0] == MidiStatuses.KEY_UP -> {
+							keysDown.remove(midiPacket[1])
+							output.addMidi(position, shortArrayOf(MidiStatuses.KEY_UP, transposeKey(midiPacket[1])))
+						}
+
+						else -> output.addMidi(position, midiPacket)
 					}
 				}
 
-				input.read += available
+				val localNode = localNode as LNode
 
-				if (input.read == buffer_size && output != null) {
-					val localNode = localNode as LNode
+				// User has changed transpose via UI
+				if (localNode.transpose != transpose) {
+					for (key in keysDown)
+						output.addMidi(buffer_size - 1, shortArrayOf(MidiStatuses.KEY_UP, transposeKey(key), 0))
 
-					if (localNode.transpose != transpose) {
-						for (key in keysDown)
-							output.putMidi(buffer_size - 1, shortArrayOf(MidiStatuses.KEY_UP, transposeKey(key), 0))
+					keysDown.clear()
 
-						keysDown.clear()
-
-						transpose = localNode.transpose
-					}
+					transpose = localNode.transpose
 				}
-
-				output?.written = input.read
-
-				output?.push()
-			}/* else {
-				input.read += available
-				output?.written = buffer_size
-
-				output?.push()
-			}*/
-		} else {
-			input?.read = buffer_size
-			output?.written = buffer_size
-
-			output?.push()
+			}
 		}
+
+		output?.push()
 	}
 
 	private fun transposeKey(key: Short) = (key + transpose).toShort()

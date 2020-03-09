@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioInlet;
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
 public class LProcessor extends LocalProcessor {
 	double amplitude = 1;
@@ -39,11 +38,6 @@ public class LProcessor extends LocalProcessor {
 			AudioOutlet output = (AudioOutlet)out;
 			LNode lnode = (LNode)getLocalNode();
 
-			final int start = in.read;
-			int stop = in.outlet.written;
-			if(sidechain != null && sidechain.outlet.written < stop)
-				stop = sidechain.outlet.written;
-
 			int channelCount = input.outlet.getChannelCount();
 
 			double attack = lnode.attack;
@@ -63,7 +57,7 @@ public class LProcessor extends LocalProcessor {
 				for (int channel = 0; channel < channelCount; channel++) {
 					float[] inAudio = input.outlet.audio[channel];
 
-					for (int i = start; i < stop; i++) {
+					for (int i = 0; i < buffer_size; i++) {
 						float sample = Math.abs(inAudio[i]);
 
 						if (sample > maxAmplitudes[i])
@@ -73,7 +67,7 @@ public class LProcessor extends LocalProcessor {
 			} else if(sidechain instanceof AudioInlet) {
 				float[] inAudio = ((AudioInlet)sidechain).outlet.audio[0];
 
-				for (int i = start; i < stop; i++) {
+				for (int i = 0; i < buffer_size; i++) {
 					float sample = Math.abs(inAudio[i]);
 
 					if (sample > maxAmplitudes[i])
@@ -82,7 +76,7 @@ public class LProcessor extends LocalProcessor {
 			}
 
 			// Convert max amplitudes to correspondingly correction amplitudes
-			for (int i = start; i < stop; i++) {
+			for (int i = 0; i < buffer_size; i++) {
 				float maxAmplitude = maxAmplitudes[i];
 
 				if (maxAmplitude * amplitude > threshold || -maxAmplitude * amplitude < -threshold)
@@ -98,29 +92,19 @@ public class LProcessor extends LocalProcessor {
 				float[] inAudio = input.outlet.audio[channel];
 				float[] outAudio = output.audio[channel];
 
-				for (int i = start; i < stop; i++)
+				for (int i = 0; i < buffer_size; i++)
 					outAudio[i] = inAudio[i] * amplitudes[i] * outputAmplitude;
 			}
 
 			if(amplitude < 0.001)
 				amplitude = 0.001;
 
-			in.read = stop;
-			output.written = stop;
 			output.push();
 
-			if(sidechain != null)
-				sidechain.read = stop;
 		} else {
-			if (in != null) {
-				in.read = buffer_size;
-			}
 			if (out != null) {
-				out.written = buffer_size;
 				out.push();
 			}
-			if(sidechain != null)
-				sidechain.read = buffer_size;
 		}
 	}
 
