@@ -10,7 +10,7 @@ import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import java.util.*
 import kotlin.collections.ArrayList
 
-class GridListBox : UIClip(), FlexibleDimension {
+class ListBox : UIClip(), FlexibleDimension {
 	val list = object : AutoLayout<LayoutMethods.ListBox>(LayoutMethods.ListBox()) {
 		override fun onDraw(draw: Draw) {
 			super.onDraw(draw)

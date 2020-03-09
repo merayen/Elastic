@@ -7,12 +7,11 @@ import net.merayen.elastic.ui.objects.components.DirectTextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
 import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.TextInputBox
-import net.merayen.elastic.ui.objects.components.listbox.GridListBox
+import net.merayen.elastic.ui.objects.components.listbox.ListBox
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.util.KeyboardState
 import net.merayen.elastic.uinodes.UINodeInformation
-import kotlin.random.Random
 
 class AddNodeWindow : UIObject(), EasyMotionBranch {
 	interface Handler {
@@ -23,7 +22,7 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 
 	private val window = InlineWindow()
 	private val textInput = TextInputBox()
-	private val resultListBox = GridListBox()
+	private val resultListBox = ListBox()
 
 	override fun onInit() {
 		window.title = "Find node"

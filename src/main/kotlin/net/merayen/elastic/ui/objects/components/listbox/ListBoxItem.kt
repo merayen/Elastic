@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.components.listbox
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 
-class GridListBoxItem(elements: HashMap<String, UIObject>) : UIObject() {
+class ListBoxItem(elements: HashMap<String, UIObject>) : UIObject() {
 	init {
 		for ((name, obj) in elements) {
 			if (obj !is FlexibleDimension)
