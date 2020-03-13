@@ -16,15 +16,13 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
+		if (frameFinished() || !available())
+			return;
+
 		Inlet a = getInlet("a");
 		Inlet b = getInlet("b");
 		Inlet fac = getInlet("fac");
 		Outlet out = getOutlet("out");
-
-		if (frameFinished())
-			return;
-
-		boolean available = available();
 
 		if(out != null) {
 			if (a instanceof AudioInlet && b instanceof AudioInlet) {
