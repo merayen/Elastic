@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.top.easymotion
 
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
-import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.objects.top.window.Window
 import net.merayen.elastic.ui.util.KeyboardState
 import java.util.*
 import kotlin.collections.ArrayList
@@ -126,7 +126,8 @@ class EasyMotion(private val initialBranch: EasyMotionBranch) {
 		}
 	}
 
-	fun getCurrentStack() = ArrayList(stack)
+
+	fun getCurrentStack(): Collection<EasyMotionBranch> = Collections.unmodifiableCollection(stack)
 
 	/**
 	 * Rebuilds the tree by checking which Controls are still attached.

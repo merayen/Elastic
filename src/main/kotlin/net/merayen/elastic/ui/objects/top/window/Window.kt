@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui.objects.top
+package net.merayen.elastic.ui.objects.top.window
 
 import net.merayen.elastic.Config
 import net.merayen.elastic.ui.FlexibleDimension
@@ -6,6 +6,8 @@ import net.merayen.elastic.ui.ImmutableDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.top.Debug
+import net.merayen.elastic.ui.objects.top.Top
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotion
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
@@ -91,6 +93,8 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	val surfaceID: String
 		get() = surface.id
 
+	private val easyMotionOverlay = EasyMotionOverlay(this)
+
 	init {
 		add(viewportContainer)
 
@@ -113,6 +117,8 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 				println("Out ${branch}")
 			}
 		}
+
+		add(easyMotionOverlay)
 	}
 
 	override fun onInit() {

@@ -8,6 +8,7 @@ import net.merayen.elastic.ui.TopNode
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.*
 import net.merayen.elastic.ui.objects.top.mouse.MouseCursorManager
+import net.merayen.elastic.ui.objects.top.window.Window
 import net.merayen.elastic.ui.surface.Swing
 import net.merayen.elastic.util.NetListMessages
 import net.merayen.elastic.util.Postmaster

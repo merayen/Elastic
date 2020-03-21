@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.splashview
 
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.MutableColor
-import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.objects.top.window.Window
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.util.Pacer

@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview.addnode;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.popupslide.PopupSlide;
-import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.objects.top.window.Window;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.uinodes.BaseInfo;
 

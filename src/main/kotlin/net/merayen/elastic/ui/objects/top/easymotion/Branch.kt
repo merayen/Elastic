@@ -7,7 +7,7 @@ import net.merayen.elastic.ui.util.KeyboardState
 /**
  * @param uiobject The owner of this branch. Used for rebuilding the stack in EasyMotion.
  */
-abstract class Branch(private val uiobject: UIObject) {
+abstract class Branch(val uiobject: UIObject) {
 	interface Handler {
 		fun onEnter()
 		fun onLeave()

@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.util
 
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.top.Top
-import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.objects.top.window.Window
 
 object UINodeUtil {
 

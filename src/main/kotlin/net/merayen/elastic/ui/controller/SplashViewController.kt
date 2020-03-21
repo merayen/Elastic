@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.controller
 import net.merayen.elastic.system.intercom.BackendReadyMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.ui.objects.top.Top
-import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.objects.top.window.Window
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
 
