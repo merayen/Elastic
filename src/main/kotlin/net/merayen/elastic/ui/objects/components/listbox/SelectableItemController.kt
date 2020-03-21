@@ -19,6 +19,7 @@ class SelectableItemController(private val container: UIObject) {
 				}
 			})
 		}
+
 		override fun onDraw(draw: Draw) {
 			if (selected)
 				draw.setColor(1f, 0f, 1f)

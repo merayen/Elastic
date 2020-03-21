@@ -14,6 +14,7 @@ import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
 import net.merayen.elastic.ui.util.Movable
+import net.merayen.elastic.uinodes.BaseInfo
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -293,7 +294,7 @@ class NodeView : View() {
 		this.contextMenu = newContextMenu
 	}
 
-	private fun showFindNode(): AddNodeWindow {
+	private fun showAddNode(): AddNodeWindow {
 		val findNodeWindow = addNodeWindow
 		if (findNodeWindow == null) {
 			val newWindow = AddNodeWindow()
@@ -303,6 +304,10 @@ class NodeView : View() {
 						remove(newWindow)
 						this@NodeView.addNodeWindow = null
 					}
+				}
+
+				override fun onSelect(node: BaseInfo) {
+					println("Du valgte ${node.name}!")
 				}
 			}
 
@@ -326,7 +331,7 @@ class NodeView : View() {
 		init {
 			controls[setOf(KeyboardEvent.Keys.F)] = Control {
 				println("Supposed to show add-node-view in NodeView")
-				showFindNode()
+				showAddNode()
 			}
 			controls[setOf(KeyboardEvent.Keys.A)] = Control { println("Supposed to show a search box to find a node"); null }
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control { Control.STEP_BACK }

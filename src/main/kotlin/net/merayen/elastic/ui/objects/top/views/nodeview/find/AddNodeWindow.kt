@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview.find
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
-import net.merayen.elastic.ui.objects.components.DirectTextInput
+import net.merayen.elastic.ui.objects.components.TextInput
 import net.merayen.elastic.ui.objects.components.InlineWindow
 import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.TextInputBox
@@ -11,21 +11,23 @@ import net.merayen.elastic.ui.objects.components.listbox.ListBox
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.util.KeyboardState
+import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.uinodes.UINodeInformation
 
 class AddNodeWindow : UIObject(), EasyMotionBranch {
 	interface Handler {
 		fun onClose()
+		fun onSelect(node: BaseInfo)
 	}
 
 	var handler: Handler? = null
 
 	private val window = InlineWindow()
-	private val textInput = TextInputBox()
+	private val textInputBox = TextInputBox()
 	private val resultListBox = ListBox()
 
 	override fun onInit() {
-		window.title = "Find node"
+		window.title = "Add node"
 		add(window)
 
 		window.content.add(object : UIObject() {
@@ -36,12 +38,12 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 			}
 		})
 
-		textInput.translation.x = 2f
-		textInput.translation.y = 2f
-		textInput.directTextInput.color.red = 1f
-		textInput.directTextInput.color.green = 1f
-		textInput.directTextInput.color.blue = 1f
-		window.content.add(textInput)
+		textInputBox.translation.x = 2f
+		textInputBox.translation.y = 2f
+		textInputBox.textInput.color.red = 1f
+		textInputBox.textInput.color.green = 1f
+		textInputBox.textInput.color.blue = 1f
+		window.content.add(textInputBox)
 
 		window.handler = object : InlineWindow.Handler {
 			override fun onClose() {
@@ -49,53 +51,40 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 			}
 		}
 
-		textInput.directTextInput.handler = object : DirectTextInput.Handler {
+		textInputBox.textInput.handler = object : TextInput.Handler {
 			override fun onType(keyStroke: KeyboardState.KeyStroke): Boolean {
-				if (keyStroke.hasKey(KeyboardEvent.Keys.ENTER))
-					return false // Suppress multiline
+				when {
+					keyStroke.hasKey(KeyboardEvent.Keys.ENTER) -> select()
+					keyStroke.hasKey(KeyboardEvent.Keys.DOWN) -> println("user wannwa go down on result")
+					keyStroke.hasKey(KeyboardEvent.Keys.UP) -> println("oh god, now the user wannwa go down on result")
+					else -> return true
+				}
 
-				return true
+				return false
 			}
 
 			override fun onChange() {
-				val text = textInput.directTextInput.text.toLowerCase()
-
-				val nodeInfos = UINodeInformation.getNodeInfos()
-				resultListBox.list.removeAll()
-
-				nodeInfos.filter {
-					text in it.name.toLowerCase() || text in it.description.toLowerCase()
-				}
-
-				nodeInfos.sortBy {
-					val name = it.name.toLowerCase()
-					if (name.startsWith(text))
-						name
-					else
-						"\uFFFF${name}"
-				}
-
-				for (nodeInfo in nodeInfos)
-					if (text in nodeInfo.name.toLowerCase() || text in nodeInfo.description.toLowerCase())
-						resultListBox.list.add(Label(nodeInfo.name, eventTransparent = false))
+				search(textInputBox.textInput.text)
 			}
 		}
 
-		textInput.layoutWidth = 200f
-		textInput.layoutHeight = 15f
+		textInputBox.layoutWidth = 200f
+		textInputBox.layoutHeight = 15f
 
 		resultListBox.translation.x = 2f
 		resultListBox.translation.y = 27f
 		resultListBox.layoutWidth = 200f
 		resultListBox.layoutHeight = 100f
 		window.content.add(resultListBox)
+
+		search("")
 	}
 
 	private var focused = false
 
 	override fun onUpdate() {
 		if (!focused) {
-			textInput.focus()
+			textInputBox.focus()
 			focused = true
 		}
 	}
@@ -107,5 +96,32 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 				null
 			}
 		}
+	}
+
+	private fun search(text: String) {
+		val text = text.toLowerCase()
+
+		val nodeInfos = UINodeInformation.getNodeInfos()
+		resultListBox.list.removeAll()
+
+		nodeInfos.filter {
+			text in it.name.toLowerCase() || text in it.description.toLowerCase()
+		}
+
+		nodeInfos.sortBy {
+			val name = it.name.toLowerCase()
+			if (name.startsWith(text))
+				name
+			else
+				"\uFFFF${name}"
+		}
+
+		for (nodeInfo in nodeInfos)
+			if (text in nodeInfo.name.toLowerCase() || text in nodeInfo.description.toLowerCase())
+				resultListBox.list.add(Label(nodeInfo.name, eventTransparent = false))
+	}
+
+	private fun select() {
+
 	}
 }

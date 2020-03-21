@@ -16,7 +16,7 @@ import kotlin.math.min
 /**
  * Text input using EasyMotion. Probably to replace TextInput soon.
  */
-class DirectTextInput : UIObject(), EasyMotionBranch {
+class TextInput : UIObject(), EasyMotionBranch {
 	interface Handler {
 		fun onType(keyStroke: KeyboardState.KeyStroke): Boolean
 		fun onChange()

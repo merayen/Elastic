@@ -8,16 +8,17 @@ import net.merayen.elastic.util.MutablePoint
 
 /**
  * A clickable text input.
+ * Use textInput freely, directly.
  * TODO implement scrolling after the cursor
  */
 class TextInputBox : UIClip() {
-	val directTextInput = DirectTextInput()
+	val textInput = TextInput()
 
 	private val mouseHandler = MouseHandler(this)
 
 	override fun onInit() {
 		super.onInit()
-		add(directTextInput)
+		add(textInput)
 
 		mouseHandler.setHandler(object : MouseHandler.Handler() {
 			override fun onMouseClick(position: MutablePoint?) {
@@ -40,5 +41,5 @@ class TextInputBox : UIClip() {
 		mouseHandler.handle(event)
 	}
 
-	fun focus() = directTextInput.focus()
+	fun focus() = textInput.focus()
 }
