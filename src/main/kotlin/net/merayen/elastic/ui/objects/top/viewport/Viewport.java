@@ -131,7 +131,7 @@ public class Viewport extends UIObject implements EasyMotionBranch {
 		return (ViewportContainer) getParent();
 	}
 
-	private Branch branch = new Branch(this) {
+	private Branch branch = new Branch(this, this) {
 		{
 			setHandler(new Branch.Handler() {
 				@Override

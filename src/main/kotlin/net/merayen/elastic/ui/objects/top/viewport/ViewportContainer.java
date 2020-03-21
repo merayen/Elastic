@@ -235,7 +235,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 	}
 
 	// EASYMOTION
-	private Branch branch = new Branch(this) {
+	private Branch branch = new Branch(this, this) {
 		{
 			for (int i = 0; i < 10; i++) {
 				int paneNumber = i;

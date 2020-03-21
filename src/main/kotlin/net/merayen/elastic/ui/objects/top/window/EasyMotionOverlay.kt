@@ -11,7 +11,7 @@ class EasyMotionOverlay(private val window: Window) : UIObject() {
 		draw.disableOutline()
 		draw.setColor(1f, 0f, 1f)
 		for (entry in window.easyMotion.getCurrentStack()) {
-			val uiobject = entry.easyMotionBranch.uiobject
+			val uiobject = entry.easyMotionBranch.outline
 			if (uiobject is AddNodeWindow)
 				System.currentTimeMillis()
 			val pos = getRelativePosition(uiobject) ?: return

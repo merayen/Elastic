@@ -89,7 +89,7 @@ class AddNodeWindow : UIObject(), EasyMotionBranch {
 		}
 	}
 
-	override val easyMotionBranch = object : Branch(this) {
+	override val easyMotionBranch = object : Branch(this, window) {
 		init {
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control {
 				this@AddNodeWindow.handler?.onClose()
