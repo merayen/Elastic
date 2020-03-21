@@ -49,7 +49,9 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 		DOWN(40),
 		LEFT(37),
 		HOME(36),
-		END(35);
+		END(35),
+		MINUS(45),
+		PLUS(43);
 	}
 
 	data class Key(val character: Char, val keyCode: Int, val key: Keys?) {

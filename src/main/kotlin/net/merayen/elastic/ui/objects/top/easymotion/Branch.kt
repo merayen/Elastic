@@ -19,7 +19,21 @@ abstract class Branch(val uiobject: UIObject, val outline: UIObject = uiobject) 
 	val isActive: Boolean
 		get() = getEasyMotionMaster()?.isActive(uiobject as EasyMotionBranch) ?: false
 
-	class Control(private val onSelect: (key: KeyboardState.KeyStroke) -> EasyMotionBranch?) {
+	class Control {
+		private val onSelect: (key: KeyboardState.KeyStroke) -> EasyMotionBranch?
+		val target: UIObject?
+
+
+		constructor(onSelect: (key: KeyboardState.KeyStroke) -> EasyMotionBranch?) {
+			this.onSelect = onSelect
+			this.target = null
+		}
+
+		constructor(target: UIObject, onSelect: (key: KeyboardState.KeyStroke) -> EasyMotionBranch?) {
+			this.onSelect = onSelect
+			this.target = target
+		}
+
 		companion object {
 			val STEP_BACK = object : UIObject(), EasyMotionBranch {
 				override val easyMotionBranch = object : Branch(this) {}

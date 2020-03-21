@@ -15,7 +15,6 @@ import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionMaster
 import net.merayen.elastic.ui.objects.top.mouse.SurfaceMouseCursors
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
 import net.merayen.elastic.ui.surface.Surface
-import net.merayen.elastic.ui.util.KeyboardState
 import net.merayen.elastic.util.ImmutablePoint
 
 /**
@@ -93,8 +92,6 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	val surfaceID: String
 		get() = surface.id
 
-	private val easyMotionOverlay = EasyMotionOverlay(this)
-
 	init {
 		add(viewportContainer)
 
@@ -103,23 +100,9 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 
 		add(overlay)
 		add(surfaceMouseCursors)
-
-		easyMotion.handler = object : EasyMotion.Handler {
-			override fun onMistype(keyStroke: KeyboardState.KeyStroke) {
-				viewportContainer.blinkRed()
-			}
-
-			override fun onEnter(branch: EasyMotionBranch) {
-				println("Inn ${branch}")
-			}
-
-			override fun onLeave(branch: EasyMotionBranch) {
-				println("Out ${branch}")
-			}
-		}
-
-		add(easyMotionOverlay)
 	}
+
+	private val windowEasyMotion = WindowEasyMotion(this)
 
 	override fun onInit() {
 		(search.top as Top).mouseCursorManager.addSurface(surfaceMouseCursors)
@@ -141,9 +124,11 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	}
 
 	override fun onEvent(event: UIEvent) {
+		windowEasyMotion.handleEvent(event)
 		if (event is KeyboardEvent)
 			easyMotion.handle(event)
 	}
+
 
 	/**
 	 * Center this window on the screen.
