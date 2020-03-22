@@ -124,13 +124,9 @@ class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 		// Then connect all the uiports, creating lines between them that user can follow using arrow keys
 		val linesCreated = ArrayList<Line>()
 		for (node in nodeView.nodes.values) {
-			val nodePoint = pointMap.entries.first { it.value === node }.key
-
 			for (uiportA in node.getPorts()) {
 				if (uiportA is UIPortTemporary)
 					continue
-
-				val uiportPointA = pointMap.entries.first { it.value === uiportA }.key
 
 				for (uiportB in nodeView.uiNet.getAllConnectedPorts(uiportA)) {
 					if (uiportB is UIPortTemporary)
@@ -139,43 +135,29 @@ class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 					if (linesCreated.any { (it.portA === uiportA && it.portB === uiportB) || (it.portB === uiportA && it.portA === uiportB) })
 						continue // Already set up
 
-					val uiportPointB = pointMap.entries.first { it.value === uiportB }.key
+					val inPort = if (uiportA.output) uiportB else uiportA
+					val outPort = if (uiportA.output) uiportA else uiportB
+
+					val inPortPoint = pointMap.entries.first { it.value === inPort }.key
+					val outPortPoint = pointMap.entries.first { it.value === outPort }.key
 
 					val linePoint = arrowNavigation.newPoint()
-					val line = Line(uiportA, uiportB)
+					val line = Line(inPort, outPort)
 					linesCreated.add(line)
 					pointMap[linePoint] = line
 
-					if (uiportA.output) {
-						linePoint.left = uiportPointA
-						linePoint.right = uiportPointB
+					linePoint.left = outPortPoint
+					linePoint.right = inPortPoint
+					inPortPoint.left = linePoint
 
-						// Jumping between lines
-						val uiportPointARight = uiportPointA.right
-						if (uiportPointARight == null) {
-							uiportPointA.right = linePoint
-							uiportPointB.left = linePoint
-						} else {
-							val lastLinePoint = uiportPointARight.findLast(ArrowNavigation.Direction.DOWN)
-							lastLinePoint.down = linePoint
-							linePoint.up = lastLinePoint
-						}
+					// Attach linePoint to the ports, and other linePoints
+					val outPortPointRight = outPortPoint.right
+					if (outPortPointRight == null) {
+						outPortPoint.right = linePoint
 					} else {
-						linePoint.right = uiportPointA
-						linePoint.left = uiportPointB
-						uiportPointA.left = linePoint
-						uiportPointB.right = linePoint
-
-						// Jumping between lines
-						val uiportPointBLeft = uiportPointB.left
-						if (uiportPointBLeft == null) {
-							uiportPointA.left = linePoint
-							uiportPointB.right = linePoint
-						} else {
-							val lastLinePoint = uiportPointBLeft.findLast(ArrowNavigation.Direction.DOWN)
-							lastLinePoint.down = linePoint
-							linePoint.up = lastLinePoint
-						}
+						val bottomMostLinePoint = outPortPointRight.findLast(ArrowNavigation.Direction.DOWN)
+						bottomMostLinePoint.down = linePoint
+						linePoint.up = bottomMostLinePoint
 					}
 				}
 			}
@@ -187,6 +169,5 @@ class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 	fun move(direction: ArrowNavigation.Direction) {
 		val last = arrowNavigation.current
 		arrowNavigation.move(direction)
-		println("Moved from ${pointMap[last]} to ${pointMap[arrowNavigation.current]}")
 	}
 }
