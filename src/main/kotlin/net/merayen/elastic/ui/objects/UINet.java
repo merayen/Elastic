@@ -9,6 +9,7 @@ import net.merayen.elastic.ui.objects.node.UIPortTemporary;
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.MutablePoint;
+import net.merayen.elastic.util.Revision;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,12 +19,20 @@ import java.util.List;
 /**
  * Draws the lines between the ports on the nodes.
  */
-public class UINet extends UIObject {
+public class UINet extends UIObject implements Revision {
+
+	private int revision;
+
+	@Override
+	public int getRevision() {
+		return revision;
+	}
+
 
 	/**
 	 * Class keeps all the connections in the UI. Gets gradually build from the messages sent from backend.
 	 */
-	private class Connection {
+	private static class Connection {
 		public UIPort a, b;
 
 		public Connection(UIPort a, UIPort b) {
@@ -68,13 +77,16 @@ public class UINet extends UIObject {
 	public void addLine(UIPort a, UIPort b) {
 		removeLine(a, b);
 		connections.add(new Connection(a, b));
+		revision++;
 	}
 
 	public void removeLine(UIObject a, UIObject b) {
-		for(int i = 0; i < connections.size(); i++) {
+		for(int i = connections.size() - 1; i > -1; i--) {
 			Connection c = connections.get(i);
-			if((c.a == a && c.b == b) || (c.a == b && c.b == a))
+			if((c.a == a && c.b == b) || (c.a == b && c.b == a)) {
 				connections.remove(i);
+				revision++;
+			}
 		}
 	}
 
@@ -101,6 +113,7 @@ public class UINet extends UIObject {
 		}
 
 		connections.add(new Connection(port_a, port_b));
+		revision++;
 	}
 
 	public void disconnect(UIPort a, UIPort b) {
@@ -113,11 +126,15 @@ public class UINet extends UIObject {
 			String node_a = c.a.getNode().getNodeId();
 			String node_b = c.b.getNode().getNodeId();
 			if(node_a.equals(message.node_a) && node_b.equals(message.node_b)) {
-				if(c.a.name.equals(message.port_a) && c.b.name.equals(message.port_b))
+				if(c.a.name.equals(message.port_a) && c.b.name.equals(message.port_b)) {
 					connections.remove(i);
+					revision++;
+				}
 			} else if(node_a.equals(message.node_b) && node_b.equals(message.node_a)) {
-				if(c.a.name.equals(message.port_b) && c.b.name.equals(message.port_a))
+				if(c.a.name.equals(message.port_b) && c.b.name.equals(message.port_a)) {
 					connections.remove(i);
+					revision++;
+				}
 			}
 		}
 	}
@@ -132,8 +149,10 @@ public class UINet extends UIObject {
 			else if(c.b.getNode().getNodeId().equals(node_id))
 				port = c.b;
 
-			if(port != null)
+			if(port != null) {
 				connections.remove(i);
+				revision++;
+			}
 		}
 	}
 
@@ -142,10 +161,13 @@ public class UINet extends UIObject {
 		while(iterator.hasNext()) {
 			Connection c = iterator.next();
 
-			if(c.a.getNode().getNodeId().equals(message.node_id) && c.a.name.equals(message.port))
+			if(c.a.getNode().getNodeId().equals(message.node_id) && c.a.name.equals(message.port)) {
 				iterator.remove();
-			else if(c.b.getNode().getNodeId().equals(message.node_id) && c.b.name.equals(message.port))
+				revision++;
+			} else if(c.b.getNode().getNodeId().equals(message.node_id) && c.b.name.equals(message.port)) {
 				iterator.remove();
+				revision++;
+			}
 		}
 	}
 
@@ -191,11 +213,6 @@ public class UINet extends UIObject {
 		 * This port can then be retrieved by a hovering port by calling getOtherPort()
 		 */
 		this.temporary_port = temporary_port;
-		/*if(dragging_port_source != null)
-			for(int i = connections.size() - 1; i > -1; i--)
-				if(connections.get(i).a instanceof UIPortTemporary || connections.get(i).b instanceof UIPortTemporary)
-					connections.remove(i);*/
-
 		dragging_port_source = source_port;
 	}
 
@@ -227,6 +244,7 @@ public class UINet extends UIObject {
 		connections.clear();
 		//dragging_port = null;
 		dragging_port_source = null;
+		revision++;
 	}
 
 	private NodeView getNodeView() {

@@ -15,18 +15,16 @@ import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.uinodes.BaseInfo
+import net.merayen.elastic.util.Revision
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-// TODO accept NetList as input and rebuild ourselves automatically from that
-// TODO allow forwarding of node messages from and to the backend.
-// TODO make (dis)connecting work again, by sending a message when user tries
 
 /**
  * Main view. Shows all the nodes and their connections.
  */
-class NodeView : View() {
+class NodeView : View(), Revision {
 	/**
 	 * Retrieve the ID of the node this view displays.
 	 * @return
@@ -49,6 +47,11 @@ class NodeView : View() {
 
 	private var addNodeWindow: AddNodeWindow? = null
 
+	private val navigation = NodeViewNavigation(this)
+
+	override var revision = 0
+		private set
+
 	init {
 		add(container)
 		add(nodeViewBar)
@@ -68,6 +71,8 @@ class NodeView : View() {
 				container.zoomScaleYTarget = container.translation.scaleY
 			}
 		})
+
+		add(navigation)
 	}
 
 	override fun onDraw(draw: Draw) {
@@ -160,6 +165,8 @@ class NodeView : View() {
 					uiNet.handleMessage(message)
 			}
 		}
+
+		navigation.handleMessage(message)
 	}
 
 	/**
@@ -178,13 +185,22 @@ class NodeView : View() {
 
 		uinode.nodeId = node_id
 
+		// Unmark all nodes
+		for (node in nodes.values)
+			node.selected = false
+
 		nodes[node_id] = uinode
 		container.add(uinode)
+		revision++
+
+		// Select newly created node
+		uinode.selected = true
 	}
 
 	private fun removeNode(node_id: String) {
 		val removedNode = nodes.remove(node_id) ?: return
 		container.remove(removedNode)
+		revision++
 	}
 
 	private fun zoom(newScaleX: Float, newScaleY: Float) {
@@ -326,6 +342,20 @@ class NodeView : View() {
 		private const val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
 	}
 
+	private fun moveSelection(x: Int, y: Int) {
+		val selected = nodes.values.lastOrNull { it.selected }
+
+		// Unselect everyone but 1 first
+		if (selected != null) {
+			for (node in nodes.values)
+				if (selected !== node && node.selected)
+					node.selected = false
+		} else {
+			// Randomly select a node. TODO select the one node in center of the view
+			nodes.values.first().selected = true
+		}
+	}
+
 	// EASYMOTION
 	override val easyMotionBranch = object : Branch(this) {
 		init {
@@ -335,6 +365,26 @@ class NodeView : View() {
 			}
 			controls[setOf(KeyboardEvent.Keys.A)] = Control { println("Supposed to show a search box to find a node"); null }
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control { Control.STEP_BACK }
+
+			// Navigation
+			controls[setOf(KeyboardEvent.Keys.LEFT)] = Control {
+				navigation.move(-1, 0)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.RIGHT)] = Control {
+				navigation.move(1, 0)
+				null
+			}
+			controls[setOf(KeyboardEvent.Keys.UP)] = Control {
+				navigation.move(0, -1)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.DOWN)] = Control {
+				navigation.move(0, 1)
+				null
+			}
 		}
 	}
 }

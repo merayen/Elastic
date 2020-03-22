@@ -26,6 +26,8 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 	private var inited: Boolean = false
 
+	var selected = false
+
 	val targetLocation = MutablePoint()
 	private val lastDraw = Pacer()
 
@@ -61,7 +63,11 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		translation.x += (targetLocation.x - translation.x) * diff
 		translation.y += (targetLocation.y - translation.y) * diff
 
-		draw.setColor(80, 80, 80)
+		if (selected)
+			draw.setColor(150, 150, 150)
+		else
+			draw.setColor(80, 80, 80)
+
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
 		titlebar.layoutWidth = layoutWidth
@@ -76,6 +82,8 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 		return null
 	}
+
+	fun getPorts() = nodePorts.toList()
 
 	fun sendProperties(instance: BaseNodeProperties) {
 		sendMessage(NodePropertyMessage(nodeId, instance))
