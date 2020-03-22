@@ -10,6 +10,7 @@ import net.merayen.elastic.ui.event.MouseWheelEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
+import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
@@ -66,8 +67,8 @@ class NodeView : View(), Revision {
 			override fun onGrab() {}
 			override fun onDrop() {}
 			override fun onMove() {
-				container.zoomTranslateXTarget = container.translation.x
-				container.zoomTranslateYTarget = container.translation.y
+				container.translateXTarget = container.translation.x
+				container.translateYTarget = container.translation.y
 				container.zoomScaleXTarget = container.translation.scaleX
 				container.zoomScaleYTarget = container.translation.scaleY
 			}
@@ -216,8 +217,8 @@ class NodeView : View(), Revision {
 
 		container.zoomScaleXTarget = newScaleX
 		container.zoomScaleYTarget = newScaleY
-		container.zoomTranslateXTarget = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
-		container.zoomTranslateYTarget = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
+		container.translateXTarget = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
+		container.translateYTarget = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
 	}
 
 	override fun onEvent(event: UIEvent) {
@@ -267,8 +268,8 @@ class NodeView : View(), Revision {
 		currentNodeId = newNodeId
 
 		// TODO zoom and translate to cover all the nodes
-		container.zoomTranslateXTarget = 0f
-		container.zoomTranslateYTarget = 0f
+		container.translateXTarget = 0f
+		container.translateYTarget = 0f
 		container.zoomScaleXTarget = 1f
 		container.zoomScaleYTarget = 1f
 
@@ -384,6 +385,98 @@ class NodeView : View(), Revision {
 
 			controls[setOf(KeyboardEvent.Keys.DOWN)] = Control {
 				navigation.move(ArrowNavigation.Direction.DOWN)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.X)] = Control {
+				println("Supposed to delete a ${when (navigation.current) {
+					is UIPort -> "port (but ignored, because no)"
+					is UINode -> "node"
+					is NodeViewNavigation.Line -> "line"
+					else -> "no idea"
+				}}")
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.A)] = Control {
+				println(when (navigation.current) {
+					is UIPort -> "Supposed to open the Create Node-window at this port"
+					is UINode -> "Supposed to just add a node close to current node"
+					is NodeViewNavigation.Line -> "Supposed to open the Create Node-window and try to connect that node into that line"
+					else -> "Not sure what to do"
+				})
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.S)] = Control {
+				println("Supposed to open search window that searches by node name, and nicknames")
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ENTER)] = Control {
+				val c = navigation.current
+				if (c is UINode) println("Supposed to go into node for editing its parameters")
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.Y)] = Control {
+				when (navigation.current) {
+					is UINode -> println("Supposed to copy node. This should copy the node and its data into memory")
+				}
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.P)] = Control {
+				val c = navigation.current
+				when (c) {
+					is UINode -> println("Supposed to paste node on the right of selected node")
+					is UIPort -> println("Supposed to paste node and try to connect pasted node to selected port")
+					is NodeViewNavigation.Line -> print("Supposed to paste node and try to insert it between the connected nodes")
+				}
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.C)] = Control {
+				val c = navigation.current
+				when (c) {
+					is UIPort -> println("Supposed to open some kind of connect-wizard, listing all connectable ports, based on data types and recommendation, and close to the port already")
+				}
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.MINUS)] = Control {
+				container.zoomScaleXTarget *= 1.2f
+				container.zoomScaleYTarget *= 1.2f
+				container.translateXTarget *= 1.4f
+				container.translateYTarget *= 1.4f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.PLUS)] = Control {
+				container.zoomScaleXTarget /= 1.2f
+				container.zoomScaleYTarget /= 1.2f
+				container.translateXTarget /= 1.4f
+				container.translateYTarget /= 1.4f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.LEFT)] = Control {
+				container.translateXTarget += 100f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.RIGHT)] = Control {
+				container.translateXTarget -= 100f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.UP)] = Control {
+				container.translateYTarget += 100f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.DOWN)] = Control {
+				container.translateYTarget -= 100f
 				null
 			}
 		}

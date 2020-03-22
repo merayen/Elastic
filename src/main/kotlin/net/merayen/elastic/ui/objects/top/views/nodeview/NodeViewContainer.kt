@@ -8,8 +8,8 @@ import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.util.Pacer
 
 class NodeViewContainer(val nodeView: NodeView) : UIObject() {
-	var zoomTranslateXTarget = 0f
-	var zoomTranslateYTarget = 0f
+	var translateXTarget = 0f
+	var translateYTarget = 0f
 	var zoomScaleXTarget = 1f
 	var zoomScaleYTarget = 1f
 
@@ -35,8 +35,8 @@ class NodeViewContainer(val nodeView: NodeView) : UIObject() {
 
 		val diff = pacer.getDiff(20f)
 
-		translation.x += (zoomTranslateXTarget - translation.x) * diff
-		translation.y += (zoomTranslateYTarget - translation.y) * diff
+		translation.x += (translateXTarget - translation.x) * diff
+		translation.y += (translateYTarget - translation.y) * diff
 		translation.scaleX += (zoomScaleXTarget - translation.scaleX) * diff
 		translation.scaleY += (zoomScaleYTarget - translation.scaleY) * diff
 	}
