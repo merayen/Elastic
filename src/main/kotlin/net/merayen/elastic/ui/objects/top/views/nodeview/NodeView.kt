@@ -479,6 +479,16 @@ class NodeView : View(), Revision {
 				container.translateYTarget -= 100f
 				null
 			}
+
+			controls[setOf(KeyboardEvent.Keys.ESCAPE)] = Control {
+				navigation.current = null
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.U)] = Control {
+				println("Supposed to undo last change")
+				null
+			}
 		}
 	}
 }

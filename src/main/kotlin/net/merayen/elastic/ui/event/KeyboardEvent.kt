@@ -81,5 +81,5 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 
 	val key = Key(character, keyCode, Keys.values().firstOrNull { it.code == keyCode })
 
-	init { println(keyCode) }
+	//init { println(keyCode) }
 }

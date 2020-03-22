@@ -198,12 +198,10 @@ open class UIObject {
 		val objAT = obj.absoluteTranslation ?: return null
 		val thisAT = absoluteTranslation ?: return null
 
-		val pos = getRelativePosition(obj) ?: return null
-
-		pos.x += x * objAT.scaleX / thisAT.scaleX
-		pos.y += x * objAT.scaleY / thisAT.scaleY
-
-		return pos
+		return MutablePoint(
+			x = ((objAT.x + x / objAT.scaleX) - thisAT.x) * thisAT.scaleX,
+			y = ((objAT.y + y / objAT.scaleY) - thisAT.y) * thisAT.scaleY
+		)
 	}
 
 	/**

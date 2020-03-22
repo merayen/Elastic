@@ -25,14 +25,18 @@ import net.merayen.elastic.ui.util.ArrowNavigation
 class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 	class Line(val portA: UIPort, val portB: UIPort)
 
-	val current
+	var current: Any? = null
 		get() = pointMap[arrowNavigation.current]
+		set(value) {
+			if (value != null && value !in pointMap.values)
+				throw RuntimeException("Can not mark object $value, as it is not in pointMap")
+
+			field = value
+		}
 
 	private val arrowNavigation = ArrowNavigation()
 
 	private val pointMap = HashMap<ArrowNavigation.Point, Any>()
-
-	private var dirty = true
 
 	private var nodeViewRevision = -1
 	private var uiNetRevision = -1
@@ -55,9 +59,13 @@ class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 		when (obj) {
 			is UINode -> {
 				val pos = getRelativePosition(obj) ?: return
+				val size = getRelativePosition(obj, obj.layoutWidth, obj.layoutHeight) ?: return
+				size.x -= pos.x
+				size.y -= pos.y
+
 				draw.setColor(1f, 1f, 0.5f)
 				draw.setStroke(2f)
-				draw.rect(pos.x, pos.y, 50f, 50f)
+				draw.rect(pos.x, pos.y, size.x, size.y)
 			}
 			is UIPort -> {
 				val pos = getRelativePosition(obj) ?: return
