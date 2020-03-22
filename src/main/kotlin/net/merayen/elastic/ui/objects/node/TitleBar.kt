@@ -5,7 +5,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.util.Movable
 
-class Titlebar internal constructor() : UIObject() {
+class TitleBar internal constructor() : UIObject() {
 	interface Handler {
 		fun onMove()
 	}

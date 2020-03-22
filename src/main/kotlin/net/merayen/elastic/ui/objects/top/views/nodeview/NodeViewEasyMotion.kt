@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
+import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -7,6 +8,7 @@ import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
+import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
 	private var addNodeWindow: AddNodeWindow? = null
@@ -148,6 +150,60 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				println("Supposed to undo last change")
 				null
 			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.UP)] = Control { // Should perhaps instead be a
+				moveNode(0f, -20f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.DOWN)] = Control { // Should perhaps instead be a
+				moveNode(0f, 20f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.LEFT)] = Control { // Should perhaps instead be a
+				moveNode(-20f, 0f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.RIGHT)] = Control { // Should perhaps instead be a
+				moveNode(20f, 0f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.UP)] = Control { // Should perhaps instead be a
+				moveNode(0f, -100f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.DOWN)] = Control { // Should perhaps instead be a
+				moveNode(0f, 100f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.LEFT)] = Control { // Should perhaps instead be a
+				moveNode(-100f, 0f)
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.RIGHT)] = Control { // Should perhaps instead be a
+				moveNode(100f, 0f)
+				null
+			}
+		}
+	}
+
+	private fun moveNode(x: Float, y: Float) {
+		val c = navigation.current
+		if (c is UINode) {
+			c.targetLocation.x += x
+			c.targetLocation.y += y
+
+			// Quantize
+			c.targetLocation.x = ((c.targetLocation.x / 20).roundToInt() * 20).toFloat()
+			c.targetLocation.y = ((c.targetLocation.y / 20).roundToInt() * 20).toFloat()
+
+			c.sendUiData()
 		}
 	}
 

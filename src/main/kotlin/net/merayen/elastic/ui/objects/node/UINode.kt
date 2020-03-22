@@ -17,7 +17,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
 	override var layoutHeight = 80f
 
-	protected val titlebar = Titlebar()
+	protected val titlebar = TitleBar()
 
 	private val nodePorts = ArrayList<UIPort>()
 
@@ -40,7 +40,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		get() = search.parentByType(NodeView::class.java)?.uiNet
 
 	override fun onInit() {
-		titlebar.handler = object : Titlebar.Handler {
+		titlebar.handler = object : TitleBar.Handler {
 			override fun onMove() {
 				targetLocation.x = translation.x
 				targetLocation.y = translation.y
@@ -132,7 +132,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			TODO()
 	}
 
-	private fun sendUiData() {
+	fun sendUiData() {
 		val data = newNodeData()
 		data.uiTranslation = BaseNodeProperties.UITranslation(targetLocation.x, targetLocation.y)
 		sendProperties(data)
