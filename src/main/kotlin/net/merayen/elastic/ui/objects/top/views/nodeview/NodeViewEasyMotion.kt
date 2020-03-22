@@ -122,22 +122,42 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.LEFT)] = Control {
-				nodeView.container.translateXTarget += 100f
-				null
-			}
-
-			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.RIGHT)] = Control {
 				nodeView.container.translateXTarget -= 100f
 				null
 			}
 
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.RIGHT)] = Control {
+				nodeView.container.translateXTarget += 100f
+				null
+			}
+
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.UP)] = Control {
-				nodeView.container.translateYTarget += 100f
+				nodeView.container.translateYTarget -= 100f
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.DOWN)] = Control {
-				nodeView.container.translateYTarget -= 100f
+				nodeView.container.translateYTarget += 100f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.LEFT)] = Control {
+				nodeView.container.translateXTarget -= 500f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.RIGHT)] = Control {
+				nodeView.container.translateXTarget += 500f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.UP)] = Control {
+				nodeView.container.translateYTarget -= 500f
+				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.DOWN)] = Control {
+				nodeView.container.translateYTarget += 500f
 				null
 			}
 
