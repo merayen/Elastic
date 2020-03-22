@@ -1,13 +1,13 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
-import net.merayen.elastic.backend.nodes.BaseNodeProperties
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
-import net.merayen.elastic.uinodes.BaseInfo
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
@@ -20,12 +20,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 	fun createEasyMotionBranch() = object : Branch(nodeView) {
 		init {
-			controls[setOf(KeyboardEvent.Keys.F)] = Control {
-				println("Supposed to show add-node-view in NodeView")
-				showAddNode()
-			}
-
-			controls[setOf(KeyboardEvent.Keys.A)] = Control { println("Supposed to show a search box to find a node"); null }
+			controls[setOf(KeyboardEvent.Keys.F)] = Control { println("Supposed to show a search box to find a node"); null }
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control { Control.STEP_BACK }
 
 			// Navigation
@@ -60,13 +55,12 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.A)] = Control {
-				println(when (navigation.current) {
-					is UIPort -> "Supposed to open the Create Node-window at this port"
-					is UINode -> "Supposed to just add a node close to current node"
-					is NodeViewNavigation.Line -> "Supposed to open the Create Node-window and try to connect that node into that line"
-					else -> "Not sure what to do"
-				})
-				null
+				when (navigation.current) {
+					is UIPort -> {println("Supposed to open the Create Node-window at this port"); null }
+					is UINode -> {println("Supposed to just add a node close to current node"); null}
+					is NodeViewNavigation.Line -> {println("Supposed to open the Create Node-window and try to connect that node into that line"); null}
+					else -> showAddNode()
+				}
 			}
 
 			controls[setOf(KeyboardEvent.Keys.S)] = Control {
@@ -227,7 +221,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 		}
 	}
 
-	private fun showAddNode(): AddNodeWindow {
+	private fun showAddNode(): EasyMotionBranch {
 		val findNodeWindow = addNodeWindow
 		if (findNodeWindow == null) {
 			val newWindow = AddNodeWindow()
@@ -239,19 +233,19 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					}
 				}
 
-				override fun onSelect(node: BaseInfo) {
-					println("Du valgte ${node.name}!")
+				override fun onSelect(uiobject: UIObject) {
+					println("Du valgte ${uiobject}!")
 				}
 			}
 
 			newWindow.translation.y = 20f
 			nodeView.add(newWindow)
 
-			this.addNodeWindow = newWindow
+			addNodeWindow = newWindow
 
-			return newWindow
+			return newWindow.filterInlineWindow
 		} else {
-			return findNodeWindow
+			return findNodeWindow.filterInlineWindow
 		}
 	}
 }

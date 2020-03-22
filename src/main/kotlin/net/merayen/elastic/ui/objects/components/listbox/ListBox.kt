@@ -7,8 +7,6 @@ import net.merayen.elastic.ui.objects.UIClip
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
-import java.util.*
-import kotlin.collections.ArrayList
 
 class ListBox : UIClip(), FlexibleDimension {
 	val list = object : AutoLayout<LayoutMethods.ListBox>(LayoutMethods.ListBox()) {
@@ -16,10 +14,24 @@ class ListBox : UIClip(), FlexibleDimension {
 			super.onDraw(draw)
 			draw.setColor(0.2f, 0.2f, 0.2f)
 			draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
+
+			val children = children
+			for (uiobject in children) {
+				if (uiobject !in selections)
+					continue
+
+				val width = uiobject.getWidth()
+				val height = uiobject.getHeight()
+				draw.setColor(0f, 1f, 1f)
+				draw.setStroke(2f)
+				draw.rect(uiobject.translation.x, uiobject.translation.y, width, height)
+			}
 		}
 	}
 
 	private val scroll = Scroll(list)
+
+	val selections = ArrayList<UIObject>()
 
 	override fun onInit() {
 		super.add(scroll)

@@ -9,7 +9,10 @@ import java.util.*
 open class UIObject {
 	var parent: UIObject? = null
 		private set
-	internal val children: MutableList<UIObject> = ArrayList()
+	val internalChildren: MutableList<UIObject> = ArrayList()
+
+	val children: List<UIObject>
+		get() = Collections.unmodifiableList(internalChildren)
 
 	var absoluteOutline: Rect? = Rect() // Absolute, in screen pixels
 	internal var outline: Rect? = Rect()
@@ -105,11 +108,11 @@ open class UIObject {
 	 * Should only be used in very specific cases, like by the Top() object to draw different trees for different Window()s.
 	 */
 	open fun onGetChildren(surface_id: String): List<UIObject> {
-		return this.children
+		return children
 	}
 
 	open fun add(uiobject: UIObject) {
-		internalAdd(uiobject, children.size)
+		internalAdd(uiobject, internalChildren.size)
 	}
 
 	open fun add(uiobject: UIObject, index: Int) {
@@ -125,7 +128,7 @@ open class UIObject {
 
 
 		uiobject.parent = this
-		children.add(index, uiobject)
+		internalChildren.add(index, uiobject)
 
 		topMost = calculateTopMost()
 
@@ -136,14 +139,14 @@ open class UIObject {
 	}
 
 	open fun remove(uiobject: UIObject) {
-		if (!children.contains(uiobject))
+		if (!internalChildren.contains(uiobject))
 			throw RuntimeException("UIObject is not a child of us")
 
 		if (uiobject.parent !== this)
 			throw RuntimeException("Should not happen")
 
 
-		children.remove(uiobject)
+		internalChildren.remove(uiobject)
 		uiobject.parent = null
 
 		// Mark every child to be detached
@@ -153,7 +156,7 @@ open class UIObject {
 	}
 
 	open fun removeAll() {
-		for (o in children) {
+		for (o in internalChildren) {
 			if (o.parent !== this)
 				throw RuntimeException("Should not happen")
 
@@ -165,7 +168,7 @@ open class UIObject {
 				oc.topMost = o
 		}
 
-		children.clear()
+		internalChildren.clear()
 	}
 
 	internal fun initialize() {
@@ -264,4 +267,5 @@ open class UIObject {
 
 		return topMost
 	}
+
 }
