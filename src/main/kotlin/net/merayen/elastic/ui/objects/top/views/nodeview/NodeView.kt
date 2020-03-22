@@ -13,6 +13,7 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
+import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.Revision
@@ -165,8 +166,6 @@ class NodeView : View(), Revision {
 					uiNet.handleMessage(message)
 			}
 		}
-
-		navigation.handleMessage(message)
 	}
 
 	/**
@@ -363,26 +362,28 @@ class NodeView : View(), Revision {
 				println("Supposed to show add-node-view in NodeView")
 				showAddNode()
 			}
+
 			controls[setOf(KeyboardEvent.Keys.A)] = Control { println("Supposed to show a search box to find a node"); null }
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control { Control.STEP_BACK }
 
 			// Navigation
 			controls[setOf(KeyboardEvent.Keys.LEFT)] = Control {
-				navigation.move(-1, 0)
+				navigation.move(ArrowNavigation.Direction.LEFT)
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.RIGHT)] = Control {
-				navigation.move(1, 0)
+				navigation.move(ArrowNavigation.Direction.RIGHT)
 				null
 			}
+
 			controls[setOf(KeyboardEvent.Keys.UP)] = Control {
-				navigation.move(0, -1)
+				navigation.move(ArrowNavigation.Direction.UP)
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.DOWN)] = Control {
-				navigation.move(0, 1)
+				navigation.move(ArrowNavigation.Direction.DOWN)
 				null
 			}
 		}

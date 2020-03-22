@@ -57,8 +57,8 @@ class ArrowNavigation {
 			return
 		}
 
-		when (direction) {
-			Direction.LEFT -> current = current?.left ?: return
+		current = when (direction) {
+			Direction.LEFT -> current?.left ?: return
 			Direction.RIGHT -> current?.right ?: return
 			Direction.UP -> current?.up ?: return
 			Direction.DOWN -> current?.down ?: return
