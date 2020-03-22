@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
-import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -8,6 +8,9 @@ import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
+import net.merayen.elastic.uinodes.BaseInfo
+import net.merayen.elastic.util.NodeUtil
+import net.merayen.elastic.util.UniqueID
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
@@ -56,9 +59,15 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 			controls[setOf(KeyboardEvent.Keys.A)] = Control {
 				when (navigation.current) {
-					is UIPort -> {println("Supposed to open the Create Node-window at this port"); null }
-					is UINode -> {println("Supposed to just add a node close to current node"); null}
-					is NodeViewNavigation.Line -> {println("Supposed to open the Create Node-window and try to connect that node into that line"); null}
+					is UIPort -> {
+						println("Supposed to open the Create Node-window at this port"); null
+					}
+					is UINode -> {
+						println("Supposed to just add a node close to current node"); null
+					}
+					is NodeViewNavigation.Line -> {
+						println("Supposed to open the Create Node-window and try to connect that node into that line"); null
+					}
 					else -> showAddNode()
 				}
 			}
@@ -116,42 +125,42 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.LEFT)] = Control {
-				nodeView.container.translateXTarget -= 100f
-				null
-			}
-
-			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.RIGHT)] = Control {
 				nodeView.container.translateXTarget += 100f
 				null
 			}
 
-			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.UP)] = Control {
-				nodeView.container.translateYTarget -= 100f
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.RIGHT)] = Control {
+				nodeView.container.translateXTarget -= 100f
 				null
 			}
 
-			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.DOWN)] = Control {
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.UP)] = Control {
 				nodeView.container.translateYTarget += 100f
 				null
 			}
 
-			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.LEFT)] = Control {
-				nodeView.container.translateXTarget -= 500f
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.DOWN)] = Control {
+				nodeView.container.translateYTarget -= 100f
 				null
 			}
 
-			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.RIGHT)] = Control {
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.LEFT)] = Control {
 				nodeView.container.translateXTarget += 500f
 				null
 			}
 
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.RIGHT)] = Control {
+				nodeView.container.translateXTarget -= 500f
+				null
+			}
+
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.UP)] = Control {
-				nodeView.container.translateYTarget -= 500f
+				nodeView.container.translateYTarget += 500f
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.SHIFT, KeyboardEvent.Keys.DOWN)] = Control {
-				nodeView.container.translateYTarget += 500f
+				nodeView.container.translateYTarget -= 500f
 				null
 			}
 
@@ -233,8 +242,25 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					}
 				}
 
-				override fun onSelect(uiobject: UIObject) {
-					println("Du valgte ${uiobject}!")
+				override fun onSelect(nodeInfo: BaseInfo) {
+					println("Du valgte ${nodeInfo}!")
+					val nodeViewNodeId = nodeView.currentNodeId ?: throw RuntimeException("Should not happen")
+
+					// Grr, probably put this somewhere
+					val path = nodeInfo.javaClass.name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+					val name = path[path.size - 2]
+					val nodeName = NodeUtil.getNodeName(name)
+					val nodeVersion = NodeUtil.getNodeVersion(name)
+
+					nodeView.sendMessage(
+						CreateNodeMessage(
+							UniqueID.create(),
+							nodeName,
+							nodeVersion,
+							nodeViewNodeId
+						)
+					)
+					// TODO place it in centre
 				}
 			}
 

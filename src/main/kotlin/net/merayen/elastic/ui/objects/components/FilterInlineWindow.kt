@@ -164,7 +164,5 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 
 		resultListBox.selections.clear()
 		resultListBox.selections.add(this.selected!!)
-
-		println("${(this.selected as Label).text} has been marked")
 	}
 }

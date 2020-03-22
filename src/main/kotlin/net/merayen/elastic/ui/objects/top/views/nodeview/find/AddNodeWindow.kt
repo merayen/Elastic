@@ -3,12 +3,20 @@ package net.merayen.elastic.ui.objects.top.views.nodeview.find
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.FilterInlineWindow
 import net.merayen.elastic.ui.objects.components.Label
+import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.uinodes.UINodeInformation
 
 class AddNodeWindow : UIObject() {
 	interface Handler {
 		fun onClose()
-		fun onSelect(uiobject: UIObject)
+		fun onSelect(node: BaseInfo)
+	}
+
+	private class ResultItem(val nodeInfo: BaseInfo) : UIObject() {
+
+		init {
+			add(Label(nodeInfo.name, eventTransparent = false))
+		}
 	}
 
 	var handler: Handler? = null
@@ -22,7 +30,7 @@ class AddNodeWindow : UIObject() {
 			}
 
 			override fun onSelect(uiobject: UIObject) {
-				select(uiobject)
+				select(uiobject as ResultItem)
 			}
 
 			override fun onClose() {
@@ -53,16 +61,16 @@ class AddNodeWindow : UIObject() {
 				"\uFFFF${name}"
 		}
 
-		val resultList = ArrayList<Label>()
+		val resultList = ArrayList<ResultItem>()
 
 		for (nodeInfo in nodeInfos)
 			if (text in nodeInfo.name.toLowerCase() || text in nodeInfo.description.toLowerCase())
-				resultList.add(Label(nodeInfo.name, eventTransparent = false))
+				resultList.add(ResultItem(nodeInfo))
 
 		filterInlineWindow.setResults(resultList)
 	}
 
-	private fun select(uiobject: UIObject) {
-		handler?.onSelect(uiobject)
+	private fun select(result: ResultItem) {
+		handler?.onSelect(result.nodeInfo)
 	}
 }
