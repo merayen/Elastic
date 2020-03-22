@@ -7,14 +7,16 @@ import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
+import net.merayen.elastic.ui.objects.top.views.nodeview.find.FindNodeWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
-import net.merayen.elastic.util.UniqueID
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
 	private var addNodeWindow: AddNodeWindow? = null
+	private var findNodeWindow: FindNodeWindow? = null
+
 	private val navigation = NodeViewNavigation(nodeView)
 
 	init {
@@ -23,7 +25,10 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 	fun createEasyMotionBranch() = object : Branch(nodeView) {
 		init {
-			controls[setOf(KeyboardEvent.Keys.F)] = Control { println("Supposed to show a search box to find a node"); null }
+			controls[setOf(KeyboardEvent.Keys.F)] = Control {
+				showFindNode()
+			}
+
 			controls[setOf(KeyboardEvent.Keys.Q)] = Control { Control.STEP_BACK }
 
 			// Navigation
@@ -231,14 +236,14 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 	}
 
 	private fun showAddNode(): EasyMotionBranch {
-		val findNodeWindow = addNodeWindow
-		if (findNodeWindow == null) {
+		val addNodeWindow = addNodeWindow
+		if (addNodeWindow == null) {
 			val newWindow = AddNodeWindow()
 			newWindow.handler = object : AddNodeWindow.Handler {
 				override fun onClose() {
 					if (newWindow.parent != null) {
 						nodeView.remove(newWindow)
-						addNodeWindow = null
+						this@NodeViewEasyMotion.addNodeWindow = null
 					}
 				}
 
@@ -254,7 +259,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 					nodeView.sendMessage(
 						CreateNodeMessage(
-							UniqueID.create(),
+							NodeUtil.createID(),
 							nodeName,
 							nodeVersion,
 							nodeViewNodeId
@@ -267,7 +272,37 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			newWindow.translation.y = 20f
 			nodeView.add(newWindow)
 
-			addNodeWindow = newWindow
+			this.addNodeWindow = newWindow
+
+			return newWindow.filterInlineWindow
+		} else {
+			return addNodeWindow.filterInlineWindow
+		}
+	}
+
+	private fun showFindNode(): EasyMotionBranch {
+		val findNodeWindow = findNodeWindow
+
+		if (findNodeWindow == null) {
+			val newWindow = FindNodeWindow(nodeView.nodeViewController!!.netList)
+			newWindow.handler = object : FindNodeWindow.Handler {
+				override fun onSelect(nodeId: String) {
+					println("Du valgte node_id=$nodeId")
+					// TODO set correct node parent id on NodeView, then move to the node
+					nodeView.remove(newWindow)
+					this@NodeViewEasyMotion.findNodeWindow = null
+				}
+
+				override fun onClose() {
+					nodeView.remove(newWindow)
+				}
+			}
+
+			newWindow.translation.x = 40f
+			newWindow.translation.y = 20f
+			nodeView.add(newWindow)
+
+			this.findNodeWindow = newWindow
 
 			return newWindow.filterInlineWindow
 		} else {

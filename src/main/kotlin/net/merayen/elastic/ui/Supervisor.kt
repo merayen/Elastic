@@ -36,7 +36,7 @@ class Supervisor(private val top: UIObject) {
 
 		draw.destroy()
 
-		for (o in uiobject.onGetChildren(dc.surfaceID))
+		for (o in uiobject.onGetChildren(dc.surfaceID).toList())
 			internalDraw(dc, o)
 
 		dc.pop()

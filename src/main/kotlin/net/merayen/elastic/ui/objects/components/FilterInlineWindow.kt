@@ -39,7 +39,7 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 	private val window = InlineWindow()
 	private val textInputBox = TextInputBox()
 	private val resultListBox = ListBox()
-	private var selected: UIObject? = null
+	var selected: UIObject? = null
 
 	override val easyMotionBranch = object : Branch(this, window) {
 		init {
@@ -133,7 +133,7 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 			resultListBox.list.add(uiobject)
 	}
 
-	fun select() {
+	private fun select() {
 		handler?.onSelect(selected ?: return)
 	}
 
