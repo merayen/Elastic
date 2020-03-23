@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -34,21 +35,25 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			// Navigation
 			controls[setOf(KeyboardEvent.Keys.LEFT)] = Control {
 				navigation.move(ArrowNavigation.Direction.LEFT)
+				focus()
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.RIGHT)] = Control {
 				navigation.move(ArrowNavigation.Direction.RIGHT)
+				focus()
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.UP)] = Control {
 				navigation.move(ArrowNavigation.Direction.UP)
+				focus()
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.DOWN)] = Control {
 				navigation.move(ArrowNavigation.Direction.DOWN)
+				focus()
 				null
 			}
 
@@ -241,10 +246,9 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			val newWindow = AddNodeWindow()
 			newWindow.handler = object : AddNodeWindow.Handler {
 				override fun onClose() {
-					if (newWindow.parent != null) {
+					if (newWindow.parent != null)
 						nodeView.remove(newWindow)
-						this@NodeViewEasyMotion.addNodeWindow = null
-					}
+					this@NodeViewEasyMotion.addNodeWindow = null
 				}
 
 				override fun onSelect(nodeInfo: BaseInfo) {
@@ -287,15 +291,24 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			val newWindow = FindNodeWindow(nodeView.nodeViewController!!.netList)
 			newWindow.handler = object : FindNodeWindow.Handler {
 				override fun onSelect(nodeId: String) {
-					println("Du valgte node_id=$nodeId")
 					// TODO set correct node parent id on NodeView, then move to the node
-					nodeView.remove(newWindow)
+					if (newWindow.parent != null)
+						nodeView.remove(newWindow)
+
 					this@NodeViewEasyMotion.findNodeWindow = null
+
+					navigation.current = nodeView.nodes[nodeId]
+				}
+
+				override fun onFocus(nodeId: String) {
+					nodeView.focus(nodeView.nodes[nodeId] ?: return )
 				}
 
 				override fun onClose() {
 					nodeView.remove(newWindow)
+					this@NodeViewEasyMotion.findNodeWindow = null
 				}
+
 			}
 
 			newWindow.translation.x = 40f

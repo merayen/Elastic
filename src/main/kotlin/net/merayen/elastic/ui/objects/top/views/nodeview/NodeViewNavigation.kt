@@ -177,5 +177,9 @@ class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 	fun move(direction: ArrowNavigation.Direction) {
 		val last = arrowNavigation.current
 		arrowNavigation.move(direction)
+
+		val toFocus = current ?: return
+		if (toFocus is UIObject)
+			nodeView.focus(toFocus)
 	}
 }

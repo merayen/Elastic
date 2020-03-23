@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview
 import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.NodeViewController
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.MouseEvent
@@ -182,16 +183,13 @@ class NodeView : View(), Revision {
 
 		uinode.nodeId = node_id
 
-		// Unmark all nodes
+		// Unmark all nodes. Not implemented selecting anyway
 		for (node in nodes.values)
 			node.selected = false
 
 		nodes[node_id] = uinode
 		container.add(uinode)
 		revision++
-
-		// Select newly created node
-		uinode.selected = true
 	}
 
 	private fun removeNode(node_id: String) {
@@ -303,22 +301,17 @@ class NodeView : View(), Revision {
 		this.contextMenu = newContextMenu
 	}
 
-
 	companion object {
 		private const val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
 	}
 
-	private fun moveSelection(x: Int, y: Int) {
-		val selected = nodes.values.lastOrNull { it.selected }
-
-		// Unselect everyone but 1 first
-		if (selected != null) {
-			for (node in nodes.values)
-				if (selected !== node && node.selected)
-					node.selected = false
-		} else {
-			// Randomly select a node. TODO select the one node in center of the view
-			nodes.values.first().selected = true
-		}
+	/**
+	 * Focus something.
+	 * An UINode perhaps.
+	 */
+	fun focus(uiObject: UIObject) {
+		val pos = container.getRelativePosition(uiObject) ?: return
+		container.translateXTarget = (-pos.x + layoutWidth / 2 - uiObject.getWidth() / 2)
+		container.translateYTarget = (-pos.y + layoutHeight / 2 - uiObject.getHeight() / 2)
 	}
 }

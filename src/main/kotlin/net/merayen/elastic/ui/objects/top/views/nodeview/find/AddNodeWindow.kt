@@ -29,8 +29,10 @@ class AddNodeWindow : UIObject() {
 				search(text)
 			}
 
-			override fun onSelect(uiobject: UIObject) {
-				select(uiobject as ResultItem)
+			override fun onFocus(obj: UIObject) {}
+
+			override fun onSelect(obj: UIObject) {
+				select(obj as ResultItem)
 			}
 
 			override fun onClose() {

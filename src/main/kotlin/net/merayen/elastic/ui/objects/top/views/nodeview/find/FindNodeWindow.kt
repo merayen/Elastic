@@ -1,18 +1,15 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview.find
 
-import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.netlist.NetList
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.FilterInlineWindow
 import net.merayen.elastic.ui.objects.components.Label
-import net.merayen.elastic.uinodes.BaseInfo
-import net.merayen.elastic.uinodes.UINodeInformation
-import net.merayen.elastic.util.NodeUtil
 
 class FindNodeWindow(private val netlist: NetList) : UIObject() {
 	interface Handler {
 		fun onClose()
+		fun onFocus(nodeId: String)
 		fun onSelect(nodeId: String)
 	}
 
@@ -32,8 +29,14 @@ class FindNodeWindow(private val netlist: NetList) : UIObject() {
 				search(text)
 			}
 
-			override fun onSelect(uiobject: UIObject) {
-				select(uiobject as ResultItem)
+			override fun onFocus(obj: UIObject) {
+				obj as ResultItem
+
+				handler?.onFocus(obj.nodeId)
+			}
+
+			override fun onSelect(obj: UIObject) {
+				select(obj as ResultItem)
 			}
 
 			override fun onClose() {
@@ -54,6 +57,9 @@ class FindNodeWindow(private val netlist: NetList) : UIObject() {
 		val resultItems = ArrayList<ResultItem>()
 
 		for (node in netlist.nodes) {
+			if (properties.getParent(node) == null)
+				continue // Topmost node is always hidden
+
 			val name = properties.getName(node)
 
 			if (text in name.toLowerCase())

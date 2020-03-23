@@ -27,9 +27,14 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 		fun onSearch(text: String)
 
 		/**
+		 * User focuses an item.
+		 */
+		fun onFocus(obj: UIObject)
+
+		/**
 		 * User clicks on or pushes enter on an item.
 		 */
-		fun onSelect(uiobject: UIObject)
+		fun onSelect(obj: UIObject)
 	}
 
 	var handler: Handler? = null
@@ -124,13 +129,18 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 	 * Call this method to which items to show.
 	 */
 	fun setResults(list: List<UIObject>) {
-		if (selected !in list)
-			selected = null
+		val selected = selected
+
+		if (selected != null && selected !in list)
+			this.selected = null
 
 		resultListBox.list.removeAll()
 
 		for (uiobject in list)
 			resultListBox.list.add(uiobject)
+
+		if (this.selected == null && list.isNotEmpty())
+			focusItem(list[0])
 	}
 
 	private fun select() {
@@ -162,7 +172,17 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 			else -> throw RuntimeException("Should not happen")
 		}
 
+		focusItem(this.selected!!)
+	}
+
+	fun focusItem(uiobject: UIObject) {
+		if (uiobject !in resultListBox.list.children)
+			return
+
 		resultListBox.selections.clear()
-		resultListBox.selections.add(this.selected!!)
+		resultListBox.selections.add(uiobject)
+		selected = uiobject
+
+		handler?.onFocus(uiobject)
 	}
 }
