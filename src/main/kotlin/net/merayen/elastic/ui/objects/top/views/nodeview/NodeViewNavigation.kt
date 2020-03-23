@@ -28,8 +28,16 @@ class NodeViewNavigation(private val nodeView: NodeView) : UIObject() {
 	var current: Any? = null
 		get() = pointMap[arrowNavigation.current]
 		set(value) {
-			if (value != null && value !in pointMap.values)
-				throw RuntimeException("Can not mark object $value, as it is not in pointMap")
+			if (value != null) {
+				val entry = pointMap.entries.firstOrNull { it.value === value }
+
+				if (entry == null)
+					throw RuntimeException("Can not mark object $value, as it is not in pointMap")
+
+				arrowNavigation.current = entry.key
+			} else {
+				arrowNavigation.current = null
+			}
 
 			field = value
 		}

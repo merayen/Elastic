@@ -33,7 +33,7 @@ class NodeViewContainer(val nodeView: NodeView) : UIObject() {
 	override fun onUpdate() {
 		pacer.update()
 
-		val diff = pacer.getDiff(20f)
+		val diff = pacer.getDiff(2f)
 
 		translation.x += (translateXTarget - translation.x) * diff
 		translation.y += (translateYTarget - translation.y) * diff

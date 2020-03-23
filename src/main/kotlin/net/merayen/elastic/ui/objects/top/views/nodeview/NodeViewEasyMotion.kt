@@ -35,25 +35,21 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			// Navigation
 			controls[setOf(KeyboardEvent.Keys.LEFT)] = Control {
 				navigation.move(ArrowNavigation.Direction.LEFT)
-				focus()
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.RIGHT)] = Control {
 				navigation.move(ArrowNavigation.Direction.RIGHT)
-				focus()
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.UP)] = Control {
 				navigation.move(ArrowNavigation.Direction.UP)
-				focus()
 				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.DOWN)] = Control {
 				navigation.move(ArrowNavigation.Direction.DOWN)
-				focus()
 				null
 			}
 

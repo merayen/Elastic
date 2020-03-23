@@ -5,19 +5,13 @@ import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.NodeViewController
-import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.MouseWheelEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
-import net.merayen.elastic.ui.objects.node.UIPort
-import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
-import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
-import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.ui.util.Movable
-import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.Revision
 import java.util.*
 import kotlin.math.max
@@ -311,9 +305,9 @@ class NodeView : View(), Revision {
 	 */
 	fun focus(uiObject: UIObject) {
 		val pos = container.getRelativePosition(uiObject) ?: return
-		//container.translateXTarget = (-pos.x + layoutWidth / 2 - uiObject.getWidth() / 2)
-		//container.translateYTarget = (-pos.y + layoutHeight / 2 - uiObject.getHeight() / 2)
-		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (uiObject.getWidth() / 2) / container.zoomScaleXTarget
-		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (uiObject.getHeight() / 2) / container.zoomScaleYTarget
+		val pos2 = container.getRelativePosition(uiObject, uiObject.getWidth(), uiObject.getHeight()) ?: return
+
+		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (pos2.x - pos.x) / 2
+		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (pos2.y - pos.y) / 2
 	}
 }
