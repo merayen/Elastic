@@ -311,7 +311,9 @@ class NodeView : View(), Revision {
 	 */
 	fun focus(uiObject: UIObject) {
 		val pos = container.getRelativePosition(uiObject) ?: return
-		container.translateXTarget = (-pos.x + layoutWidth / 2 - uiObject.getWidth() / 2)
-		container.translateYTarget = (-pos.y + layoutHeight / 2 - uiObject.getHeight() / 2)
+		//container.translateXTarget = (-pos.x + layoutWidth / 2 - uiObject.getWidth() / 2)
+		//container.translateYTarget = (-pos.y + layoutHeight / 2 - uiObject.getHeight() / 2)
+		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (uiObject.getWidth() / 2) / container.zoomScaleXTarget
+		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (uiObject.getHeight() / 2) / container.zoomScaleYTarget
 	}
 }
