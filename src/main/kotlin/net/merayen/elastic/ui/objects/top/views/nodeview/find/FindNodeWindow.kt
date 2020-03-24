@@ -75,12 +75,13 @@ class FindNodeWindow(private val netlist: NetList) : UIObject() {
 		}
 
 		filterInlineWindow.setResults(resultItems)
-
-		if (resultItems.isNotEmpty())
-			filterInlineWindow.selected = resultItems[0]
 	}
 
 	private fun select(result: ResultItem) {
 		handler?.onSelect(result.nodeId)
+	}
+
+	fun close() {
+		handler?.onClose()
 	}
 }

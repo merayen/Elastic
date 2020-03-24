@@ -1,7 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
-import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -66,9 +65,11 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			controls[setOf(KeyboardEvent.Keys.A)] = Control {
 				when (navigation.current) {
 					is UIPort -> {
-						println("Supposed to open the Create Node-window at this port"); null
+						showAddNode()
+						null
 					}
 					is UINode -> {
+						showAddNode()
 						println("Supposed to just add a node close to current node"); null
 					}
 					is NodeViewNavigation.Line -> {
@@ -109,7 +110,10 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			controls[setOf(KeyboardEvent.Keys.C)] = Control {
 				val c = navigation.current
 				when (c) {
-					is UIPort -> println("Supposed to open some kind of connect-wizard, listing all connectable ports, based on data types and recommendation, and close to the port already")
+					is UIPort -> {
+						println("Supposed to open some kind of connect-wizard, listing all connectable ports, based on data types and recommendation, and close to the port already")
+						showFindNode(c)
+					}
 				}
 				null
 			}
@@ -247,12 +251,11 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					this@NodeViewEasyMotion.addNodeWindow = null
 				}
 
-				override fun onSelect(nodeInfo: BaseInfo) {
-					println("Du valgte ${nodeInfo}!")
+				override fun onSelect(node: BaseInfo) {
 					val nodeViewNodeId = nodeView.currentNodeId ?: throw RuntimeException("Should not happen")
 
 					// Grr, probably put this somewhere
-					val path = nodeInfo.javaClass.name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+					val path = node.javaClass.name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 					val name = path[path.size - 2]
 					val nodeName = NodeUtil.getNodeName(name)
 					val nodeVersion = NodeUtil.getNodeVersion(name)
@@ -266,6 +269,13 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 						)
 					)
 					// TODO place it in centre
+
+					val current = navigation.current
+					if (current is UIPort){
+						println("Should try to connect the newly created node together with this node. Maybe send a request to the backend about doing this connection? Or should we do it from here?")
+					}
+
+					newWindow.close()
 				}
 			}
 
@@ -280,7 +290,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 		}
 	}
 
-	private fun showFindNode(): EasyMotionBranch {
+	private fun showFindNode(connectingPort: UIPort? = null): EasyMotionBranch {
 		val findNodeWindow = findNodeWindow
 
 		if (findNodeWindow == null) {
@@ -288,20 +298,21 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			newWindow.handler = object : FindNodeWindow.Handler {
 				override fun onSelect(nodeId: String) {
 					// TODO set correct node parent id on NodeView, then move to the node
-					if (newWindow.parent != null)
-						nodeView.remove(newWindow)
-
-					this@NodeViewEasyMotion.findNodeWindow = null
-
-					navigation.current = nodeView.nodes[nodeId]
+					newWindow.close()
+					if (connectingPort != null) {
+						println("Supposed to show a list of selected node's ports that we can connect to? Filtered on data types?")
+					}
 				}
 
 				override fun onFocus(nodeId: String) {
-					nodeView.focus(nodeView.nodes[nodeId] ?: return )
+					val uinode = nodeView.nodes[nodeId] ?: return
+					nodeView.focus(uinode)
+					navigation.current = uinode
 				}
 
 				override fun onClose() {
-					nodeView.remove(newWindow)
+					if (newWindow.parent != null)
+						nodeView.remove(newWindow)
 					this@NodeViewEasyMotion.findNodeWindow = null
 				}
 

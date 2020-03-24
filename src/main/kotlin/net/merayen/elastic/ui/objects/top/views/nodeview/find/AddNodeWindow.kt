@@ -75,4 +75,8 @@ class AddNodeWindow : UIObject() {
 	private fun select(result: ResultItem) {
 		handler?.onSelect(result.nodeInfo)
 	}
+
+	fun close() {
+		filterInlineWindow.close()
+	}
 }

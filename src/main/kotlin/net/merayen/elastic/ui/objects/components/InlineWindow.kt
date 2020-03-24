@@ -81,4 +81,8 @@ class InlineWindow : UIObject() {
 	override fun onEvent(event: UIEvent) {
 		movable.handle(event)
 	}
+
+	fun close() {
+		handler?.onClose()
+	}
 }

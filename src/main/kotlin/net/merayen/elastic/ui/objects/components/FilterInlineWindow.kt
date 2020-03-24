@@ -185,4 +185,8 @@ class FilterInlineWindow : UIObject(), EasyMotionBranch {
 
 		handler?.onFocus(uiobject)
 	}
+
+	fun close() {
+		window.close()
+	}
 }
