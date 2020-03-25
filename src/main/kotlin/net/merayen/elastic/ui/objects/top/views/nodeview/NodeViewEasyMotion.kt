@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
+import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -52,13 +53,18 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				null
 			}
 
-			controls[setOf(KeyboardEvent.Keys.X)] = Control {
-				println("Supposed to delete a ${when (navigation.current) {
-					is UIPort -> "port (but ignored, because no)"
-					is UINode -> "node"
-					is NodeViewNavigation.Line -> "line"
-					else -> "no idea"
-				}}")
+			controls[setOf(KeyboardEvent.Keys.D)] = Control {
+				val c = navigation.current
+				when (c) {
+					is UIPort -> println("port (but ignored, because no)")
+					is UINode -> {
+						nodeView.sendMessage(RemoveNodeMessage(c.nodeId))
+					}
+					is NodeViewNavigation.Line -> {
+						println("Supposed to delete line")
+					}
+					else -> println("Nothing to delete")
+				}
 				null
 			}
 
@@ -78,11 +84,6 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					}
 					else -> showAddNode()
 				}
-			}
-
-			controls[setOf(KeyboardEvent.Keys.S)] = Control {
-				println("Supposed to open search window that searches by node name, and nicknames")
-				null
 			}
 
 			controls[setOf(KeyboardEvent.Keys.ENTER)] = Control {
