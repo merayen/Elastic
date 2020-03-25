@@ -125,7 +125,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 				me = false;
 				moving = null;
 
-				self.addTask(new TaskExecutor.Task(new Object(), 0, () -> clean()));
+				self.addTask(new TaskExecutor.Task(() -> { clean(); return true; }));
 			}
 
 			/**

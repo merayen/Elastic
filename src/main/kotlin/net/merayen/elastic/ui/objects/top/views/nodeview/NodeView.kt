@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.top.views.nodeview
 import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.NodeViewController
 import net.merayen.elastic.ui.event.MouseEvent
@@ -305,7 +306,11 @@ class NodeView : View(), Revision {
 	 */
 	fun focus(uiObject: UIObject) {
 		val pos = container.getRelativePosition(uiObject) ?: return
-		val pos2 = container.getRelativePosition(uiObject, uiObject.getWidth(), uiObject.getHeight()) ?: return
+
+		val pos2 = when (uiObject) {
+			is FlexibleDimension -> container.getRelativePosition(uiObject, uiObject.layoutWidth, uiObject.layoutHeight) ?: return
+			else -> container.getRelativePosition(uiObject, uiObject.getWidth(), uiObject.getHeight()) ?: return
+		}
 
 		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (pos2.x - pos.x) / 2
 		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (pos2.y - pos.y) / 2

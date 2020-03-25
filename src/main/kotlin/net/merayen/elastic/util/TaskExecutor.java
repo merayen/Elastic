@@ -8,37 +8,51 @@ import java.util.List;
  * task with add() you will queue it to be executed, though your task is not
  * guaranteed to run at all; it might be overwritten by a task with the same
  * *key*.
- * 
+ * <p>
  * This is helpful when there are several Objects that wants to do the same
  * task, but where you do want to limit the frequency it is executed.
  */
 public class TaskExecutor {
-	public static class Task {
-		private Object key;
-		private long fire;
-		private Runnable func;
+	public interface RunnableTask {
+		/**
+		 * @return true if tasks is done and should not run again, otherwise it will run for every interval set
+		 */
+		boolean run();
+	}
 
-		public Task(Object key, long delay_ms, Runnable func) {
-			this.key = key;
-			this.fire = System.currentTimeMillis() + delay_ms;
+	public static class Task {
+		private double interval;
+		private RunnableTask func;
+		private long lastRun = System.currentTimeMillis();
+
+		public Task(double interval, RunnableTask func) {
+			this.interval = interval;
 			this.func = func;
 		}
 
-		public Task(Object key, Runnable func) {
-			this(key, 0, func);
+		public Task(RunnableTask func) {
+			this.interval = 0;
+			this.func = func;
+		}
 
+		private boolean update() {
+			boolean result;
+
+			if (lastRun + interval < System.currentTimeMillis()) {
+				result = func.run();
+				lastRun = System.currentTimeMillis();
+				return result;
+			}
+
+			return false; // Not ready to run yet
 		}
 	}
 
 	private List<Task> tasks = new ArrayList<>();
 
 	public synchronized void add(Task task) {
-		Task last = get(task.key);
-
-		if(last != null) {
-			task.fire = Math.min(last.fire, task.fire); // Prevents a task from never being executed if add() is flooded
-			remove(task.key); // Remove previous task as it will be overwritten
-		}
+		if (tasks.contains(task))
+			return;
 
 		tasks.add(task);
 	}
@@ -47,24 +61,18 @@ public class TaskExecutor {
 	 * Call this often to actually execute tasks.
 	 */
 	public synchronized void update() {
-		long time = System.currentTimeMillis();
+		double time = System.currentTimeMillis() / 1000.0;
 
-		for(int i = tasks.size() - 1; i > -1; i--)
-			if(tasks.get(i).fire <= time)
-				tasks.remove(i).func.run();
+		for (int i = tasks.size() - 1; i > -1; i--)
+			if (tasks.get(i).interval <= time)
+				if (tasks.get(i).update())
+					tasks.remove(i);
 	}
 
-	private void remove(Object key) {
-		for(int i = tasks.size() - 1; i > -1; i--)
-			if(tasks.get(i).key == key)
-				tasks.remove(i);
-	}
-
-	private Task get(Object key) {
-		for(Task t : tasks)
-			if(t.key == key)
-				return t;
-
-		return null;
+	/**
+	 * Removes a task if it exists.
+	 */
+	private synchronized boolean remove(Task task) {
+		return tasks.remove(task);
 	}
 }
