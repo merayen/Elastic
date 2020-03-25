@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
+import net.merayen.elastic.system.intercom.NodeDisconnectMessage
 import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.UINode
@@ -57,12 +58,8 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				val c = navigation.current
 				when (c) {
 					is UIPort -> println("port (but ignored, because no)")
-					is UINode -> {
-						nodeView.sendMessage(RemoveNodeMessage(c.nodeId))
-					}
-					is NodeViewNavigation.Line -> {
-						println("Supposed to delete line")
-					}
+					is UINode -> nodeView.sendMessage(RemoveNodeMessage(c.nodeId))
+					is NodeViewNavigation.Line -> nodeView.sendMessage(NodeDisconnectMessage(c.portA.node.nodeId, c.portA.name, c.portB.node.nodeId, c.portB.name))
 					else -> println("Nothing to delete")
 				}
 				null
