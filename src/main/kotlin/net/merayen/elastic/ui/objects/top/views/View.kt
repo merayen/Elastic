@@ -8,7 +8,7 @@ import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
-import net.merayen.elastic.util.TaskExecutor
+import net.merayen.elastic.util.TaskQueue
 import net.merayen.elastic.util.UniqueID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -98,13 +98,6 @@ abstract class View : UIObject, EasyMotionBranch {
 
 			return views.getOrPut(id) {HashMap()}
 		}*/
-
-	/**
-	 * Adds a task in to the closest ViewportContainer() domain.
-	 */
-	protected fun addTask(task: TaskExecutor.Task) {
-		viewport.viewportContainer.addTask(task)
-	}
 
 	override fun getWidth() = layoutWidth
 	override fun getHeight() = layoutHeight

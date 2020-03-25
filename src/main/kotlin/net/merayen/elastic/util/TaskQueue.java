@@ -12,7 +12,11 @@ import java.util.List;
  * This is helpful when there are several Objects that wants to do the same
  * task, but where you do want to limit the frequency it is executed.
  */
-public class TaskExecutor {
+public class TaskQueue {
+	public interface RunsTasks {
+		TaskQueue getTaskQueue();
+	}
+
 	public interface RunnableTask {
 		/**
 		 * @return true if tasks is done and should not run again, otherwise it will run for every interval set
@@ -23,28 +27,16 @@ public class TaskExecutor {
 	public static class Task {
 		private double interval;
 		private RunnableTask func;
-		private long lastRun = System.currentTimeMillis();
+		private double lastRun = System.currentTimeMillis() / 1000.0;
 
-		public Task(double interval, RunnableTask func) {
+		private Task(double interval, RunnableTask func) {
 			this.interval = interval;
 			this.func = func;
 		}
 
-		public Task(RunnableTask func) {
-			this.interval = 0;
-			this.func = func;
-		}
-
-		private boolean update() {
-			boolean result;
-
-			if (lastRun + interval < System.currentTimeMillis()) {
-				result = func.run();
-				lastRun = System.currentTimeMillis();
-				return result;
-			}
-
-			return false; // Not ready to run yet
+		private boolean run() {
+			lastRun = System.currentTimeMillis() / 1000.0;
+			return func.run();
 		}
 	}
 
@@ -57,22 +49,41 @@ public class TaskExecutor {
 		tasks.add(task);
 	}
 
+	public synchronized Task add(RunnableTask func) {
+		Task task = new Task(0, func);
+		tasks.add(task);
+		return task;
+	}
+
+
+	public synchronized Task add(double interval, RunnableTask func) {
+		Task task = new Task(interval, func);
+		tasks.add(task);
+		return task;
+	}
+
 	/**
 	 * Call this often to actually execute tasks.
 	 */
 	public synchronized void update() {
 		double time = System.currentTimeMillis() / 1000.0;
 
-		for (int i = tasks.size() - 1; i > -1; i--)
-			if (tasks.get(i).interval <= time)
-				if (tasks.get(i).update())
+		for (int i = tasks.size() - 1; i > -1; i--) {
+			Task task = tasks.get(i);
+			if (task.lastRun + task.interval <= time)
+				if (task.run())
 					tasks.remove(i);
+		}
 	}
 
 	/**
 	 * Removes a task if it exists.
 	 */
-	private synchronized boolean remove(Task task) {
+	public synchronized boolean remove(Task task) {
 		return tasks.remove(task);
+	}
+
+	public synchronized boolean hasTask(Task task) {
+		return tasks.contains(task);
 	}
 }

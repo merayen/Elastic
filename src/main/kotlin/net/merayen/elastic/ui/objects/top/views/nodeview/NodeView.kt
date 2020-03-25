@@ -14,6 +14,7 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Revision
+import net.merayen.elastic.util.TaskQueue
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -22,7 +23,7 @@ import kotlin.math.min
 /**
  * Main view. Shows all the nodes and their connections.
  */
-class NodeView : View(), Revision {
+class NodeView : View(), Revision, TaskQueue.RunsTasks {
 	/**
 	 * Retrieve the ID of the node this view displays.
 	 * @return
@@ -42,6 +43,8 @@ class NodeView : View(), Revision {
 	private var dragAndDropTarget = NodeViewDropTarget(this)
 
 	private var loaded = false
+
+	private val taskQueue = TaskQueue()
 
 	override var revision = 0
 		private set
@@ -103,6 +106,8 @@ class NodeView : View(), Revision {
 
 			attachContextMenu()
 		}
+
+		taskQueue.update()
 	}
 
 	fun handleMessage(message: ElasticMessage) {
@@ -315,4 +320,6 @@ class NodeView : View(), Revision {
 		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (pos2.x - pos.x) / 2
 		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (pos2.y - pos.y) / 2
 	}
+
+	override fun getTaskQueue() = taskQueue
 }

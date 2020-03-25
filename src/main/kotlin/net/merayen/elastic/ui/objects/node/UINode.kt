@@ -83,7 +83,10 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		return null
 	}
 
-	fun getPorts() = nodePorts.toList()
+	fun getPorts(): List<UIPort> {
+		nodePorts.sortBy { it.translation.y }
+		return nodePorts.toList()
+	}
 
 	fun sendProperties(instance: BaseNodeProperties) {
 		sendMessage(NodePropertyMessage(nodeId, instance))

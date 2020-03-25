@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
+import net.merayen.elastic.system.intercom.NodeConnectMessage
 import net.merayen.elastic.system.intercom.NodeDisconnectMessage
 import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.ui.event.KeyboardEvent
@@ -66,18 +67,18 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.A)] = Control {
-				when (navigation.current) {
+				val c = navigation.current
+				when (c) {
 					is UIPort -> {
 						showAddNode()
-						null
 					}
 					is UINode -> {
+						println("Supposed to just add a node close to current node")
 						showAddNode()
-						println("Supposed to just add a node close to current node"); null
 					}
 					is NodeViewNavigation.Line -> {
+						println("Supposed to open the Create Node-window and try to connect that node into that line")
 						showAddNode()
-						println("Supposed to open the Create Node-window and try to connect that node into that line"); null
 					}
 					else -> showAddNode()
 				}
@@ -259,22 +260,68 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					val nodeName = NodeUtil.getNodeName(name)
 					val nodeVersion = NodeUtil.getNodeVersion(name)
 
+					val nodeId = NodeUtil.createID()
+
 					nodeView.sendMessage(
 						CreateNodeMessage(
-							NodeUtil.createID(),
+							nodeId,
 							nodeName,
 							nodeVersion,
 							nodeViewNodeId
 						)
 					)
-					// TODO place it in centre
 
+					// Automatically connect the node when it gets created
 					val current = navigation.current
-					if (current is UIPort){
-						println("Should try to connect the newly created node together with this node. Maybe send a request to the backend about doing this connection? Or should we do it from here?")
+					if (current is UIPort) {
+						val start = System.currentTimeMillis() + 1000
+						nodeView.taskQueue.add {
+							if (start > System.currentTimeMillis()) {
+								val newNode = nodeView.nodes[nodeId]
+
+								if (newNode != null) {
+									if (current.output) {
+										val newNodeInputPort = newNode.ports.firstOrNull { !it.output }
+										if (newNodeInputPort != null)
+											nodeView.sendMessage(NodeConnectMessage(current.uinode.nodeId, current.name, newNode.nodeId, newNodeInputPort.name))
+
+										true
+									} else {
+										val newNodeOutputPort = newNode.ports.firstOrNull { it.output }
+										if (newNodeOutputPort != null)
+											nodeView.sendMessage(NodeConnectMessage(current.uinode.nodeId, current.name, newNode.nodeId, newNodeOutputPort.name))
+
+										true
+									}
+								} else {
+									println("Waiting for node to get created...")
+
+									false // Waiting for node to get created
+								}
+							} else {
+								true // Timed out
+							}
+						}
+					}
+
+					// Try to focus the UINode when it gets actually created
+					val timeout = System.currentTimeMillis() + 1000
+					nodeView.taskQueue.add {
+						if (timeout > System.currentTimeMillis()) {
+							val uinode = nodeView.nodes[nodeId]
+							if (uinode != null) {
+								nodeView.focus(uinode)
+								true // Success
+							} else {
+								false // Try again later
+							}
+						} else {
+							false // Timed out
+						}
 					}
 
 					newWindow.close()
+
 				}
 			}
 

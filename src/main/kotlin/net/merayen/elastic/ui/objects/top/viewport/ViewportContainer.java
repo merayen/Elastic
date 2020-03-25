@@ -14,7 +14,7 @@ import net.merayen.elastic.ui.util.HitTester;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.MutablePoint;
-import net.merayen.elastic.util.TaskExecutor;
+import net.merayen.elastic.util.TaskQueue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ import java.util.List;
 /**
  * Contains all the viewports.
  */
-public class ViewportContainer extends UIObject implements EasyMotionBranch {
+public class ViewportContainer extends UIObject implements EasyMotionBranch, TaskQueue.RunsTasks {
 	public float width, height;
 	List<Viewport> viewports = new ArrayList<>(); // Flat list of all the viewports
 	private Layout layout;
 	private Viewport dragging_viewport;
-	private TaskExecutor task_executor = new TaskExecutor();
+	private TaskQueue taskQueue = new TaskQueue();
 	private MouseHandler mouse_handler;
 	private long blink;
 
@@ -41,13 +41,6 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 		Viewport viewport = createViewport(view);
 		layout.splitHorizontal(viewports.get(0), viewport);
 		layout.resizeHeight(viewports.get(0), 0.2f); // Lol, no. Wrong.
-	}
-
-	/**
-	 * Add a task in the domain of ViewportContainer.
-	 */
-	public void addTask(TaskExecutor.Task task) {
-		task_executor.add(task);
 	}
 
 	/**
@@ -125,7 +118,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 				me = false;
 				moving = null;
 
-				self.addTask(new TaskExecutor.Task(() -> { clean(); return true; }));
+				self.getTaskQueue().add(() -> { clean(); return true; });
 			}
 
 			/**
@@ -164,7 +157,7 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 	@Override
 	public void onUpdate() {
 		updateLayout();
-		task_executor.update();
+		taskQueue.update();
 	}
 
 	@Override
@@ -280,4 +273,9 @@ public class ViewportContainer extends UIObject implements EasyMotionBranch {
 	}
 
 	public EasyMotionMode easyMotionMode;
+
+	@Override
+	public TaskQueue getTaskQueue() {
+		return taskQueue;
+	}
 }
