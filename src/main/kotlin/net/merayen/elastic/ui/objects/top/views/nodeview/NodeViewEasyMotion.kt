@@ -73,6 +73,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 						println("Supposed to just add a node close to current node"); null
 					}
 					is NodeViewNavigation.Line -> {
+						showAddNode()
 						println("Supposed to open the Create Node-window and try to connect that node into that line"); null
 					}
 					else -> showAddNode()
