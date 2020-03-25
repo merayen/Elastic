@@ -45,6 +45,7 @@ class FindNodeWindow(private val netlist: NetList) : UIObject() {
 		}
 
 		filterInlineWindow.title = "Find node"
+		translation.color.alpha = 0.7f
 		add(filterInlineWindow)
 	}
 

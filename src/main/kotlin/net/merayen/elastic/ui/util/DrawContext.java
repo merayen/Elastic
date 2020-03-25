@@ -40,7 +40,6 @@ public class DrawContext {
 		this.graphics2d = graphics2d;
 		this.windowLocation = surface.getSurfaceLocation();
 
-
 		this.surface = surface;
 		this.incoming_events = events;
 	}

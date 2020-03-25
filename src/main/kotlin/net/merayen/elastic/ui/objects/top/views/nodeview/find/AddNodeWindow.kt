@@ -40,6 +40,7 @@ class AddNodeWindow : UIObject() {
 			}
 		}
 
+		translation.color.alpha = 0.7f
 		filterInlineWindow.title = "Add node"
 		add(filterInlineWindow)
 	}

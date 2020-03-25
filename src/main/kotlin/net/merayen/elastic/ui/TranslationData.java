@@ -4,7 +4,7 @@ public class TranslationData {
 	public float x = 0, y = 0; // Object's origin (relative to parent)
 	public float scaleX = 1, scaleY = 1; // Scales the content INSIDE, not ourself
 	public Rect clip;
-	//public Color color = new Color(); // Probably do not do this? If we were to implement buffering of components, we need to compare color values? Or?
+	public MutableColor color = new MutableColor(1f, 1f, 1f, 1f);
 
 	public TranslationData() {}
 
@@ -14,7 +14,7 @@ public class TranslationData {
 		scaleX = t.scaleX;
 		scaleY = t.scaleY;
 		clip = t.clip;
-		//color = t.color;
+		color = new MutableColor(t.color);
 	}
 
 	public void translate(TranslationData td) {
@@ -40,6 +40,11 @@ public class TranslationData {
 
 		scaleX *= td.scaleX;
 		scaleY *= td.scaleY;
+
+		color.setRed(color.getRed() * td.color.getRed());
+		color.setGreen(color.getGreen() * td.color.getGreen());
+		color.setBlue(color.getBlue() * td.color.getBlue());
+		color.setAlpha(color.getAlpha() * td.color.getAlpha());
 	}
 
 	public String toString() {

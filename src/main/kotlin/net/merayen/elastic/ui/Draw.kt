@@ -80,19 +80,23 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun setColor(r: Int, g: Int, b: Int) {
-		g2d.color = java.awt.Color(r, g, b)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color((r / 255f) * td.color.red, (g / 255f) * td.color.green, (b / 255f) * td.color.green, td.color.alpha)
 	}
 
 	fun setColor(r: Float, g: Float, b: Float) {
-		g2d.color = java.awt.Color(r, g, b)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color(r * td.color.red, g * td.color.green, b * td.color.green, td.color.alpha)
 	}
 
 	fun setColor(r: Float, g: Float, b: Float, a: Float) {
-		g2d.color = java.awt.Color(r, g, b, a)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color(r * td.color.red, g * td.color.green, b * td.color.green, a * td.color.alpha)
 	}
 
 	fun setColor(color: Color) {
-		g2d.color = java.awt.Color(color.red, color.green, color.blue, color.alpha)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color(color.red * td.color.red, color.green * td.color.green, color.blue * td.color.blue, color.alpha * td.color.alpha)
 	}
 
 	fun fillRect(x: Float, y: Float, width: Float, height: Float) {

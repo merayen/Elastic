@@ -32,5 +32,12 @@ class MutableColor : Color {
 		this.alpha = alpha
 	}
 
+	constructor(color: Color) {
+		this.red = color.red
+		this.green = color.green
+		this.blue = color.blue
+		this.alpha = color.alpha
+	}
+
 	constructor()
 }
