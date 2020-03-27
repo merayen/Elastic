@@ -15,7 +15,8 @@ class LogicNode : BaseLogicNode() {
 	override fun onPrepareFrame(): InputFrameData = InputFrameData(id)
 
 	override fun onFinishFrame(data: OutputFrameData?) {
-		sendDataToUI(data)
+		if (data is CompressorNodeOutputFrameData)
+			sendDataToUI(data)
 	}
 
 	override fun onParameterChange(instance: BaseNodeProperties) = updateProperties(instance)
