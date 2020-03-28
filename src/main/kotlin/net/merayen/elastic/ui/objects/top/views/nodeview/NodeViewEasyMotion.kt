@@ -11,6 +11,7 @@ import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.AddNodeInlineWindow
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.FindNodeInlineWindow
+import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.MarksInlineWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil

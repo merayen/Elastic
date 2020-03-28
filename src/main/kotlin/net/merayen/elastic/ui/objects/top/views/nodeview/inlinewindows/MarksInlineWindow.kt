@@ -1,4 +1,4 @@
-package net.merayen.elastic.ui.objects.top.views.nodeview
+package net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows
 
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
