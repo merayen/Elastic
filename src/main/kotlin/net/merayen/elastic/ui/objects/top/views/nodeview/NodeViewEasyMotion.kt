@@ -9,18 +9,21 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
-import net.merayen.elastic.ui.objects.top.views.nodeview.find.AddNodeWindow
-import net.merayen.elastic.ui.objects.top.views.nodeview.find.FindNodeWindow
+import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.AddNodeInlineWindow
+import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.FindNodeInlineWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
-	private var addNodeWindow: AddNodeWindow? = null
-	private var findNodeWindow: FindNodeWindow? = null
+	private var addNodeWindow: AddNodeInlineWindow? = null
+	private var findNodeWindow: FindNodeInlineWindow? = null
+	private var marksWindow: MarksInlineWindow? = null
 
 	private val navigation = NodeViewNavigation(nodeView)
+
+	private val marks = HashMap<Char, String>()
 
 	init {
 		nodeView.add(navigation)
@@ -116,6 +119,14 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					}
 				}
 				null
+			}
+
+			controls[setOf(KeyboardEvent.Keys.M)] = Control {
+				val c = navigation.current
+				when (c) {
+					is UINode -> showMarksWindow()
+					else -> null
+				}
 			}
 
 			controls[setOf(KeyboardEvent.Keys.MINUS)] = Control {
@@ -243,8 +254,8 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 	private fun showAddNode(): EasyMotionBranch {
 		val addNodeWindow = addNodeWindow
 		if (addNodeWindow == null) {
-			val newWindow = AddNodeWindow()
-			newWindow.handler = object : AddNodeWindow.Handler {
+			val newWindow = AddNodeInlineWindow()
+			newWindow.handler = object : AddNodeInlineWindow.Handler {
 				override fun onClose() {
 					if (newWindow.parent != null)
 						nodeView.remove(newWindow)
@@ -340,8 +351,8 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 		val findNodeWindow = findNodeWindow
 
 		if (findNodeWindow == null) {
-			val newWindow = FindNodeWindow(nodeView.nodeViewController!!.netList)
-			newWindow.handler = object : FindNodeWindow.Handler {
+			val newWindow = FindNodeInlineWindow(nodeView.nodeViewController!!.netList)
+			newWindow.handler = object : FindNodeInlineWindow.Handler {
 				override fun onSelect(nodeId: String) {
 					// TODO set correct node parent id on NodeView, then move to the node
 					newWindow.close()
@@ -373,6 +384,34 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			return newWindow.filterInlineWindow
 		} else {
 			return findNodeWindow.filterInlineWindow
+		}
+	}
+
+	private fun showMarksWindow(): EasyMotionBranch {
+		val marksWindow = marksWindow;
+		if (marksWindow == null) {
+			val newWindow = MarksInlineWindow()
+			newWindow.handler = object : MarksInlineWindow.Handler {
+				override fun onSelect(mark: Char) {
+					println("Du har valgt å sette marker på $mark")
+				}
+
+				override fun onClose() {
+					if (newWindow.parent != null)
+						nodeView.remove(newWindow)
+					this@NodeViewEasyMotion.marksWindow = null
+				}
+			}
+
+			newWindow.translation.x = 40f
+			newWindow.translation.y = 40f
+			nodeView.add(newWindow)
+
+			this@NodeViewEasyMotion.marksWindow = newWindow
+
+			return newWindow
+		} else {
+			return marksWindow
 		}
 	}
 }
