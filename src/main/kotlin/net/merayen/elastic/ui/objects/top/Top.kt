@@ -28,7 +28,10 @@ class Top(private val surfaceHandler: SurfaceHandler) : UIObject(), TopNode {
 	private val messagesToBackend = Postmaster<ElasticMessage>()
 	private val messagesToUI = Postmaster<ElasticMessage>()
 
-	val netlist = NetList() // FIXME should the netlist really be global for everything? Perhaps yes?
+	/**
+	 * NetList for the user-interfaces. Updated automatically when backend sends messages to UI.
+	 */
+	val netlist = NetList()
 
 	init {
 		add(mouseCursorManager)

@@ -23,5 +23,16 @@ data class Properties(
 	/**
 	 * Marks. Those are global, for all this node's children.
 	 */
-	var marks: Map<String, String>? = null
-) : BaseNodeProperties()
+	var marks: MutableList<Mark>? = null
+
+) : BaseNodeProperties() {
+
+	data class Mark(
+		var mark: String? = null,
+		var what: String? = null
+	)
+
+	init {
+		classRegistry.add(Mark::class)
+	}
+}

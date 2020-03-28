@@ -55,7 +55,6 @@ class MarksInlineWindow(private val mode: Mode) : UIObject(), EasyMotionBranch {
 				}
 				null
 			}
-
 		}
 	}
 

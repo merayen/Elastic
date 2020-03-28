@@ -399,11 +399,13 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			newWindow.handler = object : MarksInlineWindow.Handler {
 				override fun onSelect(mark: Char) {
 					println("Du har valgt å sette marker på $mark")
+					nodeView.marks.mark(mark, "ja her skal det stå noe")
 				}
 
 				override fun onClose() {
 					if (newWindow.parent != null)
 						nodeView.remove(newWindow)
+
 					this@NodeViewEasyMotion.marksWindow = null
 				}
 			}
