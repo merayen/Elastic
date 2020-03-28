@@ -10,5 +10,4 @@ class Group1OutputFrameData(
 	nodeId: String,
 	nodeStats: NodeStatusMessage,
 	currentPlayheadPosition: Float
-) : OutputFrameData(nodeId, nodeStats) {
-}
+) : OutputFrameData(nodeId, nodeStats)

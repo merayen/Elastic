@@ -45,8 +45,6 @@ class AddNodeInlineWindow : UIObject() {
 		add(filterInlineWindow)
 	}
 
-	private var focused = false
-
 	private fun search(text: String) {
 		val text = text.toLowerCase()
 

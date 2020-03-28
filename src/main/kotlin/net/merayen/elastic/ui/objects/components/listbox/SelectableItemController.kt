@@ -8,7 +8,7 @@ import net.merayen.elastic.util.MutablePoint
 
 class SelectableItemController(private val container: UIObject) {
 	inner class Item : UIObject() {
-		var selected = false;
+		var selected = false
 
 		private val mouseHandler = MouseHandler(this)
 

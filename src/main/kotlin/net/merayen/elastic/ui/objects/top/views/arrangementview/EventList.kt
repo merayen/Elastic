@@ -19,7 +19,7 @@ class EventList : UIObject(), FlexibleDimension {
 
 	private val arrangementGrid = ArrangementGrid()
 	private val arrangementEventTracks = UIObject()
-	private val eventPanes = AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox())
+	private val eventPanes = AutoLayout(LayoutMethods.HorizontalBox())
 	private val playhead = Playhead()
 
 	override fun onInit() {

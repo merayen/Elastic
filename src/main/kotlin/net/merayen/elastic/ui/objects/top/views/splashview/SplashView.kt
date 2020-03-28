@@ -13,7 +13,6 @@ import kotlin.math.sin
 
 class SplashView : View() {
 	private var loadingBubbles = Pacer()
-	private var coloringPacer: Pacer? = null // TODO
 	private var loadingBubblesPos = 0f
 	private var loadingDescription = "Initializing"
 	private val bgColor = MutableColor(0, 0, 0)

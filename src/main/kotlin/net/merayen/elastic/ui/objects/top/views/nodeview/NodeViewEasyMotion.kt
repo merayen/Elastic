@@ -389,7 +389,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 	}
 
 	private fun showMarksWindow(): EasyMotionBranch {
-		val marksWindow = marksWindow;
+		val marksWindow = marksWindow
 		if (marksWindow == null) {
 			val newWindow = MarksInlineWindow()
 			newWindow.handler = object : MarksInlineWindow.Handler {

@@ -22,7 +22,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 	private val nodePorts = ArrayList<UIPort>()
 
 	val ports
-		get() = ArrayList<UIPort>(nodePorts)
+		get() = ArrayList(nodePorts)
 
 	private var inited: Boolean = false
 

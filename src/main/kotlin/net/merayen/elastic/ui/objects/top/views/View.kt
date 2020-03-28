@@ -8,7 +8,6 @@ import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
-import net.merayen.elastic.util.TaskQueue
 import net.merayen.elastic.util.UniqueID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
