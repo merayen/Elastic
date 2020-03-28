@@ -66,10 +66,14 @@ class Window(private val surface: Surface) : UIObject(), FlexibleDimension, Easy
 	override val easyMotionBranch = object : Branch(this@Window) {
 		init {
 			controls[setOf(KeyboardEvent.Keys.P)] = Control {
-				println("You pushed P")
 				viewportContainer.easyMotionMode = ViewportContainer.EasyMotionMode.ENTER
 				viewportContainer
 			}
+
+			controls[setOf(KeyboardEvent.Keys.APOSTROPHE)] = Control {
+				null  // TODO
+			}
+
 			controls[setOf(KeyboardEvent.Keys.C)] = Control {
 				println("You are about to swap the view")
 				viewportContainer.easyMotionMode = ViewportContainer.EasyMotionMode.CHANGE

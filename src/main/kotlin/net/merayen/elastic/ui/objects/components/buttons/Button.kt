@@ -12,7 +12,7 @@ open class Button(var label: String = "") : UIObject(), FlexibleDimension {
 	override var layoutWidth = 50f
 	override var layoutHeight = 15f
 	var autoDimension = true
-	var fontSize = 10f
+	var fontSize = 12f
 	var textColor = MutableColor()
 	var backgroundColor = MutableColor(0.5f, 0.5f, 0.5f)
 

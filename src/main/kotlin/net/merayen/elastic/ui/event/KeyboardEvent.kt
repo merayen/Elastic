@@ -51,6 +51,7 @@ class KeyboardEvent(val surface_id: String, val character: Char, val keyCode: In
 		HOME(36),
 		END(35),
 		MINUS(45),
+		APOSTROPHE(222),
 		PLUS(521); // Really 521?
 	}
 

@@ -18,6 +18,10 @@ data class Properties(
 	/**
 	 * Position of the playhead, in beats.
 	 */
-	var playheadPosition: Float? = null
+	var playheadPosition: Float? = null,
 
+	/**
+	 * Marks. Those are global, for all this node's children.
+	 */
+	var marks: Map<String, String>? = null
 ) : BaseNodeProperties()

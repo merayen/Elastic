@@ -11,7 +11,7 @@ import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.AddNodeInlineWindow
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.FindNodeInlineWindow
-import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.MarksInlineWindow
+import net.merayen.elastic.ui.objects.top.marks.MarksInlineWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
@@ -125,9 +125,13 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			controls[setOf(KeyboardEvent.Keys.M)] = Control {
 				val c = navigation.current
 				when (c) {
-					is UINode -> showMarksWindow()
+					is UINode -> showMarksWindow(MarksInlineWindow.Mode.SET)
 					else -> null
 				}
+			}
+
+			controls[setOf(KeyboardEvent.Keys.APOSTROPHE)] = Control {
+				showMarksWindow(MarksInlineWindow.Mode.GOTO)
 			}
 
 			controls[setOf(KeyboardEvent.Keys.MINUS)] = Control {
@@ -388,10 +392,10 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 		}
 	}
 
-	private fun showMarksWindow(): EasyMotionBranch {
+	private fun showMarksWindow(mode: MarksInlineWindow.Mode): EasyMotionBranch {
 		val marksWindow = marksWindow
 		if (marksWindow == null) {
-			val newWindow = MarksInlineWindow()
+			val newWindow = MarksInlineWindow(mode)
 			newWindow.handler = object : MarksInlineWindow.Handler {
 				override fun onSelect(mark: Char) {
 					println("Du har valgt å sette marker på $mark")
