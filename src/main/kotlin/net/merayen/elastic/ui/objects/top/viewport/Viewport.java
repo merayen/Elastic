@@ -26,7 +26,6 @@ public class Viewport extends UIObject implements EasyMotionBranch {
 	}
 
 	float width, height;
-	float ratio; // Value from 0 to 1, telling how much of the layoutWidth or layoutHeight this viewport takes from the view
 	public View view; // The view to draw. Set this and we will change to it on next onUpdate()
 
 	private View current_view; // Actual view

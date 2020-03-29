@@ -5,6 +5,7 @@ import net.merayen.elastic.system.intercom.NodeConnectMessage
 import net.merayen.elastic.system.intercom.NodeDisconnectMessage
 import net.merayen.elastic.system.intercom.RemoveNodeMessage
 import net.merayen.elastic.ui.event.KeyboardEvent
+import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
@@ -90,8 +91,21 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 			controls[setOf(KeyboardEvent.Keys.ENTER)] = Control {
 				val c = navigation.current
-				if (c is UINode) println("Supposed to go into node for editing its parameters")
-				null
+				if (c is UINode && c is EasyMotionBranch) {
+					c
+				} else {
+					null
+				}
+			}
+
+			controls[setOf(KeyboardEvent.Keys.E)] = Control {
+				val c = navigation.current
+				if (c is UINode && c is INodeEditable) {
+					println("Supposed to replace current view with edit mode of this node")
+					null
+				} else {
+					null
+				}
 			}
 
 			controls[setOf(KeyboardEvent.Keys.Y)] = Control {
@@ -112,8 +126,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.C)] = Control {
-				val c = navigation.current
-				when (c) {
+				when (val c = navigation.current) {
 					is UIPort -> {
 						println("Supposed to open some kind of connect-wizard, listing all connectable ports, based on data types and recommendation, and close to the port already")
 						showFindNode(c)
@@ -123,8 +136,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.M)] = Control {
-				val c = navigation.current
-				when (c) {
+				when (navigation.current) {
 					is UINode -> showMarksWindow(MarksInlineWindow.Mode.SET)
 					else -> null
 				}

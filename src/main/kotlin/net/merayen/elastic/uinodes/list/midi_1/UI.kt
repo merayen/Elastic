@@ -2,12 +2,15 @@ package net.merayen.elastic.uinodes.list.midi_1
 
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.uinodes.list.midi_1.editor.Editor
 
-class UI : UINode(), INodeEditable {
+class UI : UINode(), INodeEditable, EasyMotionBranch {
 	init {
 		layoutWidth = 80f
 		layoutHeight = 40f
@@ -34,4 +37,11 @@ class UI : UINode(), INodeEditable {
 	override fun onData(message: NodeDataMessage) {}
 
 	override fun getNodeEditor() = Editor(nodeId)
+	override val easyMotionBranch = object : Branch(this) {
+		init {
+			controls[setOf(KeyboardEvent.Keys.Q)] = Control {
+				Control.STEP_BACK
+			}
+		}
+	}
 }
