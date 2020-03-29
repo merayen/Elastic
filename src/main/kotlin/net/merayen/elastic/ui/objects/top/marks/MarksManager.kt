@@ -42,15 +42,15 @@ class MarksManager(private val view: View) {
 	 * Send null in what to delete.
 	 *
 	 * @param mark The name of the mark
-	 * @param what The identifier of the mark. Send null to delete mark
+	 * @param identifier The identifier of the mark. Send null to delete mark
 	 */
-	fun mark(mark: Char, what: String?) {
+	fun mark(mark: Char, nodeId: String, identifier: String?) {
 		val marks = marks
 
 		marks.removeIf { it.mark == mark }
 
-		if (what != null)
-			marks.add(Properties.Mark(mark, what))
+		if (identifier != null)
+			marks.add(Properties.Mark(mark = mark, nodeId = nodeId, identifier = identifier))
 
 		val message = NodePropertyMessage(
 			topNode.id,

@@ -29,7 +29,8 @@ data class Properties(
 
 	data class Mark(
 		var mark: Char? = null,
-		var what: String? = null
+		var nodeId: String? = null,
+		var identifier: String? = null
 	)
 
 	init {

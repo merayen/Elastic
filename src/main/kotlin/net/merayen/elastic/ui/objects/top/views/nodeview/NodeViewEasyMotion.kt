@@ -15,6 +15,7 @@ import net.merayen.elastic.ui.objects.top.marks.MarksInlineWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
+import net.merayen.elastic.util.logInfo
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
@@ -377,7 +378,6 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 						nodeView.remove(newWindow)
 					this@NodeViewEasyMotion.findNodeWindow = null
 				}
-
 			}
 
 			newWindow.translation.x = 40f
@@ -398,8 +398,13 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			val newWindow = MarksInlineWindow(mode)
 			newWindow.handler = object : MarksInlineWindow.Handler {
 				override fun onSelect(mark: Char) {
-					println("Du har valgt å sette marker på $mark")
-					nodeView.marks.mark(mark, "ja her skal det stå noe")
+					val c = navigation.current
+					if (c is UINode) {
+						println("Du har valgt å sette marker på $mark")
+						nodeView.marks.mark(mark, c.nodeId, "ja her skal det stå noe")
+					} else {
+						logInfo(this, "Selection is no more an UINode, not marking anything")
+					}
 				}
 
 				override fun onClose() {
