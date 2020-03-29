@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.architectures.local;
 
 public class Environment {
-	public class Playhead {
+	public static class Playhead {
 		/**
 		 * Sample count, start of the process buffer
 		 */

@@ -233,7 +233,7 @@ internal class JSONObjectMapperTest {
 		assertEquals(3, obj.array!![2])
 
 		assertThrows(ClassCastException::class.java) {
-			obj.array!![0] as Number
+			obj.array!![0]
 		}
 	}
 

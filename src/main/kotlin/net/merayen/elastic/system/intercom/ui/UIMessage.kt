@@ -6,4 +6,4 @@ import net.merayen.elastic.system.intercom.ElasticMessage
  * Messages related to the user interface.
  * Note that these messages should be generic for all UIs: No specific messages for certain UIs.
  */
-open class UIMessage : ElasticMessage
+interface UIMessage : ElasticMessage

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Layout {
-	private abstract class Item {
+	private abstract static class Item {
 		float size; // layoutWidth or layoutHeight, depending on if this object is in a Horizontal() or Vertical(). Value can be 0 to 1
 		float abs_x, abs_y, abs_width, abs_height; // Calculated values
 	}
@@ -32,7 +32,7 @@ public class Layout {
 		}
 	}
 
-	private class Translation {
+	private static class Translation {
 		float x, y, width, height;
 
 		public Translation(float x, float y, float width, float height) {

@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class NetListValidator {
 	@SuppressWarnings("serial")
-	public class ValidationError extends RuntimeException {
+	public static class ValidationError extends RuntimeException {
 		public ValidationError(String text) {
 			super(text);
 		}

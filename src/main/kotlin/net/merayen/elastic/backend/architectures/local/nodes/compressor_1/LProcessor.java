@@ -6,6 +6,8 @@ import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
 
+import java.util.Arrays;
+
 public class LProcessor extends LocalProcessor {
 	double amplitude = 1;
 	//private final int PROBE_RESOLUTI0N = 1;
@@ -20,8 +22,7 @@ public class LProcessor extends LocalProcessor {
 		if(maxAmplitudes == null)
 			maxAmplitudes = new float[buffer_size]; // TODO rather clear
 		else
-			for(int i = 0; i < maxAmplitudes.length; i++)
-				maxAmplitudes[i] = 0;
+			Arrays.fill(maxAmplitudes, 0);
 
 		if(amplitudes == null)
 			amplitudes = new float[buffer_size];

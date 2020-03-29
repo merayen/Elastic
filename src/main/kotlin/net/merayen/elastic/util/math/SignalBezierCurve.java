@@ -110,8 +110,10 @@ public class SignalBezierCurve {
 				dot1.position.getY()
 		};
 
-		int i = 0, pos = 0, pos_index = 0, protection = 0;
-		float x = 0,y = 0;
+		int i = 0;
+		int pos, pos_index, protection = 0;
+
+		float x,y;
 		while(protection++ < 10000) {
 			float v = i / (float)length;
 

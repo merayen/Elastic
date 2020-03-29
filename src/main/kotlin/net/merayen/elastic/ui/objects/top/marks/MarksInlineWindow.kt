@@ -1,6 +1,5 @@
 package net.merayen.elastic.ui.objects.top.marks
 
-import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.InlineWindow

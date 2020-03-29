@@ -160,7 +160,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		if(active_tangent != null && resampling != null) {
 			double freq = AudioUtil.midiNoteToFreq(active_tangent[1] + pitch);
-			float volume_div = sample_rate / 1000;
+			float volume_div = sample_rate / 1000f;
 			float[] audio = outlet.audio[0];
 
 			resampling.update((float)freq, buffer_size);

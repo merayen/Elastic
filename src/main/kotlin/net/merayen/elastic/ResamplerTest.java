@@ -53,7 +53,7 @@ public class ResamplerTest {
 		System.out.println(-time / 1E6);
 	}
 
-	class ResampleBox {
+	static class ResampleBox {
 		private Resampler resampler;
 
 		ResampleBox(float minFactor, float maxFactor, float[] inBuffer, float[] outBuffer) {
