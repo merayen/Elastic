@@ -65,4 +65,12 @@ class Search(private val obj: UIObject) {
 		@Suppress("UNCHECKED_CAST")
 		return if (x == null) null else x as T
 	}
+
+	fun hasParent(uiObject: UIObject): Boolean {
+		var x = obj.parent
+		while (x != null && x !== uiObject)
+			x = x.parent
+
+		return x === uiObject
+	}
 }

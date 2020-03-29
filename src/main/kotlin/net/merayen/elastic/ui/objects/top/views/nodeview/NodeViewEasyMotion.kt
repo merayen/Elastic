@@ -16,14 +16,29 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.FindNodeI
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
+import net.merayen.elastic.util.logDebug
+import net.merayen.elastic.util.logError
+import net.merayen.elastic.util.logInfo
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
+	private enum class Mode {
+		NORMAL,
+
+		/**
+		 * When a node port has been selected and user is now to connect it to another port.
+		 */
+		CONNECT;
+	}
+
 	private var addNodeWindow: AddNodeInlineWindow? = null
 	private var findNodeWindow: FindNodeInlineWindow? = null
 	private var marksWindow: MarksInlineWindow? = null
 
 	private val navigation = NodeViewNavigation(nodeView)
+
+	private var mode = Mode.NORMAL
+	private var connectingPort: UIPort? = null // Used on Mode.CONNECT
 
 	private val marks = HashMap<Char, String>()
 
@@ -91,10 +106,41 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 			controls[setOf(KeyboardEvent.Keys.ENTER)] = Control {
 				val c = navigation.current
-				if (c is UINode && c is EasyMotionBranch) {
-					c
-				} else {
-					null
+
+				when (mode) {
+					Mode.NORMAL -> {
+						if (c is UINode && c is EasyMotionBranch)
+							c
+						else
+							null
+					}
+					Mode.CONNECT -> {
+						val connectingPort = connectingPort
+						if (connectingPort == null) {
+							logError(this, "Connecting port is not set, but is still in Mode.connect")
+							this@NodeViewEasyMotion.connectingPort = null
+						} else {
+							if (c is UIPort) {
+								if (!connectingPort.search.hasParent(nodeView)) {
+									logDebug(this, "Node's port has been detached from NodeView. Leaving connect mode")
+									mode = Mode.NORMAL
+								} else {
+									if ((if (connectingPort.output) 1 else 0) + (if (c.output) 1 else 0) != 1) {
+										logInfo(this, "Connecting ports are not compatible. Ignored. TODO warn user?")
+									} else {
+										val message = NodeConnectMessage(connectingPort.uinode.nodeId, connectingPort.name, c.uinode.nodeId, c.name)
+										nodeView.sendMessage(message)
+										this@NodeViewEasyMotion.mode = Mode.NORMAL
+										this@NodeViewEasyMotion.connectingPort = null
+										logInfo(this, "Connecting ports")
+									}
+								}
+							} else {
+								logInfo(this, "Can not connect to a non-port")
+							}
+						}
+						null
+					}
 				}
 			}
 
@@ -128,8 +174,13 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			controls[setOf(KeyboardEvent.Keys.C)] = Control {
 				when (val c = navigation.current) {
 					is UIPort -> {
-						println("Supposed to open some kind of connect-wizard, listing all connectable ports, based on data types and recommendation, and close to the port already")
-						showFindNode(c)
+						if (mode != Mode.NORMAL) {
+							logInfo(this, "Not in NORMAL-mode. Ignored connect request.")
+						} else {
+							mode = Mode.CONNECT
+							connectingPort = c
+							showFindNode(c)
+						}
 					}
 				}
 				null
@@ -147,7 +198,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.MINUS)] = Control {
-				nodeView.container.zoomScaleXTarget *= 1.2f
+				nodeView.container.zoomScaleXTarget *= 1.2f  // Bull shit. Not work ing.
 				nodeView.container.zoomScaleYTarget *= 1.2f
 				nodeView.container.translateXTarget *= 1.4f
 				nodeView.container.translateYTarget *= 1.4f
@@ -203,7 +254,12 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			}
 
 			controls[setOf(KeyboardEvent.Keys.ESCAPE)] = Control {
-				navigation.current = null
+				if (mode != Mode.NORMAL) {
+					logDebug(this, "Leaving $mode mode")
+					mode = Mode.NORMAL
+				} else {
+					navigation.current = null
+				}
 				null
 			}
 
@@ -373,9 +429,6 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				override fun onSelect(nodeId: String) {
 					// TODO set correct node parent id on NodeView, then move to the node
 					newWindow.close()
-					if (connectingPort != null) {
-						println("Supposed to show a list of selected node's ports that we can connect to? Filtered on data types?")
-					}
 				}
 
 				override fun onFocus(nodeId: String) {
