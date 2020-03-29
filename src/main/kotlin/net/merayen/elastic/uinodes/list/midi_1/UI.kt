@@ -18,7 +18,7 @@ class UI : UINode(), INodeEditable, EasyMotionBranch {
 
 	override fun onInit() {
 		super.onInit()
-		titlebar.title = "MIDI"
+		titlebar.title = "Notes"
 	}
 
 	override fun onCreatePort(port: UIPort) {

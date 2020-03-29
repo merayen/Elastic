@@ -4,12 +4,16 @@ import net.merayen.elastic.backend.logicnodes.list.mix_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.components.framework.PortParameter
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
+import net.merayen.elastic.util.logDebug
 
-class UI : UINode() {
+class UI : UINode(), EasyMotionBranch {
     private var mixPortParameter: PortParameter? = null
     private val slider = ParameterSlider()
 
@@ -68,6 +72,18 @@ class UI : UINode() {
             val mixData = instance.mix
             if (mixData != null)
                 slider.value = mixData.toDouble()
+        }
+    }
+
+    override val easyMotionBranch = object : Branch(this) {
+        init {
+            controls[setOf(KeyboardEvent.Keys.Q)] = Control {
+                Control.STEP_BACK
+            }
+
+            controls[setOf(KeyboardEvent.Keys.F)] = Control {
+                slider
+            }
         }
     }
 }

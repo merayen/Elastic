@@ -3,6 +3,7 @@ package net.merayen.elastic.ui.objects.components.framework
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 
 /**
  * Defines a port, and shows one view if that port is not connected, and shows another one if it is.

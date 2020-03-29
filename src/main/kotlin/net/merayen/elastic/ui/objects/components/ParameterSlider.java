@@ -1,13 +1,19 @@
 package net.merayen.elastic.ui.objects.components;
 
 import net.merayen.elastic.ui.Draw;
-import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.UIObject;
+import net.merayen.elastic.ui.event.KeyboardEvent;
+import net.merayen.elastic.ui.event.UIEvent;
 import net.merayen.elastic.ui.objects.components.buttons.Button;
+import net.merayen.elastic.ui.objects.top.easymotion.Branch;
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.MutablePoint;
+import org.jetbrains.annotations.NotNull;
 
-public class ParameterSlider extends UIObject {
+import java.util.HashSet;
+
+public class ParameterSlider extends UIObject implements EasyMotionBranch {
 	float width = 80f;
 	public float scale = 1f;
 	public String label;
@@ -18,9 +24,37 @@ public class ParameterSlider extends UIObject {
 	private double drag_value;
 	private IHandler handler;
 
+	@NotNull
+	@Override
+	public Branch getEasyMotionBranch() {
+		return new Branch(this, this) {
+			{  // This looks like shit in Java
+				getControls().put(new HashSet<>() {{
+					add(KeyboardEvent.Keys.PLUS);
+				}}, new Control((something) -> {
+					up();
+					return null;
+				}));
+
+				getControls().put(new HashSet<>() {{
+					add(KeyboardEvent.Keys.MINUS);
+				}}, new Control((something) -> {
+					down();
+					return null;
+				}));
+
+				getControls().put(new HashSet<>() {{
+					add(KeyboardEvent.Keys.Q);
+				}}, new Control((something) -> Control.Companion.getSTEP_BACK()));
+			}
+		};
+	}
+
 	public interface IHandler {
 		void onChange(double value, boolean programatic);
+
 		void onButton(int offset);
+
 		String onLabelUpdate(double value);
 	}
 
@@ -30,13 +64,7 @@ public class ParameterSlider extends UIObject {
 		left_button.setLayoutWidth(11f);
 		add(left_button);
 
-		left_button.setHandler(() -> {
-			if(handler != null) {
-				handler.onButton(-1);
-				handler.onChange(value, false);
-				label = handler.onLabelUpdate(value);
-			}
-		});
+		left_button.setHandler(this::down);
 
 		right_button = new Button();
 		right_button.getTranslation().x = width - 11f;
@@ -45,20 +73,14 @@ public class ParameterSlider extends UIObject {
 		right_button.setLayoutWidth(11f);
 		add(right_button);
 
-		right_button.setHandler(() -> {
-			if(handler != null) {
-				handler.onButton(1);
-				handler.onChange(value, false);
-				label = handler.onLabelUpdate(value);
-			}
-		});
+		right_button.setHandler(this::up);
 
 		mousehandler = new MouseHandler(this);
 		mousehandler.setHandler(new MouseHandler.Handler() {
 			@Override
 			public void onMouseDrag(MutablePoint start_point, MutablePoint offset) {
 				setValue(drag_value + (offset.getX() / width) * scale);
-				if(handler != null) {
+				if (handler != null) {
 					handler.onChange(value, false);
 					label = handler.onLabelUpdate(value);
 				}
@@ -79,18 +101,18 @@ public class ParameterSlider extends UIObject {
 		draw.setColor(150, 150, 150);
 		draw.fillRect(11f, 1f, width - 21f, 13f);
 
-		double v = Math.max(Math.min(value, 1),  0);
+		double v = Math.max(Math.min(value, 1), 0);
 		draw.setColor(180, 180, 180);
-		draw.fillRect(11f, 1f, (width - 21f) * (float)v, 13f);
+		draw.fillRect(11f, 1f, (width - 21f) * (float) v, 13f);
 
-		if(label != null) {
+		if (label != null) {
 			draw.setFont("Verdana", 10f);
 			draw.setColor(50, 50, 50); // Shadow
 			float text_width = draw.getTextWidth(label);
-			draw.text(label, width/2 - text_width/2 + 0.5f, 10.5f);
+			draw.text(label, width / 2 - text_width / 2 + 0.5f, 10.5f);
 
 			draw.setColor(200, 200, 200);
-			draw.text(label, width/2 - text_width/2, 10f);
+			draw.text(label, width / 2 - text_width / 2, 10f);
 		}
 
 		super.onDraw(draw);
@@ -116,5 +138,21 @@ public class ParameterSlider extends UIObject {
 
 	public void setHandler(IHandler handler) {
 		this.handler = handler;
+	}
+
+	private void up() {
+		if (handler != null) {
+			handler.onButton(1);
+			handler.onChange(value, false);
+			label = handler.onLabelUpdate(value);
+		}
+	}
+
+	private void down() {
+		if (handler != null) {
+			handler.onButton(-1);
+			handler.onChange(value, false);
+			label = handler.onLabelUpdate(value);
+		}
 	}
 }
