@@ -321,6 +321,10 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			c.targetLocation.y = ((c.targetLocation.y / 20).roundToInt() * 20).toFloat()
 
 			c.sendUiData()
+
+			val c = navigation.current
+			if (c is UINode)
+				nodeView.focus(c)
 		}
 	}
 
@@ -400,7 +404,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 								false // Try again later
 							}
 						} else {
-							false // Timed out
+							true // Timed out
 						}
 					}
 

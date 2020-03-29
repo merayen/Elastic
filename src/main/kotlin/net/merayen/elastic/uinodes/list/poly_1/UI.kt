@@ -3,14 +3,17 @@ package net.merayen.elastic.uinodes.list.poly_1
 import net.merayen.elastic.backend.logicnodes.list.poly_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import kotlin.math.roundToInt
 
-class UI : UINode() {
+class UI : UINode(), EasyMotionBranch {
 	private val unison: ParameterSlider
 
 	init {
@@ -23,7 +26,7 @@ class UI : UINode() {
 		button.translation.y = 20f
 		button.handler = object : Button.IHandler {
 			override fun onClick() {
-				search.parentByType(NodeView::class.java)!!.swapView(nodeId)
+				enter()
 			}
 		}
 		add(button)
@@ -66,5 +69,22 @@ class UI : UINode() {
 			if (unisonData != null)
 				unison.value = (unisonData - 1) / 31.0
 		}
+	}
+
+	override val easyMotionBranch = object : Branch(this) {
+		init {
+			controls[setOf(KeyboardEvent.Keys.Q)] = Control {
+				Control.STEP_BACK
+			}
+
+			controls[setOf(KeyboardEvent.Keys.E)] = Control {
+				enter()
+				null
+			}
+		}
+	}
+
+	private fun enter() {
+		search.parentByType(NodeView::class.java)!!.swapView(nodeId)
 	}
 }
