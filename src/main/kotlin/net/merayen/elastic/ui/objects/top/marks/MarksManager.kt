@@ -59,4 +59,6 @@ class MarksManager(private val view: View) {
 
 		view.sendMessage(message)
 	}
+
+	fun get(mark: Char) = marks.firstOrNull { it.mark == mark }
 }

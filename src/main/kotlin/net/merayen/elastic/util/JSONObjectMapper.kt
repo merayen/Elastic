@@ -124,9 +124,7 @@ class JSONObjectMapper {
 			if (property.visibility == KVisibility.PUBLIC && property is KMutableProperty<*>) {
 				if (property.name == "classRegistry")
 					println("Noes")
-				val jsonValue = valueToJSON(property.getter.call(obj))
-				if (jsonValue !== UNDEFINED)
-					result[property.name] = jsonValue
+				result[property.name] = valueToJSON(property.getter.call(obj))
 			}
 		}
 
@@ -134,8 +132,6 @@ class JSONObjectMapper {
 
 		return result
 	}
-
-	private val UNDEFINED = Any()
 
 	private fun valueToJSON(value: Any?): Any? {
 		if (value == null || value is Number || value is Boolean || value is String) {
@@ -151,7 +147,6 @@ class JSONObjectMapper {
 		}
 
 		throw TypeNotSupportedException(value::class.simpleName ?: value.toString().substring(0, 100))
-		//return UNDEFINED
 	}
 
 	/**

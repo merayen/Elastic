@@ -9,13 +9,12 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
+import net.merayen.elastic.ui.objects.top.marks.MarksInlineWindow
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.AddNodeInlineWindow
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.FindNodeInlineWindow
-import net.merayen.elastic.ui.objects.top.marks.MarksInlineWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.NodeUtil
-import net.merayen.elastic.util.logInfo
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
@@ -376,6 +375,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				override fun onClose() {
 					if (newWindow.parent != null)
 						nodeView.remove(newWindow)
+
 					this@NodeViewEasyMotion.findNodeWindow = null
 				}
 			}
@@ -399,11 +399,23 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 			newWindow.handler = object : MarksInlineWindow.Handler {
 				override fun onSelect(mark: Char) {
 					val c = navigation.current
-					if (c is UINode) {
-						println("Du har valgt å sette marker på $mark")
-						nodeView.marks.mark(mark, c.nodeId, "ja her skal det stå noe")
-					} else {
-						logInfo(this, "Selection is no more an UINode, not marking anything")
+					println("Du har valgt å sette marker på $mark")
+					when (mode) {
+						MarksInlineWindow.Mode.SET -> {
+							if (c is UINode)
+								nodeView.marks.mark(mark, c.nodeId, "ja her skal det stå noe")
+						}
+						MarksInlineWindow.Mode.GOTO -> {
+							val markInstance = nodeView.marks.get(mark)
+							if (markInstance != null) {
+								val uinode = nodeView.nodes[markInstance.nodeId]  // TODO support swapping view to another node parent id
+								if (uinode != null) {
+									navigation.current = uinode
+									nodeView.focus(uinode)
+								}
+							}
+						}
+						MarksInlineWindow.Mode.DELETE -> TODO()
 					}
 				}
 
