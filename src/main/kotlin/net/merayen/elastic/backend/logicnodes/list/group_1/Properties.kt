@@ -28,7 +28,7 @@ data class Properties(
 ) : BaseNodeProperties() {
 
 	data class Mark(
-		var mark: String? = null,
+		var mark: Char? = null,
 		var what: String? = null
 	)
 

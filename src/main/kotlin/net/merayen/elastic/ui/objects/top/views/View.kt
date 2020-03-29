@@ -5,7 +5,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
-import net.merayen.elastic.ui.objects.top.marks.Marks
+import net.merayen.elastic.ui.objects.top.marks.MarksManager
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
@@ -41,7 +41,7 @@ abstract class View : UIObject, EasyMotionBranch {
 	/**
 	 * Mark support is put into View as they are global for the current view.
 	 */
-	val marks = Marks(this)
+	val marks = MarksManager(this)
 
 
 	constructor() {

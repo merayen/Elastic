@@ -4,9 +4,7 @@ import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class NetListUtil {
 	private final NetList netlist;
@@ -18,15 +16,22 @@ public class NetListUtil {
 	}
 
 	/**
-	 * Retrieves all nodes without a parent.
+	 * Retrieves the top-most node, which will be a group-node.
+	 * Throws exception if not.
 	 */
-	public Set<Node> getTopNodes() {
-		Set<Node> result = new HashSet<>();
+	public Node getTopGroupNode() {
+		List<Node> result = new ArrayList<>();
 		for (Node node : netlist.getNodes())
 			if (node_properties.getParent(node) == null)
 				result.add(node);
 
-		return result;
+		if (result.size() != 1)
+			throw new RuntimeException("Expected 1 and only 1 top-node");
+
+		if (!node_properties.getName(result.get(0)).equals("group"))
+			throw new RuntimeException("Expected top-most node to be a group-node");
+
+		return result.get(0);
 	}
 
 	public Node getParent(Node node) {

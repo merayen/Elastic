@@ -140,6 +140,8 @@ class JSONObjectMapper {
 	private fun valueToJSON(value: Any?): Any? {
 		if (value == null || value is Number || value is Boolean || value is String) {
 			return value
+		} else if (value is Char) {
+			return value.toString()
 		} else if (value is List<*>) {
 			val arr = JSONArray()
 			arr.addAll(value.map { valueToJSON(it) })
@@ -166,8 +168,9 @@ class JSONObjectMapper {
 				"kotlin.Int" -> return obj.toInt()
 				"kotlin.Short" -> return obj.toShort()
 				"kotlin.Byte" -> return obj.toByte()
-				"kotlin.Char" -> return obj.toChar()
 			}
+		} else if (obj is String && to.qualifiedName == "kotlin.Char") {
+			return obj.single()
 		}
 
 		return to.cast(obj)
