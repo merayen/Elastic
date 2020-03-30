@@ -258,6 +258,12 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				null
 			}
 
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.L)] = Control {
+				@Suppress("unchecked_cast")
+				NodeViewSolver(nodeView.container.children.filter { it is UINode } as List<UINode>).solve()
+				null
+			}
+
 			controls[setOf(KeyboardEvent.Keys.ESCAPE)] = Control {
 				if (mode != Mode.NORMAL) {
 					logDebug(this, "Leaving $mode mode")
