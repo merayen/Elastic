@@ -15,6 +15,7 @@ import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.Revision
 import net.merayen.elastic.util.TaskQueue
+import net.merayen.elastic.util.logDebug
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -319,6 +320,36 @@ class NodeView : View(), Revision, TaskQueue.RunsTasks {
 
 		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (pos2.x - pos.x) / 2
 		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (pos2.y - pos.y) / 2
+	}
+
+	fun focusAll() {  // Not tested
+		if (nodes.isEmpty())
+			return
+
+		var minX = Float.MAX_VALUE
+		var minY = Float.MAX_VALUE
+		var maxX = Float.MIN_VALUE
+		var maxY = Float.MIN_VALUE
+
+		for (node in nodes.values) {
+			minX = min(node.translation.x, minX)
+			minY = min(node.translation.y, minY)
+			maxX = max(node.translation.x + node.layoutWidth, maxX)
+			maxY = max(node.translation.y + node.layoutHeight, maxY)
+		}
+
+		val width = maxX - minX
+		val height = maxY - minY
+
+		logDebug(this, container.translation.scaleX.toString())
+
+		val scale = max((width + 40) / layoutWidth, (height + 40) / layoutHeight)
+		container.zoomScaleXTarget = scale
+		container.zoomScaleYTarget = scale
+
+		container.translateXTarget = -minX / container.zoomScaleXTarget + 20f
+		container.translateYTarget = -minY / container.zoomScaleYTarget + 20f
+
 	}
 
 	override fun getTaskQueue() = taskQueue

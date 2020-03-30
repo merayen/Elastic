@@ -253,6 +253,11 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 				null
 			}
 
+			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.B)] = Control {
+				nodeView.focusAll()
+				null
+			}
+
 			controls[setOf(KeyboardEvent.Keys.ESCAPE)] = Control {
 				if (mode != Mode.NORMAL) {
 					logDebug(this, "Leaving $mode mode")
