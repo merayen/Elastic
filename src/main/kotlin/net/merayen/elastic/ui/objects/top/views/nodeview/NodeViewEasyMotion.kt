@@ -260,7 +260,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 
 			controls[setOf(KeyboardEvent.Keys.CONTROL, KeyboardEvent.Keys.ALT, KeyboardEvent.Keys.L)] = Control {
 				@Suppress("unchecked_cast")
-				NodeViewSolver(nodeView.container.children.filter { it is UINode } as List<UINode>).solve()
+				NodeViewSolver(nodeView).solve()
 				null
 			}
 

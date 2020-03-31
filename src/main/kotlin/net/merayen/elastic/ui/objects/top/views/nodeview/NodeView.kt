@@ -294,7 +294,7 @@ class NodeView : View(), Revision, TaskQueue.RunsTasks {
 		val newContextMenu = NodeViewContextMenu(container, currentNodeId)
 		newContextMenu.handler = object : NodeViewContextMenu.Handler {
 			override fun onSolveNodes() {
-				NodeViewSolver(nodes.values).solve()
+				NodeViewSolver(this@NodeView).solve()
 			}
 		}
 		container.add(newContextMenu)
