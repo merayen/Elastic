@@ -11,6 +11,7 @@ interface GroupLNode {
 	fun getSampleRate(): Int
 	fun getBufferSize(): Int
 	fun getDepth(): Int
+	fun getChannelCount(): Int
 
 
 

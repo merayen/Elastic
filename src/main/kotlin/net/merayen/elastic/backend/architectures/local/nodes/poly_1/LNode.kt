@@ -11,6 +11,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	override fun getSampleRate() = (parent as GroupLNode).getSampleRate()
 	override fun getBufferSize() = (parent as GroupLNode).getBufferSize()
 	override fun getDepth() = (parent as GroupLNode).getDepth()
+	override fun getChannelCount() = (parent as GroupLNode).getChannelCount()
 
 	override fun getCurrentFrameBPM() = (parent as GroupLNode).getCurrentFrameBPM()
 	override fun getCurrentBarDivision() = (parent as GroupLNode).getCurrentBarDivision()

@@ -34,6 +34,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	override fun getSampleRate() = Temporary.sampleRate
 	override fun getDepth() = Temporary.depth
+	override fun getChannelCount() = 2  // TODO make this configurable
 
 	override fun getCurrentBarDivision(): Int {
 		val parent = parent as? GroupLNode
