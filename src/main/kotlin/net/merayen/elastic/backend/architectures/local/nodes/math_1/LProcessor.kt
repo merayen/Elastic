@@ -1,10 +1,10 @@
-package net.merayen.elastic.backend.architectures.local.nodes.arithmetic_1
+package net.merayen.elastic.backend.architectures.local.nodes.math_1
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.architectures.local.lets.AudioInlet
 import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.backend.logicnodes.list.arithmetic_1.Mode
+import net.merayen.elastic.backend.logicnodes.list.math_1.Mode
 
 class LProcessor : LocalProcessor() {
 	override fun onProcess() {
@@ -36,7 +36,7 @@ class LProcessor : LocalProcessor() {
 		val bChannels = bAudioInlet?.outlet?.audio
 
 		when (localNode.mode) {
-			Mode.ADDITION -> {
+			Mode.ADD -> {
 				when {
 					aChannels == null -> {
 						outlet.audio = bChannels // Forward whole buffer
@@ -54,10 +54,18 @@ class LProcessor : LocalProcessor() {
 					}
 					}
 				}
-			Mode.SUBTRACTION -> TODO()
-			Mode.MULTIPLICATION -> TODO()
-			Mode.DIVISION -> TODO()
+			Mode.SUBTRACT -> TODO()
+			Mode.MULTIPLY -> TODO()
+			Mode.DIVIDE -> TODO()
 			Mode.MODULO -> TODO()
+			Mode.LOG -> TODO()
+			Mode.SIN -> TODO()
+			Mode.COS -> TODO()
+			Mode.TAN -> TODO()
+			Mode.ASIN -> TODO()
+			Mode.ACOS -> TODO()
+			Mode.ATAN -> TODO()
+			Mode.POWER -> TODO()
 		}
 	}
 

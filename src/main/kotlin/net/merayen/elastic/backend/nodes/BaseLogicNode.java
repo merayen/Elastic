@@ -21,8 +21,6 @@ public abstract class BaseLogicNode {
 	boolean inited;
 	private NodeProperties np;
 
-	//private InheritanceTree parameters;
-
 	private JSONObjectMapper mapper;
 	public BaseNodeProperties properties;
 

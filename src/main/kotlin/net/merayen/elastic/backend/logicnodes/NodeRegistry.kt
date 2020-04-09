@@ -27,6 +27,6 @@ object NodeRegistry {
 		nodes.add("cutoff_1")
 		nodes.add("autocorrelation_1")
 		nodes.add("frequency_1")
-		nodes.add("arithmetic_1")
+		nodes.add("math_1")
 	}
 }

@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.logicnodes.list.arithmetic_1
+package net.merayen.elastic.backend.logicnodes.list.math_1
 
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 
