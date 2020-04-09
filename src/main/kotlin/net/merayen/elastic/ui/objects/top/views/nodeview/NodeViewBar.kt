@@ -25,7 +25,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 
 		bpmSlider.handler = object : BPMSlider.Handler {
 			override fun onChange(bpm: Int) {
-				val nodeId = nodeView.currentNodeId
+				val nodeId = nodeView.nodeViewController!!.topNodeId
 				if (nodeId != null)
 					sendMessage(SetBPMMessage(nodeId, bpm))
 			}
@@ -51,7 +51,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 				if (newChannelCount != channelCount) {
 					channelCount = newChannelCount
 
-					val nodeId = nodeView.currentNodeId
+					val nodeId = nodeView.nodeViewController!!.topNodeId
 					if (nodeId != null)
 						sendMessage(NodePropertyMessage(nodeId, Properties(channelCount = channelCount)))
 				}
@@ -69,8 +69,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		playButton.label = ">"
 		playButton.handler = object : Button.IHandler {
 			override fun onClick() {
-				val nodeId = nodeView.currentNodeId
-
+				val nodeId = nodeView.nodeViewController!!.topNodeId
 				if (nodeId != null)
 					sendMessage(TransportStartPlaybackMessage(nodeId))
 			}
@@ -81,7 +80,6 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		stopButton.handler = object : Button.IHandler {
 			override fun onClick() {
 				val nodeId = nodeView.currentNodeId
-
 				if (nodeId != null)
 					sendMessage(TransportStopPlaybackMessage(nodeId))
 			}
