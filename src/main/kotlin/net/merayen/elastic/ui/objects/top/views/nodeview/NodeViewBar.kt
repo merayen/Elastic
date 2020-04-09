@@ -36,12 +36,12 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 			private var volume = 1.0
 
 			override fun onChange(value: Double, programatic: Boolean) {
-				volume = max(1/10.0.pow(12), value.pow(10))
+				volume = max(1 / 10.0.pow(12), value.pow(10))
 			}
 
 			override fun onButton(offset: Int) {}
 
-			override fun onLabelUpdate(value: Double) = "%.0f dB".format(log(1/volume, 10.0) * 10)
+			override fun onLabelUpdate(value: Double) = "%.0f dB".format(log(1 / volume, 10.0) * 10)
 		})
 		add(monitorVolumeSlider)
 
@@ -79,7 +79,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		stopButton.label = "||"
 		stopButton.handler = object : Button.IHandler {
 			override fun onClick() {
-				val nodeId = nodeView.currentNodeId
+				val nodeId = nodeView.nodeViewController!!.topNodeId
 				if (nodeId != null)
 					sendMessage(TransportStopPlaybackMessage(nodeId))
 			}
@@ -92,10 +92,12 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 			is NodePropertyMessage -> {
 				val instance = message.instance
 				if (instance is Properties) {
-					val channelCount = instance.channelCount
-					if (channelCount != null) {
-						channelCountSlider.value = channelCount - 1.0
-						this.channelCount = channelCount
+					if (message.node_id == nodeView.nodeViewController!!.topNodeId) {
+						val channelCount = instance.channelCount
+						if (channelCount != null) {
+							channelCountSlider.value = channelCount - 1.0
+							this.channelCount = channelCount
+						}
 					}
 				}
 			}
