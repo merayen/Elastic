@@ -8,31 +8,40 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
 public class LNode extends LocalNode implements OutputInterfaceNode {
-	private int channelCount;
+	private int channelCount = -1;
 
 	public LNode() {
 		super(LProcessor.class);
 	}
 
 	@Override
-	protected void onInit() {}
-
-	@Override
-	protected void onSpawnProcessor(LocalProcessor lp) {
-		((LProcessor)lp).channelDistribution = channelCount++ % 2 == 0 ? new float[]{1,0} : new float[]{0,1};
+	protected void onInit() {
 	}
 
 	@Override
-	protected void onProcess(InputFrameData data) {}
+	protected void onSpawnProcessor(LocalProcessor lp) {
+		updateChannelDistribution();
+	}
 
 	@Override
-	protected void onParameter(BaseNodeProperties instance) {}
+	protected void onProcess(InputFrameData data) {
+		int channelCount = getParentGroupNode().getChannelCount();
+		if (this.channelCount != channelCount) {
+			updateChannelDistribution();
+		}
+	}
 
 	@Override
-	protected void onFinishFrame() {}
+	protected void onParameter(BaseNodeProperties instance) {
+	}
 
 	@Override
-	protected void onDestroy() {}
+	protected void onFinishFrame() {
+	}
+
+	@Override
+	protected void onDestroy() {
+	}
 
 	@Override
 	public String getForwardPortName() {
@@ -41,11 +50,26 @@ public class LNode extends LocalNode implements OutputInterfaceNode {
 
 	@Override
 	public Inlet getOutputInlet(int session_id) {
-		return ((LProcessor)getProcessor(session_id)).inlet;
+		return ((LProcessor) getProcessor(session_id)).inlet;
 	}
 
 	@Override
 	public float[] getChannelDistribution(int session_id) {
-		return ((LProcessor)getProcessor(session_id)).channelDistribution;
+		return ((LProcessor) getProcessor(session_id)).channelDistribution;
+	}
+
+	private void updateChannelDistribution() {
+		int channelCount = getParent().getParentGroupNode().getChannelCount(); // Note: Gets channel count from above poly-node
+
+
+		int i = 0;
+		for (LocalProcessor lp : getProcessors()) {
+			float distribution[] = new float[channelCount];
+			distribution[i % channelCount] = 1f;
+			((LProcessor) lp).channelDistribution = distribution;
+			i++;
+		}
+
+		this.channelCount = channelCount;
 	}
 }

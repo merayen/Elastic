@@ -95,8 +95,10 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 				val instance = message.instance
 				if (instance is Properties) {
 					val channelCount = instance.channelCount
-					if (channelCount != null)
+					if (channelCount != null) {
 						channelCountSlider.value = channelCount - 1.0
+						this.channelCount = channelCount
+					}
 				}
 			}
 		}

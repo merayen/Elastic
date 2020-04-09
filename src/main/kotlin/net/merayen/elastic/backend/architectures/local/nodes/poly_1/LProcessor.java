@@ -108,7 +108,7 @@ public class LProcessor extends LocalProcessor {
 		for (int i = 0; i < unison; i++) {
 			int spawned_session_id;
 			try {
-				spawned_session_id = spawnSession(); // TODO sample_offset should not be always 0, but rather respect the offset from the midi packet
+				spawned_session_id = spawnSession();
 			} catch (SpawnLimitException e) {
 				return; // No more voices can be spawned. XXX Should probably kill the oldest one and replace them
 			}

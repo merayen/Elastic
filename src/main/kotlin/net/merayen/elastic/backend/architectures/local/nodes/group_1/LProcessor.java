@@ -14,7 +14,6 @@ public class LProcessor extends LocalProcessor {
 
 	@Override
 	protected void onProcess() {
-
 			try {
 				if(session_id == -1)
 					session_id = spawnSession();
