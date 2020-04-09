@@ -35,7 +35,7 @@ class UI : UINode(), EasyMotionBranch {
 		unison.translation.x = 5f
 		unison.translation.y = 40f
 		unison.setHandler(object : ParameterSlider.IHandler {
-			override fun onLabelUpdate(value: Double) = String.format("%d", Math.round(value * 31) + 1)
+			override fun onLabelUpdate(value: Double) = String.format("%d", (value * 31).roundToInt() + 1)
 
 			override fun onChange(value: Double, programatic: Boolean) = sendProperties(Properties(unison = (value * 31).roundToInt() + 1))
 
@@ -63,9 +63,9 @@ class UI : UINode(), EasyMotionBranch {
 
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onProperties(instance: BaseNodeProperties) {
-		if (instance is Properties) {
-			val unisonData = instance.unison
+	override fun onProperties(properties: BaseNodeProperties) {
+		if (properties is Properties) {
+			val unisonData = properties.unison
 			if (unisonData != null)
 				unison.value = (unisonData - 1) / 31.0
 		}

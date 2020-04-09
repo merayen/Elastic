@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	// Apply the application plugin to add support for building a CLI application.
 	application
-	kotlin("jvm") version "1.3.60"
+	kotlin("jvm") version "1.3.70"
 }
 
 repositories {

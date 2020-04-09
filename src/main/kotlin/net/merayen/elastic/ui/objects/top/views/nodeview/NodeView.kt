@@ -166,6 +166,8 @@ class NodeView : View(), Revision, TaskQueue.RunsTasks {
 					uiNet.handleMessage(message)
 			}
 		}
+
+		nodeViewBar.handleMessage(message)
 	}
 
 	/**

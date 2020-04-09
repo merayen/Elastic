@@ -1,20 +1,24 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
+import net.merayen.elastic.backend.logicnodes.list.group_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.group_1.SetBPMMessage
 import net.merayen.elastic.backend.logicnodes.list.group_1.TransportStartPlaybackMessage
 import net.merayen.elastic.backend.logicnodes.list.group_1.TransportStopPlaybackMessage
+import net.merayen.elastic.system.intercom.ElasticMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.objects.components.ParameterSlider
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.top.viewbar.ViewBar
-import kotlin.math.log
-import kotlin.math.max
-import kotlin.math.pow
+import kotlin.math.*
 
 internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::class) {
 	private val bpmSlider = BPMSlider()
 	private val monitorVolumeSlider = ParameterSlider()
+	private val channelCountSlider = ParameterSlider()
 	private val playButton = Button()
 	private val stopButton = Button()
+
+	private var channelCount = 1
 
 	override fun onInit() {
 		super.onInit()
@@ -28,7 +32,6 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		}
 		add(bpmSlider)
 
-
 		monitorVolumeSlider.setHandler(object : ParameterSlider.IHandler {
 			private var volume = 1.0
 
@@ -36,14 +39,33 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 				volume = max(1/10.0.pow(12), value.pow(10))
 			}
 
-			override fun onButton(offset: Int) {
-
-			}
+			override fun onButton(offset: Int) {}
 
 			override fun onLabelUpdate(value: Double) = "%.0f dB".format(log(1/volume, 10.0) * 10)
 		})
 		add(monitorVolumeSlider)
 
+		channelCountSlider.setHandler(object : ParameterSlider.IHandler {
+			override fun onChange(value: Double, programatic: Boolean) {
+				val newChannelCount = (value + 1).roundToInt()
+				if (newChannelCount != channelCount) {
+					println("Should tell the world about that there are now ${(value + 1).roundToInt()} channels")
+					channelCount = newChannelCount
+
+					val nodeId = nodeView.currentNodeId
+					if (nodeId != null)
+						sendMessage(NodePropertyMessage(nodeId, Properties(channelCount = channelCount)))
+				}
+			}
+
+			override fun onLabelUpdate(value: Double) = "${(channelCountSlider.value + 1).roundToInt()}"
+
+			override fun onButton(offset: Int) {
+				val newChannelCount = max(1, min(2, channelCount + offset))
+				channelCountSlider.value = (newChannelCount - 1.0)
+			}
+		})
+		add(channelCountSlider)
 
 		playButton.label = ">"
 		playButton.handler = object : Button.IHandler {
@@ -55,7 +77,6 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 			}
 		}
 		add(playButton)
-
 
 		stopButton.label = "||"
 		stopButton.handler = object : Button.IHandler {
@@ -69,5 +90,16 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		add(stopButton)
 	}
 
-
+	fun handleMessage(message: ElasticMessage) {
+		when (message) {
+			is NodePropertyMessage -> {
+				val instance = message.instance
+				if (instance is Properties) {
+					val channelCount = instance.channelCount
+					if (channelCount != null)
+						channelCountSlider.value = channelCount - 1.0
+				}
+			}
+		}
+	}
 }
