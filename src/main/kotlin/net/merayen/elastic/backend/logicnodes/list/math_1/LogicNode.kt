@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.logicnodes.list.math_1
 
+import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
@@ -8,7 +9,10 @@ import net.merayen.elastic.system.intercom.OutputFrameData
 class LogicNode : BaseLogicNode() {
 	private var mode: Mode? = null
 
-	override fun onInit() {}
+	override fun onInit() {
+		createOutputPort("out", Format.AUDIO)
+	}
+
 	override fun onData(data: NodeDataMessage?) {}
 	override fun onDisconnect(port: String?) {}
 	override fun onConnect(port: String?) {}

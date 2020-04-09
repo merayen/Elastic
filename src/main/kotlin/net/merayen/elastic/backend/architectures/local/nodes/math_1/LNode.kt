@@ -12,14 +12,15 @@ class LNode : LocalNode(LProcessor::class.java) {
 		private set
 
 	override fun onProcess(data: InputFrameData?) {}
+
 	override fun onParameter(instance: BaseNodeProperties?) {
 		instance as Properties
 		val mode = instance.mode
 
-		if (mode != null) {
+		if (mode != null)
 			this.mode = Mode.valueOf(mode)
-		}
 	}
+
 	override fun onInit() {}
 	override fun onSpawnProcessor(lp: LocalProcessor?) {}
 	override fun onFinishFrame() {}

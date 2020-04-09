@@ -18,7 +18,7 @@ class UI : UINode(), INodeEditable {
 	private lateinit var curve: SignalBezierCurveBoxControlFrame
 
 	private val frequency: Float
-		get() = Math.pow(((frequency_port_parameter!!.not_connected as PopupParameter1D).value * 10).toDouble(), 4.301029995663981).toFloat()
+		get() = Math.pow(((frequency_port_parameter!!.notConnected as PopupParameter1D).value * 10).toDouble(), 4.301029995663981).toFloat()
 
 	init {
 		layoutWidth = 200f
@@ -43,7 +43,7 @@ class UI : UINode(), INodeEditable {
 			val curveData = instance.curve
 
 			if (frequencyData != null) {
-				(frequency_port_parameter!!.not_connected as PopupParameter1D).value = (Math.pow(frequencyData.toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
+				(frequency_port_parameter!!.notConnected as PopupParameter1D).value = (Math.pow(frequencyData.toDouble(), 1 / 4.301029995663981) / 10.0).toFloat()
 			}
 
 			if (curveData != null)
@@ -65,7 +65,7 @@ class UI : UINode(), INodeEditable {
 			frequency_port_parameter!!.translation.y = 20f
 			add(frequency_port_parameter!!)
 
-			(frequency_port_parameter!!.not_connected as PopupParameter1D).handler = object : PopupParameter1D.Handler {
+			(frequency_port_parameter!!.notConnected as PopupParameter1D).handler = object : PopupParameter1D.Handler {
 				override fun onMove(value: Float) {
 					sendProperties(Properties(frequency = frequency))
 				}
@@ -75,7 +75,7 @@ class UI : UINode(), INodeEditable {
 				override fun onLabel(value: Float) = String.format("Frequency: %.3f", frequency)
 			}
 
-			(frequency_port_parameter!!.not_connected as PopupParameter1D).drag_scale = 0.5f
+			(frequency_port_parameter!!.notConnected as PopupParameter1D).drag_scale = 0.5f
 
 			port.translation.y = 20f
 		}

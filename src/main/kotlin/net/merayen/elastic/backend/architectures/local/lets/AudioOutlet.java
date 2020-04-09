@@ -4,7 +4,7 @@ import kotlin.NotImplementedError;
 import net.merayen.elastic.backend.logicnodes.Format;
 
 public class AudioOutlet extends Outlet {
-	public float[/* channel no */][/* sample index */] audio = new float[256][];
+	public final float[/* channel no */][/* sample index */] audio = new float[256][];
 	private int channel_count;
 
 	public AudioOutlet(int buffer_size) {
