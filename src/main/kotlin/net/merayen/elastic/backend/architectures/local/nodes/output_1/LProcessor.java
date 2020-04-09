@@ -27,7 +27,7 @@ public class LProcessor extends LocalProcessor {
 			AudioInlet ai = (AudioInlet) inlet;
 			LNode lnode = (LNode) getLocalNode();
 
-			int channel_count = ai.outlet.getChannelCount();
+			int channel_count = getLocalNode().getParentGroupNode().getChannelCount();
 
 			if (lnode.output[voice_id] == null || lnode.output[voice_id].length != channel_count) // See if the channel count has changed. If yes, we clear our output and recreate the channel buffers
 				lnode.output[voice_id] = new float[channel_count][];

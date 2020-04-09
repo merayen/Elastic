@@ -83,9 +83,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		Inlet frequency = getInlet("frequency");
 		Outlet output = getOutlet("output");
 
-		if(output != null)
-			((AudioOutlet)output).setChannelCount(1);
-
 		if(output == null)
 			mode = Mode.NOTHING;
 		if(frequency == null) {

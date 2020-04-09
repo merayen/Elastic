@@ -21,11 +21,9 @@ public class LProcessor extends LocalProcessor {
 		if(output != null) {
 			if(input != null) {
 				if(available()) {
-					int channelCount = input.outlet.getChannelCount();
+					int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 
 					ensureDelayBuffers(channelCount);
-
-					output.setChannelCount(channelCount);
 
 					for (int channel = 0; channel < channelCount; channel++) {
 						int position = delays[channel].process(input.outlet.audio[channel], 0, buffer_size);

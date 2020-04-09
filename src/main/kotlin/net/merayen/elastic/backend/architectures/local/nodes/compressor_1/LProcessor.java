@@ -39,7 +39,7 @@ public class LProcessor extends LocalProcessor {
 			AudioOutlet output = (AudioOutlet)out;
 			LNode lnode = (LNode)getLocalNode();
 
-			int channelCount = input.outlet.getChannelCount();
+			int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 
 			double attack = lnode.attack;
 			double release = lnode.release;
@@ -47,8 +47,6 @@ public class LProcessor extends LocalProcessor {
 			float inputAmplitude = (float)lnode.inputAmplitude;
 			float inputSidechainAmplitude = (float)lnode.inputSidechainAmplitude;
 			float outputAmplitude = (float)lnode.outputAmplitude;
-
-			output.setChannelCount(channelCount);
 
 			double attackDiv = 1.442740497 * attack * sample_rate;
 			double releaseDiv = 1.442740497 * release * sample_rate;

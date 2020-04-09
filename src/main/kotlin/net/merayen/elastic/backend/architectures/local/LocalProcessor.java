@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.local;
 
 import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.architectures.local.exceptions.SpawnLimitException;
+import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet;
 import net.merayen.elastic.backend.architectures.local.lets.FormatMaps;
 import net.merayen.elastic.backend.architectures.local.lets.Inlet;
 import net.merayen.elastic.backend.architectures.local.lets.Outlet;
@@ -182,8 +183,11 @@ public abstract class LocalProcessor {
 		for (Inlet inlet : inlets.values())
 			inlet.reset();
 
-		for (Outlet outlet : outlets.values())
+		for (Outlet outlet : outlets.values()) {
 			outlet.reset();
+			if (outlet instanceof AudioOutlet)
+				((AudioOutlet) outlet).setChannelCount(getLocalNode().getParentGroupNode().getChannelCount());
+		}
 
 		onPrepare();
 	}

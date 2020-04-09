@@ -42,7 +42,6 @@ public class LProcessor extends LocalProcessor {
 		Outlet output = getOutlet("output");
 		if (output != null) { // We made "output". It is guaranteed an AudioOutlet
 			this.output = (AudioOutlet) output;
-			this.output.setChannelCount(2); // TODO support more than 1 channel
 		}
 
 		retrieveInterfaces();
@@ -51,9 +50,10 @@ public class LProcessor extends LocalProcessor {
 	@Override
 	protected void onPrepare() {
 		resetOutlets();
+		int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 
 		if (output != null && !sessions.isEmpty()) {
-			for (int channel = 0; channel < output.getChannelCount(); channel++)
+			for (int channel = 0; channel < channelCount; channel++)
 				for (int i = 0; i < buffer_size; i++)
 					output.audio[channel][i] = 0;
 		}
@@ -270,8 +270,9 @@ public class LProcessor extends LocalProcessor {
 
 		// When there are no running sessions, clear out output-buffer so that the receiver plays silence
 		// (as we won't write to it anymore, until a tangent is pressed)
+		int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 		if (output != null && sessions.isEmpty()) {
-			for (int channel = 0; channel < output.getChannelCount(); channel++) {
+			for (int channel = 0; channel < channelCount; channel++) {
 				float[] out = output.audio[channel]; // TODO support more than 1 channel
 				for (int i = 0; i < buffer_size; i++)
 					out[i] = 0;

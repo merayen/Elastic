@@ -49,7 +49,6 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 			override fun onChange(value: Double, programatic: Boolean) {
 				val newChannelCount = (value + 1).roundToInt()
 				if (newChannelCount != channelCount) {
-					println("Should tell the world about that there are now ${(value + 1).roundToInt()} channels")
 					channelCount = newChannelCount
 
 					val nodeId = nodeView.currentNodeId

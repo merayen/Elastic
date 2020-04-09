@@ -14,7 +14,6 @@ interface GroupLNode {
 	fun getChannelCount(): Int
 
 
-
 	/**
 	 * Returns the current BPM for the frame being processed.
 	 *

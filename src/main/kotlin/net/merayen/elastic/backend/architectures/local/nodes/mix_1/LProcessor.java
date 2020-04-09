@@ -29,19 +29,17 @@ public class LProcessor extends LocalProcessor {
 				float[][] a_buffer = ((AudioOutlet) a.outlet).audio;
 				float[][] b_buffer = ((AudioOutlet) b.outlet).audio;
 
-				int channel_count = Math.max(((AudioOutlet) a.outlet).getChannelCount(), ((AudioOutlet) b.outlet).getChannelCount());
-
-				((AudioOutlet) out).setChannelCount(channel_count);
+				int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 
 				float[][] out_buffer = ((AudioOutlet) out).audio;
 
 				if (fac instanceof AudioInlet) {
 					float[][] fac_buffer = ((AudioOutlet) fac.outlet).audio;
 
-					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
+					for (int channel_no = 0; channel_no < channelCount; channel_no++) { // TODO simplify as channel count is guaranteed the same on all ports
 						for (int i = 0; i < buffer_size; i++) {
 							float af = (a_buffer[channel_no] != null ? a_buffer[channel_no][i] : 0);
-							float bf = (b_buffer[channel_count] != null ? b_buffer[channel_no][i] : 0);
+							float bf = (b_buffer[channelCount] != null ? b_buffer[channel_no][i] : 0);
 
 							float volume_a = 1 - Math.max(0, Math.min(1, fac_buffer[0][i]));
 							float volume_b = 1 - Math.max(0, Math.min(1, fac_buffer[0][i] * -1));
@@ -51,7 +49,7 @@ public class LProcessor extends LocalProcessor {
 					}
 				} else {
 					float mix = ((LNode) getLocalNode()).mix;
-					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
+					for (int channel_no = 0; channel_no < channelCount; channel_no++) {
 						float[] a_channel = a_buffer[channel_no];
 						float[] b_channel = b_buffer[channel_no];
 
@@ -65,16 +63,14 @@ public class LProcessor extends LocalProcessor {
 			} else if(a instanceof AudioInlet) {
 				float[][] a_buffer = ((AudioOutlet) a.outlet).audio;
 
-				int channel_count = ((AudioOutlet) a.outlet).getChannelCount();
-
-				((AudioOutlet) out).setChannelCount(channel_count);
+				int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 
 				float[][] out_buffer = ((AudioOutlet) out).audio;
 
 				if (fac instanceof AudioInlet) {
 					float[][] fac_buffer = ((AudioOutlet) fac.outlet).audio;
 
-					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
+					for (int channel_no = 0; channel_no < channelCount; channel_no++) {
 						for (int i = 0; i < buffer_size; i++) {
 							float volume_a = 1 - Math.max(0, Math.min(1, fac_buffer[0][i]));
 							out_buffer[channel_no][i] = a_buffer[channel_no][i] * volume_a;
@@ -82,7 +78,7 @@ public class LProcessor extends LocalProcessor {
 					}
 
 				} else {
-					mixNoFac(a, out, a_buffer, channel_count, out_buffer, Math.max(0, Math.min(1, 1 - ((LNode) getLocalNode()).mix)));
+					mixNoFac(a, out, a_buffer, channelCount, out_buffer, Math.max(0, Math.min(1, 1 - ((LNode) getLocalNode()).mix)));
 				}
 
 				out.push();
@@ -90,16 +86,14 @@ public class LProcessor extends LocalProcessor {
 			} else if(b instanceof AudioInlet) {
 				float[][] b_buffer = ((AudioOutlet) b.outlet).audio;
 
-				int channel_count = ((AudioOutlet) b.outlet).getChannelCount();
-
-				((AudioOutlet) out).setChannelCount(channel_count);
+				int channelCount = getLocalNode().getParentGroupNode().getChannelCount();
 
 				float[][] out_buffer = ((AudioOutlet) out).audio;
 
 				if (fac instanceof AudioInlet && fac.outlet instanceof AudioOutlet) {
 					float[][] fac_buffer = ((AudioOutlet) fac.outlet).audio;
 
-					for (int channel_no = 0; channel_no < channel_count; channel_no++) {
+					for (int channel_no = 0; channel_no < channelCount; channel_no++) {
 						for (int i = 0; i < buffer_size; i++) {
 							float volume_b = 1 - Math.max(0, Math.min(1, fac_buffer[0][i] * -1));
 							out_buffer[channel_no][i] = b_buffer[channel_no][i] * volume_b;
@@ -107,7 +101,7 @@ public class LProcessor extends LocalProcessor {
 					}
 
 				} else {
-					mixNoFac(b, out, b_buffer, channel_count, out_buffer, Math.max(0, Math.min(1, ((LNode) getLocalNode()).mix)));
+					mixNoFac(b, out, b_buffer, channelCount, out_buffer, Math.max(0, Math.min(1, ((LNode) getLocalNode()).mix)));
 				}
 
 				out.push();
@@ -118,8 +112,8 @@ public class LProcessor extends LocalProcessor {
 		}
 	}
 
-	private void mixNoFac(Inlet a, Outlet out, float[][] buffer, int channel_count, float[][] out_buffer, float mix) {
-		for (int channel_no = 0; channel_no < channel_count; channel_no++)
+	private void mixNoFac(Inlet a, Outlet out, float[][] buffer, int channelCount, float[][] out_buffer, float mix) {
+		for (int channel_no = 0; channel_no < channelCount; channel_no++)
 			for (int i = 0; i < buffer_size; i++)
 				out_buffer[channel_no][i] = buffer[channel_no][i] * mix;
 	}

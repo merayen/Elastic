@@ -5,6 +5,7 @@ import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.logicnodes.list.group_1.Group1InputFrameData
+import net.merayen.elastic.backend.logicnodes.list.group_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
@@ -17,6 +18,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	private var currentCursorBeatPosition = 0.0
 	private var currentCursorTimePosition = 0.0
+	private var channelCount = 1
 
 	private var playCount = 0L
 
@@ -34,7 +36,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	override fun getSampleRate() = Temporary.sampleRate
 	override fun getDepth() = Temporary.depth
-	override fun getChannelCount() = 1  // TODO make this configurable
+	override fun getChannelCount() = channelCount  // TODO make this configurable
 
 	override fun getCurrentBarDivision(): Int {
 		val parent = parent as? GroupLNode
@@ -109,7 +111,13 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 			this.bpm = bpm
 	}
 
-	override fun onParameter(instance: BaseNodeProperties) {}
+	override fun onParameter(instance: BaseNodeProperties) {
+		instance as Properties
+
+		val channelCount = instance.channelCount
+		if (channelCount != null)
+			this.channelCount = channelCount
+	}
 
 	override fun onFinishFrame() {
 		if (playing) {

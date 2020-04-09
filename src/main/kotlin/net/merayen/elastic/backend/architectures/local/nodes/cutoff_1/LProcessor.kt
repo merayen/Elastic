@@ -28,22 +28,17 @@ class LProcessor : LocalProcessor() {
 				var frequency = lnode.frequency
 				var damping = lnode.damping
 
-				val inputChannelCount = audioIn.outlet.channelCount
+				val channelCount = localNode.parentGroupNode.getChannelCount()
 
-				if (inputChannelCount != pos.size) {
-					pos = FloatArray(inputChannelCount)
-					speed = FloatArray(inputChannelCount)
+				if (channelCount != pos.size) {
+					pos = FloatArray(channelCount)
+					speed = FloatArray(channelCount)
 				}
-
-				audioOut.channelCount = inputChannelCount
 
 				var frequencyInData: FloatArray? = null
 				if (frequencyIn != null) {
 					when (frequencyIn) {
-						is AudioInlet -> {
-							if (frequencyIn.outlet.channelCount > 0)
-								frequencyInData = frequencyIn.outlet.audio[0]
-						}
+						is AudioInlet -> frequencyInData = frequencyIn.outlet.audio[0]
 						is SignalInlet -> TODO()
 					}
 				}
@@ -51,15 +46,12 @@ class LProcessor : LocalProcessor() {
 				var dampingInData: FloatArray? = null
 				if (dampingIn != null) {
 					when (dampingIn) {
-						is AudioInlet -> {
-							if (dampingIn.outlet.channelCount > 0)
-								dampingInData = dampingIn.outlet.audio[0]
-						}
+						is AudioInlet -> dampingInData = dampingIn.outlet.audio[0]
 						is SignalInlet -> TODO()
 					}
 				}
 
-				for (channel in 0 until inputChannelCount) {
+				for (channel in 0 until channelCount) {
 					val channelAudioIn = audioIn.outlet.audio[channel]
 					val channelAudioOut = audioOut.audio[channel]
 
@@ -88,7 +80,6 @@ class LProcessor : LocalProcessor() {
 			}
 		} else {
 			if (audioOut != null) {
-				audioOut.channelCount = 1
 				if (!audioOut.available())
 					audioOut.push()
 			}

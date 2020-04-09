@@ -36,8 +36,9 @@ class LProcessor : LocalProcessor() {
 		val beepLength = sample_rate / 10f
 
 		if (audio != null) {
-			audio.channelCount = 2
-			audio.audio[1] = audio.audio[0]
+			if (localNode.parentGroupNode.getChannelCount() > 1)
+				audio.audio[1] = audio.audio[0]
+
 			val hz = if (lastBeatPosition == 0) 1760 else 880
 
 			if (audioBeepPosition < beepLength)

@@ -55,7 +55,6 @@ class LProcessor : LocalProcessor() {
 		val frequency = getInlet("frequency")
 
 		out as AudioOutlet
-		out.channelCount = 1
 
 		if (frequency is MidiInlet) {
 			for ((position, midiFrame) in frequency.outlet.midi) {
