@@ -16,7 +16,7 @@ class UI : UINode() {
 		layoutWidth = 105f
 		layoutHeight = 80f
 
-		toneSlider.setHandler(object : ParameterSlider.IHandler {
+		toneSlider.setHandler(object : ParameterSlider.Handler {
 			override fun onChange(value: Double, programatic: Boolean) {
 				sendTransposeParameters()
 			}
@@ -30,7 +30,7 @@ class UI : UINode() {
 			}
 		})
 
-		fineToneSlider.setHandler(object : ParameterSlider.IHandler {
+		fineToneSlider.setHandler(object : ParameterSlider.Handler {
 			override fun onChange(value: Double, programatic: Boolean) {
 				//sendParameter(((value * 48) - 24).roundToInt())
 			}

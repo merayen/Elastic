@@ -22,7 +22,7 @@ public class ParameterSlider extends UIObject implements EasyMotionBranch {
 	private MouseHandler mousehandler;
 	private double value = 0f;
 	private double drag_value;
-	private IHandler handler;
+	private Handler handler;
 
 	@NotNull
 	@Override
@@ -50,7 +50,7 @@ public class ParameterSlider extends UIObject implements EasyMotionBranch {
 		};
 	}
 
-	public interface IHandler {
+	public interface Handler {
 		void onChange(double value, boolean programatic);
 
 		void onButton(int offset);
@@ -136,7 +136,7 @@ public class ParameterSlider extends UIObject implements EasyMotionBranch {
 		return value;
 	}
 
-	public void setHandler(IHandler handler) {
+	public void setHandler(Handler handler) {
 		this.handler = handler;
 	}
 

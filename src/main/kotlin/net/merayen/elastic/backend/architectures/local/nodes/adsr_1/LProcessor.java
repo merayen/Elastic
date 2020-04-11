@@ -118,7 +118,7 @@ public class LProcessor extends LocalProcessor {
 
 	private ADSR getADSR() {
 		if(adsr == null)
-			adsr = new ADSR(128, (int) (lnode.attack * sample_rate), (int) (lnode.decay * sample_rate), lnode.sustain, (int) (lnode.release * sample_rate));
+			adsr = new ADSR(128, (int) (lnode.attack * sampleRate), (int) (lnode.decay * sampleRate), lnode.sustain, (int) (lnode.release * sampleRate));
 
 		return adsr;
 	}

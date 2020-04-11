@@ -28,5 +28,6 @@ object NodeRegistry {
 		nodes.add("autocorrelation_1")
 		nodes.add("frequency_1")
 		nodes.add("math_1")
+		nodes.add("oscilloscope_1")
 	}
 }

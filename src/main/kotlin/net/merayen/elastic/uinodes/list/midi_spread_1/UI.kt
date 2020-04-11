@@ -15,7 +15,7 @@ class UI : UINode() {
 		spread_width = ParameterSlider()
 		spread_width.translation.x = 10f
 		spread_width.translation.y = 20f
-		spread_width.setHandler(object : ParameterSlider.IHandler {
+		spread_width.setHandler(object : ParameterSlider.Handler {
 			override fun onLabelUpdate(value: Double): String {
 				return String.format("%.2f", value)
 			}

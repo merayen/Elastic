@@ -48,8 +48,8 @@ public class LProcessor extends LocalProcessor {
 			float inputSidechainAmplitude = (float)lnode.inputSidechainAmplitude;
 			float outputAmplitude = (float)lnode.outputAmplitude;
 
-			double attackDiv = 1.442740497 * attack * sample_rate;
-			double releaseDiv = 1.442740497 * release * sample_rate;
+			double attackDiv = 1.442740497 * attack * sampleRate;
+			double releaseDiv = 1.442740497 * release * sampleRate;
 
 			// Analyze all channels for peak values TODO support RMS?
 			if(sidechain == null) {

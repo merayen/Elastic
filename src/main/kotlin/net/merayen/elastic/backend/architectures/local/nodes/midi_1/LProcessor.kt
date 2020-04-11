@@ -24,7 +24,7 @@ class LProcessor : LocalProcessor() {
 				playStartedCount = newPlayStartedCount
 
 			val stopBeat = if (parent.isPlaying()) {
-				startBeat + (parent.getCurrentFrameBPM() * (buffer_size / sample_rate.toDouble())) / 60.0
+				startBeat + (parent.getCurrentFrameBPM() * (buffer_size / sampleRate.toDouble())) / 60.0
 			} else {
 				startBeat
 			}

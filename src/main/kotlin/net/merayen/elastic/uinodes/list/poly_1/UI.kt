@@ -34,7 +34,7 @@ class UI : UINode(), EasyMotionBranch {
 		unison = ParameterSlider()
 		unison.translation.x = 5f
 		unison.translation.y = 40f
-		unison.setHandler(object : ParameterSlider.IHandler {
+		unison.setHandler(object : ParameterSlider.Handler {
 			override fun onLabelUpdate(value: Double) = String.format("%d", (value * 31).roundToInt() + 1)
 
 			override fun onChange(value: Double, programatic: Boolean) = sendProperties(Properties(unison = (value * 31).roundToInt() + 1))

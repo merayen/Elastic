@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.logicnodes.list.math_1.Mode
 import net.merayen.elastic.backend.logicnodes.list.math_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
@@ -12,6 +13,8 @@ import net.merayen.elastic.ui.objects.components.framework.PortParameter
 import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class UI : UINode() {
 	override var layoutWidth = 140f
@@ -49,12 +52,35 @@ class UI : UINode() {
 
 		if (port.name != "out") { // Assign PortParameter to the port if it is an input, so the user can choose value if it is not selected and this comment is too long I should have word wrapped it, but I did not do it
 			val slider = ParameterSlider()
+			slider.setHandler(object : ParameterSlider.Handler {
+				override fun onChange(value: Double, programatic: Boolean) {
+					if (port.name == "a") {
+						sendMessage(
+							NodePropertyMessage(
+								nodeId,
+								Properties(aValue = value.pow(2).toFloat() * 1000f)
+							)
+						)
+					} else if (port.name == "b") {
+						sendMessage(
+							NodePropertyMessage(
+								nodeId,
+								Properties(bValue = value.pow(2).toFloat() * 1000f)
+							)
+						)
+					}
+				}
+
+				override fun onLabelUpdate(value: Double) = "${(value.pow(2) * 10000f).roundToInt() / 10f}"
+				override fun onButton(offset: Int) {}
+
+			})
 			slider.translation.x = 20f
 			slider.translation.y = port.translation.y - 10f
 			add(slider)
 			val portParameter = PortParameter(this, port, slider, UIObject())
 			add(portParameter)
-
+			portParameters.add(portParameter)
 		}
 	}
 
@@ -69,6 +95,18 @@ class UI : UINode() {
 		}
 	}
 
-	override fun onProperties(properties: BaseNodeProperties) {}
+	override fun onProperties(properties: BaseNodeProperties) {
+		properties as Properties
+
+		val aValue = properties.aValue
+		val bValue = properties.bValue
+
+		if (aValue != null)
+			(portParameters[0].notConnected as ParameterSlider).value = (aValue / 1000f).pow(1/2f).toDouble()
+
+		if (bValue != null)
+			(portParameters[1].notConnected as ParameterSlider).value = (bValue / 1000f).pow(1/2f).toDouble()
+	}
+
 	override fun onData(message: NodeDataMessage) {}
 }

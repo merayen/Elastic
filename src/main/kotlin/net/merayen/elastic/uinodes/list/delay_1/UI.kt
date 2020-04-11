@@ -15,7 +15,7 @@ class UI : UINode() {
         delayTime = ParameterSlider()
         delayTime.translation.x = 10f
         delayTime.translation.y = 20f
-        delayTime.setHandler(object : ParameterSlider.IHandler {
+        delayTime.setHandler(object : ParameterSlider.Handler {
             override fun onLabelUpdate(value: Double): String {
                 return String.format("%.2f", value)
             }

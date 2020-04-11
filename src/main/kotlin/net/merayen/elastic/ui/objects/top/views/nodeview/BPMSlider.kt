@@ -20,7 +20,7 @@ class BPMSlider : UIObject() {
 	private val bpmSlider = ParameterSlider()
 
 	override fun onInit() {
-		bpmSlider.setHandler(object : ParameterSlider.IHandler {
+		bpmSlider.setHandler(object : ParameterSlider.Handler {
 			init {
 				bpmSlider.value = (1/(MAX-MIN).toDouble())*120
 				bpmSlider.scale = 1/5f

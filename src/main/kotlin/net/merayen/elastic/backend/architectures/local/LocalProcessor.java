@@ -26,7 +26,7 @@ public abstract class LocalProcessor {
 	int session_id;
 	private LocalProcessor parent;
 	protected int buffer_size;
-	protected int sample_rate;
+	protected int sampleRate;
 	long process_time;
 	int process_count;
 	AverageStat<Long> process_times = new AverageStat<>(1000); // Used by Supervisor for statistics
@@ -60,7 +60,7 @@ public abstract class LocalProcessor {
 		this.localnode = localnode;
 		this.session_id = session_id;
 		this.buffer_size = localnode.buffer_size;
-		this.sample_rate = localnode.sample_rate;
+		this.sampleRate = localnode.sample_rate;
 	}
 
 	/**

@@ -11,14 +11,13 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
-import net.merayen.elastic.util.logDebug
 
 class UI : UINode(), EasyMotionBranch {
     private var mixPortParameter: PortParameter? = null
     private val slider = ParameterSlider()
 
     init {
-        slider.setHandler(object : ParameterSlider.IHandler {
+        slider.setHandler(object : ParameterSlider.Handler {
             override fun onButton(offset: Int) {
                 slider.value += offset / 50.0
             }

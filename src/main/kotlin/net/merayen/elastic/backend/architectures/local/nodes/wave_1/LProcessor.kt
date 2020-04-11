@@ -23,7 +23,7 @@ class LProcessor : LocalProcessor() {
 			val newFrequency = AudioUtil.midiNoteToFreq(tangent + this.pitch)
 
 			for (i in lastFramePosition until buffer_size - lastFramePosition)
-				frequencyCoefficients[i] = newFrequency.toFloat() / sample_rate
+				frequencyCoefficients[i] = newFrequency.toFloat() / sampleRate
 
 			lastFramePosition = framePosition
 		}
@@ -39,7 +39,7 @@ class LProcessor : LocalProcessor() {
 	override fun onInit() {
 		frequencyCoefficients = FloatArray(buffer_size)
 		for (i in 0 until buffer_size)
-			frequencyCoefficients[i] = 1000f / sample_rate
+			frequencyCoefficients[i] = 1000f / sampleRate
 	}
 
 	override fun onPrepare() {
@@ -64,7 +64,7 @@ class LProcessor : LocalProcessor() {
 			}
 		}
 
-		val factor = 440f / sample_rate // TODO take frequency from input
+		val factor = 440f / sampleRate // TODO take frequency from input
 
 		val audio = out.audio[0]
 

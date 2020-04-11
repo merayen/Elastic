@@ -32,7 +32,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		}
 		add(bpmSlider)
 
-		monitorVolumeSlider.setHandler(object : ParameterSlider.IHandler {
+		monitorVolumeSlider.setHandler(object : ParameterSlider.Handler {
 			private var volume = 1.0
 
 			override fun onChange(value: Double, programatic: Boolean) {
@@ -45,7 +45,7 @@ internal class NodeViewBar(private val nodeView: NodeView) : ViewBar(NodeView::c
 		})
 		add(monitorVolumeSlider)
 
-		channelCountSlider.setHandler(object : ParameterSlider.IHandler {
+		channelCountSlider.setHandler(object : ParameterSlider.Handler {
 			override fun onChange(value: Double, programatic: Boolean) {
 				val newChannelCount = (value + 1).roundToInt()
 				if (newChannelCount != channelCount) {

@@ -10,7 +10,7 @@ class LogicNode : BaseLogicNode() {
 	private var mode: Mode? = null
 
 	override fun onInit() {
-		createOutputPort("out", Format.AUDIO)
+		createOutputPort("out", Format.SIGNAL)
 	}
 
 	override fun onData(data: NodeDataMessage?) {}
@@ -26,8 +26,8 @@ class LogicNode : BaseLogicNode() {
 		if (mode != null && Mode.valueOf(mode) != this.mode) {
 			this.mode = Mode.valueOf(mode)
 			updatePorts()
-			updateProperties(instance)
 		}
+		updateProperties(instance)
 	}
 
 	private fun updatePorts() {

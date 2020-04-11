@@ -1,10 +1,8 @@
 package net.merayen.elastic.backend.architectures.local.nodes.math_1
 
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
-import net.merayen.elastic.backend.architectures.local.lets.AudioInlet
-import net.merayen.elastic.backend.architectures.local.lets.AudioOutlet
-import net.merayen.elastic.backend.architectures.local.lets.Inlet
-import net.merayen.elastic.backend.logicnodes.Format
+import net.merayen.elastic.backend.architectures.local.lets.SignalInlet
+import net.merayen.elastic.backend.architectures.local.lets.SignalOutlet
 import net.merayen.elastic.backend.logicnodes.list.math_1.Mode
 
 class LProcessor : LocalProcessor() {
@@ -12,62 +10,38 @@ class LProcessor : LocalProcessor() {
 	private var bValue = 0f
 
 	override fun onProcess() {
+		val aBuffer = (getInlet("a") as? SignalInlet)?.outlet?.signal
+		val bBuffer = (getInlet("b") as? SignalInlet)?.outlet?.signal
+		val out = (getOutlet("out") as? SignalOutlet)?.signal ?: return
 
-		val aInlet = getInlet("a")
-		val bInlet = getInlet("b")
-		val outlet = getOutlet("out") as? AudioOutlet ?: return
+		val mode = (localNode as LNode).mode
 
-		if ((aInlet != null || bInlet != null) && !available())
-			return
-
-		// Only supports audio for now. Support more!
-		if (aInlet.format != Format.AUDIO || aInlet.format != Format.AUDIO) {
-			for (channel in outlet.audio)
-				for (i in channel.indices)
-					channel[i] = 0f
-
-			outlet.push()
-
-			return
-		}
-
-		val aAudioInlet = aInlet as? AudioInlet
-		val bAudioInlet = bInlet as? AudioInlet
-
-		val localNode = localNode as LNode
-
-		val aChannels = aAudioInlet?.outlet?.audio
-		val bChannels = bAudioInlet?.outlet?.audio
-		val outChannels = outlet.audio
-
-		val channelCount = localNode.parentGroupNode.getChannelCount()
-
-		val mode = localNode.mode
-
-		for (channel in 0 until channelCount) { // This loop may have bullshit performance. Developer lazy atm of writing. Mayhaps Kotlin or the JVM can see the pattern here?
-			for (i in 0 until buffer_size) {
-				outChannels[channel][i] = when (mode) {
-					Mode.ADD -> (aChannels?.get(channel)?.get(i) ?: aValue) + (bChannels?.get(channel)?.get(i) ?: bValue)
-					Mode.SUBTRACT -> (aChannels?.get(channel)?.get(i) ?: aValue) - (bChannels?.get(channel)?.get(i) ?: bValue)
-					Mode.MULTIPLY -> (aChannels?.get(channel)?.get(i) ?: aValue) * (bChannels?.get(channel)?.get(i) ?: bValue)
-					Mode.DIVIDE -> (aChannels?.get(channel)?.get(i) ?: aValue) / (bChannels?.get(channel)?.get(i) ?: bValue)
-					Mode.MODULO -> TODO()
-					Mode.LOG -> TODO()
-					Mode.SIN -> TODO()
-					Mode.COS -> TODO()
-					Mode.TAN -> TODO()
-					Mode.ASIN -> TODO()
-					Mode.ACOS -> TODO()
-					Mode.ATAN -> TODO()
-					Mode.POWER -> TODO()
-				}
+		for (i in 0 until buffer_size)  // This code is made to be beautiful to look at. It might give crap performance
+			out[i] = when (mode) {
+				Mode.ADD -> (aBuffer?.get(i) ?: aValue) + (bBuffer?.get(i) ?: bValue)
+				Mode.SUBTRACT -> (aBuffer?.get(i) ?: aValue) - (bBuffer?.get(i) ?: bValue)
+				Mode.MULTIPLY -> (aBuffer?.get(i) ?: aValue) * (bBuffer?.get(i) ?: bValue)
+				Mode.DIVIDE -> (aBuffer?.get(i) ?: aValue) / (bBuffer?.get(i) ?: bValue)
+				Mode.MODULO -> TODO()
+				Mode.LOG -> TODO()
+				Mode.SIN -> TODO()
+				Mode.COS -> TODO()
+				Mode.TAN -> TODO()
+				Mode.ASIN -> TODO()
+				Mode.ACOS -> TODO()
+				Mode.ATAN -> TODO()
+				Mode.POWER -> TODO()
 			}
-		}
 
-		outlet.push()
+		getOutlet("out").push()
 	}
 
-	override fun onPrepare() {}
+	override fun onPrepare() {
+		val lnode = localNode as LNode
+		aValue = lnode.aValue
+		bValue = lnode.bValue
+	}
+
 	override fun onInit() {}
 	override fun onDestroy() {}
 }

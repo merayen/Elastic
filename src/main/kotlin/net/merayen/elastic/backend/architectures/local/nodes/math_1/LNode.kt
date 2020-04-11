@@ -11,12 +11,18 @@ class LNode : LocalNode(LProcessor::class.java) {
 	var mode = Mode.ADD
 		private set
 
+	var aValue = 0f
+	var bValue = 0f
+
 	override fun onProcess(data: InputFrameData?) {}
 
 	override fun onParameter(instance: BaseNodeProperties?) {
 		instance as Properties
-		val mode = instance.mode
 
+		aValue = instance.aValue ?: aValue
+		bValue = instance.bValue ?: bValue
+
+		val mode = instance.mode
 		if (mode != null)
 			this.mode = Mode.valueOf(mode)
 	}

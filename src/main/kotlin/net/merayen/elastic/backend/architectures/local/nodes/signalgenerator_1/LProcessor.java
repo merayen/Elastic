@@ -137,7 +137,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		int i;
 		for (i = 0; i < buffer_size; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int) (pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
+			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int) (pos / (Math.PI * 2 * sampleRate) * lnode.curve_wave.length), lnode.curve_wave.length)];
 			pos += input_frequency_buffer[0][i];
 		}
 
@@ -157,7 +157,7 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		if(active_tangent != null && resampling != null) {
 			double freq = AudioUtil.midiNoteToFreq(active_tangent[1] + pitch);
-			float volume_div = sample_rate / 1000f;
+			float volume_div = sampleRate / 1000f;
 			float[] audio = outlet.audio[0];
 
 			resampling.update((float)freq, buffer_size);

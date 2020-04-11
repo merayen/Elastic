@@ -14,7 +14,7 @@ class LProcessor : LocalProcessor() {
 			val channels: Array<FloatArray?> = arrayOfNulls(input.outlet.audio.size)
 			for (channel in channels.indices) {
 				var step = 32
-				while (step <= sample_rate / 2) {
+				while (step <= sampleRate / 2) {
 					TODO("Run through DFT-class")
 					step *= 2
 				}
