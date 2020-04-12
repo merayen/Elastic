@@ -6,5 +6,6 @@ data class Properties(
 	var amplitude: Float? = null,
 	var offset: Float? = null,
 	var time: Float? = null,
-	var trigger: Float? = null
+	var trigger: Float? = null,
+	var auto: Boolean? = null
 ) : BaseNodeProperties()

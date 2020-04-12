@@ -8,14 +8,13 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.objects.components.oscilloscope.Oscilloscope
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
-import kotlin.math.roundToInt
 
 class UI : UINode() {
 	private val oscilloscope = Oscilloscope()
 
 	override fun onInit() {
 		super.onInit()
-		layoutWidth = 200f
+		layoutWidth = 240f
 		layoutHeight = 200f
 
 		oscilloscope.handler = object : Oscilloscope.Handler {
@@ -32,10 +31,21 @@ class UI : UINode() {
 					)
 				)
 			}
+
+			override fun onAutoChange(auto: Boolean) {
+				sendMessage(
+					NodePropertyMessage(
+						nodeId,
+						Properties(
+							auto = auto
+						)
+					)
+				)
+			}
 		}
 		oscilloscope.translation.x = 10f
 		oscilloscope.translation.y = 20f
-		oscilloscope.layoutWidth = 180f
+		oscilloscope.layoutWidth = 220f
 		oscilloscope.layoutHeight = 160f
 		add(oscilloscope)
 	}
@@ -55,6 +65,7 @@ class UI : UINode() {
 		val offset = properties.offset
 		val time = properties.time
 		val trigger = properties.trigger
+		val auto = properties.auto
 
 		if (amplitude != null)
 			oscilloscope.amplitude = amplitude
@@ -67,6 +78,9 @@ class UI : UINode() {
 
 		if (trigger != null)
 			oscilloscope.trigger = trigger
+
+		if (auto != null)
+			oscilloscope.auto = auto
 	}
 
 	override fun onData(message: NodeDataMessage) {

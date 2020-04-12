@@ -18,6 +18,8 @@ class Knob : UIObject() {
 	var min = Math.PI.toFloat() * 1.8f
 	var max = Math.PI.toFloat() * 0.2f
 
+	var disabled = false
+
 	var value = 0f
 		set(value) {
 			if(value != field) {
@@ -78,6 +80,7 @@ class Knob : UIObject() {
 	}
 
 	override fun onUpdate() {
+		translation.color.alpha = if (disabled) 0.5f else 1f
 		label.translation.x = size / 2
 		label.translation.y = size
 		label.fontSize = size / 4
@@ -88,7 +91,8 @@ class Knob : UIObject() {
 	}
 
 	override fun onEvent(event: UIEvent) {
-		mousehandler.handle(event)
+		if (!disabled)
+			mousehandler.handle(event)
 	}
 
 	private fun drawLine(draw: Draw, value: Float, length: Float) {

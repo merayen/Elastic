@@ -14,6 +14,7 @@ class LNode : LocalNode(LProcessor::class.java) {
 	var offset = 0f
 	var time = 0.001f
 	var trigger = 0f
+	var auto = false
 
 	override fun onParameter(instance: BaseNodeProperties?) {
 		instance as Properties
@@ -21,6 +22,7 @@ class LNode : LocalNode(LProcessor::class.java) {
 		offset = max(-1000f, min(1000f, instance.offset ?: offset))
 		time = max(0.000001f, min(1f, instance.time ?: time))
 		trigger = max(-1000f, min(1000f, instance.trigger ?: trigger))
+		auto = instance.auto ?: auto
 	}
 
 	override fun onProcess(data: InputFrameData?) {}
@@ -29,11 +31,14 @@ class LNode : LocalNode(LProcessor::class.java) {
 
 	@ExperimentalStdlibApi
 	override fun onFinishFrame() {
-		val processor = processors.filter { (it as LProcessor).doneSampling }.randomOrNull() as? LProcessor ?: return
+		//val processor = processors.filter { (it as LProcessor).samplesAvailable }.randomOrNull() as? LProcessor ?: return
+		val processor = (processors.firstOrNull() ?: return) as LProcessor
 
 		outgoing = OscilloscopeSignalDataMessage(
 			nodeId = id,
-			samples = processor.samples.toTypedArray()
+			samples = processor.samples.toTypedArray(),
+			minValue = processor.minValue,
+			maxValue = processor.maxValue
 		)
 	}
 

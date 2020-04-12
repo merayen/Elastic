@@ -22,20 +22,30 @@ class LProcessor : LocalProcessor() {
 	private var beenBelowTrigger = false
 
 	/**
-	 * Keeps track of if we have already sampled on this frame. We only sample once for each frame, as LNode
-	 * only send the oscilloscope sample data once per frame processed.
+	 * Last time we triggered, in samples
 	 */
-	var doneSampling = false
+	private var nextForcedTrigging = 0L
+
+	private var trigging = false
 
 	private var frameFinished = false
 
+	var minValue = 0f
+		private set
+
+	var maxValue = 0f
+		private set
+
+	var samplesAvailable = false
+		private set
+
 	override fun onPrepare() {
-		doneSampling = false
 		frameFinished = false
+		samplesAvailable = false
 	}
 
 	override fun onProcess() {
-		if (!available() || doneSampling || frameFinished)
+		if (frameFinished || !available())
 			return
 
 		val inlet = getInlet("in") ?: return
@@ -55,32 +65,48 @@ class LProcessor : LocalProcessor() {
 			else -> return
 		}
 
+		minValue = Float.MAX_VALUE
+		maxValue = Float.MIN_VALUE
+
 		for (sample in input) {
-			if (samplesPosition == -1) { // We are ready to trigger, so we check if sample triggers
-				if (sample * amplitude + 0.01f < trigger)
+			if (sample < minValue)
+				minValue = sample
+			if (sample > maxValue)
+				maxValue = sample
+		}
+
+		for ((i, sample) in input.withIndex()) {
+			if (!trigging) {
+				if (nextForcedTrigging < System.currentTimeMillis()) {
+					trigging = true
+					inputPosition = 0
+					samplesPosition = 0
+					beenBelowTrigger = false
+				} else if (sample * amplitude + 0.01f < trigger) {
 					beenBelowTrigger = true
-				else if (beenBelowTrigger && sample >= trigger) {
+				} else if (beenBelowTrigger && sample >= trigger) {
+					trigging = true
 					inputPosition = 0
 					samplesPosition = 0
 					beenBelowTrigger = false
 				}
 			}
 
-			if (samplesPosition != -1) {
+			if (trigging) {
 				if (inputPosition++ % sampleEvery == 0) {
 					samples[samplesPosition++] = sample * amplitude + offset
 					if (samplesPosition == samples.size) { // Done sampling our frame
 						samplesPosition = -1
-						doneSampling = true
 						beenBelowTrigger = false
-						println("${(samples[0] * 100).roundToInt() / 100f}, ${(samples[20] * 100).roundToInt() / 100f}")
+						nextForcedTrigging = System.currentTimeMillis() + 100 // We never trigger less than 2 times a second
+						trigging = false
+						samplesAvailable = true
 						break
 					}
 				}
 			}
 		}
 
-		inputPosition %= sampleEvery
 		frameFinished = true
 	}
 
