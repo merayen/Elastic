@@ -8,6 +8,7 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.objects.components.oscilloscope.Oscilloscope
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
+import kotlin.math.roundToInt
 
 class UI : UINode() {
 	private val oscilloscope = Oscilloscope()
@@ -69,7 +70,8 @@ class UI : UINode() {
 	}
 
 	override fun onData(message: NodeDataMessage) {
-		if (message is OscilloscopeSignalDataMessage)
+		if (message is OscilloscopeSignalDataMessage) {
 			oscilloscope.samples = message.samples.toFloatArray()
+		}
 	}
 }

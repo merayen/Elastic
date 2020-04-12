@@ -7,7 +7,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class LProcessor : LocalProcessor() {
-	var samples = FloatArray(1000)
+	var samples = FloatArray(100)
 
 	/**
 	 * Where in the samples-array we will write next time.
@@ -27,12 +27,15 @@ class LProcessor : LocalProcessor() {
 	 */
 	var doneSampling = false
 
+	private var frameFinished = false
+
 	override fun onPrepare() {
 		doneSampling = false
+		frameFinished = false
 	}
 
 	override fun onProcess() {
-		if (!available() || doneSampling)
+		if (!available() || doneSampling || frameFinished)
 			return
 
 		val inlet = getInlet("in") ?: return
@@ -54,10 +57,9 @@ class LProcessor : LocalProcessor() {
 
 		for (sample in input) {
 			if (samplesPosition == -1) { // We are ready to trigger, so we check if sample triggers
-				if (sample < trigger)
+				if (sample * amplitude + 0.01f < trigger)
 					beenBelowTrigger = true
 				else if (beenBelowTrigger && sample >= trigger) {
-					println("Triggered ${System.currentTimeMillis() % 1000}")
 					inputPosition = 0
 					samplesPosition = 0
 					beenBelowTrigger = false
@@ -71,6 +73,7 @@ class LProcessor : LocalProcessor() {
 						samplesPosition = -1
 						doneSampling = true
 						beenBelowTrigger = false
+						println("${(samples[0] * 100).roundToInt() / 100f}, ${(samples[20] * 100).roundToInt() / 100f}")
 						break
 					}
 				}
@@ -78,6 +81,7 @@ class LProcessor : LocalProcessor() {
 		}
 
 		inputPosition %= sampleEvery
+		frameFinished = true
 	}
 
 	override fun onInit() {}
