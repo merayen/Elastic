@@ -7,7 +7,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class LProcessor : LocalProcessor() {
-	var samples = FloatArray(100)
+	var samples = FloatArray(200)
 
 	/**
 	 * Where in the samples-array we will write next time.
