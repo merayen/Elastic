@@ -21,9 +21,8 @@ public class Viewport extends UIObject {
 
 	float width, height;
 	float ratio; // Value from 0 to 1, telling how much of the layoutWidth or layoutHeight this viewport takes from the view
-	public View view; // The view to draw. Set this and we will change to it on next onUpdate()
+	private View view; // The view to draw. Set this and we will change to it on next onUpdate()
 
-	private View current_view; // Actual view
 	private UIClip clip = new UIClip();
 	private ViewportDrag drag;
 	private Handler handler;
@@ -39,10 +38,7 @@ public class Viewport extends UIObject {
 		clip.getTranslation().x = BORDER_WIDTH;
 		clip.getTranslation().y = BORDER_WIDTH;
 		add(clip);
-	}
 
-	@Override
-	public void onInit() {
 		Viewport self = this;
 
 		drag = new ViewportDrag(new ViewportDrag.Handler(){
@@ -85,30 +81,28 @@ public class Viewport extends UIObject {
 
 	@Override
 	public void onUpdate() {
-		if(current_view != view) {
-			if(current_view != null)
-				clip.remove(current_view);
-
-			if(view != null) {
-				clip.add(view, 0);
-				current_view = view;
-			}
-		}
-
 		clip.setLayoutWidth(width - BORDER_WIDTH * 2);
 		clip.setLayoutHeight(height - BORDER_WIDTH * 2);
 
-		if(current_view != null) {
-			current_view.setLayoutWidth(width - BORDER_WIDTH * 2);
-			current_view.setLayoutHeight(height - BORDER_WIDTH * 2);
+		if(view != null) {
+			view.setLayoutWidth(width - BORDER_WIDTH * 2);
+			view.setLayoutHeight(height - BORDER_WIDTH * 2);
 		}
 
 		drag.width = width - BORDER_WIDTH * 2;
 		drag.height = height - BORDER_WIDTH * 2;
 	}
 
-	public View getCurrentView() {
-		return current_view;
+	public void setView(View newView) {
+		view = newView;
+
+		clip.removeAll();
+		clip.add(drag);
+		clip.add(newView);
+	}
+
+	public View getView() {
+		return view;
 	}
 
 	public String toString() {

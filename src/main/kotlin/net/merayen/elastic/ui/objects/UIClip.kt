@@ -27,7 +27,6 @@ open class UIClip : UIObject(), FlexibleDimension {
 
 		val relative = getRelativePosition(uiObject)!!
 
-
 		return relative.x + uiObject.layoutWidth > 0 && relative.y + uiObject.layoutHeight > 0 &&
 			relative.x < layoutWidth && relative.y < layoutHeight
 	}
