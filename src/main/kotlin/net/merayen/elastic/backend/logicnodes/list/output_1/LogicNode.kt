@@ -38,6 +38,9 @@ class LogicNode : BaseLogicNode() {
 	}
 
 	override fun onFinishFrame(data: OutputFrameData?) {
+		if (data == null)  // FIXME Should this really be checked for? This seem to happen if node gets created while processing a frame in the DSP backend
+			return
+
  		val output = data as Output1NodeOutputData
 
 		// Count max channels
@@ -74,6 +77,10 @@ class LogicNode : BaseLogicNode() {
 		val statistics = mixer.statistics[output_device]
 
 		if (statistics != null) {
+			if (loltid < System.currentTimeMillis()) {
+				println(statistics.describe())
+				loltid = System.currentTimeMillis() + 1000
+			}
 			sendMessage(
 					OutputNodeStatisticsData(
 							id,
@@ -86,6 +93,7 @@ class LogicNode : BaseLogicNode() {
 			)
 		}
 	}
+	private var loltid = System.currentTimeMillis()
 
 	override fun onRemove() {}
 	override fun onData(data: NodeDataMessage) {}

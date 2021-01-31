@@ -15,23 +15,21 @@ public class JavaLocalDSPBackend extends DSPModule {
 
 	public JavaLocalDSPBackend() {
 		super();
-
 		setName("JavaLocalDSPBackend");
 	}
 
 	@Override
-	public void mainLoop() {
-		while (isRunning()) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			}
+	public void onInit() {
+	}
 
-			for (ElasticMessage message : getIngoing().receiveAll())
-				handleMessage(message);
-		}
+	@Override
+	public void onUpdate() {
+		for (ElasticMessage message : getIngoing().receiveAll())
+			handleMessage(message);
+	}
 
+	@Override
+	public void onEnd() {
 		if (supervisor != null)
 			supervisor.clear();
 	}
@@ -45,11 +43,13 @@ public class JavaLocalDSPBackend extends DSPModule {
 
 			if (supervisor == null) { // Got nothing to respond with, we are completely empty
 				getOutgoing().send(new ProcessResponseMessage());
+				notifyElasticSystem();
 				return;
 			}
 
 			ProcessResponseMessage pm = supervisor.process((ProcessRequestMessage) message);
 			getOutgoing().send(pm);
+			notifyElasticSystem();
 
 		} else if (message instanceof NodePropertyMessage || message instanceof NodeDataMessage) {
 			applyNetList();

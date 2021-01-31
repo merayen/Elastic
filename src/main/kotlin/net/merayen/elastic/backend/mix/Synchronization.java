@@ -17,7 +17,7 @@ public class Synchronization {
 		/**
 		 * The time taken from requesting data to actually getting it (the time Elastic uses to process).
 		 */
-		public final AverageStat<Float> awaiting_data = new AverageStat<>(100);
+		public final AverageStat<Float> awaiting_data = new AverageStat<>(400);
 	}
 
 	public interface Handler {
@@ -68,14 +68,14 @@ public class Synchronization {
 				if(in_available != Integer.MAX_VALUE) { // We have active input-source, we use that as a time-source
 					if(in_available >= bufferSize) {
 						processing = true;
-						startWaitingData = System.currentTimeMillis();
+						startWaitingData = System.nanoTime();
 						handler.needData();
 						waitForData();
 						continue;
 					}
 				} else if(out_available != Integer.MAX_VALUE) { // Only output, using that as clock, where the output buffer blocking actually keeps us in in pace
 					processing = true;
-					startWaitingData = System.currentTimeMillis();
+					startWaitingData = System.nanoTime();
 					handler.needData();
 					waitForData();
 					continue;
@@ -91,7 +91,7 @@ public class Synchronization {
 
 					if(sample_lag > 0) { // TODO calculate a bit better, perhaps
 						processing = true;
-						startWaitingData = System.currentTimeMillis();
+						startWaitingData = System.nanoTime();
 						handler.needData();
 						waitForData();
 						continue;
@@ -107,8 +107,7 @@ public class Synchronization {
 						wait(1);
 					}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				    throw new RuntimeException(e);
 				}
 			}
 		}
@@ -134,7 +133,7 @@ public class Synchronization {
 	private int bufferSize;
 	private volatile long sampleCount; // samples from start. Counts upwards
 	private boolean reportedBehind;
-	private long startWaitingData;
+	private long startWaitingData = System.nanoTime();
 
 	public Synchronization(Mixer mixer, Handler handler) {
 		this.mixer = mixer;
@@ -145,6 +144,7 @@ public class Synchronization {
 		new Thread(poller).start();
 	}
 
+	private long nextDebugPrint;
 	/**
 	 * Tells us that a frame has been processed.
 	 * We will acknowledge that and plan next call.
@@ -159,7 +159,13 @@ public class Synchronization {
 		if(!processing)
 			throw new RuntimeException("Calling push() when not been requested is not allowed");
 
-		statistics.awaiting_data.add((System.currentTimeMillis() - startWaitingData) / 1000f);
+		statistics.awaiting_data.add((float)((System.nanoTime() - startWaitingData) / 1000000.0));
+
+		if (nextDebugPrint < System.currentTimeMillis()) {
+			System.out.printf("Total time waiting for audio from Elastic: min=%fms, avg=%fms, max=%fms\n", statistics.awaiting_data.getMin(), statistics.awaiting_data.getAvg(), statistics.awaiting_data.getMax());
+			nextDebugPrint = System.currentTimeMillis() + 1000;
+		}
+
 		processing = false;
 		reportedBehind = false;
 

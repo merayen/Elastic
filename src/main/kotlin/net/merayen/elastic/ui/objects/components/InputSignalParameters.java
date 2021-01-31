@@ -2,6 +2,7 @@ package net.merayen.elastic.ui.objects.components;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.node.UINode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * To be used with InputSignalParametersProcessor that sits on the other end (backend) and actually transforms the signal.
@@ -35,12 +36,10 @@ public class InputSignalParameters extends UIObject {
 	public void onInit() {
 		amplitude.getTranslation().x = 0;
 		amplitude.getTranslation().y = 0;
-		amplitude.label.setText("Amplitude");
 		amplitude.drag_scale = 1f;
 		add(amplitude);
 
 		offset.getTranslation().y = 20;
-		offset.label.setText("Offset");
 		offset.drag_scale = 1f;
 		add(offset);
 
@@ -48,27 +47,37 @@ public class InputSignalParameters extends UIObject {
 			@Override
 			public void onMove(float value) {
 				amplitude_value = (float)Math.pow(value * 2, 14);
-				updateTexts();
 				sendParameters();
 			}
 
 			@Override
 			public void onChange(float value) {}
+
+			@NotNull
+			@Override
+			public String onLabel(float value) {
+				return String.format("Amplitude: %.3f", getAmplitude());
+			}
 		});
+		amplitude.setValue(0);
 
 		offset.setHandler(new PopupParameter1D.Handler() {
 			@Override
 			public void onMove(float value) {
 				offset_value = (float)(Math.pow(Math.max(0.5f, value) * 2, 14) - Math.pow(Math.max(0.5f, 1-value) * 2, 14));
-				updateTexts();
 				sendParameters();
 			}
 
 			@Override
 			public void onChange(float value) {}
-		});
 
-		updateTexts();
+			@NotNull
+			@Override
+			public String onLabel(float value) {
+				return String.format("Offset: %.3f", getOffset());
+			}
+		});
+		offset.setValue(0);
 	}
 
 	public float getAmplitude() {
@@ -90,12 +99,6 @@ public class InputSignalParameters extends UIObject {
 		offset_value = v;
 	}
 
-	private void updateTexts() {
-		amplitude.label.setText(String.format("Amplitude: %.3f", getAmplitude()));
-		offset.label.setText(String.format("Offset: %.3f", getOffset()));
-	}
-
-	@SuppressWarnings("serial")
 	private void sendParameters() {
 		if (handler != null) {
 			handler.onChange(getAmplitude(), getOffset());

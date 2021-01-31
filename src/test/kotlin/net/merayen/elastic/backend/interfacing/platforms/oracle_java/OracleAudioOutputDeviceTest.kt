@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import kotlin.math.PI
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class OracleAudioOutputDeviceTest {
@@ -36,26 +37,38 @@ class OracleAudioOutputDeviceTest {
 	fun testOutputFlow() {
 		val outputDevice = outputDevice!!
 
-		outputDevice.configure(44100, 1, 16)
+		outputDevice.configure(44100, 2, 16)
 
 		outputDevice.begin()
 
 		var pos = 0
-		//while(true) {
-			for (chunk in 1 until 5) {
-				val audio = FloatArray(2.0.pow(8 + 4 - chunk).toInt())
-				println("Audio should sound good with no hick ups, buffer: ${audio.size}")
+		for (chunk in 4 until 5) {
+			val audio = FloatArray(2.0.pow(8 + 4 - chunk).toInt())
+			println("Audio should sound good with no hick ups, buffer: ${audio.size}")
 
-				//for (x in 0 until 50*chunk) {
-				val t = System.currentTimeMillis() + 2000
-				while (t > System.currentTimeMillis()) {
-					for (i in 0 until audio.size)
-						audio[i] = sin(pos++ / 44100.0 * 1000 * 2 * PI).toFloat() * 0.1f
+			val t = System.currentTimeMillis() + 2000000
+			var l = System.currentTimeMillis()
+			var samplesSent = 0
+			while (t > System.currentTimeMillis()) {
+				for (i in audio.indices)
+					audio[i] = sin(pos++ / 44100.0 * 1000 * 2 * PI).toFloat() * 0.05f
 
-					outputDevice.write(audio)
+				if (Math.random() > 0.1)
+					Thread.sleep(1)
+
+				outputDevice.write(audio)
+				//if (outputDevice.available() == 0)
+				//	println("Noes")
+
+				samplesSent += audio.size
+
+				if (l + 1000 < System.currentTimeMillis()) {
+					println("Samples sent: $samplesSent/s, ${outputDevice.statistics.describe()}")
+					samplesSent = 0
+					l = System.currentTimeMillis()
 				}
 			}
-		//}
+		}
 
 		outputDevice.stop()
 	}

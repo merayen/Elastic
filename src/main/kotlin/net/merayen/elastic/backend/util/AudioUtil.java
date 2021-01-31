@@ -24,7 +24,6 @@ public class AudioUtil {
 		}
 	}
 
-
 	public static double midiNoteToFreq(float n) {
 		return 440 * Math.pow(2, (n - 69) / 12.0f);
 	}

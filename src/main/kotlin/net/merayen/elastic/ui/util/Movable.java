@@ -80,4 +80,8 @@ public class Movable extends MouseHandler { // TODO make it not inherit, rather 
 	public void setHandler(MouseHandler.Handler lol) { // Should not access inherited setHandler()
 		throw new RuntimeException();
 	}
+
+	public boolean isDragging() {
+		return start_absolute_position != null;
+	}
 }

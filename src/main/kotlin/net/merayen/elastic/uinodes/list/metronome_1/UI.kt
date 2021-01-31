@@ -36,14 +36,10 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeProperties) {}
+	override fun onProperties(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is MetronomeBeatMessage)
 			beatIndicator.handleMessage(message)
-	}
-
-	override fun onParameter(instance: BaseNodeProperties) {
-
 	}
 }

@@ -1,7 +1,10 @@
 package net.merayen.elastic.util
 
 import org.json.simple.JSONArray
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.cast
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -15,10 +18,11 @@ class JSONObjectMapper {
 	class AnonymousClassesNotSupportedException : RuntimeException()
 	class ClassNotRegistered(val className: String) : RuntimeException("Class '$className' not registered")
 	class ClassAlreadyRegistered(val className: String) : RuntimeException(className)
-	class GenericListsLimitedSupport() : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
-	class MissingClassNameDefinitionInObject() : RuntimeException()
+	class GenericListsLimitedSupport : RuntimeException("Only JSONObject, Number, String and Boolean is supported in List<>s")
+	class MissingClassNameDefinitionInObject : RuntimeException()
 	class ClassMemberIsReadOnly(val className: String, val member: String) : RuntimeException("Can not apply value to '$member' on class '$className' as it is read-only")
 	class ConstructorMissingDefault(val className: String, val parameter: String) : RuntimeException("Class '$className' constructor missing default value for parameter $parameter")
+	class TypeNotSupportedException(type: String) : java.lang.RuntimeException(type)
 
 	private val registry = HashMap<String, KClass<out Any>>()
 	private val listConverters = HashMap<String, Map<String, (it: Any?) -> Any?>>()
@@ -120,9 +124,7 @@ class JSONObjectMapper {
 			if (property.visibility == KVisibility.PUBLIC && property is KMutableProperty<*>) {
 				if (property.name == "classRegistry")
 					println("Noes")
-				val jsonValue = valueToJSON(property.getter.call(obj))
-				if (jsonValue !== UNDEFINED)
-					result[property.name] = jsonValue
+				result[property.name] = valueToJSON(property.getter.call(obj))
 			}
 		}
 
@@ -131,20 +133,20 @@ class JSONObjectMapper {
 		return result
 	}
 
-	private val UNDEFINED = Any()
-
 	private fun valueToJSON(value: Any?): Any? {
 		if (value == null || value is Number || value is Boolean || value is String) {
 			return value
+		} else if (value is Char) {
+			return value.toString()
 		} else if (value is List<*>) {
 			val arr = JSONArray()
 			arr.addAll(value.map { valueToJSON(it) })
 			return arr
-		} else if (registry[value::class.simpleName] === value::class) {
+		} else if (registry[value::class.simpleName] == value::class) {
 			return toMap(value)
 		}
 
-		return UNDEFINED
+		throw TypeNotSupportedException(value::class.simpleName ?: value.toString().substring(0, 100))
 	}
 
 	/**
@@ -161,8 +163,9 @@ class JSONObjectMapper {
 				"kotlin.Int" -> return obj.toInt()
 				"kotlin.Short" -> return obj.toShort()
 				"kotlin.Byte" -> return obj.toByte()
-				"kotlin.Char" -> return obj.toChar()
 			}
+		} else if (obj is String && to.qualifiedName == "kotlin.Char") {
+			return obj.single()
 		}
 
 		return to.cast(obj)

@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.event;
 
 import net.merayen.elastic.ui.UIObject;
-import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.objects.top.window.Window;
 import net.merayen.elastic.ui.util.UINodeUtil;
 
 import java.util.ArrayList;

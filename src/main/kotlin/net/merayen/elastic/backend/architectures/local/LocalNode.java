@@ -8,10 +8,7 @@ import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.NodeStatusMessage;
 import net.merayen.elastic.system.intercom.OutputFrameData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A LocalNode is a node that implements the logic for local JVM processing.
@@ -76,11 +73,11 @@ public abstract class LocalNode {
 		return node.getID();
 	}
 
-	void compiler_setInfo(Supervisor supervisor, Node node, int sample_rate, int buffer_size) {
+	void compiler_setInfo(Supervisor supervisor, Node node, int sampleRate, int buffer_size) {
 		this.supervisor = supervisor;
 		this.netlist = supervisor.netlist;
 		this.node = node;
-		this.sample_rate = sample_rate;
+		this.sample_rate = sampleRate;
 		this.buffer_size = buffer_size;
 		this.properties = new NodeProperties(netlist);
 	}
@@ -117,7 +114,7 @@ public abstract class LocalNode {
 		return lp;
 	}
 
-	protected List<Integer> getSessions() {
+	protected Set<Integer> getSessions() {
 		return supervisor.processor_list.getSessions(this);
 	}
 
@@ -138,6 +135,14 @@ public abstract class LocalNode {
 			return null;
 
 		return supervisor.getLocalNode(parent.getID());
+	}
+
+	public GroupLNode getParentGroupNode() {
+		LocalNode parent = getParent();
+		if (parent != null)
+			return (GroupLNode) parent;
+		else
+			return null;
 	}
 
 	void init() {

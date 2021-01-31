@@ -6,40 +6,59 @@ import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.KeyboardEvent
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotion
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
+import net.merayen.elastic.ui.objects.top.views.View
+import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
+import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.NodeUtil
 import net.merayen.elastic.util.Pacer
-import net.merayen.elastic.util.MutablePoint
+import net.merayen.elastic.util.logDebug
 import java.util.*
 
-abstract class UINode : UIObject(), FlexibleDimension {
+abstract class UINode : UIObject(), FlexibleDimension, EasyMotionBranch {
 	lateinit var nodeId: String // Same ID as in the backend-system, netlist etc
 	override var layoutWidth = 100f
 	override var layoutHeight = 80f
 
-	protected val titlebar = Titlebar()
+	protected val titlebar = TitleBar()
 
 	private val nodePorts = ArrayList<UIPort>()
 
 	val ports
-		get() = ArrayList<UIPort>(nodePorts)
+		get() = ArrayList(nodePorts)
 
 	private var inited: Boolean = false
+
+	var selected = false
+
+	final override val easyMotionBranch = object : Branch(this, this) {
+		init {
+			controls[setOf(KeyboardEvent.Keys.E)] = Control {
+				val editNodeView = search.parentByType(View::class.java)!!.swap(EditNodeView::class)
+				editNodeView.editNode(this@UINode as INodeEditable)
+				null
+			}
+		}
+	}
 
 	val targetLocation = MutablePoint()
 	private val lastDraw = Pacer()
 
 	protected abstract fun onCreatePort(port: UIPort)  // Node can customize the created UIPort in this function
 	protected abstract fun onRemovePort(port: UIPort)  // Node can clean up any resources belonging to the UIPort
-	protected abstract fun onMessage(message: BaseNodeProperties) // TODO remove. Use onParameter instead!
+	protected abstract fun onProperties(properties: BaseNodeProperties)
 	protected abstract fun onData(message: NodeDataMessage)
-	protected abstract fun onParameter(instance: BaseNodeProperties)
+
 
 	val UINet
 		get() = search.parentByType(NodeView::class.java)?.uiNet
 
 	override fun onInit() {
-		titlebar.handler = object : Titlebar.Handler {
+		titlebar.handler = object : TitleBar.Handler {
 			override fun onMove() {
 				targetLocation.x = translation.x
 				targetLocation.y = translation.y
@@ -50,7 +69,6 @@ abstract class UINode : UIObject(), FlexibleDimension {
 
 		inited = true
 	}
-
 
 	override fun onDraw(draw: Draw) {
 		if (!inited)
@@ -63,7 +81,11 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		translation.x += (targetLocation.x - translation.x) * diff
 		translation.y += (targetLocation.y - translation.y) * diff
 
-		draw.setColor(80, 80, 80)
+		if (selected)
+			draw.setColor(150, 150, 200)
+		else
+			draw.setColor(150, 150, 150)
+
 		draw.fillRect(0f, 0f, layoutWidth, layoutHeight)
 
 		titlebar.layoutWidth = layoutWidth
@@ -79,7 +101,12 @@ abstract class UINode : UIObject(), FlexibleDimension {
 		return null
 	}
 
-	fun sendParameter(instance: BaseNodeProperties) {
+	fun getPorts(): List<UIPort> {
+		nodePorts.sortBy { it.translation.y }
+		return nodePorts.toList()
+	}
+
+	fun sendProperties(instance: BaseNodeProperties) {
 		sendMessage(NodePropertyMessage(nodeId, instance))
 	}
 
@@ -106,8 +133,7 @@ abstract class UINode : UIObject(), FlexibleDimension {
 					}
 			}
 
-			onMessage(message.instance)
-			onParameter(message.instance)
+			onProperties(message.instance)
 
 		} else if (message is NodeDataMessage) {
 			onData(message)
@@ -127,10 +153,10 @@ abstract class UINode : UIObject(), FlexibleDimension {
 			TODO()
 	}
 
-	private fun sendUiData() {
+	fun sendUiData() {
 		val data = newNodeData()
 		data.uiTranslation = BaseNodeProperties.UITranslation(targetLocation.x, targetLocation.y)
-		sendParameter(data)
+		sendProperties(data)
 	}
 
 	protected fun newNodeData(): BaseNodeProperties {

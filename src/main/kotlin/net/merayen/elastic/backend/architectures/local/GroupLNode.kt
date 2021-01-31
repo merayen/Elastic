@@ -11,7 +11,7 @@ interface GroupLNode {
 	fun getSampleRate(): Int
 	fun getBufferSize(): Int
 	fun getDepth(): Int
-
+	fun getChannelCount(): Int
 
 
 	/**
@@ -67,9 +67,14 @@ interface GroupLNode {
 	fun isPlaying(): Boolean
 
 	/**
-	 * Returns how many times play has started.
+	 * Returns how many times play has started, playback cursor moved etc.
 	 * Nodes should check if this number has changed. If yes, read getTimePosition(), getBeatPosition() etc to set
 	 * correct inner state.
 	 */
 	fun playStartedCount(): Long
+
+	/**
+	 * Range the user has set in the arrangement view. If not null, we should only loop in the range.
+	 */
+	fun getRangeSelection(): Pair<Float, Float>
 }

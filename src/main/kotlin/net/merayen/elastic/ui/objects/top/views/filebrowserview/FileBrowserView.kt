@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.filebrowserview
 
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import java.io.File
 
@@ -12,7 +13,7 @@ class FileBrowserView : View() {
 		add(fileList)
 		fileList.browse("/")
 		fileList.translation.x = 0f
-		fileList.translation.y = 20f
+		fileList.translation.y = 40f
 		fileList.setHandler(object : FileList.Handler {
 			override fun onSelect(file: File?) {
 				if (file == null)
@@ -28,10 +29,12 @@ class FileBrowserView : View() {
 
 	override fun onUpdate() {
 		fileList.layoutWidth = getWidth()
-		fileList.layoutHeight = getHeight() - 20
+		fileList.layoutHeight = getHeight() - 40
 	}
 
 	override fun cloneView(): View {
 		return FileBrowserView()
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

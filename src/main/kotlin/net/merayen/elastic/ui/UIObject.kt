@@ -6,10 +6,13 @@ import net.merayen.elastic.ui.util.UINodeUtil
 import net.merayen.elastic.util.MutablePoint
 import java.util.*
 
-open class  UIObject {
+open class UIObject {
 	var parent: UIObject? = null
 		private set
-	internal val children: MutableList<UIObject> = ArrayList()
+	val internalChildren: MutableList<UIObject> = ArrayList()
+
+	val children: List<UIObject>
+		get() = Collections.unmodifiableList(internalChildren)
 
 	var absoluteOutline: Rect? = Rect() // Absolute, in screen pixels
 	internal var outline: Rect? = Rect()
@@ -27,8 +30,11 @@ open class  UIObject {
 	 */
 	var isInitialized = false
 		private set
-	var isAttached: Boolean = false
-		private set // Attached to the tree (reachable from Top) or not
+
+	/**
+	 * Cached version of the topmost parent of this UIObject
+	 */
+	var topMost: UIObject = this
 
 	val search = Search(this)
 
@@ -39,6 +45,17 @@ open class  UIObject {
 				return MutablePoint(td.x, td.y)
 
 			return null
+		}
+
+	/**
+	 * Actual visible area for this UIObject.
+	 * The returned rectangle is in local coordinates.
+	 * Use this feature to skip drawing outside visible area.
+	 */
+	val visibility: Rect?
+		get() {
+			val clip = absoluteTranslation?.clip ?: return null
+			return getRelativeFromAbsolute(clip)
 		}
 
 	/**
@@ -102,11 +119,11 @@ open class  UIObject {
 	 * Should only be used in very specific cases, like by the Top() object to draw different trees for different Window()s.
 	 */
 	open fun onGetChildren(surface_id: String): List<UIObject> {
-		return this.children
+		return children
 	}
 
 	open fun add(uiobject: UIObject) {
-		internalAdd(uiobject, children.size)
+		internalAdd(uiobject, internalChildren.size)
 	}
 
 	open fun add(uiobject: UIObject, index: Int) {
@@ -120,45 +137,49 @@ open class  UIObject {
 		if (uiobject.parent != null)
 			throw RuntimeException("UIObject already has a parent")
 
+
 		uiobject.parent = this
-		children.add(index, uiobject)
+		internalChildren.add(index, uiobject)
+
+		topMost = calculateTopMost()
 
 		// Mark every child as attached to the tree
-		uiobject.isAttached = true
+		uiobject.topMost = topMost
 		for (o in uiobject.search.allChildren)
-			o.isAttached = true
+			o.topMost = topMost
 	}
 
 	open fun remove(uiobject: UIObject) {
-		if (!children.contains(uiobject))
+		if (!internalChildren.contains(uiobject))
 			throw RuntimeException("UIObject is not a child of us")
 
 		if (uiobject.parent !== this)
 			throw RuntimeException("Should not happen")
 
-		children.remove(uiobject)
+
+		internalChildren.remove(uiobject)
 		uiobject.parent = null
 
 		// Mark every child to be detached
-		uiobject.isAttached = false
+		uiobject.topMost = uiobject
 		for (o in uiobject.search.allChildren)
-			o.isAttached = false
+			o.topMost = uiobject
 	}
 
 	open fun removeAll() {
-		for(o in children) {
+		for (o in internalChildren) {
 			if (o.parent !== this)
 				throw RuntimeException("Should not happen")
 
 			o.parent = null
 
 			// Mark every child to be detached
-			o.isAttached = false
+			o.topMost = o
 			for (oc in o.search.allChildren)
-				oc.isAttached = false
+				oc.topMost = o
 		}
 
-		children.clear()
+		internalChildren.clear()
 	}
 
 	internal fun initialize() {
@@ -187,12 +208,28 @@ open class  UIObject {
 		)
 	}
 
+	fun getRelativePosition(obj: UIObject, x: Float = 0f, y: Float = 0f): MutablePoint? {
+		val objAT = obj.absoluteTranslation ?: return null
+		val thisAT = absoluteTranslation ?: return null
+
+		return MutablePoint(
+				x = ((objAT.x + x / objAT.scaleX) - thisAT.x) * thisAT.scaleX,
+				y = ((objAT.y + y / objAT.scaleY) - thisAT.y) * thisAT.scaleY
+		)
+	}
+
 	/**
 	 * Get our internal (relative) position from absolute position.
 	 */
 	fun getRelativeFromAbsolute(x: Float, y: Float): MutablePoint {
 		val td = absoluteTranslation
 		return MutablePoint((x - td!!.x) * td.scaleX, (y - td.y) * td.scaleY)
+	}
+
+	fun getRelativeFromAbsolute(rect: Rect): Rect {
+		val p1 = getRelativeFromAbsolute(rect.x1, rect.y1)
+		val p2 = getRelativeFromAbsolute(rect.x2, rect.y2)
+		return Rect(p1.x, p1.y, p2.x, p2.y)
 	}
 
 	fun getAbsoluteDimension(width: Float, height: Float): MutableDimension? {
@@ -235,4 +272,17 @@ open class  UIObject {
 		top?.sendMessage(message)
 				?: System.out.printf("WARNING: Could not send message, UIObject %s is disconnected from Top()\n", javaClass.name)
 	}
+
+	/**
+	 * Retrieves the topmost parent of this object.
+	 * If no parents, we are the topmost object.
+	 */
+	private fun calculateTopMost(): UIObject {
+		var topMost = this
+		while (true)
+			topMost = topMost.parent ?: break
+
+		return topMost
+	}
+
 }

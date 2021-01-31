@@ -7,7 +7,6 @@ import net.merayen.elastic.ui.event.MouseEvent;
 /**
  * Helper class to make an UIObject moveable.
  * Tightly coupled to UIObjects.
- *
  */
 public class MouseHandler {
 	public static abstract class Handler {
@@ -56,6 +55,9 @@ public class MouseHandler {
 	 * Call this from your UIObject to handle event
 	 */
 	public void handle(UIEvent event) { // XXX Should we ensure UIObject is initialized before
+		if (!uiobject.isInitialized())
+			return;
+
 		if(event instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)event;
 			currentMouseEvent = e;
@@ -126,5 +128,9 @@ public class MouseHandler {
 	 */
 	public MouseEvent getMouseEvent() {
 		return currentMouseEvent;
+	}
+
+	public boolean isDown() {
+		return mouse_down;
 	}
 }

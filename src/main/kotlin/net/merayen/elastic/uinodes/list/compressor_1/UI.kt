@@ -4,7 +4,7 @@ import net.merayen.elastic.backend.logicnodes.list.compressor_1.CompressorNodeOu
 import net.merayen.elastic.backend.logicnodes.list.compressor_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.ui.objects.components.CircularSlider
+import net.merayen.elastic.ui.objects.components.Knob
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import kotlin.math.*
@@ -13,14 +13,14 @@ class UI : UINode() {
 	private val WIDTH = 300f
 	private val HEIGHT = 100f
 	private val vu = VUMeter()
-	private val attack = CircularSlider()
-	private val release = CircularSlider()
-	private val ratio = CircularSlider()
-	private val knee = CircularSlider()
-	private val threshold = CircularSlider()
-	private val inputAmplitude = CircularSlider()
-	private val inputSidechainAmplitude = CircularSlider()
-	private val outputAmplitude = CircularSlider()
+	private val attack = Knob()
+	private val release = Knob()
+	private val ratio = Knob()
+	private val knee = Knob()
+	private val threshold = Knob()
+	private val inputAmplitude = Knob()
+	private val inputSidechainAmplitude = Knob()
+	private val outputAmplitude = Knob()
 
 	private var compressionValue = 0f
 
@@ -83,40 +83,40 @@ class UI : UINode() {
 		threshold.label.text = "Threshold"
 		add(threshold)
 
-		inputAmplitude.handler = object : CircularSlider.Handler {
+		inputAmplitude.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
-		inputSidechainAmplitude.handler = object : CircularSlider.Handler {
+		inputSidechainAmplitude.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
-		outputAmplitude.handler = object : CircularSlider.Handler {
+		outputAmplitude.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(log(abs(calcCentricPow(value)), 10f) * 10).roundToInt()}dB"
 		}
 
-		attack.handler = object : CircularSlider.Handler {
+		attack.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(value * 1000).toInt()}ms"
 		}
 
-		release.handler = object : CircularSlider.Handler {
+		release.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "${(value * 1000).toInt()}ms"
 		}
 
-		ratio.handler = object : CircularSlider.Handler {
+		ratio.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 		}
 
-		knee.handler = object : CircularSlider.Handler {
+		knee.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 		}
 
-		threshold.handler = object : CircularSlider.Handler {
+		threshold.handler = object : Knob.Handler {
 			override fun onChange(value: Float) = sendCompressorParameters()
 			override fun onLabelUpdate(value: Float) = "-${(log(1 / min(1f, value.pow(2) + 0.0001f), 10f) * 10).roundToInt()}dB"
 		}
@@ -151,14 +151,13 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is CompressorNodeOutputFrameData)
 			compressionValue = 1 - log(1 / max(0.0001f, message.amplitude), 10f) / 3f
 	}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		if (instance is Properties) {
 			val attackData = instance.attack
 			val releaseData = instance.release

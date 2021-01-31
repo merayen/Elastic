@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.controller
 
+import net.merayen.elastic.backend.logicnodes.list.group_1.PlaybackStatusMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.ui.objects.top.Top
@@ -23,8 +24,7 @@ class EditNodeController(top: Top) : Controller(top) {
 
 	override fun onMessageFromUI(message: ElasticMessage) {
 		when(message) {
-			is Hello ->
-				message.editNodeView.init(this)
+			is Hello -> message.editNodeView.init(this)
 		}
 	}
 

@@ -1,7 +1,5 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
-import java.util.ArrayList
-
 import net.merayen.elastic.ui.UIObject
 
 internal class Piano(private val octave_count: Int, private val handler: Handler) : UIObject() {
@@ -74,6 +72,6 @@ internal class Piano(private val octave_count: Int, private val handler: Handler
 
 	fun unmarkAllTangents() {
 		for (tangent in tangents.values)
-			tangent.marked = false;
+			tangent.marked = false
 	}
 }

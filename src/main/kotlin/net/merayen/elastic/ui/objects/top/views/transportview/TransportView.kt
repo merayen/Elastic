@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.top.views.transportview
 
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 
 class TransportView : View() {
@@ -17,4 +18,5 @@ class TransportView : View() {
 		return TransportView()
 	}
 
+	override val easyMotionBranch = object : Branch(this) {}
 }

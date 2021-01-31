@@ -3,6 +3,8 @@ package net.merayen.elastic.ui.objects.top.views.nodeview
 import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.FlexibleDimension
+import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.NodeViewController
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.MouseWheelEvent
@@ -11,18 +13,18 @@ import net.merayen.elastic.ui.objects.UINet
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.util.Movable
+import net.merayen.elastic.util.Revision
+import net.merayen.elastic.util.TaskQueue
+import net.merayen.elastic.util.logDebug
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-// TODO accept NetList as input and rebuild ourselves automatically from that
-// TODO allow forwarding of node messages from and to the backend.
-// TODO make (dis)connecting work again, by sending a message when user tries
 
 /**
  * Main view. Shows all the nodes and their connections.
  */
-class NodeView : View() {
+class NodeView : View(), Revision, TaskQueue.RunsTasks {
 	/**
 	 * Retrieve the ID of the node this view displays.
 	 * @return
@@ -43,6 +45,11 @@ class NodeView : View() {
 
 	private var loaded = false
 
+	private val taskQueue = TaskQueue()
+
+	override var revision = 0
+		private set
+
 	init {
 		add(container)
 		add(nodeViewBar)
@@ -56,21 +63,24 @@ class NodeView : View() {
 			override fun onGrab() {}
 			override fun onDrop() {}
 			override fun onMove() {
-				container.zoomTranslateXTarget = container.translation.x
-				container.zoomTranslateYTarget = container.translation.y
+				container.translateXTarget = container.translation.x
+				container.translateYTarget = container.translation.y
 				container.zoomScaleXTarget = container.translation.scaleX
 				container.zoomScaleYTarget = container.translation.scaleY
 			}
 		})
 	}
 
+	private val easyMotion = NodeViewEasyMotion(this) // Makes it possible to navigate Elastic by keyboard
+	override val easyMotionBranch = easyMotion.createEasyMotionBranch()
+
 	override fun onDraw(draw: Draw) {
 		super.onDraw(draw)
 
 		when {
 			dragAndDropTarget.hover -> draw.setColor(100, 100, 200)
-			dragAndDropTarget.interested -> draw.setColor(50, 50, 100)
-			else -> draw.setColor(20, 20, 50)
+			dragAndDropTarget.interested -> draw.setColor(50, 50, 150)
+			else -> draw.setColor(200, 200, 200)
 		}
 
 		draw.fillRect(2f, 2f, getWidth() - 4, getHeight() - 4)
@@ -97,6 +107,8 @@ class NodeView : View() {
 
 			attachContextMenu()
 		}
+
+		taskQueue.update()
 	}
 
 	fun handleMessage(message: ElasticMessage) {
@@ -154,6 +166,8 @@ class NodeView : View() {
 					uiNet.handleMessage(message)
 			}
 		}
+
+		nodeViewBar.handleMessage(message)
 	}
 
 	/**
@@ -172,31 +186,33 @@ class NodeView : View() {
 
 		uinode.nodeId = node_id
 
+		// Unmark all nodes. Not implemented selecting anyway
+		for (node in nodes.values)
+			node.selected = false
+
 		nodes[node_id] = uinode
 		container.add(uinode)
+		revision++
 	}
 
 	private fun removeNode(node_id: String) {
 		val removedNode = nodes.remove(node_id) ?: return
 		container.remove(removedNode)
+		revision++
 	}
 
 	private fun zoom(newScaleX: Float, newScaleY: Float) {
-		/*val previousScaleX = container.zoomScaleXTarget
-		val previousScaleY = container.zoomScaleYTarget*/
 		val previousScaleX = container.translation.scaleX
 		val previousScaleY = container.translation.scaleY
 		val scaleDiffX = newScaleX - previousScaleX
 		val scaleDiffY = newScaleY - previousScaleY
-		/*val currentOffsetX = container.zoomTranslateXTarget - getWidth() / 2
-		val currentOffsetY = container.zoomTranslateYTarget - getHeight() / 2*/
 		val currentOffsetX = container.translation.x - getWidth() / 2
 		val currentOffsetY = container.translation.y - getHeight() / 2
 
 		container.zoomScaleXTarget = newScaleX
 		container.zoomScaleYTarget = newScaleY
-		container.zoomTranslateXTarget = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
-		container.zoomTranslateYTarget = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
+		container.translateXTarget = getWidth() / 2 + currentOffsetX + currentOffsetX * (-scaleDiffX / newScaleX)
+		container.translateYTarget = getHeight() / 2 + currentOffsetY + currentOffsetY * (-scaleDiffY / newScaleY)
 	}
 
 	override fun onEvent(event: UIEvent) {
@@ -246,8 +262,8 @@ class NodeView : View() {
 		currentNodeId = newNodeId
 
 		// TODO zoom and translate to cover all the nodes
-		container.zoomTranslateXTarget = 0f
-		container.zoomTranslateYTarget = 0f
+		container.translateXTarget = 0f
+		container.translateYTarget = 0f
 		container.zoomScaleXTarget = 1f
 		container.zoomScaleYTarget = 1f
 
@@ -280,7 +296,7 @@ class NodeView : View() {
 		val newContextMenu = NodeViewContextMenu(container, currentNodeId)
 		newContextMenu.handler = object : NodeViewContextMenu.Handler {
 			override fun onSolveNodes() {
-				NodeViewSolver(nodes.values).solve()
+				NodeViewSolver(this@NodeView).solve()
 			}
 		}
 		container.add(newContextMenu)
@@ -291,4 +307,51 @@ class NodeView : View() {
 	companion object {
 		private const val UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.%s_%d.%s"
 	}
+
+	/**
+	 * Focus something.
+	 * An UINode perhaps.
+	 */
+	fun focus(uiObject: UIObject) {
+		val pos = container.getRelativePosition(uiObject) ?: return
+
+		val pos2 = when (uiObject) {
+			is FlexibleDimension -> container.getRelativePosition(uiObject, uiObject.layoutWidth, uiObject.layoutHeight) ?: return
+			else -> container.getRelativePosition(uiObject, uiObject.getWidth(), uiObject.getHeight()) ?: return
+		}
+
+		container.translateXTarget = -pos.x / container.zoomScaleXTarget + layoutWidth / 2 - (pos2.x - pos.x) / 2
+		container.translateYTarget = -pos.y / container.zoomScaleYTarget + layoutHeight / 2 - (pos2.y - pos.y) / 2
+	}
+
+	fun focusAll() {  // Not tested
+		if (nodes.isEmpty())
+			return
+
+		var minX = Float.MAX_VALUE
+		var minY = Float.MAX_VALUE
+		var maxX = Float.MIN_VALUE
+		var maxY = Float.MIN_VALUE
+
+		for (node in nodes.values) {
+			minX = min(node.translation.x, minX)
+			minY = min(node.translation.y, minY)
+			maxX = max(node.translation.x + node.layoutWidth, maxX)
+			maxY = max(node.translation.y + node.layoutHeight, maxY)
+		}
+
+		val width = maxX - minX
+		val height = maxY - minY
+
+		logDebug(container.translation.scaleX.toString())
+
+		val scale = max((width + 40) / layoutWidth, (height + 40) / layoutHeight)
+		container.zoomScaleXTarget = scale
+		container.zoomScaleYTarget = scale
+
+		container.translateXTarget = -minX / container.zoomScaleXTarget + 40f
+		container.translateYTarget = -minY / container.zoomScaleYTarget + 40f
+	}
+
+	override fun getTaskQueue() = taskQueue
 }

@@ -6,17 +6,17 @@ import net.merayen.elastic.ui.UIObject
 class InputSignalKnob : UIObject() { // TODO delete
 	var size = 30f
 
-	private var amplitude: CircularSlider? = null
-	private var offset: CircularSlider? = null
+	private var amplitude: Knob? = null
+	private var offset: Knob? = null
 
 	override fun onInit() {
-		amplitude = CircularSlider()
+		amplitude = Knob()
 		amplitude!!.value = 0.5f
 		amplitude!!.size = size
 		amplitude!!.dragScale = 0.05f
 		add(amplitude!!)
 
-		offset = CircularSlider()
+		offset = Knob()
 		offset!!.translation.x = size / 4
 		offset!!.translation.y = size / 4
 		offset!!.size = size / 2

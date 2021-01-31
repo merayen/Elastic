@@ -1,21 +1,21 @@
 package net.merayen.elastic.backend.architectures.local.nodes.poly_1;
 
+import net.merayen.elastic.backend.architectures.local.lets.Outlet;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.merayen.elastic.backend.architectures.local.lets.Outlet;
-
 class PolySessions {
 	static class Session {
-		final int session_id;
+		final int id;
 		final short tangent;
 		final Outlet input;
 		final OutputInterfaceNode[] outnodes;
 		boolean active = true;
 
 		private Session(int session_id, short tangent, Outlet input, OutputInterfaceNode[] outnodes) {
-			this.session_id = session_id;
+			this.id = session_id;
 			this.tangent = tangent;
 			this.input = input;
 			this.outnodes = outnodes;
@@ -44,7 +44,6 @@ class PolySessions {
 			}
 		}
 
-		System.out.println(sessions.size());
 		return result;
 	}
 
@@ -74,7 +73,7 @@ class PolySessions {
 		return false;
 	}
 
-	List<Outlet> getOutlets() {
+	List<Outlet> getInputOutlets() {
 		List<Outlet> result = new ArrayList<>();
 
 		for(Session session : sessions)

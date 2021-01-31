@@ -5,6 +5,7 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.*
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
+import net.merayen.elastic.ui.controller.ArrangementController
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.components.midiroll.MidiRoll
@@ -61,6 +62,10 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 			override fun onRemoveEventZone(eventZoneId: String) {
 				TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 			}
+
+			override fun onPlayheadMoved(beat: Float) {
+				sendMessage(ArrangementController.PlayheadPositionChange(beat))
+			}
 		})
 		midiRoll.translation.scaleX = 0.5f
 		midiRoll.translation.scaleY = 0.5f
@@ -84,7 +89,6 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 	}
 
 	override fun onMessage(message: NodeMessage) {
-		if (message is NodePropertyMessage)
-			midiRoll.handleMessage(message)
+		midiRoll.handleMessage(message)
 	}
 }

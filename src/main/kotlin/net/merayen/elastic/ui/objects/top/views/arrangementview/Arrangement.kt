@@ -1,9 +1,11 @@
 package net.merayen.elastic.ui.objects.top.views.arrangementview
 
+import net.merayen.elastic.backend.logicnodes.list.group_1.PlaybackStatusMessage
 import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.controller.ArrangementController
 import net.merayen.elastic.ui.objects.components.Scroll
 import net.merayen.elastic.ui.objects.components.SelectionRectangle
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
@@ -16,7 +18,7 @@ class Arrangement : UIObject() {
 	var layoutWidth: Float = 0f
 	var layoutHeight: Float = 0f
 
-	var beatWidth = 20f
+	var beatWidth = 40f
 
 	private val tracks = ArrayList<ArrangementTrack>()
 	private val trackList = TrackList()
@@ -41,21 +43,22 @@ class Arrangement : UIObject() {
 			init {
 				label = "New track"
 				handler = object : IHandler {
-					override fun onClick() {
-						TODO("Ask user which type of track to create and send a message to backend")
-					}
+					override fun onClick() = TODO("Ask user which type of track to create and send a message to backend")
 				}
+				disabled = true // For now
 			}
 		})
+
+		eventList.handler = object : EventList.Handler {
+			override fun onPlayheadMoved(beat: Float) = sendMessage(ArrangementController.PlayheadPositionChange(beat))
+			override fun onRangeChange(range: Pair<Float, Float>) = sendMessage(ArrangementController.RangeSelectionChange(range))
+		}
 	}
 
 	override fun onUpdate() {
 		trackList.layoutWidth = 100f
 		arrangementListScroll.layoutWidth = layoutWidth
 		arrangementListScroll.layoutHeight = layoutHeight - 20
-
-		eventList.layoutWidth = layoutWidth - 100
-		eventList.layoutHeight = layoutHeight - 20
 
 		for (track in tracks) // Make EventPane keep up with the height of the TrackPane
 			track.eventPane.layoutHeight = track.trackPane.layoutHeight
@@ -70,7 +73,7 @@ class Arrangement : UIObject() {
 					val midiTrack = MidiTrack(message.nodeId, this)
 					midiTrack.handler = object : MidiTrack.Handler {
 						override fun onEventSelect() {
-							for (track in tracks) // TODO check for modifer-key. If user is holding SHIFT, do not unselect everything
+							for (track in tracks) // TODO check for modifier-key. If user is holding SHIFT, do not unselect everything
 								track.clearSelections()
 						}
 
@@ -111,13 +114,17 @@ class Arrangement : UIObject() {
 					eventList.addEventPane(midiTrack.eventPane)
 					tracks.add(midiTrack)
 				}
+				eventList.handleMessage(message)
 			}
+			is PlaybackStatusMessage -> eventList.handleMessage(message)
+			is NodePropertyMessage -> eventList.handleMessage(message)
 		}
 
 		for (track in tracks) {
-			if (message is NodePropertyMessage)
+			if (message is NodePropertyMessage) {
 				if (message.nodeId == track.nodeId)
 					track.onParameter(message.instance)
+			}
 		}
 	}
 

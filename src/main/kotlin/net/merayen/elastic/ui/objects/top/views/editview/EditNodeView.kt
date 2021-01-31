@@ -7,6 +7,7 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.controller.EditNodeController
 import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 
 class EditNodeView : View() {
@@ -31,7 +32,7 @@ class EditNodeView : View() {
 		add(content)
 		add(bar)
 
-		content.translation.y = 20f
+		content.translation.y = 40f
 	}
 
 	override fun onDraw(draw: Draw) {
@@ -62,7 +63,7 @@ class EditNodeView : View() {
 		nodeEditor?.onMessage(message)
 
 		if (message is NodePropertyMessage) {
-			nodeEditor?.onParameter(message.instance);
+			nodeEditor?.onParameter(message.instance)
 		}
 	}
 
@@ -85,4 +86,6 @@ class EditNodeView : View() {
 			}
 		}
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

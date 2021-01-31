@@ -21,7 +21,7 @@ class Supervisor {
 	private static final String CLASS_PATH = "net.merayen.elastic.backend.architectures.local.nodes.%s_%d.LNode";
 
 	final NetList netlist;
-	private final int sample_rate;
+	private final int sampleRate;
 	final int buffer_size;
 	long sampleCount = 0; // Global sample counter from
 
@@ -47,9 +47,9 @@ class Supervisor {
 	private long not_processing_time_last;
 	private AverageStat<Long> not_processing_time = new AverageStat<>(1000);
 
-	public Supervisor(NetList netlist, int sample_rate, int buffer_size) {
+	public Supervisor(NetList netlist, int sampleRate, int buffer_size) {
 		this.netlist = netlist; // Our own, compiled NetList
-		this.sample_rate = sample_rate;
+		this.sampleRate = sampleRate;
 		this.buffer_size = buffer_size;
 
 		new NetListValidator(netlist); // Make sure the netlist is sane before we proceed
@@ -77,7 +77,7 @@ class Supervisor {
 				nodes.put(node.getID(), localnode);
 			}
 
-			localnode.compiler_setInfo(this, node, sample_rate, buffer_size);
+			localnode.compiler_setInfo(this, node, sampleRate, buffer_size);
 			localnode.init();
 
 			// Apply any parameters
@@ -97,7 +97,7 @@ class Supervisor {
 	void clear() {
 		dead = true;
 
-		for(int session_id : new ArrayList<>(processor_list.getSessions()))
+		for(int session_id : new ArrayList<>(processor_list.getSessionIds()))
 			removeSession(session_id);
 
 		processor_list.clear();
@@ -133,8 +133,8 @@ class Supervisor {
 			lp.init();
 	}
 
-	int spawnSession(Node node, int sample_offset) throws SpawnLimitException {
-		spawnSession(node, ++session_id_counter, sample_offset);
+	int spawnSession(Node node) throws SpawnLimitException {
+		spawnSession(node, ++session_id_counter);
 		return session_id_counter;
 	}
 
@@ -143,7 +143,7 @@ class Supervisor {
 	 * sample_offset is the offset into the process frame which the session gets spawned.
 	 * If node is null, the topmost node's session gets started.
 	 */
-	synchronized private void spawnSession(Node node, int session_id, int sample_offset) throws SpawnLimitException {
+	synchronized private void spawnSession(Node node, int session_id) throws SpawnLimitException {
 		List<LocalNode> lnodes = new ArrayList<>(); // LocalNodes to create sessions on
 		for(Node n : netlist.getNodes())
 			if((node == null && node_properties.getParent(n) == null) || (node != null && node.equals(netlist_util.getParent(n))))
@@ -153,8 +153,6 @@ class Supervisor {
 			for(LocalNode ln : lnodes)
 				if(processor_list.getSessions(ln).size() >= 128)
 					throw new SpawnLimitException();
-
-		processor_list.addSession(session_id);
 
 		List<LocalProcessor> to_wire_up = new ArrayList<>();
 		for(LocalNode ln : lnodes) {
@@ -166,8 +164,6 @@ class Supervisor {
 
 		wireUp(to_wire_up);
 		initProcessors(to_wire_up);
-
-		//System.out.println("Active sessions: " + processor_list.getSessions().size());
 	}
 
 	/**
@@ -210,7 +206,7 @@ class Supervisor {
 
 		// Reset all frame-state in the processors
 		for(LocalProcessor x : processor_list)
-			x.prepare(0);
+			x.prepare();
 
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for (Node node : netlist.getNodes()) {
@@ -240,7 +236,7 @@ class Supervisor {
 		for(LocalProcessor lp : processor_list.getAllProcessors()) {
 			if(!lp.frameFinished()) {
 				failed = true;
-				System.out.printf("Node failed to process: %s, session_id=%d. Frame has not been completely processed. Forgotten to increase Outlet.written / Inlet.read and called Outlet.push()?\n", lp.getClass(), lp.session_id);
+				System.out.printf("Node failed to process: %s, session_id=%d. Frame has not been completely processed. Forgotten to call Outlet.push()?\n", lp.getClass(), lp.session_id);
 			}
 		}
 
@@ -278,7 +274,7 @@ class Supervisor {
 				nodeStats.put(ln.getID(), new StatisticsReportMessage.NodeStats(ln.getClass().getName(), 0f, (float)ln.getStatisticsAvg(), (float)ln.getStatisticsMax(), 0, ln.getStatisticsProcessCount()));
 			}
 
-			response.setStatisticsReportMessage(new StatisticsReportMessage(process_time.getAvg() / 1E9, process_time.getMax() / 1E9, not_processing_time.getAvg() / 1E9, nodeStats, buffer_size / (double) sample_rate));
+			response.setStatisticsReportMessage(new StatisticsReportMessage(process_time.getAvg() / 1E9, process_time.getMax() / 1E9, not_processing_time.getAvg() / 1E9, nodeStats, buffer_size / (double) sampleRate));
 		}
 
 		not_processing_time_last = System.nanoTime();

@@ -57,8 +57,8 @@ class LogicNode : BaseLogicNode() {
 
 					temporaryMidi = if (buffer.size > 0) {
 						// TODO remove cancellations?
-						val r = buffer.toTypedArray();
-						buffer.clear();
+						val r = buffer.toTypedArray()
+						buffer.clear()
 						r
 					} else {
 						null
@@ -74,11 +74,20 @@ class LogicNode : BaseLogicNode() {
 	override fun onData(data: NodeDataMessage) {
 		when (data) {
 			is AddMidiMessage -> {
-				println("Adding midi message $data")
 				midiData.merge(data.midiData)
 				dirty = true
-				TODO("Send a Data() with all the events and their contents")
-				//updateProperties(Data(midiData = midiData.clone()))
+				val properties = properties as Properties
+
+				val eventZone = properties.eventZones?.first { it.id == data.eventZoneId }
+				if (eventZone == null) {
+					println("EventZone ${data.eventZoneId} not found")
+					return
+				}
+
+				eventZone.midi!!.merge(data.midiData)
+
+				// Mark eventZone as have being updated
+				updateProperties(Properties(eventZones = properties.eventZones))
 			}
 			is PushTangentMessage -> {
 				buffer.add(shortArrayOf(144.toShort(), data.tangent, 64))
@@ -87,8 +96,6 @@ class LogicNode : BaseLogicNode() {
 				buffer.add(shortArrayOf(128.toShort(), data.tangent, 64))
 			}
 			is AddEventZoneMessage -> {
-				println("Adding EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
-
 				val eventZones = (properties as Properties).eventZones ?: ArrayList()
 
 				eventZones.add(Properties.EventZone(
@@ -101,8 +108,6 @@ class LogicNode : BaseLogicNode() {
 				updateProperties(Properties(eventZones = eventZones))
 			}
 			is ChangeEventZoneMessage -> {
-				println("Changing EventZone id=${data.eventZoneId}, start=${data.start}, length=${data.length}")
-
 				val eventZones = (properties as Properties).eventZones
 
 				val eventZone = eventZones?.find { it.id == data.eventZoneId }

@@ -4,15 +4,16 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
+import net.merayen.elastic.ui.objects.top.marks.MarksManager
 import net.merayen.elastic.ui.objects.top.menu.Bar
 import net.merayen.elastic.ui.objects.top.viewport.Viewport
 import net.merayen.elastic.ui.objects.top.viewport.ViewportContainer
-import net.merayen.elastic.util.TaskExecutor
 import net.merayen.elastic.util.UniqueID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-abstract class View : UIObject {
+abstract class View : UIObject, EasyMotionBranch {
 	val id: String
 	var layoutWidth = 100f // Set by EditNodeView
 	var layoutHeight = 100f // Set by EditNodeView
@@ -31,11 +32,17 @@ abstract class View : UIObject {
 			while (c != null && c !is Viewport)
 				c = c.parent
 
-			if(c != null)
+			if (c != null)
 				return c as Viewport
 			else
 				throw RuntimeException("Viewport not found")
 		}
+
+	/**
+	 * Mark support is put into View as they are global for the current view.
+	 */
+	val marks = MarksManager(this)
+
 
 	constructor() {
 		this.id = UniqueID.create()
@@ -90,13 +97,6 @@ abstract class View : UIObject {
 		if (event is MouseEvent) {
 			isFocused = event.hitDepth(this) > -1
 		}
-	}
-
-	/**
-	 * Adds a task in to the closest ViewportContainer() domain.
-	 */
-	protected fun addTask(task: TaskExecutor.Task) {
-		viewport.viewportContainer.addTask(task)
 	}
 
 	override fun getWidth() = layoutWidth

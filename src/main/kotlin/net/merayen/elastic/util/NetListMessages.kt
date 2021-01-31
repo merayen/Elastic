@@ -8,6 +8,8 @@ import net.merayen.elastic.system.intercom.*
 import java.util.*
 
 /**
+ * Builds/changes a NetList by messaging put into it.
+ * Can also generate messages of the current NetList
  * Helper class to restore NetList into either UI or backend.
  * Iterates through the NetList and generates messages that can be consumed by the UI or backend so they can generate their own NetList.
  *

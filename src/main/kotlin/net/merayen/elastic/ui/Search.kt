@@ -1,17 +1,16 @@
 package net.merayen.elastic.ui
 
+import net.merayen.elastic.ui.objects.top.Top
 import java.util.*
 
 class Search(private val obj: UIObject) {
-
-	// TODO neste gang: endre mange til å være getWindow() i stedet
-	val top: UIObject
+	val top: Top?
 		get() {
 			var top = obj
 			while (top.parent != null)
 				top = top.parent!!
 
-			return top
+			return top as? Top
 		}
 
 	// Not tested
@@ -65,5 +64,13 @@ class Search(private val obj: UIObject) {
 
 		@Suppress("UNCHECKED_CAST")
 		return if (x == null) null else x as T
+	}
+
+	fun hasParent(uiObject: UIObject): Boolean {
+		var x = obj.parent
+		while (x != null && x !== uiObject)
+			x = x.parent
+
+		return x === uiObject
 	}
 }

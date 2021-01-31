@@ -1,5 +1,6 @@
 package net.merayen.elastic.system
 
+import net.merayen.elastic.backend.context.JavaBackend
 import net.merayen.elastic.system.intercom.ElasticMessage
 
 /**

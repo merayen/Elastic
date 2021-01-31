@@ -5,6 +5,8 @@ import net.merayen.elastic.backend.architectures.local.GroupLNode
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
 import net.merayen.elastic.backend.logicnodes.list.group_1.Group1InputFrameData
+import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
+import net.merayen.elastic.backend.logicnodes.list.group_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 
@@ -16,7 +18,13 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	private var currentBeatPosition = 0.0
 
 	private var currentCursorBeatPosition = 0.0
+	private var lastCursorBeatPosition = 0.0
 	private var currentCursorTimePosition = 0.0
+	private var channelCount = 1
+
+	private var rangeSelection = Pair(0f, 0f)
+
+	private var playCount = 0L
 
 	private var bpm = 120.0
 
@@ -32,6 +40,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 	override fun getSampleRate() = Temporary.sampleRate
 	override fun getDepth() = Temporary.depth
+	override fun getChannelCount() = channelCount
 
 	override fun getCurrentBarDivision(): Int {
 		val parent = parent as? GroupLNode
@@ -72,8 +81,14 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 	override fun isPlaying() = playing
 
 	override fun playStartedCount(): Long {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		val parent = parent as? GroupLNode
+		if (parent != null)
+			playCount = parent.playStartedCount()
+
+		return playCount
 	}
+
+	override fun getRangeSelection() = rangeSelection
 
 	override fun onInit() {}
 	override fun onSpawnProcessor(lp: LocalProcessor) {}
@@ -83,7 +98,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 
 		val startPlaying = data.startPlaying ?: false
 		val stopPlaying = data.stopPlaying ?: false
-		val cursorBeatPosition = data.cursorBeatPosition
+		val playheadPosition = data.playheadPosition
 		val bpm = data.bpm
 
 		if (startPlaying && !stopPlaying)
@@ -92,14 +107,34 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		if (stopPlaying)
 			playing = false
 
-		if (cursorBeatPosition != null)
-			currentBeatPosition = cursorBeatPosition
+		val rangeSelection = rangeSelection
+		if (playheadPosition != null) {
+			this.currentCursorBeatPosition = playheadPosition.toDouble()
+			playCount++
+		} else if (rangeSelection.first != rangeSelection.second && isPlaying()) { // If there is a range selection set, see if we should move the playhead to the beginning if it has reached the end
+			if (currentCursorBeatPosition >= rangeSelection.second)
+				currentCursorBeatPosition = rangeSelection.first.toDouble()
+		}
+
+		lastCursorBeatPosition = currentCursorBeatPosition
 
 		if (bpm != null)
 			this.bpm = bpm
 	}
 
-	override fun onParameter(instance: BaseNodeProperties) {}
+	override fun onParameter(instance: BaseNodeProperties) {
+		instance as Properties
+
+		val channelCount = instance.channelCount
+		if (channelCount != null)
+			this.channelCount = channelCount
+
+		val rangeSelectionStart = instance.rangeSelectionStart
+		val rangeSelectionStop = instance.rangeSelectionStop
+
+		if (rangeSelectionStart != null && rangeSelectionStop != null)
+			this.rangeSelection = Pair(rangeSelectionStart, rangeSelectionStop)
+	}
 
 	override fun onFinishFrame() {
 		if (playing) {
@@ -109,6 +144,9 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 			currentBeatPosition += (buffer_size / sample_rate.toDouble()) * (getCurrentFrameBPM() / 60.0)
 			currentBeatPosition %= getCurrentBarDivision()
 		}
+
+		// Report back playback position
+		outgoing = Group1OutputFrameData(nodeId = id, currentPlayheadPosition = currentCursorBeatPosition.toFloat(), currentBPM = bpm.toFloat())
 	}
 
 	override fun onDestroy() {}

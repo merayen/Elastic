@@ -10,6 +10,7 @@ import net.merayen.elastic.ui.util.MouseHandler
 import net.merayen.elastic.uinodes.UINodeInformation
 import net.merayen.elastic.util.MutablePoint
 
+@Deprecated("Should be replaced by AddNodeWindow")
 internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content()) {
     internal interface Handler {
         fun onSelectCategory(category: String)
@@ -35,8 +36,8 @@ internal class AddNodePopupSlideItem(handler: Handler) : PopupSlideItem(Content(
 
         private fun addCategory(text: String) {
             list.add(object : UIObject() {
-                internal var mouse = MouseHandler(this)
-                internal var over: Boolean = false
+                var mouse = MouseHandler(this)
+                var over: Boolean = false
 
                 override fun onInit() {
                     mouse.setHandler(object : MouseHandler.Handler() {

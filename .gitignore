@@ -12,3 +12,8 @@
 .DS_Store
 /bin
 /classes
+*.class
+*.swp
+/gradle.properties
+a.out
+*.s

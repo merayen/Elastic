@@ -18,7 +18,7 @@ class UI : UINode() {
 		typeDropDown = DropDown(object : DropDown.Handler {
 			override fun onChange(selected: DropDown.Item) {
 				selected as DropDownItem
-				sendParameter(Properties(type = selected.type.name))
+				sendProperties(Properties(type = selected.type.name))
 			}
 		})
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.SINE, "Sine"))
@@ -43,17 +43,16 @@ class UI : UINode() {
 			port.translation.x = 0f
 			port.translation.y = 20f
 
-		} else if (port.name == "audio") {
+		} else if (port.name == "out") {
 			port.translation.x = layoutWidth
 			port.translation.y = 20f
 		}
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeProperties) {}
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		instance as Properties
 
 		val type = instance.type

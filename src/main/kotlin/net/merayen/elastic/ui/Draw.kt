@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui
 
 import net.merayen.elastic.ui.util.DrawContext
-import net.merayen.elastic.util.MutablePoint
+import net.merayen.elastic.util.Point
 import java.awt.Font
 import java.awt.FontMetrics
 import java.awt.geom.Path2D
@@ -80,19 +80,23 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 	}
 
 	fun setColor(r: Int, g: Int, b: Int) {
-		g2d.color = java.awt.Color(r, g, b)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color((r / 255f) * td.color.red, (g / 255f) * td.color.green, (b / 255f) * td.color.green, td.color.alpha)
 	}
 
 	fun setColor(r: Float, g: Float, b: Float) {
-		g2d.color = java.awt.Color(r, g, b)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color(r * td.color.red, g * td.color.green, b * td.color.green, td.color.alpha)
 	}
 
 	fun setColor(r: Float, g: Float, b: Float, a: Float) {
-		g2d.color = java.awt.Color(r, g, b, a)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color(r * td.color.red, g * td.color.green, b * td.color.green, a * td.color.alpha)
 	}
 
 	fun setColor(color: Color) {
-		g2d.color = java.awt.Color(color.red, color.green, color.blue, color.alpha)
+		val td = uiobject.absoluteTranslation ?: return
+		g2d.color = java.awt.Color(color.red * td.color.red, color.green * td.color.green, color.blue * td.color.blue, color.alpha * td.color.alpha)
 	}
 
 	fun fillRect(x: Float, y: Float, width: Float, height: Float) {
@@ -113,6 +117,44 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		val dimension = uiobject.getAbsoluteDimension(width, height) ?: return
 		reg(x, y, width, height)
 		g2d.drawRect(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
+	}
+
+	fun polygon(points: FloatArray) {
+		val length = points.size
+
+		if (length < 4)
+			return // Nothing to draw
+
+		if ((length / 2) * 2 != length)
+			throw RuntimeException("Points array must be dividable by 2")
+
+		val xs = IntArray(length / 2)
+		val ys = IntArray(length / 2)
+
+		var xmin = Float.MAX_VALUE
+		var ymin = Float.MAX_VALUE
+		var xmax = Float.MIN_VALUE
+		var ymax = Float.MIN_VALUE
+
+		for (i in 0 until length step 2) {
+			if (points[i] < xmin)
+				xmin = points[i]
+			if (points[i+1] < ymin)
+				ymin = points[i+1]
+
+			if (points[i] > xmax)
+				xmax = points[i]
+			if (points[i+1] > ymax)
+				ymax = points[i+1]
+
+			val point = uiobject.getAbsolutePosition(points[i], points[i+1]) ?: return
+			xs[i / 2] = point.x.toInt()
+			ys[i / 2] = point.y.toInt()
+		}
+
+		reg(xmin, ymin, xmax - xmin, ymax - ymin)
+
+		g2d.fillPolygon(xs, ys, length / 2)
 	}
 
 	fun setStroke(width: Float) {
@@ -158,7 +200,7 @@ class Draw internal constructor(private val uiobject: UIObject, private val draw
 		g2d.drawOval(point.x.toInt(), point.y.toInt(), dimension.width.toInt(), dimension.height.toInt())
 	}
 
-	fun bezier(x: Float, y: Float, points: Array<MutablePoint>) {
+	fun bezier(x: Float, y: Float, points: Array<Point>) {
 		val point = uiobject.getAbsolutePosition(x, y) ?: return
 
 		if (points.size == 0)

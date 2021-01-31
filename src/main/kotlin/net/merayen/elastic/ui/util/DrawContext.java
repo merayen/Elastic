@@ -17,15 +17,10 @@ import java.util.List;
  */
 public class DrawContext {
 	public final java.awt.Graphics2D graphics2d;
-
 	public final MutablePoint windowLocation;
-
 	private final Surface surface;
-
 	private int z_counter = 0;
-
 	public final List<UIEvent> incoming_events;
-
 	public final TranslationDataStack translation_stack = new TranslationDataStack();
 
 	/**
@@ -39,7 +34,6 @@ public class DrawContext {
 	public DrawContext(java.awt.Graphics2D graphics2d, Surface surface, List<UIEvent> events) { // TODO abstract away Graphics2D
 		this.graphics2d = graphics2d;
 		this.windowLocation = surface.getSurfaceLocation();
-
 
 		this.surface = surface;
 		this.incoming_events = events;

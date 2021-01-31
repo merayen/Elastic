@@ -30,7 +30,7 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeProperties) {}
+	override fun onProperties(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		message as HistogramUpdateMessage
@@ -38,6 +38,4 @@ class UI : UINode() {
 		if (bucketsData != null)
 			histogram.buckets = bucketsData.clone()
 	}
-
-	override fun onParameter(instance: BaseNodeProperties) {}
 }

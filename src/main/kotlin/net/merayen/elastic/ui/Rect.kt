@@ -10,10 +10,10 @@ class Rect {
 	var y2 = 0f
 
 	val width: Float
-		get() = x2 - x1
+		get() = max(0f, x2 - x1)
 
 	val height: Float
-		get() = y2 - y1
+		get() = max(0f, y2 - y1)
 
 	constructor(x1: Float, y1: Float, x2: Float, y2: Float) {
 		this.x1 = x1

@@ -6,7 +6,7 @@ import java.util.Deque;
 import java.util.List;
 
 public class ADSR {
-	class Entry {
+	static class Entry {
 		final long position;
 		final float state;
 

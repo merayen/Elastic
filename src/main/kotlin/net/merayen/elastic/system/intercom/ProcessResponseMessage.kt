@@ -5,9 +5,8 @@ import java.util.*
 /**
  * Message is sent to backend when we want to process a new frame.
  * Backend responds with a new ProcessMessage with the processed data.
- * TODO split this into DoProcessMessage, FinishedProcessMessage
  */
-class ProcessResponseMessage : ElasticMessage {
+class ProcessResponseMessage : ElasticMessage { // TODO tissue:llvm remove, will send individual messages using NodeDataMessage instead
 	/**
 	 * Resulting data from the processing backend
 	 */

@@ -21,6 +21,8 @@ open class UIClip : UIObject(), FlexibleDimension {
 	 * Returns true if the object is visible inside us.
 	 * Does not check if it is really a child of us.
 	 * The UIObject must implement the FlexibleDimension interface.
+	 *
+	 * TODO Perhaps delete this one? UIObject has visiblity-property itself.
 	 */
 	fun isVisible(uiObject: UIObject): Boolean {
 		uiObject as FlexibleDimension
@@ -29,17 +31,5 @@ open class UIClip : UIObject(), FlexibleDimension {
 
 		return relative.x + uiObject.layoutWidth > 0 && relative.y + uiObject.layoutHeight > 0 &&
 			relative.x < layoutWidth && relative.y < layoutHeight
-	}
-
-	/**
-	 * Returns a rectangle representing the visible area of the UIObject.
-	 * The UIObject must implement the FlexibleDimension interface.
-	 */
-	fun visibleRectangle(uiObject: UIObject): Rect {
-		uiObject as FlexibleDimension
-
-		val relative = getRelativePosition(uiObject)!!
-
-		return Rect(relative.x, relative.y, layoutWidth, layoutHeight)
 	}
 }

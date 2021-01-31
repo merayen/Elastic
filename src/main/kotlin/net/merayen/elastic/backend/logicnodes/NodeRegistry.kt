@@ -24,5 +24,13 @@ object NodeRegistry {
 		nodes.add("histogram_1")
 		nodes.add("wave_1")
 		nodes.add("metronome_1")
+		nodes.add("cutoff_1")
+		nodes.add("autocorrelation_1")
+		nodes.add("frequency_1")
+		nodes.add("math_1")
+		nodes.add("oscilloscope_1")
+		nodes.add("value_1")
+		nodes.add("to_audio_1")
+		nodes.add("from_midi_1")
 	}
 }

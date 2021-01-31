@@ -1,11 +1,13 @@
 package net.merayen.elastic.ui.objects.top.views.nodeview
 
 import net.merayen.elastic.ui.objects.node.UINode
+import net.merayen.elastic.util.logError
+import kotlin.random.Random
 
 /**
  * Re-arranges nodes
  */
-class NodeViewSolver(private val uinodes: Collection<UINode>) {
+class NodeViewSolver(private val nodeView: NodeView) {
 	fun solve() {
 		sillySolve()
 	}
@@ -16,7 +18,7 @@ class NodeViewSolver(private val uinodes: Collection<UINode>) {
 		var inputRow = 0
 		var outputRow = 0
 		var looseRow = 0
-		for (uinode in uinodes) { // Bullshit-sorter
+		for (uinode in nodeView.nodes.values) { // Bullshit-sorter
 			if (uinode in nodes.input) {
 				uinode.targetLocation.x = 0f
 				uinode.targetLocation.y = inputRow * 100f
@@ -41,7 +43,7 @@ class NodeViewSolver(private val uinodes: Collection<UINode>) {
 	private fun getInputNodes(): NodeArray {
 		val result = NodeArray()
 
-		for (uinode in uinodes) {
+		for (uinode in nodeView.nodes.values) {
 			val uinet = uinode.UINet
 
 			if (uinet != null) {
@@ -73,5 +75,31 @@ class NodeViewSolver(private val uinodes: Collection<UINode>) {
 		}
 
 		return result
+	}
+
+	private class Node(val uinode: UINode, val level: Int)
+
+	private fun lessSillySolve() {
+		val uiNet = nodeView.uiNet
+		val leftMostNodes = nodeView.nodes.values.filter { uiNode ->
+			uiNode.ports.filter { uiPort -> !uiPort.output }.all { inputUiPort ->
+				!uiNet.isConnected(inputUiPort)
+			}
+		}
+	}
+
+	private fun solveByPaths() {
+		if (nodeView.nodes.isEmpty())
+			return
+
+		val touched = ArrayList<UINode>()
+
+		var currentNode = nodeView.nodes.values.first()
+
+		val queue = ArrayList<UINode>()
+
+		while (queue.isNotEmpty()) {
+			//queue.
+		}
 	}
 }

@@ -1,8 +1,9 @@
 package net.merayen.elastic.ui.objects.top.views.splashview
 
-import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
-import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.MutableColor
+import net.merayen.elastic.ui.objects.top.window.Window
+import net.merayen.elastic.ui.objects.top.easymotion.Branch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.util.Pacer
 import kotlin.math.PI
@@ -12,16 +13,11 @@ import kotlin.math.sin
 
 class SplashView : View() {
 	private var loadingBubbles = Pacer()
-	private var coloringPacer: Pacer? = null // TODO
 	private var loadingBubblesPos = 0f
-	private var loadingDescription = "Waiting on computer..."
-	private val bgColor = Color(0, 0, 0)
-	private val fgColor = Color(1f, 1f, 1f)
+	private var loadingDescription = "Initializing"
+	private val bgColor = MutableColor(0, 0, 0)
+	private val fgColor = MutableColor(1f, 1f, 1f)
 	override fun cloneView() = SplashView()
-
-	init {
-		System.currentTimeMillis()
-	}
 
 	override fun onInit() {
 		super.onInit()
@@ -76,6 +72,8 @@ class SplashView : View() {
 		// Loading description
 		draw.setColor(fgColor)
 		draw.setFont("", 24f)
-		draw.text(loadingDescription, 50f + 140f * (1 - initPos), layoutHeight / 2 + 100f)
+		draw.text(loadingDescription, 50f + 140f * (1 - initPos), layoutHeight / 2 + 90f)
 	}
+
+	override val easyMotionBranch = object : Branch(this) {}
 }

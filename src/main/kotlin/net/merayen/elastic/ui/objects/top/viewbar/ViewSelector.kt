@@ -35,11 +35,10 @@ internal class ViewSelector(handler: Handler) : UIObject() {
 		views.add(DropDownItem(TransportView::class, "Transport"))
 		views.add(DropDownItem(ArrangementView::class, "Arrangement"))
 		views.add(DropDownItem(StatisticsView::class, "Statistics"))
-		//views.add(DropDownItem(SplashView::class, "Splash"))
 	}
 
 	override fun onInit() {
-		dropDown.layoutHeight = 14f
+		dropDown.layoutHeight = 34f
 		add(dropDown)
 
 		for (item in views)

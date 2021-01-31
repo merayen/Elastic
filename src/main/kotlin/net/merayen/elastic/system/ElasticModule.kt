@@ -5,6 +5,20 @@ import net.merayen.elastic.util.Postmaster
 import java.io.Closeable
 
 abstract class ElasticModule : Thread(), Closeable {
+	interface Handler {
+		/**
+		 * Called when this module sends outgoing messages.
+		 * ElasticSystem's thread will wake up and retrieve the message.
+		 */
+		fun onWakeUp()
+	}
+
+	var handler: Handler? = null
+
+	private val lock = Object()
+
+	private var notified = true
+
 	/**
 	 * Messages sent to this module, that are to be read by this module.
 	 */
@@ -21,23 +35,47 @@ abstract class ElasticModule : Thread(), Closeable {
 
 	final override fun run() {
 		isRunning = true
-		mainLoop()
+
+		onInit()
+
+		while (isRunning) {
+			synchronized(lock) {
+				if (!notified)
+					lock.wait()
+
+				notified = false
+			}
+
+			onUpdate()
+		}
+
+		onEnd()
 	}
 
+	abstract fun onInit()
+
 	/**
-	 * Implement the main code here. Like this:
-	 *
-	 * 	override fun mainLoop() {
-	 *		// Your init code here
-	 *
-	 *		while (running) {
-	 *			// Your mainloop here
-	 *		}
-	 *
-	 *		// Your destructor code here
-	 *	}
+	 * Called every time someone schedules us, due to e.g incoming message.
 	 */
-	abstract fun mainLoop()
+	abstract fun onUpdate()
+
+	/**
+	 * Called when asked to stop the module.
+	 * Clean up any resources/threads in this one.
+	 */
+	abstract fun onEnd()
+
+	protected fun notifyElasticSystem() = handler!!.onWakeUp()
+
+	/**
+	 * Notifies this module that something is ready for it, usually a message.
+	 */
+	fun schedule() {
+		synchronized(lock) {
+			notified = true
+			lock.notifyAll()
+		}
+	}
 
 	override fun close() {
 		isRunning = false

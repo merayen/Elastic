@@ -1,10 +1,12 @@
 package net.merayen.elastic.backend.queue
 
-import java.util.ArrayDeque
+import java.util.*
 import kotlin.collections.HashSet
 
 /**
-* An async queue with support for progress reporting.
+ * An async queue with support for progress reporting.
+ * The content of the queue is thought to be shown to the user as a progress bar with some description.
+ * User should be able to cancel a task.
  */
 class Queue(val threadCount: Int) {
     private val tasks = ArrayDeque<QueueTask>()

@@ -1,12 +1,13 @@
 package net.merayen.elastic.ui.objects.components.curvebox
 
-import net.merayen.elastic.ui.Color
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Rect
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.UIEvent
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.MutablePoint
+import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
 import java.util.*
@@ -95,7 +96,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	}
 
 	inner class BezierDotDragable internal constructor(private val point: BezierDot) : UIObject() {
-		val color = Color(255, 200, 0)
+		val color = MutableColor(255, 200, 0)
 		var radius = 0.05f
 
 		lateinit var movable: Movable
@@ -195,7 +196,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 		val bps = points[0] // The initial point
 		@Suppress("UNCHECKED_CAST")
-		draw.bezier(bps.position.translation.x, bps.position.translation.y, p as Array<MutablePoint>)
+		draw.bezier(bps.position.translation.x, bps.position.translation.y, p as Array<Point>)
 
 		// Draw lines from the dots to the points
 		drawDotLines(draw)

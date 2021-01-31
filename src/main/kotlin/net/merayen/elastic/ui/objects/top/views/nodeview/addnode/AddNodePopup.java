@@ -2,10 +2,11 @@ package net.merayen.elastic.ui.objects.top.views.nodeview.addnode;
 
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.popupslide.PopupSlide;
-import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.objects.top.window.Window;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.uinodes.BaseInfo;
 
+@Deprecated
 public class AddNodePopup {
 	public interface Handler {
 		void onSelectNode(BaseInfo info);
@@ -28,7 +29,7 @@ public class AddNodePopup {
 	}
 
 	private void openAddNodePopup() {
-		popup.openPopup(new AddNodePopupSlideItem(category -> openNodeList(category)));
+		popup.openPopup(new AddNodePopupSlideItem(this::openNodeList));
 	}
 
 	private void openNodeList(String category) {

@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.data.eventdata
 
-import junit.framework.Assert.assertEquals
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -18,14 +18,14 @@ class MidiDataIteratorTest {
 				MidiData.MidiChunk(
 					i.toString(),
 					1 - (1 / (i+1).toDouble()),
-					arrayOf(shortArrayOf(i.toShort()))
+					mutableListOf(i.toShort())
 				)
 			)
 		}
 
 		// Add notes at the same exact place, order should be kept (100 before 101)
-		midiData.add(MidiData.MidiChunk("100", 1.0, arrayOf(shortArrayOf(100))))
-		midiData.add(MidiData.MidiChunk("101", 1.0, arrayOf(shortArrayOf(101))))
+		midiData.add(MidiData.MidiChunk("100", 1.0, mutableListOf(100)))
+		midiData.add(MidiData.MidiChunk("101", 1.0, mutableListOf(101)))
 
 		this.midiData = midiData
 	}
@@ -50,7 +50,7 @@ class MidiDataIteratorTest {
 
 		var count = 0
 		for (midiChunk in midiData)
-				Assertions.assertEquals(count++, midiChunk.id.toInt())
+				Assertions.assertEquals(count++, midiChunk.id!!.toInt())
 	}
 
 
@@ -61,7 +61,7 @@ class MidiDataIteratorTest {
 		for (i in 0 until 100) {
 			var count = i
 			for (midiChunk in midiData.iterator(1 - 1 / (i + 1.0)))
-				Assertions.assertEquals(count++, midiChunk.id.toInt())
+				Assertions.assertEquals(count++, midiChunk.id!!.toInt())
 		}
 	}
 
@@ -73,7 +73,7 @@ class MidiDataIteratorTest {
 		for (i in 0 until 102/2) {
 			var count = 0
 			for (midiChunk in midiData) {
-				assertEquals(count, midiChunk.id.toInt())
+				assertEquals(count, midiChunk.id!!.toInt())
 				midiData.remove((count + 1).toString())
 				count += 2
 			}

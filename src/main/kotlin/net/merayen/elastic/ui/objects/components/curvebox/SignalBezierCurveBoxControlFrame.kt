@@ -2,9 +2,9 @@ package net.merayen.elastic.ui.objects.components.curvebox
 
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
+import net.merayen.elastic.ui.objects.components.buttons.Button
 
 class SignalBezierCurveBoxControlFrame : UIObject(), FlexibleDimension {
 	override var layoutWidth = 100f
@@ -14,7 +14,7 @@ class SignalBezierCurveBoxControlFrame : UIObject(), FlexibleDimension {
 	private val buttons = AutoLayout(LayoutMethods.HorizontalBox(2f, 0f))
 
 	override fun onInit() {
-		bezier.translation.y = 15f
+		bezier.translation.y = 20f
 		add(bezier)
 		add(buttons)
 

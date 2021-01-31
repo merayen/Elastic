@@ -49,7 +49,7 @@ public class Serializer {
 		for (Object x : (JSONArray) obj.get("list")) {
 			JSONObject r = (JSONObject) x;
 
-			DependencyItem dependencyItem = null;
+			DependencyItem dependencyItem;
 
 			if (r.get("id").equals(""))
 				dependencyItem = dependencyGraph.get("");

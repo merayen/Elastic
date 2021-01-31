@@ -1,8 +1,8 @@
 package net.merayen.elastic.uinodes;
 
-import java.util.*;
-
 import net.merayen.elastic.backend.logicnodes.NodeRegistry;
+
+import java.util.*;
 
 public class UINodeInformation {
 	private static final String UI_CLASS_PATH = "net.merayen.elastic.uinodes.list.";
@@ -16,7 +16,7 @@ public class UINodeInformation {
 			try {
 				result.add( (BaseInfo)Class.forName(UI_CLASS_PATH + p + ".Info").newInstance() );
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-				e.printStackTrace();
+				System.out.printf("Could not retrieve Info-class for %s. Forgotten to create that class?\n", p);
 			}
 		}
 

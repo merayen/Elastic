@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
 
 open class ViewBar(private val viewClass: KClass<out View>) : AutoLayout<LayoutMethods.HorizontalBox>(LayoutMethods.HorizontalBox(2f, 100000f)), FlexibleDimension {
 	override var layoutWidth = 0f
-	override var layoutHeight = 20f
+	override var layoutHeight = 40f
 
 	private val menu = ViewSelector(object : ViewSelector.Handler {
 		override fun onSelect(cls: KClass<out View>) {

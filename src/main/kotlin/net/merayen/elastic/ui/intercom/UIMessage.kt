@@ -1,3 +1,5 @@
 package net.merayen.elastic.ui.intercom
 
-abstract class UIMessage
+import net.merayen.elastic.system.intercom.ElasticMessage
+
+interface UIMessage : ElasticMessage

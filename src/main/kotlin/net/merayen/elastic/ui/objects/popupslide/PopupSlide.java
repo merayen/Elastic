@@ -4,7 +4,7 @@ import net.merayen.elastic.ui.MutableDimension;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.event.UIEvent;
-import net.merayen.elastic.ui.objects.top.Window;
+import net.merayen.elastic.ui.objects.top.window.Window;
 import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.ui.util.UINodeUtil;
 import net.merayen.elastic.util.MutablePoint;

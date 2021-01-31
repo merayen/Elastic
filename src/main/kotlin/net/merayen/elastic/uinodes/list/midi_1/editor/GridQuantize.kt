@@ -10,21 +10,16 @@ class GridQuantize : UIObject() {
 	private var division = 1
 
 	override fun onInit() {
-		quantizeScale.setHandler(object : PopupParameter1D.Handler {
+		quantizeScale.handler = object : PopupParameter1D.Handler {
 			override fun onMove(value: Float) {
 				division = 2.0.pow((value * 6).roundToInt()).toInt()
-				updateLabel()
 			}
 
 			override fun onChange(value: Float) {}
-		})
+
+			override fun onLabel(value: Float) = "Grid 1/${2.0.pow((value * 6).roundToInt()).toInt()}"
+		}
 
 		add(quantizeScale)
-
-		updateLabel()
-	}
-
-	private fun updateLabel() {
-		quantizeScale.label.text = "Grid 1/$division"
 	}
 }

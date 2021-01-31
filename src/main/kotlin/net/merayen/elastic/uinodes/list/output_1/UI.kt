@@ -7,7 +7,6 @@ import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 
 class UI : UINode() {
-
 	private val vu = VU()
 
 	init {
@@ -38,7 +37,7 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeProperties) {}
+	override fun onProperties(message: BaseNodeProperties) {}
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is OutputNodeStatisticsMessage) {
@@ -46,7 +45,4 @@ class UI : UINode() {
 			vu.updateOffset(message.offsets)
 		}
 	}
-
-
-	override fun onParameter(instance: BaseNodeProperties) {}
 }

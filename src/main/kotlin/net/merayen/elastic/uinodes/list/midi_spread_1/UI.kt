@@ -15,13 +15,13 @@ class UI : UINode() {
 		spread_width = ParameterSlider()
 		spread_width.translation.x = 10f
 		spread_width.translation.y = 20f
-		spread_width.setHandler(object : ParameterSlider.IHandler {
+		spread_width.setHandler(object : ParameterSlider.Handler {
 			override fun onLabelUpdate(value: Double): String {
 				return String.format("%.2f", value)
 			}
 
 			override fun onChange(value: Double, programatic: Boolean) {
-				self.sendParameter(Properties(width = value.toFloat()))
+				self.sendProperties(Properties(width = value.toFloat()))
 			}
 
 			override fun onButton(offset: Int) {
@@ -52,11 +52,9 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
-	override fun onMessage(message: BaseNodeProperties) {}
-
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		if (instance is Properties) {
 			val widthData = instance.width
 			if (widthData != null)

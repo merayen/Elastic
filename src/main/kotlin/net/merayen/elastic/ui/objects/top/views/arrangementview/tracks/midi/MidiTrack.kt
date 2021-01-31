@@ -5,9 +5,9 @@ import net.merayen.elastic.backend.logicnodes.list.midi_1.ChangeEventZoneMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.midi_1.RemoveEventZoneMessage
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
-import net.merayen.elastic.ui.objects.components.TextInput
+import net.merayen.elastic.ui.objects.components.NativeTextInput
 import net.merayen.elastic.ui.objects.components.buttons.Button
 import net.merayen.elastic.ui.objects.components.buttons.StateButton
 import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
@@ -26,7 +26,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 
 	private val soloButton: StateButton
 	private val recordButton: StateButton
-	private val trackName = TextInput()
+	private val trackName = NativeTextInput()
 
 	private val eventTimeLine = EventTimeLine()
 
@@ -47,8 +47,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		muteButton = object : StateButton() {
 			init {
 				label = "M"
-				textColor = Color(1f, 1f, 1f)
-				backgroundColor = Color(1f, 0f, 0f)
+				textColor = MutableColor(1f, 1f, 1f)
+				backgroundColor = MutableColor(1f, 0f, 0f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
 						sendParameter(Properties(mute = value))
@@ -60,8 +60,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		soloButton = object : StateButton() {
 			init {
 				label = "S"
-				textColor = Color()
-				backgroundColor = Color(1f, 1f, 0f)
+				textColor = MutableColor()
+				backgroundColor = MutableColor(1f, 1f, 0f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
 						sendParameter(Properties(solo = value))
@@ -73,8 +73,8 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		recordButton = object : StateButton() {
 			init {
 				label = "R"
-				textColor = Color(1f, 1f, 1f)
-				backgroundColor = Color(1f, 0.5f, 0.5f)
+				textColor = MutableColor(1f, 1f, 1f)
+				backgroundColor = MutableColor(1f, 0.5f, 0.5f)
 				handler = object : Handler {
 					override fun onClick(value: Boolean) {
 						sendParameter(Properties(record = value))
@@ -89,7 +89,7 @@ class MidiTrack(nodeId: String, arrangement: Arrangement) : ArrangementTrack(nod
 		trackName.translation.x = 5f
 		trackName.translation.y = 25f
 		trackName.description = "Name of the track"
-		trackName.handler = object : TextInput.Handler {
+		trackName.handler = object : NativeTextInput.Handler {
 			override fun onChange(text: String) {
 				sendParameter(Properties(trackName = text))
 			}

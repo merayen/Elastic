@@ -90,9 +90,17 @@ public class AverageStat<T extends Number> implements Iterable<T> {
 		return new Stat(min != Double.MAX_VALUE ? min : 0, getAvg(), max != Double.MIN_VALUE ? max : 0);
 	}
 
-	public String info() {
+	public interface Formatter {
+		String apply(double value);
+	}
+
+	public String info(Formatter formatter) {
 		Stat stat = get();
-		return String.format("[%f / %f / %f]", stat.min, stat.avg, stat.max);
+		return String.format("[%s / %s / %s]", formatter.apply(stat.min), formatter.apply(stat.avg), formatter.apply(stat.max));
+	}
+
+	public String info() {
+		return info(Double::toString);
 	}
 
 	@Override

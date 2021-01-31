@@ -1,10 +1,13 @@
 package net.merayen.elastic.ui.objects.components
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
 
 class BoxLabel(var text: String = "") : UIObject() {
     private var calculatedWidth: Float = 0f
+
+    val color = MutableColor()
 
     override fun onDraw(draw: Draw) {
         draw.setFont("", 10f)

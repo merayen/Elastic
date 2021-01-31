@@ -1,12 +1,8 @@
 package net.merayen.elastic.backend.architectures.local;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Iterator;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 /**
  * Contains a list of several LocalProcessors that is active in a LocalNode.
@@ -16,40 +12,27 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 	 * Key: session_id
 	 * Value: [LocalProcessor(), ...]
 	 */
-	private final Map<Integer, List<LocalProcessor>> sessions = new HashMap<>();
+	private final List<LocalProcessor> processors = new ArrayList<>();
 
-	ProcessorList() {}
-
-	void addSession(int session_id) {
-		if(!sessions.containsKey(session_id))
-			sessions.put(session_id, new ArrayList<>());
+	ProcessorList() {
 	}
 
 	void add(LocalProcessor localprocessor) {
-		sessions.get(localprocessor.session_id).add(localprocessor);
+		processors.add(localprocessor);
 	}
 
 	public List<LocalProcessor> getAllProcessors() {
-		List<LocalProcessor> result = new ArrayList<>();
-
-		for(List<LocalProcessor> list : sessions.values())
-			result.addAll(list);
-
-		return result;
+		return Collections.unmodifiableList(processors);
 	}
 
 	/**
 	 * Get a processor for a certain session on a certain LocalNode.
 	 */
 	public LocalProcessor getProcessor(LocalNode localnode, int session_id) {
-		List<LocalProcessor> processors = sessions.get(session_id);
-
-		if(processors == null)
-			throw new RuntimeException("No such session");
-
-		for(LocalProcessor lp : processors)
-			if(lp.localnode == localnode)
+		for (LocalProcessor lp : processors) {
+			if (lp.localnode == localnode && lp.session_id == session_id)
 				return lp;
+		}
 
 		throw new RuntimeException("LocalNode does not have a LocalProcessor for this session");
 	}
@@ -58,42 +41,45 @@ public class ProcessorList implements Iterable<LocalProcessor> {
 	 * Retrieves all processors living in a session.
 	 */
 	public List<LocalProcessor> getProcessors(int session_id) {
-		List<LocalProcessor> result = sessions.get(session_id);
-		if(result == null)
-			throw new RuntimeException("No such session");
+		List<LocalProcessor> result = new ArrayList<>();
+
+		for (LocalProcessor lp : processors)
+			if (lp.session_id == session_id)
+				result.add(lp);
 
 		return result;
 	}
 
-	public Set<Integer> getSessions() {
-		return sessions.keySet();
+	public Set<Integer> getSessionIds() {
+		Set<Integer> result = new HashSet<>();
+
+		for (LocalProcessor lp : processors)
+			result.add(lp.session_id);
+
+		return result;
 	}
 
-	public List<Integer> getSessions(LocalNode localnode) {
-		List<Integer> result = new ArrayList<>();
+	public Set<Integer> getSessions(LocalNode localnode) {
+		Set<Integer> result = new HashSet<>();
 
-		for(Entry<Integer, List<LocalProcessor>> e : sessions.entrySet()) {
-			for(LocalProcessor lp : e.getValue()) {
-				if(lp.localnode == localnode) {
-					result.add(e.getKey());
-					break;
-				}
-			}
-		}
+		for (LocalProcessor lp : processors)
+			if (lp.localnode == localnode)
+				result.add(lp.session_id);
 
 		return result;
 	}
 
 	void removeSession(int session_id) {
-		if(sessions.remove(session_id) == null)
-			throw new RuntimeException("Session does not exist");
+		processors.removeIf(x -> x.session_id == session_id);
 	}
 
+	@Override
+	@NotNull
 	public Iterator<LocalProcessor> iterator() { // Bad performance? Check getAllProcessors()
-		return getAllProcessors().iterator(); 
+		return getAllProcessors().iterator();
 	}
 
 	void clear() {
-		sessions.clear();
+		processors.clear();
 	}
 }

@@ -59,7 +59,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		bwb.layoutHeight = 100f
 
 		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
-			internal var i: Int = 0
+			var i: Int = 0
 			override fun onChange() = send()
 
 			override fun onMove() {

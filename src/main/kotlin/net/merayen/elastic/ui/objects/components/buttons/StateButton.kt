@@ -1,6 +1,6 @@
 package net.merayen.elastic.ui.objects.components.buttons
 
-import net.merayen.elastic.ui.Color
+import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
 
 open class StateButton : UIObject() {
@@ -18,8 +18,8 @@ open class StateButton : UIObject() {
 
 	var handler: Handler? = null
 
-	var textColor = Color(255, 255, 255)
-	var backgroundColor = Color(100, 100, 100)
+	var textColor = MutableColor(255, 255, 255)
+	var backgroundColor = MutableColor(100, 100, 100)
 
 	var value = false
 		set(value) {
@@ -40,7 +40,7 @@ open class StateButton : UIObject() {
 	}
 
 	private fun updateButtonColor() {
-		button.textColor = if (value) textColor else Color(textColor.red / 2, textColor.green / 2, textColor.blue / 2)
-		button.backgroundColor = if (value) backgroundColor else Color(backgroundColor.red / 2, backgroundColor.green / 2, backgroundColor.blue / 2)
+		button.textColor = if (value) textColor else MutableColor(textColor.red / 2, textColor.green / 2, textColor.blue / 2)
+		button.backgroundColor = if (value) backgroundColor else MutableColor(backgroundColor.red / 2, backgroundColor.green / 2, backgroundColor.blue / 2)
 	}
 }

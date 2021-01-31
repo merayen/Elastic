@@ -1,7 +1,7 @@
 package net.merayen.elastic.ui.surface
 
-import junit.framework.Assert.assertTrue
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import java.awt.Color
 import java.awt.Graphics2D
 

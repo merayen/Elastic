@@ -33,10 +33,6 @@ public class AudioOutlet extends Outlet {
 		this.channel_count = channel_count;
 	}
 
-	public int getChannelCount() {
-		return channel_count;
-	}
-
 	@Override
 	public void forwardFromOutlet(Outlet source) {
 		throw new NotImplementedError();

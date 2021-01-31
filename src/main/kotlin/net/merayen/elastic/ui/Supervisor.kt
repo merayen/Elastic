@@ -36,7 +36,7 @@ class Supervisor(private val top: UIObject) {
 
 		draw.destroy()
 
-		for (o in uiobject.onGetChildren(dc.surfaceID))
+		for (o in uiobject.onGetChildren(dc.surfaceID).toList())
 			internalDraw(dc, o)
 
 		dc.pop()
@@ -47,7 +47,7 @@ class Supervisor(private val top: UIObject) {
 	 * Here the UIObjects can change their properties, add/remove UIObjects, etc.
 	 */
 	private fun internalUpdate(dc: DrawContext, uiobject: UIObject) {
-		if (!uiobject.isAttached && uiobject !== top)
+		if (uiobject.topMost !== top) // Only update UIObject if it is connected to our tree
 			return
 
 		if (uiobject.isInitialized) { // UIObject probably created in a previous onInit(), and has not been initialized yet, if this skips

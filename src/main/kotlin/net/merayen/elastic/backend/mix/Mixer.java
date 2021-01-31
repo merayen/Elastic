@@ -26,7 +26,7 @@ public class Mixer { // Rename to e.g "IODispatch"?
 
 	// Default mixer settings. These will be applied on all input and output devices, if possible
 	private int sample_rate = 44100;
-	private int audio_channels = 1;
+	private int audio_channels = 2;
 	private int audio_depth = 16;
 
 	private final AbstractDeviceScanner device_scanner;

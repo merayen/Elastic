@@ -39,7 +39,6 @@ class UI : UINode() {
 	}
 
 	override fun onRemovePort(port: UIPort) {}
-	override fun onMessage(message: BaseNodeProperties) {}
+	override fun onProperties(message: BaseNodeProperties) {}
 	override fun onData(message: NodeDataMessage) {}
-	override fun onParameter(instance: BaseNodeProperties) {}
 }

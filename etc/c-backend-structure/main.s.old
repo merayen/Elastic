@@ -1,0 +1,268 @@
+	.text
+	.intel_syntax noprefix
+	.file	"main.c"
+	.globl	Node_top1234_init       # -- Begin function Node_top1234_init
+	.p2align	4, 0x90
+	.type	Node_top1234_init,@function
+Node_top1234_init:                      # @Node_top1234_init
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end0:
+	.size	Node_top1234_init, .Lfunc_end0-Node_top1234_init
+	.cfi_endproc
+                                        # -- End function
+	.globl	Proc_top1234_init       # -- Begin function Proc_top1234_init
+	.p2align	4, 0x90
+	.type	Proc_top1234_init,@function
+Proc_top1234_init:                      # @Proc_top1234_init
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end1:
+	.size	Proc_top1234_init, .Lfunc_end1-Proc_top1234_init
+	.cfi_endproc
+                                        # -- End function
+	.globl	Node_value1234_init     # -- Begin function Node_value1234_init
+	.p2align	4, 0x90
+	.type	Node_value1234_init,@function
+Node_value1234_init:                    # @Node_value1234_init
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end2:
+	.size	Node_value1234_init, .Lfunc_end2-Node_value1234_init
+	.cfi_endproc
+                                        # -- End function
+	.globl	Proc_value1234_init     # -- Begin function Proc_value1234_init
+	.p2align	4, 0x90
+	.type	Proc_value1234_init,@function
+Proc_value1234_init:                    # @Proc_value1234_init
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end3:
+	.size	Proc_value1234_init, .Lfunc_end3-Proc_value1234_init
+	.cfi_endproc
+                                        # -- End function
+	.globl	init                    # -- Begin function init
+	.p2align	4, 0x90
+	.type	init,@function
+init:                                   # @init
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end4:
+	.size	init, .Lfunc_end4-init
+	.cfi_endproc
+                                        # -- End function
+	.globl	wait_next_frame         # -- Begin function wait_next_frame
+	.p2align	4, 0x90
+	.type	wait_next_frame,@function
+wait_next_frame:                        # @wait_next_frame
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end5:
+	.size	wait_next_frame, .Lfunc_end5-wait_next_frame
+	.cfi_endproc
+                                        # -- End function
+	.globl	process                 # -- Begin function process
+	.p2align	4, 0x90
+	.type	process,@function
+process:                                # @process
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	sub	rsp, 1968
+	mov	rax, qword ptr [data]
+	mov	ecx, dword ptr [rax]
+	mov	dword ptr [rbp - 4], ecx
+	mov	dword ptr [rbp - 8], 0
+.LBB6_1:                                # =>This Loop Header: Depth=1
+                                        #     Child Loop BB6_5 Depth 2
+                                        #       Child Loop BB6_9 Depth 3
+                                        #     Child Loop BB6_15 Depth 2
+	mov	eax, dword ptr [rbp - 8]
+	cmp	eax, dword ptr [rbp - 4]
+	jge	.LBB6_20
+# %bb.2:                                #   in Loop: Header=BB6_1 Depth=1
+	mov	rax, qword ptr [data]
+	movsxd	rcx, dword ptr [rbp - 8]
+	cmp	qword ptr [rax + 8*rcx + 8], 0
+	jne	.LBB6_4
+# %bb.3:                                #   in Loop: Header=BB6_1 Depth=1
+	jmp	.LBB6_19
+.LBB6_4:                                #   in Loop: Header=BB6_1 Depth=1
+	mov	rax, qword ptr [data]
+	mov	ecx, dword ptr [rax + 2056]
+	mov	dword ptr [rbp - 2068], ecx
+	mov	rax, qword ptr [data]
+	movss	xmm0, dword ptr [rax + 4112] # xmm0 = mem[0],zero,zero,zero
+	movss	dword ptr [rbp - 2072], xmm0
+	mov	dword ptr [rbp - 2076], 0
+.LBB6_5:                                #   Parent Loop BB6_1 Depth=1
+                                        # =>  This Loop Header: Depth=2
+                                        #       Child Loop BB6_9 Depth 3
+	mov	eax, dword ptr [rbp - 2076]
+	cmp	eax, dword ptr [rbp - 2068]
+	jge	.LBB6_14
+# %bb.6:                                #   in Loop: Header=BB6_5 Depth=2
+	mov	rax, qword ptr [data]
+	movsxd	rcx, dword ptr [rbp - 2076]
+	cmp	qword ptr [rax + 8*rcx + 2064], 0
+	jne	.LBB6_8
+# %bb.7:                                #   in Loop: Header=BB6_5 Depth=2
+	jmp	.LBB6_13
+.LBB6_8:                                #   in Loop: Header=BB6_5 Depth=2
+	mov	dword ptr [rbp - 2080], 0
+.LBB6_9:                                #   Parent Loop BB6_1 Depth=1
+                                        #     Parent Loop BB6_5 Depth=2
+                                        # =>    This Inner Loop Header: Depth=3
+	cmp	dword ptr [rbp - 2080], 512
+	jge	.LBB6_12
+# %bb.10:                               #   in Loop: Header=BB6_9 Depth=3
+	movss	xmm0, dword ptr [rbp - 2072] # xmm0 = mem[0],zero,zero,zero
+	movsxd	rax, dword ptr [rbp - 2080]
+	movss	dword ptr [rbp + 4*rax - 2064], xmm0
+# %bb.11:                               #   in Loop: Header=BB6_9 Depth=3
+	mov	eax, dword ptr [rbp - 2080]
+	add	eax, 1
+	mov	dword ptr [rbp - 2080], eax
+	jmp	.LBB6_9
+.LBB6_12:                               #   in Loop: Header=BB6_5 Depth=2
+	jmp	.LBB6_13
+.LBB6_13:                               #   in Loop: Header=BB6_5 Depth=2
+	mov	eax, dword ptr [rbp - 2076]
+	add	eax, 1
+	mov	dword ptr [rbp - 2076], eax
+	jmp	.LBB6_5
+.LBB6_14:                               #   in Loop: Header=BB6_1 Depth=1
+	mov	dword ptr [rbp - 2084], 0
+.LBB6_15:                               #   Parent Loop BB6_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	cmp	dword ptr [rbp - 2084], 256
+	jge	.LBB6_18
+# %bb.16:                               #   in Loop: Header=BB6_15 Depth=2
+	jmp	.LBB6_17
+.LBB6_17:                               #   in Loop: Header=BB6_15 Depth=2
+	mov	eax, dword ptr [rbp - 2084]
+	add	eax, 1
+	mov	dword ptr [rbp - 2084], eax
+	jmp	.LBB6_15
+.LBB6_18:                               #   in Loop: Header=BB6_1 Depth=1
+	jmp	.LBB6_19
+.LBB6_19:                               #   in Loop: Header=BB6_1 Depth=1
+	mov	eax, dword ptr [rbp - 8]
+	add	eax, 1
+	mov	dword ptr [rbp - 8], eax
+	jmp	.LBB6_1
+.LBB6_20:
+	add	rsp, 1968
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end6:
+	.size	process, .Lfunc_end6-process
+	.cfi_endproc
+                                        # -- End function
+	.globl	main                    # -- Begin function main
+	.p2align	4, 0x90
+	.type	main,@function
+main:                                   # @main
+	.cfi_startproc
+# %bb.0:
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset rbp, -16
+	mov	rbp, rsp
+	.cfi_def_cfa_register rbp
+	sub	rsp, 16
+	mov	dword ptr [rbp - 4], 0
+	mov	edi, 1
+	mov	esi, 4120
+	call	calloc
+	mov	qword ptr [data], rax
+	call	init
+	mov	qword ptr [frame_number], 0
+.LBB7_1:                                # =>This Inner Loop Header: Depth=1
+	cmp	qword ptr [frame_number], 1000000
+	jge	.LBB7_4
+# %bb.2:                                #   in Loop: Header=BB7_1 Depth=1
+	call	wait_next_frame
+	call	process
+# %bb.3:                                #   in Loop: Header=BB7_1 Depth=1
+	mov	rax, qword ptr [frame_number]
+	add	rax, 1
+	mov	qword ptr [frame_number], rax
+	jmp	.LBB7_1
+.LBB7_4:
+	xor	eax, eax
+	add	rsp, 16
+	pop	rbp
+	.cfi_def_cfa rsp, 8
+	ret
+.Lfunc_end7:
+	.size	main, .Lfunc_end7-main
+	.cfi_endproc
+                                        # -- End function
+	.type	data,@object            # @data
+	.comm	data,8,8
+	.type	frame_number,@object    # @frame_number
+	.local	frame_number
+	.comm	frame_number,8,8
+	.ident	"clang version 10.0.0-4ubuntu1 "
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+	.addrsig_sym init
+	.addrsig_sym wait_next_frame
+	.addrsig_sym process
+	.addrsig_sym calloc
+	.addrsig_sym data
+	.addrsig_sym frame_number

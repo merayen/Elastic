@@ -3,7 +3,7 @@ package net.merayen.elastic.ui.controller
 import net.merayen.elastic.system.intercom.BackendReadyMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.ui.objects.top.Top
-import net.merayen.elastic.ui.objects.top.Window
+import net.merayen.elastic.ui.objects.top.window.Window
 import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.ui.objects.top.views.splashview.SplashView
 
@@ -15,10 +15,10 @@ class SplashViewController(top: Top) : Controller(top) {
 
 			var setupWindow = false
 			for (view in getViews(SplashView::class.java)) {
-				view.swap(NodeView::class)
+				val nodeView = view.swap(NodeView::class)
 
 				if (!setupWindow) {
-					val window = view.search.parentByType(Window::class.java)
+					val window = nodeView.search.parentByType(Window::class.java)
 					if (window != null) {
 						window.layoutWidth = 1000f
 						window.layoutHeight = 1000f

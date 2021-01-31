@@ -16,7 +16,7 @@ class UI : UINode() {
 		layoutWidth = 105f
 		layoutHeight = 80f
 
-		toneSlider.setHandler(object : ParameterSlider.IHandler {
+		toneSlider.setHandler(object : ParameterSlider.Handler {
 			override fun onChange(value: Double, programatic: Boolean) {
 				sendTransposeParameters()
 			}
@@ -30,7 +30,7 @@ class UI : UINode() {
 			}
 		})
 
-		fineToneSlider.setHandler(object : ParameterSlider.IHandler {
+		fineToneSlider.setHandler(object : ParameterSlider.Handler {
 			override fun onChange(value: Double, programatic: Boolean) {
 				//sendParameter(((value * 48) - 24).roundToInt())
 			}
@@ -71,10 +71,9 @@ class UI : UINode() {
 		add(fineToneSlider)
 	}
 
-	override fun onMessage(message: BaseNodeProperties) {}
 	override fun onData(message: NodeDataMessage) {}
 
-	override fun onParameter(instance: BaseNodeProperties) {
+	override fun onProperties(instance: BaseNodeProperties) {
 		val data = instance as Properties
 		val transposeData = data.transpose
 		if (transposeData != null)
@@ -82,7 +81,7 @@ class UI : UINode() {
 	}
 
 	private fun sendTransposeParameters() {
-		sendParameter(
+		sendProperties(
 				Properties(
 						transpose = ((toneSlider.value * 48) - 24).roundToInt()
 				)

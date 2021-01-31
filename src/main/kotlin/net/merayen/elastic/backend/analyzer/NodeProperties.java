@@ -16,7 +16,7 @@ public class NodeProperties {
 	/**
 	 * Getters and setters for the analyzer.X-namespace
 	 */
-	public class Analyzer {
+	public static class Analyzer {
 		private Analyzer() {}
 
 		public void setDecidedFormat(Port port, Format format) {
@@ -28,7 +28,7 @@ public class NodeProperties {
 		}
 	}
 
-	public class Parameters {
+	public static class Parameters {
 		private Parameters() {}
 
 		public void set(Node node, String key, Object value) {

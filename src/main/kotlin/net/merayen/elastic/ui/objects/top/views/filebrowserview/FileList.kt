@@ -26,7 +26,7 @@ internal class FileList : UIObject() {
 		override fun onUpdate() {
 			(placement as LayoutMethods.HorizontalBox).maxWidth = getWidth()
 
-			if (files != current_files) {
+			if (files !== current_files) {
 				for (obj in ArrayList(search.children))
 					remove(obj)
 

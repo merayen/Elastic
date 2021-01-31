@@ -6,11 +6,8 @@ import net.merayen.elastic.backend.architectures.local.nodes.poly_1.SessionKeepe
 import net.merayen.elastic.backend.architectures.local.utils.InputSignalParametersProcessor;
 import net.merayen.elastic.backend.midi.MidiState;
 import net.merayen.elastic.backend.util.AudioUtil;
-import net.merayen.elastic.system.intercom.ElasticMessage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private enum Mode {
@@ -33,7 +30,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private boolean sustain;
 	private float volume;
 	private short[] active_tangent;
-	private float velocity;
 
 	private double pos = new Random().nextDouble() * Math.PI * 2;
 
@@ -43,8 +39,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		@Override
 		protected void onKeyDown(short tangent, float _velocity) {
-			velocity = _velocity;
-
 			if (!sustain)
 				keys_down.add(getCurrentMidiPacket());
 
@@ -86,9 +80,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		Inlet frequency = getInlet("frequency");
 		Outlet output = getOutlet("output");
 
-		if(output != null)
-			((AudioOutlet)output).setChannelCount(1);
-
 		if(output == null)
 			mode = Mode.NOTHING;
 		if(frequency == null) {
@@ -106,12 +97,8 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 	@Override
 	public void onProcess() {
-		if(getOutlet("output") == null) {
-			Inlet frequency = getInlet("frequency");
-			if(frequency != null)
-				frequency.read = frequency.outlet.written;
+		if (frameFinished())
 			return;
-		}
 
 		if(mode == Mode.RAW)
 			generateRaw();
@@ -126,46 +113,40 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 	private void generateRaw() {
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 
-		if(resampling != null && outlet.written == 0)
+		if(resampling != null && !outlet.available())
 			resampling.update(lnode.frequency);
 
-		outlet.written = outlet.buffer_size;
 		outlet.push();
 	}
 
 	private void generateWithFrequency() {
+		if (!available())
+			return;
+
 		AudioOutlet outlet = (AudioOutlet) getOutlet("output");
 		AudioInlet frequency = (AudioInlet) getInlet("frequency");
-
-		int available = available();
-
-		if (available == 0)
-			return;
 
 		// Transform input according to the UI's InputSignalProcessor() parameters
 		if (input_frequency_buffer == null)
 			input_frequency_buffer = new float[1][buffer_size];
 
-		InputSignalParametersProcessor.process(lnode, "frequency", new float[][]{frequency.outlet.audio[0]}, input_frequency_buffer, outlet.written, available);
+		InputSignalParametersProcessor.process(lnode, "frequency", new float[][]{frequency.outlet.audio[0]}, input_frequency_buffer, 0, buffer_size);
 
 		int i;
-		for (i = outlet.written; i < outlet.written + available; i++) {
-			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int) (pos / (Math.PI * 2 * sample_rate) * lnode.curve_wave.length), lnode.curve_wave.length)];
+		for (i = 0; i < buffer_size; i++) {
+			outlet.audio[0][i] = lnode.curve_wave[Math.floorMod((int) (pos / (Math.PI * 2 * sampleRate) * lnode.curve_wave.length), lnode.curve_wave.length)];
 			pos += input_frequency_buffer[0][i];
 		}
 
-		outlet.written = i;
-		frequency.read = i;
 		outlet.push();
 	}
 
 	private void generateWithMidi() {
+		if(!available())
+			return;
+
 		AudioOutlet outlet = (AudioOutlet)getOutlet("output");
 		MidiInlet inlet = (MidiInlet)getInlet("frequency");
-		int available = inlet.available();
-
-		if(available == 0)
-			return;
 
 		updateKeysDown();
 
@@ -173,23 +154,19 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 
 		if(active_tangent != null && resampling != null) {
 			double freq = AudioUtil.midiNoteToFreq(active_tangent[1] + pitch);
-			float volume_div = sample_rate / 1000;
+			float volume_div = sampleRate / 1000f;
 			float[] audio = outlet.audio[0];
 
-			resampling.update((float)freq, available);
+			resampling.update((float)freq, buffer_size);
 			float new_volume = (float)Math.pow(midiState.getVolume(), 3) * midiState.getVelocity();
 
 			if (volume != new_volume) {
-				int start = outlet.written;
-				int stop = start + available;
-				for (int i = start; i < stop; i++) {
+				for (int i = 0; i < buffer_size; i++) {
 					volume += (new_volume - volume) / volume_div;
 					audio[i] *= volume;
 				}
 			} else if(volume != 1f) {
-				int start = outlet.written;
-				int stop = start + available;
-				for (int i = start; i < stop; i++)
+				for (int i = 0; i < buffer_size; i++)
 					audio[i] *= volume;
 			}
 
@@ -199,19 +176,20 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 				outlet.audio[0][i] = 0;
 		}
 
-		outlet.written += available;
+//		System.out.printf("signalgenerator_1 pushing audio out for session %s (%f)\n", getSessionID(), outlet.audio[0][new Random().nextInt(buffer_size)]);
+
 		outlet.push();
 	}
 
 	private void updateKeysDown() {
 		MidiInlet inlet = (MidiInlet)getInlet("frequency");
-		if(inlet.available() > 0) {
+		if(inlet.available()) {
 			MidiOutlet.MidiFrame midiFrame;
-			while((midiFrame = inlet.getNextMidiFrame(buffer_size)) != null)
-				for (short[] midiPacket : midiFrame)
+			for (Map.Entry<Integer, MidiOutlet.MidiFrame> entry : inlet.outlet.midi.entrySet()) {
+				for (short[] midiPacket : entry.getValue()) {
 					midiState.handle(midiPacket);
-
-			inlet.read += inlet.available();
+				}
+			}
 		}
 	}
 
@@ -225,9 +203,6 @@ public class LProcessor extends LocalProcessor implements SessionKeeper {
 		if(resampling != null)
 			resampling.rewind();
 	}
-
-	@Override
-	protected void onMessage(ElasticMessage message) {}
 
 	@Override
 	protected void onDestroy() {}

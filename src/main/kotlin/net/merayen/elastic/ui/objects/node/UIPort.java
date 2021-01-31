@@ -2,7 +2,7 @@ package net.merayen.elastic.ui.objects.node;
 
 import java.util.HashSet;
 
-import net.merayen.elastic.ui.Color;
+import net.merayen.elastic.ui.MutableColor;
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;
 import net.merayen.elastic.ui.objects.UINet;
@@ -10,16 +10,16 @@ import net.merayen.elastic.ui.util.MouseHandler;
 import net.merayen.elastic.util.MutablePoint;
 
 public class UIPort extends UIObject {
-	public final static Color AUDIO_PORT = new Color(150, 200, 150);
-	public final static Color MIDI_PORT = new Color(200, 150, 100);
-	public final static Color AUX_PORT = new Color(150, 150, 150);
+	public final static MutableColor AUDIO_PORT = new MutableColor(150, 200, 150);
+	public final static MutableColor MIDI_PORT = new MutableColor(200, 150, 100);
+	public final static MutableColor AUX_PORT = new MutableColor(150, 150, 150);
 
 	private MouseHandler port_drag;
 	public final String name;
 	public final boolean output;
 	public final UINode uinode;
 	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
-	public Color color = AUX_PORT;
+	public MutableColor color = AUX_PORT;
 
 	UIPort(String name, boolean output, UINode uinode) {
 		super();

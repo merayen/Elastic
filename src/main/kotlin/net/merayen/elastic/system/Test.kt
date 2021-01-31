@@ -59,8 +59,8 @@ class Test private constructor() {
 	private fun waitFor(func: () -> Boolean) {
 		try {
 			while (!func()) {
-				system.update()
-				Thread.sleep(1)
+				system.update(1000)
+				//Thread.sleep(1)
 			}
 		} catch (e: InterruptedException) {
 			e.printStackTrace()

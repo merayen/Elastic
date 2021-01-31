@@ -33,8 +33,6 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 	 */
 	private var dimension = Dimension()
 
-	private val this_Swing = this
-
 	private var isDecorated = true
 
 	private var internalThreadId: Long? = null
@@ -132,7 +130,7 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 				throw RuntimeException("Called by another thread, not expected")
 
 			graphics as Graphics2D
-			val rh = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			val rh = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 			//(graphics as Graphics2D).setRenderingHints(rh);
 
 			if (bufferRendering) {
@@ -187,14 +185,14 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 		override fun keyPressed(e: KeyEvent) {
 			if (!active_key_codes.contains(e.keyCode)) {
 				active_key_codes.add(e.keyCode)
-				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, KeyboardEvent.Action.DOWN))
+				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, true))
 			}
 		}
 
 		override fun keyReleased(e: KeyEvent) {
 			if (active_key_codes.contains(e.keyCode)) {
 				active_key_codes.remove(e.keyCode)
-				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, KeyboardEvent.Action.UP))
+				queueEvent(KeyboardEvent(e.component.name, e.keyChar, e.keyCode, false))
 			}
 		}
 	}
@@ -357,11 +355,11 @@ class Swing(id: String, handler: Handler) : Surface(id, handler) {
 				}
 
 			override var isDecorated: Boolean
-				get() = this_Swing.isDecorated
+				get() = this@Swing.isDecorated
 				set(value) {
-					if (value != this_Swing.isDecorated) {
+					if (value != this@Swing.isDecorated) {
 						// Swing requires us to create a new window to change the decoration
-						this_Swing.isDecorated = value
+						this@Swing.isDecorated = value
 						createWindow()
 					}
 				}

@@ -18,11 +18,14 @@ public class LogicNode extends BaseLogicNode {
 		createOutputPort("output", Format.MIDI);
 
 		for(AbstractDevice ad : getEnv().getMixer().getAvailableDevices())
-			if(ad instanceof MidiInputDevice)
-				if(ad.getId().startsWith("KEYBOARD") || ad.getId().contains("microKEY2 Air") || ad.getId().contains("microKEY2-37") || ad.getId().contains("Code 61 USB MIDI")) // TODO send all devices to UI Node and let hte user decide
-					device = (MidiInputDevice)ad;
-				else
+			if(ad instanceof MidiInputDevice) {
+				if (ad.getId().startsWith("KEYBOARD") || ad.getId().contains("microKEY2 Air") || ad.getId().contains("microKEY2-37") || ad.getId().contains("Code 61 USB MIDI") || ad.getId().contains("Launchkey 25")) {// TODO send all devices to UI Node and let hte user decide
+					device = (MidiInputDevice) ad;
+					break;
+				} else {
 					System.out.println("Skipped MIDI device " + ad.getId());
+				}
+			}
 	}
 
 	@Override

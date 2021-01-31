@@ -25,3 +25,7 @@ having to recompile and reset anything.
 Each node can have many instances, in different sessions. The Java-side of Elastic should not be aware of this and
 should only see the incoming and outgoing node data. That data itself may contain data from all the different sessions
 split up, but the Java-backend itself has no clue about it itself.
+
+## Threading
+This is important, dividing up the built synth into decoupled parts that can be run in parallel in threads. This might be
+even more important if we will target OpenCL, but need to look into kernel spaces, how big they are supposed to be etc.

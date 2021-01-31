@@ -27,6 +27,9 @@ public class DeviceScanner extends AbstractDeviceScanner {
 
 	private void addJavaAudio() {
 		for(Info i : AudioSystem.getMixerInfo()) {
+			if (i.getName().contains("NVidia") || i.getName().contains("PCH"))
+				continue;  // Scans slowly on Linux. Goes from 3 seconds to 150ms with this hack
+
 			Mixer m = AudioSystem.getMixer(i);
 
 			// Speakers and other audio outputs

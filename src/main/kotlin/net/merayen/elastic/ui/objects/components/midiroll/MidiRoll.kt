@@ -1,6 +1,7 @@
 package net.merayen.elastic.ui.objects.components.midiroll
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
+import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
@@ -19,12 +20,14 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		fun onCreateEventZone(start: Float, length: Float)
 		fun onChangeEventZone(eventZoneId: String, start: Float, length: Float)
 		fun onRemoveEventZone(eventZoneId: String)
+
+		fun onPlayheadMoved(beat: Float)
 	}
 
 	override var layoutWidth = 100f
 	override var layoutHeight = 100f
 
-	var beatWidth = 20f
+	var beatWidth = 20f // Horizontal zoom, in other words
 
 	private val OCTAVE_COUNT = 8
 	private lateinit var piano: Piano
@@ -35,6 +38,7 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 	private val scroll = Scroll(eventZones)
 
 	override fun onInit() {
+		scroll.translation.x = 20f
 		eventZones.handler = object : MidiRollEventZones.Handler {
 			override fun onCreateEventZone(start: Float, length: Float) = handler.onCreateEventZone(start, length)
 			override fun onChangeEventZone(eventZoneId: String, start: Float, length: Float) = handler.onChangeEventZone(eventZoneId, start, length)
@@ -48,6 +52,10 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 
 			override fun onGhostNoteOff(tangent: Short) {
 				piano.unmarkAllTangents()
+			}
+
+			override fun onPlayheadMoved(beat: Float) {
+				handler?.onPlayheadMoved(beat)
 			}
 		}
 		piano = Piano(OCTAVE_COUNT, object : Piano.Handler {
@@ -67,6 +75,7 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		scroll.layoutWidth = layoutWidth
 		scroll.layoutHeight = layoutHeight
 		eventZones.layoutHeight = layoutHeight
+		eventZones.beatWidth = beatWidth
 
 		if (tangentDown != -1) {
 			handler.onUp(tangentDown)
@@ -74,7 +83,7 @@ class MidiRoll(private val handler: Handler) : UIObject(), FlexibleDimension {
 		}
 	}
 
-	fun handleMessage(message: NodePropertyMessage) {
+	fun handleMessage(message: NodeMessage) {
 		eventZones.handleMessage(message)
 	}
 }
