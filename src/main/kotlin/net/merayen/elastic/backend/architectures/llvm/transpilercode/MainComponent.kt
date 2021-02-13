@@ -8,6 +8,9 @@ class MainComponent(private val fprintfMutex: PThreadMutex, private val log: Log
 			Method("int", "main") {
 				fprintfMutex.writeInit(codeWriter)
 
+				//Statement("bool wait_for_debug = true")
+				//While("wait_for_debug") {}
+
 				Call("init_threads")
 				Call("init_workunits")
 				Call("init_stdinout")

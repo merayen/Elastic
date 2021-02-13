@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.architectures.llvm.transpilercode
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 
-class PThreadCond(val name: String, val log: LogComponent? = null) {
+class PThreadCond(val name: String, val log: LogComponent? = null, val debug: Boolean = false) {
 	fun writeDefinition(codeWriter: CodeWriter) {
 		codeWriter.Statement("pthread_cond_t $name")
 	}
@@ -14,13 +14,13 @@ class PThreadCond(val name: String, val log: LogComponent? = null) {
 			Statement("$resultVar = pthread_cond_init($variableExpression, NULL)")
 			If("$resultVar == 0") {}
 			ElseIf("$resultVar == EAGAIN") {
-				ohshit(codeWriter, "$resultVar init: EAGAIN")
+				ohshit(codeWriter, "$resultVar init: EAGAIN", debug = debug)
 			}
 			ElseIf("$resultVar == ENOMEM") {
-				ohshit(codeWriter, "$resultVar init: ENOMEM")
+				ohshit(codeWriter, "$resultVar init: ENOMEM", debug = debug)
 			}
 			Else {
-				ohshit(codeWriter, "$resultVar init: (unknown error)")
+				ohshit(codeWriter, "$resultVar init: (unknown error)", debug = debug)
 			}
 		}
 	}
@@ -50,10 +50,10 @@ class PThreadCond(val name: String, val log: LogComponent? = null) {
 				Statement("${name}_result = pthread_cond_timedwait($condVariableExpression, ${mutexVariableExpression}, &${name}_wait_until)") // Wait for someone to wake us up, also temporary unlocks the mutex
 			}
 			If("${name}_result == EINVAL") {
-				ohshit(codeWriter, "$name timedwait: EINVAL")
+				ohshit(codeWriter, "$name timedwait: EINVAL", debug = debug)
 			}
 			ElseIf("${name}_result == EPERM") {
-				ohshit(codeWriter, "$name timedwait: EPERM")
+				ohshit(codeWriter, "$name timedwait: EPERM", debug = debug)
 			}
 			if (onTimeOut != null) {
 				ElseIf("${name}_result == ETIMEDOUT") {
@@ -80,7 +80,7 @@ class PThreadCond(val name: String, val log: LogComponent? = null) {
 			Statement("int $resultVar")
 			Statement("$resultVar = pthread_cond_broadcast($variableExpression)")
 			If("$resultVar != 0") {
-				ohshit(codeWriter, "$name broadcast: %i", resultVar)
+				ohshit(codeWriter, "$name broadcast: %i", resultVar, debug = debug)
 			}
 		}
 	}

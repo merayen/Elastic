@@ -1,11 +1,9 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
-import net.merayen.elastic.backend.architectures.llvm.transpilercode.ohshit
 import net.merayen.elastic.backend.logicnodes.list.value_1.Properties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
-import java.nio.ByteBuffer
 
 /**
  * A node that adds two inputs.
@@ -29,10 +27,10 @@ class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) 
 		override fun onWriteDataReceiver(codeWriter: CodeWriter) {
 			with(codeWriter) {
 				If("length != 5") {
-					ohshit(codeWriter, "Length must be 5")
+					writePanic(codeWriter, "Length must be 5")
 				}
 				If("*(unsigned char *)(data) != 0") {
-					ohshit(codeWriter, "Type should always be 0")
+					writePanic(codeWriter, "Type should always be 0")
 				}
 				Statement("${writeParameterVariable("value")} = *(float *)(data + 1)")
 				log?.write(codeWriter, "Node $nodeId received value %f", "*(float *)(data + 1)")

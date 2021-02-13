@@ -9,7 +9,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
  */
 internal class QueueComponent(private val threadCount: Int, private val log: LogComponent, val debug: Boolean) {
 	private val threadMutexes = PThreadMutex("", log)
-	private val threadConds = PThreadCond("", log)
+	private val threadConds = PThreadCond("", log, debug = debug)
 
 	fun writeDefinition(codeWriter: CodeWriter) {
 		with(codeWriter) {

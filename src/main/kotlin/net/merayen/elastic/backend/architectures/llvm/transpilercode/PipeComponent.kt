@@ -42,11 +42,11 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 
 			Method("int", "init_stdinout") { // Initializes communication using stdin and stdout
 				If("freopen(NULL, \"rb\", stdin) == NULL") {
-					ohshit(codeWriter, "Could not open stdin")
+					ohshit(codeWriter, "Could not open stdin", debug = debug)
 				}
 
 				If("freopen(NULL, \"wb\", stdout) == NULL") {
-					ohshit(codeWriter, "Could not open stdout")
+					ohshit(codeWriter, "Could not open stdout", debug = debug)
 				}
 
 				Statement("char hello[] = {'H','E','L','L','O'}")
@@ -91,7 +91,6 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 
 				While("true") {
 					if (debug) log.write(this, "Waiting for message!", "")
-					Call("fflush", "stderr")
 
 					Call("fread", "&message_size, 1, 4, stdin")
 
@@ -153,7 +152,7 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 
 							Statement("invalid_message[i] = data[i]")
 						}
-						ohshit(this, "Unknown message: %s", "invalid_message")
+						ohshit(this, "Unknown message: %s", "invalid_message", debug = debug)
 					}
 
 					allocComponent.writeFree(codeWriter, "data")

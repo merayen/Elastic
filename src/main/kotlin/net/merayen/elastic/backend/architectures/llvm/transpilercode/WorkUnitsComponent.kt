@@ -17,7 +17,7 @@ class WorkUnitsComponent(
 	private val debug: Boolean
 ) {
 	private val workUnitsMutex = PThreadMutex("work_units_mutex", log)
-	private val workUnitsCond = PThreadCond("work_units_cond", log)
+	private val workUnitsCond = PThreadCond("work_units_cond", log, debug = debug)
 	private val wudl: WorkUnitDependencyList<String>
 
 	init {

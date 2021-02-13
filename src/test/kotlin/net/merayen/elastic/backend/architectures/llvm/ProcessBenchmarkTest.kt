@@ -9,7 +9,7 @@ internal class ProcessBenchmarkTest {
 	@Test
 	@Timeout(2)
 	fun `benchmark with huge buffer`() {
-		val supervisor = LLVMSupervisor("/tmp/none", true)
+		val supervisor = LLVMSupervisor("/tmp/none", false)
 		supervisor.ingoing.send(addOneAndTwo())
 
 		val t = System.currentTimeMillis() + 5000

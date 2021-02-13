@@ -5,7 +5,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 /**
  * Hassle to write locking manually in C. Let's do it by zero-cost abstraction!
  */
-class PThreadMutex(val name: String, val log: LogComponent? = null) {
+class PThreadMutex(val name: String, val log: LogComponent? = null, val debug: Boolean = false) {
 	fun writeDefinition(codeWriter: CodeWriter) {
 		codeWriter.Statement("pthread_mutex_t $name")
 	}
@@ -17,16 +17,16 @@ class PThreadMutex(val name: String, val log: LogComponent? = null) {
 			Statement("$resultVar = pthread_mutex_init($variableExpression, NULL)")
 			If("$resultVar == 0") {}
 			ElseIf("$resultVar == EAGAIN") {
-				ohshit(codeWriter, "$resultVar ended with EAGAIN")
+				ohshit(codeWriter, "$resultVar ended with EAGAIN", debug = debug)
 			}
 			ElseIf("$resultVar == ENOMEM") {
-				ohshit(codeWriter, "$resultVar init: ENOMEM")
+				ohshit(codeWriter, "$resultVar init: ENOMEM", debug = debug)
 			}
 			ElseIf("$resultVar == EPERM") {
-				ohshit(codeWriter, "$resultVar init: EPERM")
+				ohshit(codeWriter, "$resultVar init: EPERM", debug = debug)
 			}
 			Else {
-				ohshit(codeWriter, "$resultVar init: (unknown error)")
+				ohshit(codeWriter, "$resultVar init: (unknown error)", debug = debug)
 			}
 		}
 	}
@@ -58,7 +58,7 @@ class PThreadMutex(val name: String, val log: LogComponent? = null) {
 					ohshit(codeWriter, "$name lock: EDEADLK")
 				}
 				Else {
-					ohshit(codeWriter, "$name lock: (unknown error)")
+					ohshit(codeWriter, "$name lock: (unknown error)", debug = debug)
 				}
 			}
 		}

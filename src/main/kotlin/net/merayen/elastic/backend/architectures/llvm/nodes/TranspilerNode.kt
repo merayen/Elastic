@@ -24,6 +24,7 @@ import kotlin.collections.HashMap
  * Generic transpiler node that all nodes should inherit.
  */
 abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
+	var debug = false
 	lateinit var shared: Transpiler.TranspilerData // Gets set by Transpiler
 	lateinit var node: Node
 	internal var log: LogComponent? = null
@@ -409,6 +410,10 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		}
 
 		return result
+	}
+
+	protected fun writePanic(codeWriter: CodeWriter, message: String) {
+		ohshit(codeWriter, message, debug = debug)
 	}
 
 	private fun hasOutlets() = shared.nodeProperties.getOutputPorts(node).isNotEmpty()
