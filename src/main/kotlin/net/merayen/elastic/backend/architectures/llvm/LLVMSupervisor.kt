@@ -84,7 +84,10 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 		llvmRunner = LLVMRunner(netList, llvm, llvmCommunicator)
 	}
 
+	private var processing = false
 	private fun process() {
+		if (processing) error("Should not happen")
+		processing = true
 		val llvmRunner = llvmRunner ?: throw RuntimeException("Can not process. There is no DSP process running")
 
 		val currentTranspiler = currentTranspiler!!
@@ -134,6 +137,7 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 		startTime += System.nanoTime()
 
 		println("DSP timings: Total=${startTime / 1000 / 1000.0}ms, DSP process=${startProcess / 1000 / 1000.0}ms")
+		processing = false
 	}
 
 	override fun onInit() {}

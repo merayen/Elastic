@@ -33,7 +33,7 @@ class PThreadCond(val name: String, val log: LogComponent? = null) {
 		mutex: PThreadMutex,
 		seconds: Double,
 		condVariableExpression: String = "&$name",
-		mutextVariableExpression: String = "&${mutex.name}",
+		mutexVariableExpression: String = "&${mutex.name}",
 		onTimeOut: (() -> Unit)? = null
 	) {
 		with(codeWriter) {
@@ -47,7 +47,7 @@ class PThreadCond(val name: String, val log: LogComponent? = null) {
 				Statement("${name}_wait_until.tv_sec += ${name}_wait_until.tv_nsec / 1000000000")
 				Statement("${name}_wait_until.tv_nsec %= 1000000000")
 				//log?.write(codeWriter, "$defaultName timeout: %ld , %ld", "${defaultName}_wait_until.tv_sec, ${defaultName}_wait_until.tv_nsec")
-				Statement("${name}_result = pthread_cond_timedwait($condVariableExpression, ${mutextVariableExpression}, &${name}_wait_until)") // Wait for someone to wake us up, also temporary unlocks the mutex
+				Statement("${name}_result = pthread_cond_timedwait($condVariableExpression, ${mutexVariableExpression}, &${name}_wait_until)") // Wait for someone to wake us up, also temporary unlocks the mutex
 			}
 			If("${name}_result == EINVAL") {
 				ohshit(codeWriter, "$name timedwait: EINVAL")
@@ -60,6 +60,17 @@ class PThreadCond(val name: String, val log: LogComponent? = null) {
 					onTimeOut()
 				}
 			}
+		}
+	}
+
+	fun writeWait(
+		codeWriter: CodeWriter,
+		mutex: PThreadMutex,
+		condVariableExpression: String = "&$name",
+		mutexVariableExpression: String = "&${mutex.name}",
+	) {
+		with (codeWriter) {
+			Call("pthread_cond_wait", "$condVariableExpression, $mutexVariableExpression") // Wait for someone to wake us up, also temporary unlocks the mutex
 		}
 	}
 

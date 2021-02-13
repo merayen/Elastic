@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
+import net.merayen.elastic.backend.architectures.llvm.transpilercode.ohshit
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
@@ -16,8 +17,10 @@ class Add(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 		// TODO change code returned based on connected ports?
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			writeForEachVoice(codeWriter) {
-				codeWriter.For("int i = 0", "i < ${shared.frameSize}", "i++") {
-					codeWriter.Statement("${writeOutlet("out")}.signal[i] = ${writeInlet("in1")}.signal[i] + ${writeInlet("in2")}.signal[i]")
+				with(codeWriter) {
+					For("int i = 0", "i < ${shared.frameSize}", "i++") {
+						Statement("${writeOutlet("out")}.signal[i] = ${writeInlet("in1")}.signal[i] + ${writeInlet("in2")}.signal[i]")
+					}
 				}
 			}
 		}

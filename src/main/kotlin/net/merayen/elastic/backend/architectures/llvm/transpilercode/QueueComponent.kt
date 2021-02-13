@@ -69,7 +69,8 @@ internal class QueueComponent(private val threadCount: Int, private val log: Log
 					Call("pthread_cond_broadcast", "&thread->cond")
 					If("thread->func == NULL") { // No job set, go back to sleep
 						if (debug) log.write(this, "[%i] No job set, waiting for work", "thread_index")
-						Call("pthread_cond_wait", "&thread->cond, &thread->lock") // Wait for someone to wake us up, also temporary unlocks the mutex
+						threadConds.writeWait(codeWriter, threadMutexes, "&thread->cond", "&thread->lock")
+						//Call("pthread_cond_wait", "&thread->cond, &thread->lock") // Wait for someone to wake us up, also temporary unlocks the mutex
 						Continue() // Woken up, look for job again
 					}
 
