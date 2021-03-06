@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Timeout
 
 internal class ProcessBenchmarkTest {
 	@Test
-	@Timeout(2)
+	//@Timeout(2)
 	fun `benchmark with huge buffer`() {
 		val supervisor = LLVMSupervisor("/tmp/none", false)
 		supervisor.ingoing.send(addOneAndTwo())
 
-		val t = System.currentTimeMillis() + 5000
+		val t = System.currentTimeMillis() + 10000
 
 		while (t > System.currentTimeMillis()) {
 			supervisor.ingoing.send(ProcessRequestMessage())
@@ -24,7 +24,6 @@ internal class ProcessBenchmarkTest {
 			assertEquals(1, messages.size)
 			println(messages.first())
 		}
-		println("Ja")
 
 		supervisor.onEnd()
 	}

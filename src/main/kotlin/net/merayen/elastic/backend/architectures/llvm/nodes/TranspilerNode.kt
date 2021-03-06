@@ -174,17 +174,6 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		protected open fun onWriteDestroyVoice(codeWriter: CodeWriter) {}
 
 		/**
-		 * Writes a for-each voice loop for you.
-		 * voice_index is the index of the current voice.
-		 */
-		protected fun writeForEachVoice(content: String) = """
-			for (int voice_index = 0; voice_index < ${shared.voiceCount}; voice_index++) {
-				if (${writeVoicesVariable()}[voice_index] == 0) continue;
-				${include(4, content)}
-			}
-		""".trimIndent()
-
-		/**
 		 * Create a for-loop for each voice.
 		 *
 		 * Variable: voice_index

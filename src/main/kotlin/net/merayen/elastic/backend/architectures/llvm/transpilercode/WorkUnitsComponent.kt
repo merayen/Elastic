@@ -102,16 +102,18 @@ class WorkUnitsComponent(
 
 					// Write that we are finished to work_units
 					// TODO only necessary if we have 2 or more dependents!
-					Call("pthread_mutex_lock", "&work_units_mutex")
-					Statement("work_units[$workUnitId] = 2")
-					workUnitsCond.writeCallBroadcast(codeWriter)
+					//Call("pthread_mutex_lock", "&work_units_mutex")
+					workUnitsMutex.writeLock(codeWriter, "&work_units_mutex") {
+						Statement("work_units[$workUnitId] = 2")
+						//workUnitsCond.writeCallBroadcast(codeWriter) // Why?
 
-					// Queue the nodes that are connected to us
-					for (nextWorkUnit in wudl.getDependents(workUnit))
-						Call("queue_task", "process_workunit_${workUnitToIndexMap[nextWorkUnit]!!}")
+						// Queue the nodes that are connected to us
+						for (nextWorkUnit in wudl.getDependents(workUnit))
+							Call("queue_task", "process_workunit_${workUnitToIndexMap[nextWorkUnit]!!}")
 
-					// Done doing exclusive things
-					Call("pthread_mutex_unlock", "&work_units_mutex")
+						// Done doing exclusive things
+						//Call("pthread_mutex_unlock", "&work_units_mutex")
+					}
 
 					if (debug) log.write(codeWriter, "process_workunit_$workUnitId: done", "")
 				}
@@ -133,45 +135,47 @@ class WorkUnitsComponent(
 					Call("queue_task", "process_workunit_${workUnitToIndexMap[workUnit]}")
 
 				// Wait for all work units to complete
-				Call("pthread_mutex_lock", "&work_units_mutex")
+				//Call("pthread_mutex_lock", "&work_units_mutex")
+				workUnitsMutex.writeLock(codeWriter, "&work_units_mutex") {
 
-				Statement("double start")
-				Block {
-					Statement("struct timespec tid")
-					Statement("clock_gettime(CLOCK_MONOTONIC_RAW, &tid)")
-					Statement("start = tid.tv_sec + tid.tv_nsec / 1E9")
-				}
+					Statement("double start")
+					Block {
+						Statement("struct timespec tid")
+						Statement("clock_gettime(CLOCK_MONOTONIC_RAW, &tid)")
+						Statement("start = tid.tv_sec + tid.tv_nsec / 1E9")
+					}
 
-				For("int i = 0", "i < ${wudl.size}", "i++") {
-					While("work_units[i] != 2") {
-						workUnitsCond.writeTimedWait(codeWriter, workUnitsMutex, 0.1, onTimeOut = {
-							if (debug) log.write(codeWriter, "work_units_cond timed out!")
-							ohshit(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway")
-						})
+					For("int i = 0", "i < ${wudl.size}", "i++") {
+						While("work_units[i] != 2") {
+							workUnitsCond.writeTimedWait(codeWriter, workUnitsMutex, 0.1, onTimeOut = {
+								if (debug) log.write(codeWriter, "work_units_cond timed out!")
+								ohshit(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway")
+							})
 
-						Statement("double now")
-						Block {
-							Statement("struct timespec tid")
-							If("clock_gettime(CLOCK_MONOTONIC_RAW, &tid)") {
-								if (debug) log.write(codeWriter, "Failed to get time")
-								Call("exit_failure")
+							Statement("double now")
+							Block {
+								Statement("struct timespec tid")
+								If("clock_gettime(CLOCK_MONOTONIC_RAW, &tid)") {
+									if (debug) log.write(codeWriter, "Failed to get time")
+									Call("exit_failure")
+								}
+								Statement("now = tid.tv_sec + tid.tv_nsec / 1E9")
 							}
-							Statement("now = tid.tv_sec + tid.tv_nsec / 1E9")
-						}
 
-						//if (debug) log.write(codeWriter, "Noes! %f", "now - start")
+							//if (debug) log.write(codeWriter, "Noes! %f", "now - start")
 
-						If("now - start >= 1.0") {
-							if (debug) log.write(
-								codeWriter,
-								"FATAL: Timeout when waiting for all nodes to process. process_workunit_%i never finished.",
-								"i"
-							)
-							Call("exit", "EXIT_FAILURE")
+							If("now - start >= 1.0") {
+								if (debug) log.write(
+									codeWriter,
+									"FATAL: Timeout when waiting for all nodes to process. process_workunit_%i never finished.",
+									"i"
+								)
+								Call("exit", "EXIT_FAILURE")
+							}
 						}
 					}
+					//Call("pthread_mutex_unlock", "&work_units_mutex")
 				}
-				Call("pthread_mutex_unlock", "&work_units_mutex")
 			}
 		}
 	}

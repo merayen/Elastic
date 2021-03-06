@@ -38,7 +38,11 @@ class LLVMBackend(code: String) {
 			if (process.exitValue() != 0)
 				throw DoesNotCompile(process.exitValue())
 
-			println("Compiling took ${System.currentTimeMillis() - t}ms for ${code.lineSequence().filter { it.trim().isNotEmpty() }.count()} LOC")
+			println(
+				"Compiling took ${System.currentTimeMillis() - t}ms for ${
+					code.lineSequence().filter { it.trim().isNotEmpty() }.count()
+				} LOC"
+			)
 		}
 
 		process = with(ProcessBuilder(listOf(outputPath, outputPath))) {
@@ -81,7 +85,7 @@ class LLVMBackend(code: String) {
 			throw e
 		}
 
-	ensureAlive()
+		ensureAlive()
 
 		if (!answer.contentEquals(byteArrayOf('G'.toByte(), 'O'.toByte(), 'O'.toByte(), 'D'.toByte())))
 			throw RuntimeException("Subprocess did not answer to us in the manner we wanted it to: Got ${String(answer)}")
