@@ -16,8 +16,8 @@ class WorkUnitsComponent(
 	private val log: LogComponent,
 	private val debug: Boolean
 ) {
-	private val workUnitsMutex = PThreadMutex("work_units_mutex", log)
-	private val workUnitsCond = PThreadCond("work_units_cond", log, debug = debug)
+	val workUnitsMutex = PThreadMutex("work_units_mutex", log)
+	val workUnitsCond = PThreadCond("work_units_cond", log, debug = debug)
 	private val wudl: WorkUnitDependencyList<String>
 
 	init {
@@ -33,19 +33,19 @@ class WorkUnitsComponent(
 		codeWriter.Statement("char work_units[${wudl.size}]")
 
 		codeWriter.Method("void", "prepare_workunits") {
-			codeWriter.Call("pthread_mutex_lock", "&work_units_mutex") // Lock the resource
-
-			for (i in 0 until wudl.size)
-				codeWriter.Statement("\twork_units[$i] = 0")
-
-			// Unlock the resource
-			codeWriter.Call("pthread_mutex_unlock", "&work_units_mutex")
+			workUnitsMutex.writeLock(codeWriter) {
+				for (i in 0 until wudl.size)
+					codeWriter.Statement("work_units[$i] = 0")
+			}
 		}
 	}
 
-	fun writeDefinition(codeWriter: CodeWriter) {
+	fun writeHeaders(codeWriter: CodeWriter) {
 		workUnitsMutex.writeDefinition(codeWriter)
 		workUnitsCond.writeDefinition(codeWriter)
+	}
+
+	fun writeDefinition(codeWriter: CodeWriter) {
 		writeWorkUnitArray(codeWriter)
 		writeWorkUnitMethods(codeWriter)
 		codeWriter.Method("void", "init_workunits") {
@@ -77,18 +77,20 @@ class WorkUnitsComponent(
 					// If we got just 1 dependency, that dependency is already finished processing as it is the only workunit
 					// queuing us.
 					if (dependencies.size > 1) {
-						Call("pthread_mutex_lock", "&work_units_mutex")
-						If("work_units[$workUnitId] != 0") {
-							if (debug) log.write(codeWriter, "process_workunit_$workUnitId: already processed/processing", "")
-							Call("pthread_mutex_unlock", "&work_units_mutex")
-							Return() // Already processed. Should not happen...
+						Statement("bool all_finished = false")
+						writeLock(codeWriter) {
+							If("work_units[$workUnitId] != 0") {
+								if (debug) log.write(codeWriter, "process_workunit_$workUnitId: already processed/processing", "")
+								// Already processed. Should not happen...
+								// TODO crash hardcore then...?
+							}
+							Else {
+								Statement("all_finished = ${dependencies.joinToString(" && ") { "work_units[${workUnitToIndexMap[it]}] == 2" }}")
+								If("all_finished") {
+									Statement("work_units[$workUnitId] = 1") // Means 'we are currently processing'")
+								}
+							}
 						}
-						Statement("bool all_finished = ${dependencies.joinToString(" && ") { "work_units[${workUnitToIndexMap[it]}] == 2" }}")
-						If("all_finished") {
-							Statement("work_units[$workUnitId] = 1") // Means 'we are currently processing'")
-						}
-
-						Call("pthread_mutex_unlock", "&work_units_mutex")
 						If("!all_finished") {
 							if (debug) log.write(codeWriter, "process_workunit_$workUnitId: not all dependencies has processed", "")
 							Return() // Need to wait for additional work units we depend on to get finished")
@@ -105,15 +107,12 @@ class WorkUnitsComponent(
 					//Call("pthread_mutex_lock", "&work_units_mutex")
 					workUnitsMutex.writeLock(codeWriter, "&work_units_mutex") {
 						Statement("work_units[$workUnitId] = 2")
-						//workUnitsCond.writeCallBroadcast(codeWriter) // Why?
-
-						// Queue the nodes that are connected to us
-						for (nextWorkUnit in wudl.getDependents(workUnit))
-							Call("queue_task", "process_workunit_${workUnitToIndexMap[nextWorkUnit]!!}")
-
-						// Done doing exclusive things
-						//Call("pthread_mutex_unlock", "&work_units_mutex")
+						workUnitsCond.writeCallBroadcast(codeWriter)
 					}
+
+					// Queue the nodes that are connected to us
+					for (nextWorkUnit in wudl.getDependents(workUnit))
+						Call("queue_task", "process_workunit_${workUnitToIndexMap[nextWorkUnit]!!}")
 
 					if (debug) log.write(codeWriter, "process_workunit_$workUnitId: done", "")
 				}
@@ -149,7 +148,7 @@ class WorkUnitsComponent(
 						While("work_units[i] != 2") {
 							workUnitsCond.writeTimedWait(codeWriter, workUnitsMutex, 0.1, onTimeOut = {
 								if (debug) log.write(codeWriter, "work_units_cond timed out!")
-								ohshit(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway")
+								ohshit(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway", debug = debug)
 							})
 
 							Statement("double now")
@@ -161,8 +160,6 @@ class WorkUnitsComponent(
 								}
 								Statement("now = tid.tv_sec + tid.tv_nsec / 1E9")
 							}
-
-							//if (debug) log.write(codeWriter, "Noes! %f", "now - start")
 
 							If("now - start >= 1.0") {
 								if (debug) log.write(
@@ -185,5 +182,12 @@ class WorkUnitsComponent(
 
 		for (number in workUnitToIndexMap.values)
 			log.write(codeWriter, "process_workunit_$number = %p", "process_workunit_$number")
+	}
+
+	/**
+	 * Write a lock for work_units_cond.
+	 */
+	fun writeLock(codeWriter: CodeWriter, func: () -> Unit) {
+		workUnitsMutex.writeLock(codeWriter, "&work_units_mutex", func)
 	}
 }

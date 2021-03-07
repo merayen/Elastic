@@ -7,7 +7,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
  *
  * This is for performance and use of several CPU cores.
  */
-internal class QueueComponent(private val threadCount: Int, private val log: LogComponent, val debug: Boolean) {
+internal class QueueComponent(private val threadCount: Int, private val workUnitsComponent: WorkUnitsComponent, private val log: LogComponent, val debug: Boolean) {
 	private val threadMutexes = PThreadMutex("", log)
 	private val threadConds = PThreadCond("", log, debug = debug)
 
@@ -26,11 +26,12 @@ internal class QueueComponent(private val threadCount: Int, private val log: Log
 
 	fun writeMethods(codeWriter: CodeWriter) {
 		with(codeWriter) {
-			Method("pthread_t*", "queue_task", "void *func") { // Will run a function with the argument "voice". Will poll several threads or just block if no threads available
+			// Will run a function with the argument "voice". Will poll several threads or just block if no threads available
+			Method("void", "queue_task", "void *func") {
 				if (debug) log.write(this, "queue_task %p", "func")
-				While("true") { // We retry forever until we find a thread that has no work
+				Statement("bool lock_success = false")
+				workUnitsComponent.writeLock(codeWriter) {
 					For("int i = 0", "i < $threadCount", "i++") {
-						Statement("bool lock_success = false")
 						threadMutexes.writeTryLock(this, variableExpression = "threads[i].lock", locked = {
 							If("threads[i].func == NULL") {
 								// Found a thread that is available
@@ -41,13 +42,13 @@ internal class QueueComponent(private val threadCount: Int, private val log: Log
 								if (debug) log.write(this, "queue_task: Queued %p", "func")
 							}
 						})
-						If("lock_success") {
-							Return("&threads[i].thread") // TODO take care of this, need to unlock first!
-						}
 					}
 				}
+				If("lock_success") {
+					Return()
+				}
 				if (debug) log.write(this, "queue_task: No empty thread found queueing %p, waiting", "func")
-				Call("usleep", "1000") // No thread available, we wait a bit before trying again (bad? Should use a cond?)
+				Call("((void(*)())func)")
 			}
 
 			Method("void*", "thread_runner", "void *args")
@@ -93,7 +94,13 @@ internal class QueueComponent(private val threadCount: Int, private val log: Log
 
 				// Init mutexes
 				For("int i = 0", "i < $threadCount", "i++") {
-					Call("pthread_mutex_init", "&threads[i].lock, NULL")
+					Statement("pthread_mutexattr_t mutex_attr")
+					Call("memset", "&mutex_attr, 0, sizeof(pthread_mutexattr_t)")
+
+					If("pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_ERRORCHECK) != 0") {
+						ohshit(codeWriter, debug = debug);
+					}
+					Call("pthread_mutex_init", "&threads[i].lock, &mutex_attr")
 				}
 
 				// Create and run the threads

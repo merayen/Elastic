@@ -14,7 +14,15 @@ class PThreadMutex(val name: String, val log: LogComponent? = null, val debug: B
 		with(codeWriter) {
 			val resultVar = "${name}_init_result"
 			Statement("int $resultVar")
-			Statement("$resultVar = pthread_mutex_init($variableExpression, NULL)")
+			Statement("pthread_mutexattr_t mutex_attr")
+
+			// Couldn't find documentation that this is needed...
+			Call("memset", "&mutex_attr, 0, sizeof(pthread_mutexattr_t)")
+
+			If ("pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_ERRORCHECK) != 0") {
+				ohshit(codeWriter)
+			}
+			Statement("$resultVar = pthread_mutex_init($variableExpression, &mutex_attr)")
 			If("$resultVar == 0") {}
 			ElseIf("$resultVar == EAGAIN") {
 				ohshit(codeWriter, "$resultVar ended with EAGAIN", debug = debug)
@@ -46,7 +54,9 @@ class PThreadMutex(val name: String, val log: LogComponent? = null, val debug: B
 				Statement("$resultVar = pthread_mutex_lock($variableExpression)")
 				If("$resultVar == 0") {
 					block()
-					Call("pthread_mutex_unlock", variableExpression)
+					If("pthread_mutex_unlock($variableExpression) != 0") {
+						ohshit(codeWriter, "$name lock: Could not unlock")
+					}
 				}
 				ElseIf("$resultVar == EINVAL") {
 					ohshit(codeWriter, "$name lock: EINVAL")

@@ -72,10 +72,10 @@ class Transpiler(
 		for (node in nodes.values)
 			node.shared = shared
 
-		val queueCode = QueueComponent(threadCount, log, debug)
 		val nodeDataComponent = NodeDataComponent(log, debug)
 		val pipeCode = PipeComponent(allocComponent, log, debug)
 		val workUnitsCode = WorkUnitsComponent(netList, nodes, log, debug)
+		val queueCode = QueueComponent(threadCount, workUnitsCode, log, debug)
 		val mainCode = MainComponent(log.fprintfMutex, log, debug)
 
 		val result = object : CodeWriter() {
@@ -95,6 +95,7 @@ class Transpiler(
 				Include("unistd.h")
 				Include("stdarg.h")
 				Include("errno.h")
+				Include("signal.h")
 
 				Method("void", "exit_failure")
 
@@ -102,6 +103,7 @@ class Transpiler(
 				queueCode.writeDefinition(this)
 				nodeDataComponent.writeHeaders(this)
 				pipeCode.writeMethods(this)
+				workUnitsCode.writeHeaders(this)
 				queueCode.writeMethods(this)
 				writePortClasses(this)
 				writeNodeStructs(this)
