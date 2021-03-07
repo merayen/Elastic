@@ -79,10 +79,14 @@ class WorkUnitsComponent(
 					if (dependencies.size > 1) {
 						Statement("bool all_finished = false")
 						writeLock(codeWriter) {
-							If("work_units[$workUnitId] != 0") {
+							If("work_units[$workUnitId] == 2") {
 								if (debug) log.write(codeWriter, "process_workunit_$workUnitId: already processed/processing", "")
 								// Already processed. Should not happen...
 								// TODO crash hardcore then...?
+								//ohshit(codeWriter, "Already processed, should not happen", debug = debug)
+							}
+							ElseIf("work_units[$workUnitId] == 1") {
+								// Ok, we are already processing, might have multiple inputs that triggers us...? Or...?
 							}
 							Else {
 								Statement("all_finished = ${dependencies.joinToString(" && ") { "work_units[${workUnitToIndexMap[it]}] == 2" }}")

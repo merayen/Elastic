@@ -20,7 +20,7 @@ class LLVMCommunicator(private val backend: LLVMBackend) { // Is this bullshit?
 		sizeBuffer.putInt(arr.size)
 		sizeBuffer.rewind()
 
-		println("Sending ${arr.size} bytes: ${arr.filter { it in 48..126 }.joinToString("") { it.toChar().toString() }}")
+		//println("Sending ${arr.size} bytes: ${arr.filter { it in 48..126 }.joinToString("") { it.toChar().toString() }}")
 
 		try {
 			backend.outputStream.write(sizeBuffer.array())
@@ -65,7 +65,7 @@ class LLVMCommunicator(private val backend: LLVMBackend) { // Is this bullshit?
 			throw e
 		}
 
-		println("Receiving $size bytes: ${result.filter { it in 48..126 }.joinToString("") { it.toChar().toString() }}")
+		//println("Receiving $size bytes: ${result.filter { it in 48..126 }.joinToString("") { it.toChar().toString() }}")
 
 		return ByteBuffer.wrap(result).order(ByteOrder.nativeOrder())
 	}

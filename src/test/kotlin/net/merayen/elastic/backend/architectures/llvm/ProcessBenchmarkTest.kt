@@ -14,6 +14,7 @@ internal class ProcessBenchmarkTest {
 
 		val t = System.currentTimeMillis() + 10000
 
+		var framesProcessed = 0
 		while (t > System.currentTimeMillis()) {
 			supervisor.ingoing.send(ProcessRequestMessage())
 			supervisor.onUpdate()
@@ -22,8 +23,10 @@ internal class ProcessBenchmarkTest {
 
 			val messages = supervisor.outgoing.receiveAll()
 			assertEquals(1, messages.size)
-			println(messages.first())
+			framesProcessed++
 		}
+
+		println("Frames processed in 10 seconds: $framesProcessed")
 
 		supervisor.onEnd()
 	}

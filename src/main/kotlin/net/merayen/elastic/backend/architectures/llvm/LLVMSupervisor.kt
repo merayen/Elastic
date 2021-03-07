@@ -136,7 +136,7 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 
 		startTime += System.nanoTime()
 
-		println("DSP timings: Total=${startTime / 1000 / 1000.0}ms, DSP process=${startProcess / 1000 / 1000.0}ms")
+		//println("DSP timings: Total=${startTime / 1000 / 1000.0}ms, DSP process=${startProcess / 1000 / 1000.0}ms")
 		processing = false
 	}
 
