@@ -11,7 +11,7 @@ internal class ProcessBenchmarkTest {
 		val supervisor = LLVMSupervisor("/tmp/none", false)
 		supervisor.ingoing.send(addOneAndTwo())
 
-		val t = System.currentTimeMillis() + 10000
+		val t = System.currentTimeMillis() + 1000
 
 		var framesProcessed = 0
 		while (t > System.currentTimeMillis()) {

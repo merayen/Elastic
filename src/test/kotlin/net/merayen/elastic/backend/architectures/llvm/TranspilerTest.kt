@@ -9,23 +9,11 @@ import org.junit.jupiter.api.Test
 
 internal class TranspilerTest {
 	@Test
-	fun `simple test`() { // This test is crap. What does it do
-		val netlist = NetList()
-
-		NetListMessages.apply(netlist, CreateNodeMessage("top", "group", 1, null))
-		NetListMessages.apply(netlist, CreateNodeMessage("a", "value", 1, "top"))
-		NetListMessages.apply(netlist, CreateNodeMessage("b", "out", 1, "top"))
-
-		val transpiler = Transpiler(netlist, 44100, 16, 256, 4, 256, true)
-		println(transpiler.transpile())
-	}
-
-	@Test
 	fun `1 + 2 = 3`() {
 		val supervisor = LLVMSupervisor("/tmp/none")
-		supervisor.listenCodeGen = {
-			println(it.split("\n").mapIndexed { i, x -> "${i + 1}\t$x" }.joinToString("\n"))
-		}
+		// supervisor.listenCodeGen = {
+		// 	println(it.split("\n").mapIndexed { i, x -> "${i + 1}\t$x" }.joinToString("\n"))
+		// }
 
 		val messages = addOneAndTwo()
 

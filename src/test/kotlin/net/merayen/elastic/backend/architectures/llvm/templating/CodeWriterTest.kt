@@ -61,8 +61,7 @@ internal class CodeWriterTest {
 			struct Person {
 				char* name;
 				int age;
-			}
-			instance1, instance2;
+			}instance1, instance2;
 			void main(char args[], int length) {
 				if (length != 2) {
 					printf("Length must be 2! Got %i", length);
