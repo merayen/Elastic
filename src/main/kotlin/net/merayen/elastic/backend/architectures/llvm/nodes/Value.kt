@@ -44,7 +44,6 @@ class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) 
 	override fun onPrepareFrame() {}
 
 	override fun onMessage(message: NodePropertyMessage) {
-		println("$nodeId supposed to forward data: ${message.instance}")
 		val instance = message.instance as Properties
 		val value = instance.value
 		if (value != null) {
