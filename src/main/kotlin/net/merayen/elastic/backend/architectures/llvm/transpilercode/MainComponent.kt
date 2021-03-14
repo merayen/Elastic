@@ -11,16 +11,17 @@ class MainComponent(private val fprintfMutex: PThreadMutex, private val log: Log
 				Call("init_threads")
 				Call("init_workunits")
 				Call("init_stdinout")
-				Call("init_nodes")
-				Call("init_voice")
 
 				//Statement("bool wait_for_debug = true")
 				//While("wait_for_debug") {}
 
-				For("long i = 0", "", "i++") {
+				Call("init_nodes")
+				Call("init_voice")
+
+				For("unsigned long i = 0", "", "i++") {
 					Call("process_communication")
 					Call("process")
-					if (debug) log.write(codeWriter, "Done with frame %i", "i")
+					if (debug) log.write(codeWriter, "Done with frame %lu", "i")
 				}
 
 				Return("0")

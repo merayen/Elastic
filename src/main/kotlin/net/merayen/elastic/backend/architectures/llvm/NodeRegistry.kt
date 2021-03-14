@@ -7,6 +7,7 @@ val nodeRegistry = mapOf(
 	"value" to Value::class,
 	//"elapsed" to Elapsed::class,
 	"add" to Add::class,
+	"midi_poly" to MidiPoly::class,
 	//"multiply" to Multiply::class,
 	//"sine" to Sine::class,
 	"out" to Out::class

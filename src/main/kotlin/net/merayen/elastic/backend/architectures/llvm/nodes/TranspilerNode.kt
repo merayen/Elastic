@@ -299,7 +299,13 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		return "nodedata_$nodeId->outlets[$voiceIndex]->$portName"
 	}
 
-	protected fun writeParameterVariable(parameterName: String): String {
+	/**
+	 * Write the parameter variable, accessed outside the CClass instance methods.
+	 *
+	 * E.g, if you want to access the parameter from another CClass or method outside current instance methods,
+	 * use this method. Otherwise, just use `this->parameters.your_parameter` instead.
+	 */
+	protected fun writeOuterParameterVariable(parameterName: String): String {
 		return "nodedata_$nodeId->parameters.$parameterName"
 	}
 

@@ -19,7 +19,7 @@ class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) 
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			writeForEachVoice(codeWriter) {
 				codeWriter.For("int i = 0", "i < ${shared.frameSize}", "i++") {
-					codeWriter.Statement("${writeOutlet("out")}.signal[i] = ${writeParameterVariable("value")}")
+					codeWriter.Statement("${writeOutlet("out")}.signal[i] = ${writeOuterParameterVariable("value")}")
 				}
 			}
 		}
@@ -32,7 +32,7 @@ class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) 
 				If("*(unsigned char *)(data) != 0") {
 					writePanic(codeWriter, "Type should always be 0")
 				}
-				Statement("${writeParameterVariable("value")} = *(float *)(data + 1)")
+				Statement("${writeOuterParameterVariable("value")} = *(float *)(data + 1)")
 				log?.write(codeWriter, "Node $nodeId received value %f", "*(float *)(data + 1)")
 			}
 		}
