@@ -3,8 +3,8 @@ package net.merayen.elastic.backend.data.eventdata
 
 // TODO split data from functions?
 data class MidiData(
-	var midi: MutableList<MidiChunk>? = ArrayList()
-) : Cloneable, Iterable<MidiData.MidiChunk> {
+	var midi: MutableList<MidiMessage>? = ArrayList()
+) : Cloneable, Iterable<MidiData.MidiMessage> {
 
 	class DuplicateID(id: String) : RuntimeException(id)
 
@@ -16,12 +16,12 @@ data class MidiData(
 	 * @param start Offset (in beats) this MidiChunk applies
 	 * @param midi Array of midi packets
 	 */
-	class MidiChunk(
+	class MidiMessage(
 		var id: String? = null,
 		var start: Double? = null,
 		var midi: MutableList<Short>? = null
 	) : Cloneable {
-		public override fun clone() = MidiChunk(id, start, ArrayList(midi!!))
+		public override fun clone() = MidiMessage(id, start, ArrayList(midi!!))
 	}
 
 	/**
@@ -42,25 +42,25 @@ data class MidiData(
 	}
 
 	public override fun clone(): MidiData {
-		return MidiData(midi!!.map { it.clone() } as ArrayList<MidiChunk>)
+		return MidiData(midi!!.map { it.clone() } as ArrayList<MidiMessage>)
 	}
 
-	fun add(midiChunk: MidiChunk) {
-		if (midi!!.any { it.id == midiChunk.id })
-			throw DuplicateID(midiChunk.id!!)
+	fun add(midiMessage: MidiMessage) {
+		if (midi!!.any { it.id == midiMessage.id })
+			throw DuplicateID(midiMessage.id!!)
 
-		midi?.add(midiChunk)
+		midi?.add(midiMessage)
 		revision++
 
 		midi!!.sortBy { it.start }
 	}
 
-	fun addAll(midiChunks: Array<MidiChunk>) {
-		for (midiChunk in midiChunks)
+	fun addAll(midiMessages: Array<MidiMessage>) {
+		for (midiChunk in midiMessages)
 			if (midi!!.any { it.id == midiChunk.id })
 				throw DuplicateID(midiChunk.id!!)
 
-		midi?.addAll(midiChunks)
+		midi?.addAll(midiMessages)
 		revision++
 
 		midi!!.sortBy { it.start }
@@ -87,8 +87,8 @@ data class MidiData(
 		return removed
 	}
 
-	fun remove(midiChunk: MidiChunk): Boolean {
-		val removed = midi!!.remove(midiChunk)
+	fun remove(midiMessage: MidiMessage): Boolean {
+		val removed = midi!!.remove(midiMessage)
 
 		revision++
 

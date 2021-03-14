@@ -139,9 +139,9 @@ abstract class MidiState {
 
 	fun handle(midiPacket: Array<Short>) = handle(midiPacket.toShortArray(), null)
 
-	fun handle(midiChunk: MidiData.MidiChunk) {
-		time = midiChunk.start!!
-		handle(midiChunk.midi!!.toShortArray(), midiChunk.id!!)
+	fun handle(midiMessage: MidiData.MidiMessage) {
+		time = midiMessage.start!!
+		handle(midiMessage.midi!!.toShortArray(), midiMessage.id!!)
 	}
 
 	private fun dataEntryUpdate() {

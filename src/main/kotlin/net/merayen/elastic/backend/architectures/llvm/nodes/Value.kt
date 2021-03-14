@@ -29,9 +29,11 @@ class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) 
 				If("length != 5") {
 					writePanic(codeWriter, "Length must be 5")
 				}
+
 				If("*(unsigned char *)(data) != 0") {
 					writePanic(codeWriter, "Type should always be 0")
 				}
+
 				Statement("${writeOuterParameterVariable("value")} = *(float *)(data + 1)")
 				log?.write(codeWriter, "Node $nodeId received value %f", "*(float *)(data + 1)")
 			}

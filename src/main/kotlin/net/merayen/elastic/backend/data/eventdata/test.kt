@@ -10,26 +10,26 @@ fun test() {
 fun testMidiData() {
 	val midiData = MidiData()
 	midiData.add(
-		MidiData.MidiChunk(
+		MidiData.MidiMessage(
 			UniqueID.create(),
 			0.0,
 			MidiMessagesCreator.keyDown(10, 1f).toMutableList()
 		)
 	)
 
-	midiData.add(MidiData.MidiChunk(
+	midiData.add(MidiData.MidiMessage(
 		UniqueID.create(),
 		0.0,
 		MidiMessagesCreator.keyDown(11, 0.8f).toMutableList()
 	))
 
-	midiData.add(MidiData.MidiChunk( // Overlaps tangent 10, so this should be discarded
+	midiData.add(MidiData.MidiMessage( // Overlaps tangent 10, so this should be discarded
 		UniqueID.create(),
 		0.1,
 		MidiMessagesCreator.keyDown(10, 0.5f).toMutableList()
 	))
 
-	midiData.add(MidiData.MidiChunk( // Releases a tangent that isn't pressed. Should be discarded
+	midiData.add(MidiData.MidiMessage( // Releases a tangent that isn't pressed. Should be discarded
 		UniqueID.create(),
 		0.1,
 		MidiMessagesCreator.keyDown(12, 0.5f).toMutableList()

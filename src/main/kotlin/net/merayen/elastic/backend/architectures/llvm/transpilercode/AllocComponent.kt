@@ -2,6 +2,11 @@ package net.merayen.elastic.backend.architectures.llvm.transpilercode
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 
+/**
+ * Allocates and deallocates memory.
+ *
+ * TODO make it track allocations and deallocations when in debug mode
+ */
 class AllocComponent(private val log: LogComponent, private val debug: Boolean = false) {
 	fun writeMalloc(codeWriter: CodeWriter, typeExpression: String, destinationVariable: String, sizeExpression: String) {
 		with(codeWriter) {

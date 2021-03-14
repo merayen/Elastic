@@ -166,12 +166,12 @@ class PianoNet(private val octaveCount: Int) : UIObject(), FlexibleDimension {
 					notes.remove(ghostNote)
 					if (toolMode == ToolModes.Create) {
 						val midiData = MidiData()
-						midiData.add(MidiData.MidiChunk(
+						midiData.add(MidiData.MidiMessage(
 								UniqueID.create(),
 								ghostNote.start,
 								MidiMessagesCreator.keyDown(ghostNote.tangent.toInt(), 1f).toMutableList()
 						))
-						midiData.add(MidiData.MidiChunk(
+						midiData.add(MidiData.MidiMessage(
 								UniqueID.create(),
 								ghostNote.start + ghostNote.length,
 								MidiMessagesCreator.keyUp(ghostNote.tangent.toInt(), 0f).toMutableList()

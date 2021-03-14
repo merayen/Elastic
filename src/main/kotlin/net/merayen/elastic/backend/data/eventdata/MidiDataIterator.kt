@@ -1,10 +1,10 @@
 package net.merayen.elastic.backend.data.eventdata
 
-class MidiDataIterator(private val midiData: MidiData, private var position: Double = Double.NEGATIVE_INFINITY) : Iterator<MidiData.MidiChunk> {
+class MidiDataIterator(private val midiData: MidiData, private var position: Double = Double.NEGATIVE_INFINITY) : Iterator<MidiData.MidiMessage> {
 	private var iteratorRevision = -1L
 	private var index = 0
 	private var lastMidiChunkId: String? = null
-	private val playedAtCurrentTime = ArrayList<MidiData.MidiChunk>() // Guard to not repeat any MidiChunk at the same position
+	private val playedAtCurrentTime = ArrayList<MidiData.MidiMessage>() // Guard to not repeat any MidiChunk at the same position
 	private var midi = midiData.getMidiChunks()
 
 	override fun hasNext(): Boolean {
@@ -13,7 +13,7 @@ class MidiDataIterator(private val midiData: MidiData, private var position: Dou
 		return index < midi.size
 	}
 
-	override fun next(): MidiData.MidiChunk {
+	override fun next(): MidiData.MidiMessage {
 		relocate()
 
 		if (index > midi.size)

@@ -15,7 +15,7 @@ class MidiDataIteratorTest {
 		// Add notes getting closer at the end
 		for (i in 0 until 100) {
 			midiData.add(
-				MidiData.MidiChunk(
+				MidiData.MidiMessage(
 					i.toString(),
 					1 - (1 / (i+1).toDouble()),
 					mutableListOf(i.toShort())
@@ -24,8 +24,8 @@ class MidiDataIteratorTest {
 		}
 
 		// Add notes at the same exact place, order should be kept (100 before 101)
-		midiData.add(MidiData.MidiChunk("100", 1.0, mutableListOf(100)))
-		midiData.add(MidiData.MidiChunk("101", 1.0, mutableListOf(101)))
+		midiData.add(MidiData.MidiMessage("100", 1.0, mutableListOf(100)))
+		midiData.add(MidiData.MidiMessage("101", 1.0, mutableListOf(101)))
 
 		this.midiData = midiData
 	}

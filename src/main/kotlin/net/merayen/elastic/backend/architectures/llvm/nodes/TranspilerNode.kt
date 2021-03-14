@@ -179,11 +179,13 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 * Variable: voice_index
 		 */
 		protected fun writeForEachVoice(codeWriter: CodeWriter, block: () -> Unit) {
-			codeWriter.For("int voice_index = 0", "voice_index < ${shared.voiceCount}", "voice_index++") {
-				codeWriter.If("${writeVoicesVariable()}[voice_index] == 0") {
-					codeWriter.Continue()
+			with(codeWriter) {
+				For("int voice_index = 0", "voice_index < ${shared.voiceCount}", "voice_index++") {
+					If("${writeVoicesVariable()}[voice_index] == 0") {
+						Continue()
+					}
+					block()
 				}
-				block()
 			}
 		}
 
@@ -199,7 +201,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		}
 
 		/**
-		 * Create a for-loop for each channel.
+		 * Create a for-loop for each channel. AUDIO ONLY.
 		 *
 		 * Variable: channel_index
 		 */

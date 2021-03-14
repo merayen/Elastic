@@ -96,7 +96,7 @@ class LogicNode : BaseLogicNode() {
 				buffer.add(shortArrayOf(128.toShort(), data.tangent, 64))
 			}
 			is AddEventZoneMessage -> {
-				val eventZones = (properties as Properties).eventZones ?: ArrayList()
+				val eventZones = (properties as Properties).eventZones ?: Properties.EventZones()
 
 				eventZones.add(Properties.EventZone(
 						id = data.eventZoneId,

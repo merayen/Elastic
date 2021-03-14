@@ -22,13 +22,5 @@ class Add(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 				}
 			}
 		}
-
-		override fun onWriteDataReceiver(codeWriter: CodeWriter) {}
-		override fun onWriteCreateVoice(codeWriter: CodeWriter) {}
-		override fun onWriteDestroyVoice(codeWriter: CodeWriter) {}
 	}
-
-	override fun onPrepareFrame() {}
-	override fun onMessage(message: NodePropertyMessage) {}
-	override fun onMessage(message: NodeDataMessage) {}
 }

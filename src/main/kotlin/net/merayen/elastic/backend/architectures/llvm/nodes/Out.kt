@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeOutputData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.NodePropertyMessage
 import java.nio.ByteBuffer
 
 class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
@@ -21,7 +20,10 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 						}
 					}
 				}
+
 				Call("send", "$length, output")
+
+				alloc.writeFree(codeWriter, "output")
 			}
 		}
 	}

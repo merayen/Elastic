@@ -15,9 +15,9 @@ class MidiDataTest {
 	@BeforeEach
 	fun setUp() {
 		val midiData = MidiData()
-		midiData.add(MidiData.MidiChunk("0", 0.0, arrayListOf(0)))
-		midiData.add(MidiData.MidiChunk("2", 2.0, arrayListOf(2)))
-		midiData.add(MidiData.MidiChunk("1", 1.0, arrayListOf(1)))
+		midiData.add(MidiData.MidiMessage("0", 0.0, arrayListOf(0)))
+		midiData.add(MidiData.MidiMessage("2", 2.0, arrayListOf(2)))
+		midiData.add(MidiData.MidiMessage("1", 1.0, arrayListOf(1)))
 
 		this.midiData = midiData
 	}
@@ -53,9 +53,9 @@ class MidiDataTest {
 
 		val newMidiData = MidiData()
 
-		newMidiData.add(MidiData.MidiChunk("10", 1.0, arrayListOf(10.toShort())))
-		newMidiData.add(MidiData.MidiChunk("11", 1.5, arrayListOf(10)))
-		newMidiData.add(MidiData.MidiChunk("12", 2.1, arrayListOf(10)))
+		newMidiData.add(MidiData.MidiMessage("10", 1.0, arrayListOf(10.toShort())))
+		newMidiData.add(MidiData.MidiMessage("11", 1.5, arrayListOf(10)))
+		newMidiData.add(MidiData.MidiMessage("12", 2.1, arrayListOf(10)))
 
 		midiData.merge(newMidiData)
 
@@ -77,7 +77,7 @@ class MidiDataTest {
 		val mapper = JSONObjectMapper()
 		mapper.registerClass(Data::class)
 		mapper.registerClass(MidiData::class)
-		mapper.registerClass(MidiData.MidiChunk::class)
+		mapper.registerClass(MidiData.MidiMessage::class)
 
 		val result = mapper.toObject(JSONParser().parse(JSONObject.toJSONString(mapper.toMap(data))) as Map<*, *>) as Data
 

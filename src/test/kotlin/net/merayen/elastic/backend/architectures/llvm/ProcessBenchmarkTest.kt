@@ -28,7 +28,7 @@ internal class ProcessBenchmarkTest {
 			framesProcessed++
 		}
 
-		println("Frames processed in 10 seconds: $framesProcessed")
+		println("Frames processed in 1 seconds: $framesProcessed")
 
 		supervisor.onEnd()
 	}
