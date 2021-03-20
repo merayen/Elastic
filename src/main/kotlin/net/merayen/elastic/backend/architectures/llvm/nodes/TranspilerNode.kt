@@ -401,8 +401,8 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		return result
 	}
 
-	protected fun writePanic(codeWriter: CodeWriter, message: String = "") {
-		writePanic(codeWriter, message, debug = debug)
+	protected fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "") {
+		writePanic(codeWriter, message, args, debug = debug)
 	}
 
 	private fun hasOutlets() = shared.nodeProperties.getOutputPorts(node).isNotEmpty()

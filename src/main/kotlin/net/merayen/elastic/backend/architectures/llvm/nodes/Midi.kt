@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
+import javax.swing.plaf.nimbus.State
 
 /**
  * Midi score.
@@ -15,16 +16,12 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 		/**
 		 * Receive the whole midi data for this node.
 		 *
+		 * The first 4 bytes, and int, describes the size of the data. The second part if the midi part itself, then the
+		 * timing as doubles, 8 bytes for each.
+		 *
 		 * It will get resent, everything, when user modifies a note in the MIDI score editor.
 		 */
 		MIDI_SCORE_DATA,
-
-		/**
-		 * Timing data for the MIDI_SCORE_DATA.
-		 *
-		 * In seconds.
-		 */
-		MIDI_SCORE_DATA_TIMING,
 
 		/**
 		 * MIDI data that is not related to the score itself.
@@ -40,6 +37,7 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteParameters(codeWriter: CodeWriter) {
 			with(codeWriter) {
+				Member("int", "midi_score_count")
 				// The whole score data received via MIDI_SCORE_DATA
 				Member("unsigned char*", "midi_score_data")
 
@@ -53,6 +51,7 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
 			with(codeWriter) {
+				Statement("this->parameters.midi_score_count = 0")
 				Statement("this->parameters.midi_score_data = 0")
 				Statement("this->parameters.midi_score_data_timing = 0")
 				Statement("this->parameters.position = 0")
@@ -66,10 +65,22 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 				}
 
 				If("*(unsigned char*)(data) == ${Operations.MIDI_SCORE_DATA.ordinal}") {
-					writePanic(codeWriter, "It virks! Got MIDI_SCORE_DATA")
-				}
-				ElseIf("*(unsigned char*)(data) == ${Operations.MIDI_SCORE_DATA_TIMING.ordinal}") {
-					writePanic(codeWriter, "It virks! Got MIDI_SCORE_DATA_TIMING")
+					Statement("int count = (length - 1) / (4 + 8)")
+
+					If ("this->parameters.midi_score_count != 0") {
+						Call("free", "this->parameters.midi_score_data")
+						Call("free", "this->parameters.midi_score_data_timing")
+					}
+
+					Statement("unsigned char* midi_score_data = malloc(count * 4)")
+					Statement("double* midi_score_data_timing = malloc(count * 8)")
+
+					Call("memcpy", "midi_score_data, data + 1, count * 4")
+					Call("memcpy", "midi_score_data_timing, data + 1 + (count * 4), count * 8")
+
+					Statement("this->parameters.midi_score_count = count")
+					Statement("this->parameters.midi_score_data = midi_score_data")
+					Statement("this->parameters.midi_score_data_timing = midi_score_data_timing")
 				}
 				ElseIf("*(unsigned char*)(data) == ${Operations.DIRECT_MIDI.ordinal}") {
 					writePanic(codeWriter, "It virks! Got DIRECT_MIDI")
@@ -86,9 +97,10 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			val midiMessages = eventZones.getAbsoluteMidiMessages()
 
 			// Convert midi data to our local format and send to DSP node
-			sendDataToDSP(midiMessages.size * 4 + 1) {
+			sendDataToDSP(1 + midiMessages.size * 4 + midiMessages.size * 8) {
 				it.put(Operations.MIDI_SCORE_DATA.ordinal.toByte())
 
+				// First write all the midi messages that are 4 bytes each
 				for (midiMessage in midiMessages) {
 					val midi = midiMessage.midi!!
 					for (i in 0 until 4) // Always write 4 byte midi messages
@@ -97,12 +109,8 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 						else
 							it.put(0)
 				}
-			}
 
-			// Convert midi timing and send to DSP node
-			sendDataToDSP(midiMessages.size * 8 + 1) {
-				it.put(Operations.MIDI_SCORE_DATA_TIMING.ordinal.toByte())
-
+				// Then write the timing data for each midi message as 8 bytes
 				for (midiMessage in midiMessages)
 					it.putDouble(midiMessage.start!!)
 			}
