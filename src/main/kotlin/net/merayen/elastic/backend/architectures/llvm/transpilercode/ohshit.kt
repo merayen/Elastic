@@ -8,7 +8,7 @@ import kotlin.math.min
  */
 fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "", debug: Boolean) {
 	val stackTrace = Thread.currentThread().stackTrace
-	val stackTraceText = stackTrace.slice(2 until min(15, stackTrace.size)).filter { it.className.split(".").last() != "CodeWriter" }.joinToString("\\n\\t") { it.toString() }
+	val stackTraceText = stackTrace.slice(3 until min(15, stackTrace.size)).filter { it.className.split(".").last() != "CodeWriter" }.joinToString("\\n\\t") { it.toString() }
 	with(codeWriter) {
 		if (debug) {
 			if (message.isBlank())

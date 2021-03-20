@@ -159,8 +159,10 @@ class Transpiler(
 			val transpilerNodeCls = nodeRegistry[name] ?: throw RuntimeException("TranspilerNode '$name' not found")
 			val transpilerNode = transpilerNodeCls.primaryConstructor!!.call(node.id, index)
 
-			if (debug)
+			if (debug) {
 				transpilerNode.log = log
+				transpilerNode.debug = true
+			}
 
 			transpilerNode.alloc = allocComponent
 			transpilerNode.shared = shared
