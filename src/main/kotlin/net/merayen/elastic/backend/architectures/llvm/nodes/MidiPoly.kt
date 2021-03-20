@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
-import net.merayen.elastic.backend.architectures.llvm.transpilercode.ohshit
 import net.merayen.elastic.backend.logicnodes.list.midi_poly_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 

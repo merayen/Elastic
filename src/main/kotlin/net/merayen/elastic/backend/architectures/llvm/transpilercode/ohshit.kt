@@ -6,7 +6,7 @@ import kotlin.math.min
 /**
  * Kills the backend immediately with a message including the Kotlin/Java traceback where this ohshit-method got called.
  */
-fun ohshit(codeWriter: CodeWriter, message: String = "", args: String = "", debug: Boolean = false) {
+fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "", debug: Boolean) {
 	val stackTrace = Thread.currentThread().stackTrace
 	val stackTraceText = stackTrace.slice(2 until min(15, stackTrace.size)).filter { it.className.split(".").last() != "CodeWriter" }.joinToString("\\n\\t") { it.toString() }
 	with(codeWriter) {

@@ -6,7 +6,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
  * Logs stuff, using a mutex.
  */
 class LogComponent {
-	val fprintfMutex = PThreadMutex("fprintf_mutex", this)
+	val fprintfMutex = PThreadMutex("fprintf_mutex", this, false)
 
 	fun writeDefinition(codeWriter: CodeWriter) {
 		fprintfMutex.writeDefinition(codeWriter)

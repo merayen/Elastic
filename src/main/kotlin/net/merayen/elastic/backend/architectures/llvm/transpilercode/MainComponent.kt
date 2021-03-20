@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.architectures.llvm.transpilercode
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 
-class MainComponent(private val fprintfMutex: PThreadMutex, private val log: LogComponent, private val debug: Boolean) {
+class MainComponent(private val fprintfMutex: PThreadMutex, log: LogComponent, debug: Boolean) : TranspilerComponent(log, debug) {
 	fun create(codeWriter: CodeWriter) {
 		with(codeWriter) {
 			Method("int", "main") {
@@ -21,7 +21,7 @@ class MainComponent(private val fprintfMutex: PThreadMutex, private val log: Log
 				For("unsigned long i = 0", "", "i++") {
 					Call("process_communication")
 					Call("process")
-					if (debug) log.write(codeWriter, "Done with frame %lu", "i")
+					writeLog(codeWriter, "Done with frame %lu", "i")
 				}
 
 				Return("0")

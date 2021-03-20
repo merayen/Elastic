@@ -5,7 +5,11 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 /**
  * C code for receiving and sending data to the parent process via pipes.
  */
-class PipeComponent(private val allocComponent: AllocComponent, private val log: LogComponent, private val debug: Boolean) {
+class PipeComponent(
+	private val allocComponent: AllocComponent,
+	log: LogComponent,
+	debug: Boolean
+) : TranspilerComponent(log, debug) {
 	fun writeMethods(codeWriter: CodeWriter) {
 		with(codeWriter) {
 			Method("void", "send", "int length, void* data") {
@@ -42,11 +46,11 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 
 			Method("int", "init_stdinout") { // Initializes communication using stdin and stdout
 				If("freopen(NULL, \"rb\", stdin) == NULL") {
-					ohshit(codeWriter, "Could not open stdin", debug = debug)
+					panic(codeWriter, "Could not open stdin")
 				}
 
 				If("freopen(NULL, \"wb\", stdout) == NULL") {
-					ohshit(codeWriter, "Could not open stdout", debug = debug)
+					panic(codeWriter, "Could not open stdout")
 				}
 
 				Statement("char hello[] = {'H','E','L','L','O'}")
@@ -90,24 +94,24 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 				Statement("int message_size") // FIXME This portable...? No?
 
 				While("true") {
-					if (debug) log.write(this, "Waiting for message!", "")
+					writeLog(this, "Waiting for message!", "")
 
 					Call("fread", "&message_size, 1, 4, stdin")
 
 					If("feof(stdin)") {
-						if (debug) log.write(this, "Host closed the stream", "")
+						writeLog(this, "Host closed the stream", "")
 						Call("exit_failure")
 					}
 
 					If("message_size > 1073741824") {
-						if (debug) log.write(this, "Packet is too big", "")
+						writeLog(this, "Packet is too big", "")
 						Call("exit_failure")
 					}
 
 					//${log.writeLog("Got a message at %d bytes!", "message_size").prependIndent("\t\t")}
 
 					If("message_size < 1") {
-						if (debug) log.write(this, "Message size is less than 1", "")
+						writeLog(this, "Message size is less than 1", "")
 						Call("exit_failure")
 					}
 
@@ -116,7 +120,7 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 					Call("fread", "data, message_size, 1, stdin")
 
 					If("feof(stdin)") {
-						if (debug) log.write(this, "Host closed the stream", "")
+						writeLog(this, "Host closed the stream", "")
 						allocComponent.writeFree(codeWriter, "data")
 						Call("exit_failure")
 					}
@@ -130,12 +134,12 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 						// TODO
 					}
 					ElseIf("""consume_text("PROCESS", data, &offset, message_size)""") {
-						if (debug) log.write(this, "Asked to process", "")
+						writeLog(this, "Asked to process", "")
 						allocComponent.writeFree(codeWriter, "data")
 						Return() // Return from this method. Caller will process a frame
 					}
 					ElseIf("""consume_text("QUIT", data, &offset, message_size)""") {
-						if (debug) log.write(this, "Quitting", "")
+						writeLog(this, "Quitting", "")
 						allocComponent.writeFree(codeWriter, "data")
 						Call("send_text", "\"QUIT\"")
 						Call("exit", "0")
@@ -152,7 +156,7 @@ class PipeComponent(private val allocComponent: AllocComponent, private val log:
 
 							Statement("invalid_message[i] = data[i]")
 						}
-						ohshit(this, "Unknown message: %s", "invalid_message", debug = debug)
+						panic(this, "Unknown message: %s", "invalid_message")
 					}
 
 					allocComponent.writeFree(codeWriter, "data")

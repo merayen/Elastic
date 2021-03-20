@@ -13,11 +13,11 @@ import net.merayen.elastic.netlist.NetList
 class WorkUnitsComponent(
 	netList: NetList,
 	private val nodes: Map<String, TranspilerNode>,
-	private val log: LogComponent,
-	private val debug: Boolean
-) {
-	val workUnitsMutex = PThreadMutex("work_units_mutex", log)
-	val workUnitsCond = PThreadCond("work_units_cond", log, debug = debug)
+	log: LogComponent,
+	debug: Boolean
+) : TranspilerComponent(log, debug) {
+	val workUnitsMutex = PThreadMutex("work_units_mutex", log, debug)
+	val workUnitsCond = PThreadCond("work_units_cond", log, debug)
 	private val wudl: WorkUnitDependencyList<String>
 
 	init {
@@ -71,7 +71,7 @@ class WorkUnitsComponent(
 				Method("void", "process_workunit_$workUnitId") {
 					Comment(workUnit.nodes.toString())
 
-					if (debug) log.write(codeWriter, "process_workunit_$workUnitId: start, %p", "process_workunit_$workUnitId")
+					writeLog(codeWriter, "process_workunit_$workUnitId: start, %p", "process_workunit_$workUnitId")
 
 					// If this work unit depends on more than 1 work unit, then we need to check if all of them are finished
 					// If we got just 1 dependency, that dependency is already finished processing as it is the only workunit
@@ -80,10 +80,10 @@ class WorkUnitsComponent(
 						Statement("bool all_finished = false")
 						writeLock(codeWriter) {
 							If("work_units[$workUnitId] == 2") {
-								if (debug) log.write(codeWriter, "process_workunit_$workUnitId: already processed/processing", "")
+								writeLog(codeWriter, "process_workunit_$workUnitId: already processed/processing", "")
 								// Already processed. Should not happen...
 								// TODO crash hardcore then...?
-								//ohshit(codeWriter, "Already processed, should not happen", debug = debug)
+								//panic(codeWriter, "Already processed, should not happen")
 							}
 							ElseIf("work_units[$workUnitId] == 1") {
 								// Ok, we are already processing, might have multiple inputs that triggers us...? Or...?
@@ -96,7 +96,7 @@ class WorkUnitsComponent(
 							}
 						}
 						If("!all_finished") {
-							if (debug) log.write(codeWriter, "process_workunit_$workUnitId: not all dependencies has processed", "")
+							writeLog(codeWriter, "process_workunit_$workUnitId: not all dependencies has processed", "")
 							Return() // Need to wait for additional work units we depend on to get finished")
 						}
 					}
@@ -118,7 +118,7 @@ class WorkUnitsComponent(
 					for (nextWorkUnit in wudl.getDependents(workUnit))
 						Call("queue_task", "process_workunit_${workUnitToIndexMap[nextWorkUnit]!!}")
 
-					if (debug) log.write(codeWriter, "process_workunit_$workUnitId: done", "")
+					writeLog(codeWriter, "process_workunit_$workUnitId: done", "")
 				}
 			}
 
@@ -151,22 +151,22 @@ class WorkUnitsComponent(
 					For("int i = 0", "i < ${wudl.size}", "i++") {
 						While("work_units[i] != 2") {
 							workUnitsCond.writeTimedWait(codeWriter, workUnitsMutex, 0.1, onTimeOut = {
-								if (debug) log.write(codeWriter, "work_units_cond timed out!")
-								ohshit(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway", debug = debug)
+								writeLog(codeWriter, "work_units_cond timed out!")
+								panic(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway")
 							})
 
 							Statement("double now")
 							Block {
 								Statement("struct timespec tid")
 								If("clock_gettime(CLOCK_MONOTONIC_RAW, &tid)") {
-									if (debug) log.write(codeWriter, "Failed to get time")
+									writeLog(codeWriter, "Failed to get time")
 									Call("exit_failure")
 								}
 								Statement("now = tid.tv_sec + tid.tv_nsec / 1E9")
 							}
 
 							If("now - start >= 1.0") {
-								if (debug) log.write(
+								writeLog(
 									codeWriter,
 									"FATAL: Timeout when waiting for all nodes to process. process_workunit_%i never finished.",
 									"i"
@@ -181,11 +181,10 @@ class WorkUnitsComponent(
 		}
 	}
 
-	fun writeDebugInfo(codeWriter: CodeWriter) {
-		if (!debug) return
-
-		for (number in workUnitToIndexMap.values)
-			log.write(codeWriter, "process_workunit_$number = %p", "process_workunit_$number")
+	private fun writeDebugInfo(codeWriter: CodeWriter) {
+		if (debug)
+			for (number in workUnitToIndexMap.values)
+				writeLog(codeWriter, "process_workunit_$number = %p", "process_workunit_$number")
 	}
 
 	/**

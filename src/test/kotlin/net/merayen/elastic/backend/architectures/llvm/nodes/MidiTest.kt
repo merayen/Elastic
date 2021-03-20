@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.backend.logicnodes.list.midi_1.MidiDataMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.backend.midi.MidiStatuses
 import net.merayen.elastic.system.intercom.*

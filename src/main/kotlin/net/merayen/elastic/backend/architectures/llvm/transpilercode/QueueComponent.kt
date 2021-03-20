@@ -7,9 +7,14 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
  *
  * This is for performance and use of several CPU cores.
  */
-internal class QueueComponent(private val threadCount: Int, private val workUnitsComponent: WorkUnitsComponent, private val log: LogComponent, val debug: Boolean) {
-	private val threadMutexes = PThreadMutex("", log)
-	private val threadConds = PThreadCond("", log, debug = debug)
+internal class QueueComponent(
+	private val threadCount: Int,
+	private val workUnitsComponent: WorkUnitsComponent,
+	log: LogComponent,
+	debug: Boolean
+) : TranspilerComponent(log, debug) {
+	private val threadMutexes = PThreadMutex("", log, debug)
+	private val threadConds = PThreadCond("", log, debug)
 
 	fun writeDefinition(codeWriter: CodeWriter) {
 		with(codeWriter) {
@@ -28,7 +33,7 @@ internal class QueueComponent(private val threadCount: Int, private val workUnit
 		with(codeWriter) {
 			// Will run a function with the argument "voice". Will poll several threads or just block if no threads available
 			Method("void", "queue_task", "void *func") {
-				if (debug) log.write(this, "queue_task %p", "func")
+				writeLog(this, "queue_task %p", "func")
 				Statement("bool lock_success = false")
 				workUnitsComponent.writeLock(codeWriter) {
 					For("int i = 0", "i < $threadCount", "i++") {
@@ -36,10 +41,10 @@ internal class QueueComponent(private val threadCount: Int, private val workUnit
 							If("threads[i].func == NULL") {
 								// Found a thread that is available
 								Statement("lock_success = true")
-								if (debug) log.write(this, "queue_task: Found slot to queue %p into [%d]", "func, i")
+								writeLog(this, "queue_task: Found slot to queue %p into [%d]", "func, i")
 								Statement("threads[i].func = func")
 								threadConds.writeCallBroadcast(this, "&threads[i].cond")
-								if (debug) log.write(this, "queue_task: Queued %p", "func")
+								writeLog(this, "queue_task: Queued %p", "func")
 							}
 						})
 					}
@@ -47,7 +52,7 @@ internal class QueueComponent(private val threadCount: Int, private val workUnit
 				If("lock_success") {
 					Return()
 				}
-				if (debug) log.write(this, "queue_task: No empty thread found queueing %p, waiting", "func")
+				writeLog(this, "queue_task: No empty thread found queueing %p, waiting", "func")
 				Call("((void(*)())func)")
 			}
 
@@ -61,7 +66,7 @@ internal class QueueComponent(private val threadCount: Int, private val workUnit
 
 				Statement("struct threads_t* thread = &threads[thread_index]")
 
-				if (debug) log.write(this, "[%i] Launched", "thread_index")
+				writeLog(this, "[%i] Launched", "thread_index")
 				Call("pthread_mutex_lock", "&thread->lock") // Lock to us all the time, as long as we do not pthread_cond_wait
 
 				While("true") {
@@ -69,13 +74,13 @@ internal class QueueComponent(private val threadCount: Int, private val workUnit
 
 					Call("pthread_cond_broadcast", "&thread->cond")
 					If("thread->func == NULL") { // No job set, go back to sleep
-						if (debug) log.write(this, "[%i] No job set, waiting for work", "thread_index")
+						writeLog(this, "[%i] No job set, waiting for work", "thread_index")
 						threadConds.writeWait(codeWriter, threadMutexes, "&thread->cond", "&thread->lock")
 						//Call("pthread_cond_wait", "&thread->cond, &thread->lock") // Wait for someone to wake us up, also temporary unlocks the mutex
 						Continue() // Woken up, look for job again
 					}
 
-					if (debug) log.write(this, "Thread %i has gotten work", "thread_index")
+					writeLog(this, "Thread %i has gotten work", "thread_index")
 					Call("((void(*)())thread->func)")
 					Statement("thread->func = NULL")
 				}
@@ -94,13 +99,17 @@ internal class QueueComponent(private val threadCount: Int, private val workUnit
 
 				// Init mutexes
 				For("int i = 0", "i < $threadCount", "i++") {
-					Statement("pthread_mutexattr_t mutex_attr")
-					Call("memset", "&mutex_attr, 0, sizeof(pthread_mutexattr_t)")
+					if (debug) {
+						Statement("pthread_mutexattr_t mutex_attr")
+						Call("memset", "&mutex_attr, 0, sizeof(pthread_mutexattr_t)")
 
-					If("pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_ERRORCHECK) != 0") {
-						ohshit(codeWriter, debug = debug);
+						If("pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_ERRORCHECK) != 0") {
+							panic(codeWriter);
+						}
+						Call("pthread_mutex_init", "&threads[i].lock, &mutex_attr")
+					} else {
+						Call("pthread_mutex_init", "&threads[i].lock, NULL")
 					}
-					Call("pthread_mutex_init", "&threads[i].lock, &mutex_attr")
 				}
 
 				// Create and run the threads

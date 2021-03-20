@@ -7,12 +7,12 @@ class NodeDataComponent(private val log: LogComponent, private val debug: Boolea
 	fun writeDefinition(codeWriter: CodeWriter, nodes: Map<String, TranspilerNode>) {
 		with(codeWriter) {
 			Method("void", "handle_ingoing_nodedata", "int length, void* data") {
-				If("length < 4") { ohshit(codeWriter) }
+				If("length < 4") { writePanic(codeWriter, debug = debug) }
 				if (debug) log.write(codeWriter, "handle_ingoing_nodedata receiving packet at size %i", "length")
 
 				if (nodes.isNotEmpty()) {
 					If("*(int *)data < 0") {
-						ohshit(codeWriter)
+						writePanic(codeWriter, debug = debug)
 					}
 					for (node in nodes.values) {
 						ElseIf("*(int *)data == ${node.nodeIndex}") {
@@ -20,7 +20,7 @@ class NodeDataComponent(private val log: LogComponent, private val debug: Boolea
 						}
 					}
 					Else {
-						ohshit(codeWriter, "Node with index %i not found", "*(int *)data")
+						writePanic(codeWriter, "Node with index %i not found", "*(int *)data", debug = debug)
 					}
 				}
 			}

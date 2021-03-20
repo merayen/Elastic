@@ -8,9 +8,8 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.templating.include
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.LogComponent
-import net.merayen.elastic.backend.architectures.llvm.transpilercode.ohshit
+import net.merayen.elastic.backend.architectures.llvm.transpilercode.writePanic
 import net.merayen.elastic.netlist.Node
-import net.merayen.elastic.system.intercom.NetListMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
@@ -64,7 +63,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 
 			addInstanceMethod(codeWriter, "void", "receive_data", "int length, void* data") {
 				codeWriter.If("length < 0") {
-					ohshit(codeWriter, "Corrupt data?")
+					writePanic(codeWriter, "Corrupt data?")
 				}
 				onWriteDataReceiver(codeWriter)
 			}
@@ -138,7 +137,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 *
 		 * The length is "int length;"
 		 *
-		 * If something is wrong with the incoming data, use "ohshit(...)" to stop immediately.
+		 * If something is wrong with the incoming data, use "writePanic(...)" to stop immediately.
 		 */
 		protected open fun onWriteDataReceiver(codeWriter: CodeWriter) {}
 
@@ -290,13 +289,6 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	 */
 	fun prepareFrame() = onPrepareFrame()
 
-	protected fun writeForEachVoice(text: String): String {
-		return """
-			for (int voice_index = 0; voice_index < ${shared.voiceCount}; voice_index++)
-				${include(4, text)}
-		""".trim()
-	}
-
 	protected fun writeOutlet(portName: String, voiceIndex: String = "voice_index"): String {
 		return "nodedata_$nodeId->outlets[$voiceIndex]->$portName"
 	}
@@ -370,8 +362,8 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	 */
 	fun writeVoiceDestruction(codeWriter: CodeWriter) {
 		with(codeWriter) {
-			If("voice_index < 0 || voice_index >= ${shared.voiceCount}") { ohshit(codeWriter) }
-			If("$instanceVariable->voices[voice_index] == 0") { ohshit(codeWriter, "Voice already destroyed") }
+			If("voice_index < 0 || voice_index >= ${shared.voiceCount}") { writePanic(codeWriter) }
+			If("$instanceVariable->voices[voice_index] == 0") { writePanic(codeWriter, "Voice already destroyed") }
 
 			for (node in getChildren())
 				node.nodeClass.writeCall(codeWriter, "destroy_voice", "${node.instanceVariable}, voice_index")
@@ -409,8 +401,8 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		return result
 	}
 
-	protected fun writePanic(codeWriter: CodeWriter, message: String) {
-		ohshit(codeWriter, message, debug = debug)
+	protected fun writePanic(codeWriter: CodeWriter, message: String = "") {
+		writePanic(codeWriter, message, debug = debug)
 	}
 
 	private fun hasOutlets() = shared.nodeProperties.getOutputPorts(node).isNotEmpty()

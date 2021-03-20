@@ -2,7 +2,7 @@ package net.merayen.elastic.backend.architectures.llvm.transpilercode
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 
-class PThreadCond(val name: String, val log: LogComponent? = null, val debug: Boolean = false) {
+class PThreadCond(val name: String, log: LogComponent, debug: Boolean = false) : TranspilerComponent(log, debug) {
 	fun writeDefinition(codeWriter: CodeWriter) {
 		codeWriter.Statement("pthread_cond_t $name")
 	}
@@ -14,13 +14,13 @@ class PThreadCond(val name: String, val log: LogComponent? = null, val debug: Bo
 			Statement("$resultVar = pthread_cond_init($variableExpression, NULL)")
 			If("$resultVar == 0") {}
 			ElseIf("$resultVar == EAGAIN") {
-				ohshit(codeWriter, "$resultVar init: EAGAIN", debug = debug)
+				panic(codeWriter, "$resultVar init: EAGAIN")
 			}
 			ElseIf("$resultVar == ENOMEM") {
-				ohshit(codeWriter, "$resultVar init: ENOMEM", debug = debug)
+				panic(codeWriter, "$resultVar init: ENOMEM")
 			}
 			Else {
-				ohshit(codeWriter, "$resultVar init: (unknown error)", debug = debug)
+				panic(codeWriter, "$resultVar init: (unknown error)")
 			}
 		}
 	}
@@ -50,10 +50,10 @@ class PThreadCond(val name: String, val log: LogComponent? = null, val debug: Bo
 				Statement("${name}_result = pthread_cond_timedwait($condVariableExpression, ${mutexVariableExpression}, &${name}_wait_until)") // Wait for someone to wake us up, also temporary unlocks the mutex
 			}
 			If("${name}_result == EINVAL") {
-				ohshit(codeWriter, "$name timedwait: EINVAL", debug = debug)
+				panic(codeWriter, "$name timedwait: EINVAL")
 			}
 			ElseIf("${name}_result == EPERM") {
-				ohshit(codeWriter, "$name timedwait: EPERM", debug = debug)
+				panic(codeWriter, "$name timedwait: EPERM")
 			}
 			if (onTimeOut != null) {
 				ElseIf("${name}_result == ETIMEDOUT") {
@@ -80,7 +80,7 @@ class PThreadCond(val name: String, val log: LogComponent? = null, val debug: Bo
 			Statement("int $resultVar")
 			Statement("$resultVar = pthread_cond_broadcast($variableExpression)")
 			If("$resultVar != 0") {
-				ohshit(codeWriter, "$name broadcast: %i", resultVar, debug = debug)
+				panic(codeWriter, "$name broadcast: %i", resultVar)
 			}
 		}
 	}

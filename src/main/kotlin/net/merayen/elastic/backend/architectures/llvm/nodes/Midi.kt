@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
-import net.merayen.elastic.backend.architectures.llvm.transpilercode.ohshit
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 
@@ -67,13 +66,13 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 				}
 
 				If("*(unsigned char*)(data) == ${Operations.MIDI_SCORE_DATA.ordinal}") {
-					ohshit(codeWriter, "It virks! Got MIDI_SCORE_DATA")
+					writePanic(codeWriter, "It virks! Got MIDI_SCORE_DATA")
 				}
 				ElseIf("*(unsigned char*)(data) == ${Operations.MIDI_SCORE_DATA_TIMING.ordinal}") {
-					ohshit(codeWriter, "It virks! Got MIDI_SCORE_DATA_TIMING")
+					writePanic(codeWriter, "It virks! Got MIDI_SCORE_DATA_TIMING")
 				}
 				ElseIf("*(unsigned char*)(data) == ${Operations.DIRECT_MIDI.ordinal}") {
-					ohshit(codeWriter, "It virks! Got DIRECT_MIDI")
+					writePanic(codeWriter, "It virks! Got DIRECT_MIDI")
 				}
 			}
 		}
@@ -87,15 +86,21 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			val midiMessages = eventZones.getAbsoluteMidiMessages()
 
 			// Convert midi data to our local format and send to DSP node
-			sendDataToDSP(midiMessages.size * 4)  {
+			sendDataToDSP(midiMessages.size * 4 + 1) {
 				it.put(Operations.MIDI_SCORE_DATA.ordinal.toByte())
 
-				for (midiMessage in midiMessages)
-					it.put(midiMessage.midi!!.map { it.toByte() }.toByteArray())
+				for (midiMessage in midiMessages) {
+					val midi = midiMessage.midi!!
+					for (i in 0 until 4) // Always write 4 byte midi messages
+						if (midi.size > i)
+							it.put(midi[i].toByte())
+						else
+							it.put(0)
+				}
 			}
 
 			// Convert midi timing and send to DSP node
-			sendDataToDSP(midiMessages.size * 8) {
+			sendDataToDSP(midiMessages.size * 8 + 1) {
 				it.put(Operations.MIDI_SCORE_DATA_TIMING.ordinal.toByte())
 
 				for (midiMessage in midiMessages)

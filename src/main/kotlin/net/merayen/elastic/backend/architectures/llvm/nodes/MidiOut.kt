@@ -1,8 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
-import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
-import net.merayen.elastic.backend.architectures.llvm.transpilercode.ohshit
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import java.nio.ByteBuffer
 
@@ -14,7 +12,7 @@ class MidiOut(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			with(codeWriter) {
 				writeForEachVoice(codeWriter) {
-					ohshit(codeWriter, "Works!")
+					writePanic(codeWriter, "Works!")
 				}
 			}
 		}
