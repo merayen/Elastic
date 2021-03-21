@@ -18,7 +18,7 @@ class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) 
 
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			writeForEachVoice(codeWriter) {
-				codeWriter.For("int i = 0", "i < ${shared.frameSize}", "i++") {
+				codeWriter.For("int i = 0", "i < ${shared.frameSize}", "i++") { // TODO replace with writeForEachSamplw
 					codeWriter.Statement("${writeOutlet("out")}.signal[i] = ${writeOuterParameterVariable("value")}")
 				}
 			}

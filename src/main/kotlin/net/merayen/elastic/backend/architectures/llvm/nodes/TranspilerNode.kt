@@ -5,10 +5,10 @@ import net.merayen.elastic.backend.architectures.llvm.ports.PortRegistry
 import net.merayen.elastic.backend.architectures.llvm.ports.PortStruct
 import net.merayen.elastic.backend.architectures.llvm.templating.CClass
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
-import net.merayen.elastic.backend.architectures.llvm.templating.include
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.LogComponent
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.writePanic
+import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.netlist.Node
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
@@ -210,6 +210,9 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 			}
 		}
 
+		/**
+		 * Write code to access an outlet from another node.
+		 */
 		protected fun writeInlet(portName: String, voiceIndex: String = "voice_index"): String {
 			val lines = shared.netList.getConnections(node, portName)
 			if (lines.size != 1)
@@ -221,6 +224,40 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 			val outputPort = if (line.node_a == node) line.port_b else line.port_a
 
 			return "nodedata_${outputNode.id}->outlets[$voiceIndex]->$outputPort"
+		}
+
+		/**
+		 * Check if the current node has inlet by name and that it is connected.
+		 */
+		protected fun getInletType(name: String): Format? {
+			val ports = shared.nodeProperties.getInputPorts(node)
+
+			if (!ports.any { it == name })
+				return null
+
+			if (ports.size != 1)
+				error("A node should not have multiple ports with the same name")
+
+			val lines = shared.netList.getConnections(node, name)
+			if (lines.isEmpty())
+				return null
+
+			return shared.nodeProperties.getFormat(shared.netList.getPort(node, ports[0]))
+		}
+
+		/**
+		 * Check if the current node has outlet by name and that it is connected.
+		 */
+		protected fun hasOutlet(name: String): Boolean {
+			val port = shared.nodeProperties.getOutputPorts(node).any { it == name }
+			if (!port)
+				return false
+
+			val lines = shared.netList.getConnections(node, name)
+			if (lines.isEmpty())
+				return false
+
+			return true
 		}
 	}
 
@@ -402,7 +439,11 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	}
 
 	protected fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "") {
-		writePanic(codeWriter, message, args, debug = debug)
+		writePanic(codeWriter, message, args, debug)
+	}
+
+	protected fun writeLog(codeWriter: CodeWriter, message: String, args: String = "") {
+		log?.write(codeWriter, message, args)
 	}
 
 	private fun hasOutlets() = shared.nodeProperties.getOutputPorts(node).isNotEmpty()

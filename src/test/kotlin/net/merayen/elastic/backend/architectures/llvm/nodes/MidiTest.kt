@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.backend.midi.MidiStatuses
 import net.merayen.elastic.system.intercom.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class MidiTest : LLVMNodeTest() {
@@ -14,7 +13,7 @@ internal class MidiTest : LLVMNodeTest() {
 	 */
 	@Test
 	fun `output direct midi`() {
-		val supervisor = create()
+		val supervisor = createSupervisor()
 
 		// Create the nodes and netlist
 		supervisor.ingoing.send(CreateNodeMessage("midi", "midi", "top"))

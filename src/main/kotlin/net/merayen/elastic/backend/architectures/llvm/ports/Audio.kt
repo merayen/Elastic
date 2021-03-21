@@ -47,7 +47,7 @@ internal class Audio(frameSize: Int) : PortStruct(frameSize) {
 
 		override fun onWriteMembers(codeWriter: CodeWriter) {
 			codeWriter.Member("int", "channels")
-			codeWriter.Member("float*", "audio")
+			codeWriter.Member("float*", "audio") // Format: channel 0, channel 1, ...
 		}
 	}
 }
