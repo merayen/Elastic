@@ -28,7 +28,7 @@ class LLVMBackend(code: String) {
 		if (outputFile.exists())
 			outputFile.delete()
 
-		with(ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-g", "-Wall"))) {
+		with(ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-lm", "-g", "-Wall"))) {
 			redirectOutput(ProcessBuilder.Redirect.INHERIT)
 			redirectError(ProcessBuilder.Redirect.INHERIT)
 			val t = System.currentTimeMillis()
