@@ -34,7 +34,7 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 					writeForEachVoice(codeWriter) {
 						writeForEachChannel(codeWriter) {
 							writeForEachSample(codeWriter) {
-								Statement("output[sample_index + channel_index * $frameSize] += ${writeInlet("in")}.signal[sample_index + channel_index * $frameSize]")
+								Statement("output[sample_index + channel_index * $frameSize] += ${writeInlet("in")}.audio[sample_index + channel_index * $frameSize]")
 							}
 						}
 					}
@@ -52,8 +52,9 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 		for (channel in 0 until channelCount) {
 			val channelAudio = FloatArray(frameSize)
-			for (sample in 0 until frameSize)
+			for (sample in 0 until frameSize) {
 				channelAudio[sample] = data.float
+			}
 			audio.add(channelAudio)
 		}
 
@@ -63,7 +64,7 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 				audio = Array(channelCount) { audio[it] },
 				amplitudes = FloatArray(channelCount), // TODO
 				offsets = FloatArray(channelCount),
-				sampleRate = shared.sampleRate, // TODO
+				sampleRate = shared.sampleRate,
 				depth = shared.depth,
 				bufferSize = shared.frameSize
 			)

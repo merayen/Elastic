@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
+import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
@@ -19,8 +20,20 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			with(codeWriter) {
 				Member("char", "type")
 				Member("double", "frequency")
-				Member("double", "position") // In seconds
+				Member("double", "position[${shared.voiceCount}]") // In seconds
 			}
+		}
+
+		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
+			super.onWriteInit(codeWriter, allocComponent)
+
+			codeWriter.Statement("this->parameters.frequency = 1000")
+		}
+
+		override fun onWriteCreateVoice(codeWriter: CodeWriter) {
+			super.onWriteCreateVoice(codeWriter)
+
+			codeWriter.Statement("this->parameters.position[voice_index] = 0")
 		}
 
 		override fun onWriteDataReceiver(codeWriter: CodeWriter) {
@@ -50,22 +63,22 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 			with(codeWriter) {
 				Statement("double frequency = this->parameters.frequency")
-				Statement("double step = 1.0 / frequency")
+				Statement("double step =  frequency / ${shared.sampleRate}")
 				If("this->parameters.type == ${Properties.Type.SINE.ordinal}") { // No frequency input for now
-
-					// Create the wave first
-					Statement("double position = this->parameters.position")
+					// Create the waves for each voice first
 					Statement("float audio[$frameSize]")
-					writeForEachSample(codeWriter) {
-						Statement("audio[sample_index] = (float)sin(position * 2 * M_PI * frequency)")
-						Statement("position += step")
-					}
-					Statement("this->parameters.position = position")
-
-					// Then copy the generated wave onto all channels and voices
 					writeForEachVoice(codeWriter) {
+						Statement("double position = this->parameters.position[voice_index]")
+						writeForEachSample(codeWriter) {
+							Statement("audio[sample_index] = (float)sin(position * 2 * M_PI * frequency)")
+							Statement("position += step")
+						}
+						Statement("this->parameters.position[voice_index] = position")
+
+						// Then copy the generated wave onto all channels and voices
 						writeForEachChannel(codeWriter) {
 							Call("memcpy", "(void *)(${writeOutlet("out")}.audio + channel_index * $frameSize), (void *)audio, $frameSize * 4")
+							//writePanic(codeWriter, "woho %f", "${writeOutlet("out")}.audio[123]")
 						}
 					}
 				}

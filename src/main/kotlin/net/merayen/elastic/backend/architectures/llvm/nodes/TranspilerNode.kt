@@ -10,6 +10,7 @@ import net.merayen.elastic.backend.architectures.llvm.transpilercode.LogComponen
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.writePanic
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.netlist.Node
+import net.merayen.elastic.netlist.Port
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
@@ -242,7 +243,15 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 			if (lines.isEmpty())
 				return null
 
-			return shared.nodeProperties.getFormat(shared.netList.getPort(node, ports[0]))
+			if (lines.size != 1)
+				error("Inlet should never have more than 1 line connected")
+
+			if (lines[0].node_a === node)
+				return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
+			else if (lines[0].node_b === node)
+				return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
+			else
+				error("Invalid connection")
 		}
 
 		/**
