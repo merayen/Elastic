@@ -29,8 +29,8 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			super.onWriteInit(codeWriter, allocComponent)
 
 			with (codeWriter) {
-				codeWriter.Statement("this->parameters.type = 0")
-				codeWriter.Statement("this->parameters.frequency = 1000")
+				Statement("this->parameters.type = 0")
+				Statement("this->parameters.frequency = 1000")
 			}
 		}
 
