@@ -5,6 +5,7 @@ import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocCompon
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
+import kotlin.math.sin
 
 /**
  * Outputs audio signal, like sine.
@@ -27,13 +28,17 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
 			super.onWriteInit(codeWriter, allocComponent)
 
-			codeWriter.Statement("this->parameters.frequency = 1000")
+			with (codeWriter) {
+				codeWriter.Statement("this->parameters.type = 0")
+				codeWriter.Statement("this->parameters.frequency = 1000")
+			}
 		}
 
 		override fun onWriteCreateVoice(codeWriter: CodeWriter) {
 			super.onWriteCreateVoice(codeWriter)
 
 			codeWriter.Statement("this->parameters.position[voice_index] = 0")
+			sin(0.0)
 		}
 
 		override fun onWriteDataReceiver(codeWriter: CodeWriter) {
@@ -46,7 +51,7 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 					Statement("this->parameters.type = *((char *)(data + 1))")
 				}
 				ElseIf("*((char *)data) == ${Operation.SET_FREQUENCY.ordinal} && length == 5") {
-					Statement("this->parameters.type = (double)*((float *)(data + 1))")
+					Statement("this->parameters.frequency = (double)*((float *)(data + 1))")
 				}
 				Else {
 					writePanic(codeWriter, "Invalid operation")
@@ -64,13 +69,14 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			with(codeWriter) {
 				Statement("double frequency = this->parameters.frequency")
 				Statement("double step =  frequency / ${shared.sampleRate}")
+				writeLog(codeWriter, "frequency %f", "frequency")
 				If("this->parameters.type == ${Properties.Type.SINE.ordinal}") { // No frequency input for now
 					// Create the waves for each voice first
 					Statement("float audio[$frameSize]")
 					writeForEachVoice(codeWriter) {
 						Statement("double position = this->parameters.position[voice_index]")
 						writeForEachSample(codeWriter) {
-							Statement("audio[sample_index] = (float)sin(position * 2 * M_PI * frequency)")
+							Statement("audio[sample_index] = (float)sin(position * 2 * M_PI)")
 							Statement("position += step")
 						}
 						Statement("this->parameters.position[voice_index] = position")
@@ -78,12 +84,11 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 						// Then copy the generated wave onto all channels and voices
 						writeForEachChannel(codeWriter) {
 							Call("memcpy", "(void *)(${writeOutlet("out")}.audio + channel_index * $frameSize), (void *)audio, $frameSize * 4")
-							//writePanic(codeWriter, "woho %f", "${writeOutlet("out")}.audio[123]")
 						}
 					}
 				}
 				Else {
-					writePanic(codeWriter, "Unknown operation")
+					writePanic(codeWriter, "Unknown operation %i", "(int)this->parameters.type")
 				}
 			}
 		}

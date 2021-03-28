@@ -47,6 +47,9 @@ internal class QueueComponent(
 								writeLog(this, "queue_task: Queued %p", "func")
 							}
 						})
+						If("lock_success") {
+							Break()
+						}
 					}
 				}
 				If("lock_success") {
