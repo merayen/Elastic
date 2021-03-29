@@ -1,13 +1,12 @@
 package net.merayen.elastic.backend.architectures.llvm
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-internal class LLVMSupervisorTest {
+internal class LLVMDSPModuleTest {
 	@Test
 	fun `create node`() {
-		val supervisor = LLVMSupervisor("/tmp/none")
+		val supervisor = LLVMDSPModule("/tmp/none")
 		supervisor.ingoing.send(listOf(
 			CreateNodeMessage("group0", "group", 1, null),
 			CreateNodeMessage("time0", "elapsed", 1, null),

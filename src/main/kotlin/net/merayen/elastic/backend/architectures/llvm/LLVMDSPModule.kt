@@ -1,14 +1,15 @@
 package net.merayen.elastic.backend.architectures.llvm
 
+import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.backend.analyzer.node_dependency.toDependencyList
 import net.merayen.elastic.netlist.NetList
-import net.merayen.elastic.system.BackendModule
+import net.merayen.elastic.system.DSPModule
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.util.NetListMessages
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : BackendModule(projectPath) {
+class LLVMDSPModule() : DSPModule() {
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null
 	private var upcomingNetList: NetList? = null
@@ -31,7 +32,7 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 			when (message) {
 				is NetListMessage -> { // These messages changes the structure of the netlist, so we will need to recompile
 					if (upcomingNetList == null)
-						upcomingNetList = llvmRunner?.netList?.copy() ?: NetList()
+						upcomingNetList = currentNetList.copy()
 
 					NetListMessages.apply(upcomingNetList!!, message)
 				}
@@ -39,7 +40,7 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 					if (upcomingNetList == null) // If we are to recompile soon, we ignore the message as the new backend will have it
 						sendProperty(message)
 					else // We are replacing the netlist, so we need to queue the property-message
-						propertyMessages.add(message) // TOOD queue other message types too?
+						propertyMessages.add(message) // TODO queue other message types too?
 				}
 				is ProcessRequestMessage -> {
 					val upcomingNetList = upcomingNetList
@@ -51,6 +52,12 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 						// Send queued NodePropertyMessages
 						for (propertyMessage in propertyMessages)
 							sendProperty(propertyMessage)
+					} else if (llvmRunner == null) {
+						val netList = NetList() // Temporary, mostly empty NetList
+						val topNode = netList.createNode("temporary_top_node")
+						val nodeProperties = NodeProperties(netList)
+						nodeProperties.setName(topNode, "group")
+						startLLVMRunner(netList)
 					}
 
 					process()
@@ -63,7 +70,7 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 
 	private fun startLLVMRunner(netList: NetList) {
 		currentTranspiler = null
-		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, debug) // ???
+		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, true) // ???
 		val c = tr.transpile()
 		currentTranspiler = tr
 
@@ -127,6 +134,8 @@ class LLVMSupervisor(projectPath: String, private val debug: Boolean = false) : 
 
 			outgoing.send(node.onDataFromDSP(nodeData))
 		}
+
+		outgoing.send(ProcessResponseMessage()) // TODO always send empty message? Send data individually as below?
 
 		val doneResponse = llvmRunner.communicator.poll()
 

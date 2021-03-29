@@ -1,5 +1,7 @@
 package net.merayen.elastic.system
 
+import net.merayen.elastic.backend.architectures.llvm.LLVMBackend
+import net.merayen.elastic.backend.architectures.llvm.LLVMDSPModule
 import net.merayen.elastic.backend.architectures.local.JavaLocalDSPBackend
 import net.merayen.elastic.backend.context.JavaBackend
 import net.merayen.elastic.system.intercom.BackendReadyMessage
@@ -13,7 +15,8 @@ class Test private constructor() {
 	private val system = ElasticSystem(
 		File("NewProject.elastic").absolutePath,
 		uiModule = JavaUI::class,
-		dspModule = JavaLocalDSPBackend::class,
+		//dspModule = JavaLocalDSPBackend::class,
+		dspModule = LLVMDSPModule::class,
 		backendModule = JavaBackend::class
 	)
 

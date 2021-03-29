@@ -39,22 +39,22 @@ class CreateDefaultProject(private val message: CreateDefaultProjectMessage) : A
 		waitFor { nodes.size == 1 }
 
 		// Create nodes inside our top-most node
-		send(CreateNodeMessage("signalgenerator", 1, nodes[0].node_id))
-		send(CreateNodeMessage("output", 1, nodes[0].node_id))
+		send(CreateNodeMessage("wave", 1, nodes[0].node_id))
+		send(CreateNodeMessage("out", 1, nodes[0].node_id))
 
 		// Wait until all the nodes has been reported to have been created (we receive async messages back upon backend having created them)
 		waitFor { nodes.size == 3 }
 
 		// Set the position of the nodes
-		val outputNodeData = net.merayen.elastic.backend.logicnodes.list.output_1.Properties()
-		outputNodeData.uiTranslation = BaseNodeProperties.UITranslation(250f, 50f)
-		send(NodePropertyMessage(nodes[2].node_id, outputNodeData))
+		val outNodeData = net.merayen.elastic.backend.logicnodes.list.out_1.Properties()
+		outNodeData.uiTranslation = BaseNodeProperties.UITranslation(250f, 50f)
+		send(NodePropertyMessage(nodes[2].node_id, outNodeData))
 
-		// Connect signal generator to output
-		send(NodeConnectMessage(nodes[1].node_id, "output", nodes[2].node_id, "input"))
+		// Connect signal generator to out
+		send(NodeConnectMessage(nodes[1].node_id, "out", nodes[2].node_id, "in"))
 
 		// Set frequency parameter on one of the nodes
-		val signalgeneratorNodeData = net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Properties()
+		val signalgeneratorNodeData = net.merayen.elastic.backend.logicnodes.list.wave_1.Properties()
 		signalgeneratorNodeData.frequency = 1000f
 		send(NodePropertyMessage(nodes[1].node_id, signalgeneratorNodeData))
 	}

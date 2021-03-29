@@ -1,9 +1,8 @@
 package net.merayen.elastic.netlist;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import net.merayen.elastic.util.UniqueID;
+
+import java.util.*;
 import java.util.Map.Entry;
 
 public final class NetList {
@@ -45,7 +44,7 @@ public final class NetList {
 	}
 
 	public Node createNode() {
-		return createNode(Integer.toString(UUID.randomUUID().hashCode()));
+		return createNode(UniqueID.create());
 	}
 
 	public Node createNode(String node_id) {

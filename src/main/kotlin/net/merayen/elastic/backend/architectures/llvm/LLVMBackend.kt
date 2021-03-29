@@ -5,7 +5,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * Uses LLVM with clang-10 to generate an executable and runs it afterwards, making the streams to the executable
+ * Uses LLVM with clang to generate an executable and runs it afterwards, making the streams to the executable
  * available.
  */
 class LLVMBackend(code: String) {

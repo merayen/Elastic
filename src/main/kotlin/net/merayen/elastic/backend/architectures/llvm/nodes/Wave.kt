@@ -38,7 +38,6 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			super.onWriteCreateVoice(codeWriter)
 
 			codeWriter.Statement("this->parameters.position[voice_index] = 0")
-			sin(0.0)
 		}
 
 		override fun onWriteDataReceiver(codeWriter: CodeWriter) {

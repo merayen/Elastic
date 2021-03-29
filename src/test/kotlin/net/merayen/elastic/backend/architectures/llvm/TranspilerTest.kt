@@ -1,16 +1,14 @@
 package net.merayen.elastic.backend.architectures.llvm
 
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeOutputData
-import net.merayen.elastic.netlist.NetList
 import net.merayen.elastic.system.intercom.*
-import net.merayen.elastic.util.NetListMessages
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class TranspilerTest {
 	@Test
 	fun `1 + 2 = 3`() {
-		val supervisor = LLVMSupervisor("/tmp/none")
+		val supervisor = LLVMDSPModule("/tmp/none")
 		// supervisor.listenCodeGen = {
 		// 	println(it.split("\n").mapIndexed { i, x -> "${i + 1}\t$x" }.joinToString("\n"))
 		// }
