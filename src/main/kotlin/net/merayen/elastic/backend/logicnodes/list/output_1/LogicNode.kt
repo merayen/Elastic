@@ -41,7 +41,7 @@ class LogicNode : BaseLogicNode() {
 		if (data == null)  // FIXME Should this really be checked for? This seem to happen if node gets created while processing a frame in the DSP backend
 			return
 
- 		val output = data as Output1NodeOutputData
+ 		val output = data as Output1NodeAudioOut
 
 		// Count max channels
 		val channelCount = output.audio.size

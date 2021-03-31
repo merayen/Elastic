@@ -3,7 +3,7 @@ package net.merayen.elastic.backend.architectures.local.nodes.output_1;
 import net.merayen.elastic.backend.architectures.local.GroupLNode;
 import net.merayen.elastic.backend.architectures.local.LocalNode;
 import net.merayen.elastic.backend.architectures.local.LocalProcessor;
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeOutputData;
+import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut;
 import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 
@@ -81,7 +81,7 @@ public class LNode extends LocalNode {
 		}
 
 		GroupLNode parent = (GroupLNode)getParent();
-		outgoing = new Output1NodeOutputData(
+		outgoing = new Output1NodeAudioOut(
 				getID(),
 				channels,
 				amplitude,

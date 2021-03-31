@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.nodes;
 
-import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.context.JavaBackend;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
@@ -17,9 +16,6 @@ public abstract class BaseLogicNode {
 	private Supervisor supervisor;
 	Node node; // NetList-node that this LogicNode represents
 	private NetList netlist;
-	private LogicNodeList logicnode_list; // Only used for look-up needs
-	boolean inited;
-	private NodeProperties np;
 
 	private JSONObjectMapper mapper;
 	public BaseNodeProperties properties;
@@ -34,8 +30,6 @@ public abstract class BaseLogicNode {
 	 * Called when a parameter change has occurred.
 	 * This could be the UI changing a parameter, or a restore loading parameters.
 	 * Modify value if needed and call set(...) to acknowledge, which will send it to UI and the backend.
-	 *
-	 * @param instance
 	 */
 	protected abstract void onParameterChange(BaseNodeProperties instance);
 
@@ -44,7 +38,7 @@ public abstract class BaseLogicNode {
 	 */
 	protected abstract void onData(NodeDataMessage data);
 
-	protected abstract void onConnect(String port); // Port is not connected, but is now connected
+	protected abstract void onConnect(String port); // Port was not connected, but is now connected
 
 	protected abstract void onDisconnect(String port); // Port was connected, but has no more connections
 
@@ -56,8 +50,6 @@ public abstract class BaseLogicNode {
 	/**
 	 * Called when a ProcessMessage()-request has been received. All LogicNodes must prepare data to be sent to processor.
 	 * Change the data-argument directly.
-	 *
-	 * @return
 	 */
 	protected InputFrameData onPrepareFrame() {
 		return new InputFrameData(id);
@@ -119,16 +111,8 @@ public abstract class BaseLogicNode {
 		sendMessage(data);
 	}
 
-	protected boolean isConnected(String port) {
-		return !netlist.getConnections(node, port).isEmpty();
-	}
-
 	protected String[] getPorts() {
 		return netlist.getPorts(node);
-	}
-
-	protected boolean isOutput(String port) {
-		return np.isOutput(netlist.getPort(node, port));
 	}
 
 	void create(String name, Integer version, String parent) {
@@ -150,7 +134,6 @@ public abstract class BaseLogicNode {
 		this.supervisor = supervisor;
 		this.node = node;
 
-		logicnode_list = supervisor.getLogicnode_list();
 		netlist = supervisor.getEnv().getProject().getNetList();
 
 		// Load data

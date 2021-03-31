@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 internal class LLVMDSPModuleTest {
 	@Test
 	fun `create node`() {
-		val supervisor = LLVMDSPModule("/tmp/none")
+		val supervisor = LLVMDSPModule()
 		supervisor.ingoing.send(listOf(
 			CreateNodeMessage("group0", "group", 1, null),
 			CreateNodeMessage("time0", "elapsed", 1, null),

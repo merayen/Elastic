@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm
 
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeOutputData
+import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
 import net.merayen.elastic.system.intercom.ProcessRequestMessage
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ProcessBenchmarkTest {
 	@Test
 	fun `benchmark with huge buffer`() {
-		val supervisor = LLVMDSPModule("/tmp/none", false)
+		val supervisor = LLVMDSPModule()
 		supervisor.ingoing.send(addOneAndTwo())
 
 		val t = System.currentTimeMillis() + 1000
@@ -23,7 +23,7 @@ internal class ProcessBenchmarkTest {
 			val messages = supervisor.outgoing.receiveAll()
 			assertEquals(1, messages.size)
 			messages.all { message ->
-				message is Output1NodeOutputData && message.audio.first()!!.all { it == 3.0f }
+				message is Output1NodeAudioOut && message.audio.first()!!.all { it == 3.0f }
 			}
 			framesProcessed++
 		}

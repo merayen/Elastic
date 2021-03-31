@@ -7,6 +7,8 @@ import java.nio.ByteBuffer
 
 /**
  * Sends midi out somewhere (e.g a hardware/software device).
+ *
+ * TODO delete? Just use the out-node...?
  */
 class MidiOut(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 	override val nodeClass = object : NodeClass() {

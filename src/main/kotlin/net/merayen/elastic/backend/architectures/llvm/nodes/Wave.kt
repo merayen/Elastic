@@ -9,6 +9,8 @@ import kotlin.math.sin
 
 /**
  * Outputs audio signal, like sine.
+ *
+ * Can optionally output signal too (configuration on node).
  */
 class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 	private enum class Operation {
@@ -21,7 +23,7 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			with(codeWriter) {
 				Member("char", "type")
 				Member("double", "frequency")
-				Member("double", "position[${shared.voiceCount}]") // In seconds
+				Member("double", "position[${shared.voiceCount}]") // In cycles
 			}
 		}
 
@@ -67,7 +69,7 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 			with(codeWriter) {
 				Statement("double frequency = this->parameters.frequency")
-				Statement("double step =  frequency / ${shared.sampleRate}")
+				Statement("double step = frequency / ${shared.sampleRate}")
 				writeLog(codeWriter, "frequency %f", "frequency")
 				If("this->parameters.type == ${Properties.Type.SINE.ordinal}") { // No frequency input for now
 					// Create the waves for each voice first

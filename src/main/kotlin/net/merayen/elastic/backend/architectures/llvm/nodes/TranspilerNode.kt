@@ -227,32 +227,6 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 			return "nodedata_${outputNode.id}->outlets[$voiceIndex]->$outputPort"
 		}
 
-		/**
-		 * Check if the current node has inlet by name and that it is connected.
-		 */
-		protected fun getInletType(name: String): Format? {
-			val ports = shared.nodeProperties.getInputPorts(node)
-
-			if (!ports.any { it == name })
-				return null
-
-			if (ports.size != 1)
-				error("A node should not have multiple ports with the same name")
-
-			val lines = shared.netList.getConnections(node, name)
-			if (lines.isEmpty())
-				return null
-
-			if (lines.size != 1)
-				error("Inlet should never have more than 1 line connected")
-
-			if (lines[0].node_a === node)
-				return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
-			else if (lines[0].node_b === node)
-				return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
-			else
-				error("Invalid connection")
-		}
 
 		/**
 		 * Check if the current node has outlet by name and that it is connected.
@@ -367,6 +341,33 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 
 	fun writeStruct(codeWriter: CodeWriter) {
 		nodeClass.writeStruct(codeWriter, listOf("*$instanceVariable"))
+	}
+
+	/**
+	 * Check if the current node has inlet by name and that it is connected.
+	 */
+	protected fun getInletType(name: String): Format? {
+		val ports = shared.nodeProperties.getInputPorts(node)
+
+		if (!ports.any { it == name })
+			return null
+
+		if (ports.size != 1)
+			error("A node should not have multiple ports with the same name")
+
+		val lines = shared.netList.getConnections(node, name)
+		if (lines.isEmpty())
+			return null
+
+		if (lines.size != 1)
+			error("Inlet should never have more than 1 line connected")
+
+		if (lines[0].node_a === node)
+			return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
+		else if (lines[0].node_b === node)
+			return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
+		else
+			error("Invalid connection")
 	}
 
 	/**

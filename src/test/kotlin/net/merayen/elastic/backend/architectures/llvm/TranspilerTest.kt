@@ -1,6 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm
 
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeOutputData
+import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
 import net.merayen.elastic.system.intercom.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class TranspilerTest {
 	@Test
 	fun `1 + 2 = 3`() {
-		val supervisor = LLVMDSPModule("/tmp/none")
+		val supervisor = LLVMDSPModule()
 		// supervisor.listenCodeGen = {
 		// 	println(it.split("\n").mapIndexed { i, x -> "${i + 1}\t$x" }.joinToString("\n"))
 		// }
@@ -23,11 +23,11 @@ internal class TranspilerTest {
 
 		supervisor.onEnd()
 
-		val result = supervisor.outgoing.receiveAll().first { it is Output1NodeOutputData }
+		val result = supervisor.outgoing.receiveAll().first { it is Output1NodeAudioOut }
 
-		assertTrue { result is Output1NodeOutputData }
+		assertTrue { result is Output1NodeAudioOut }
 
-		result as Output1NodeOutputData
+		result as Output1NodeAudioOut
 
 		assertTrue { result.audio.size == 2 }
 

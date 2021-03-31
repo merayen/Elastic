@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.system.intercom.CreateNodeMessage
+import net.merayen.elastic.system.intercom.NodeConnectMessage
 import net.merayen.elastic.system.intercom.ProcessRequestMessage
 import org.junit.jupiter.api.Test
 
@@ -8,7 +9,10 @@ internal class MidiPolyNodeTest : LLVMNodeTest() {
 	@Test
 	fun `create voices`() {
 		val supervisor = createSupervisor()
+		supervisor.ingoing.send(CreateNodeMessage("midi", "midi", 1, "top"))
 		supervisor.ingoing.send(CreateNodeMessage("midi_poly", "midi_poly", 1, "top"))
+		supervisor.ingoing.send(NodeConnectMessage("midi", "out", "midi_poly", "in"))
+		// TODO play midi notes (directly) via the midi node
 
 		val processRequestMessage = ProcessRequestMessage()
 		//processRequestMessage.input["midi_poly"] = NodePropertyMessage("midi_poly")
