@@ -8,9 +8,7 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
 import kotlin.math.sin
 
 /**
- * Outputs audio signal, like sine.
- *
- * Can optionally output signal too (configuration on node).
+ * Outputs signals, like a sine.
  */
 class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 	private enum class Operation {
@@ -72,20 +70,13 @@ class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 				Statement("double step = frequency / ${shared.sampleRate}")
 				writeLog(codeWriter, "frequency %f", "frequency")
 				If("this->parameters.type == ${Properties.Type.SINE.ordinal}") { // No frequency input for now
-					// Create the waves for each voice first
-					Statement("float audio[$frameSize]")
 					writeForEachVoice(codeWriter) {
 						Statement("double position = this->parameters.position[voice_index]")
 						writeForEachSample(codeWriter) {
-							Statement("audio[sample_index] = (float)sin(position * 2 * M_PI)")
+							Statement("${writeOutlet("out")}.signal[sample_index] = (float)sin(position * 2 * M_PI)")
 							Statement("position += step")
 						}
 						Statement("this->parameters.position[voice_index] = position")
-
-						// Then copy the generated wave onto all channels and voices
-						writeForEachChannel(codeWriter) {
-							Call("memcpy", "(void *)(${writeOutlet("out")}.audio + channel_index * $frameSize), (void *)audio, $frameSize * 4")
-						}
 					}
 				}
 				Else {

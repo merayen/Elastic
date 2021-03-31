@@ -9,25 +9,34 @@ import org.junit.jupiter.api.Test
 import kotlin.math.PI
 import kotlin.math.sin
 
-internal class WaveTest : LLVMNodeTest() {
+internal class ToAudioTest : LLVMNodeTest() {
 	@Test
-	fun `generate sinewave audio`() {
+	fun `signal to audio stereo`() {
 		val supervisor = createSupervisor()
 		supervisor.ingoing.send(CreateNodeMessage("wave", "wave", "top"))
-		supervisor.ingoing.send(CreateNodePortMessage("wave", "audio_out", Format.AUDIO))
-		supervisor.ingoing.send(CreateNodePortMessage("wave", "signal_out", Format.AUDIO))
+		supervisor.ingoing.send(CreateNodePortMessage("wave", "out", Format.SIGNAL))
+		supervisor.ingoing.send(NodePropertyMessage("wave", Properties(frequency = 10f, type = Properties.Type.SINE.name)))
+
+		supervisor.ingoing.send(CreateNodeMessage("to_audio", "to_audio", "top"))
+		supervisor.ingoing.send(CreateNodePortMessage("to_audio", "in"))
+		supervisor.ingoing.send(CreateNodePortMessage("to_audio", "out", Format.AUDIO))
+
 		supervisor.ingoing.send(CreateNodeMessage("out", "out", "top"))
 		supervisor.ingoing.send(CreateNodePortMessage("out", "in"))
-		supervisor.ingoing.send(NodePropertyMessage("wave", Properties(type = Properties.Type.SINE.name, frequency = 10f)))
-		supervisor.ingoing.send(NodeConnectMessage("wave", "out", "out", "in"))
+
+		supervisor.ingoing.send(NodeConnectMessage("wave", "out", "to_audio", "in"))
+		supervisor.ingoing.send(NodeConnectMessage("to_audio", "out", "out", "in"))
+
 		supervisor.ingoing.send(ProcessRequestMessage())
+
 		supervisor.onUpdate()
+
 		val result = supervisor.outgoing.receive() as Output1NodeAudioOut
 
-		var position = 0.0
+		assertNotEquals(0.0f, result.audio[0]!![10])
+
 		for ((i, sample) in result.audio[0]!!.withIndex()) {
-			assertEquals((sin(position * 2 * PI) * 1000).toInt() / 1000.0, (sample * 1000).toInt() / 1000.0)
-			position += 10.0 / 44100.0
+			assertEquals((sin(i * (10 / 44100.0) * 2 * PI) * 1000).toInt() / 1000f, (sample * 1000).toInt() / 1000f)
 		}
 	}
 }

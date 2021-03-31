@@ -16,4 +16,5 @@ val nodeRegistry = mapOf(
 	"out" to Out::class,
 	"output" to Out::class,
 	"wave" to Wave::class,
+	"to_audio" to ToAudio::class,
 )
