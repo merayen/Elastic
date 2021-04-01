@@ -21,21 +21,21 @@ internal class Audio(frameSize: Int) : PortStruct(frameSize) {
 		}
 
 		override fun onWriteMethods(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
-			addInstanceMethod(codeWriter, "void", "prepare", "int channels") {
-				codeWriter.If("this->channels != channels") {
-					codeWriter.If("this->audio != NULL") {
-						if (allocComponent != null)
-							allocComponent.writeFree(codeWriter, "this->audio")
-						else
-							codeWriter.Call("free", "this->audio")
-					}
+			//addInstanceMethod(codeWriter, "void", "prepare", "int channels") {
+			//	codeWriter.If("this->channels != channels") {
+			//		codeWriter.If("this->audio != NULL") {
+			//			if (allocComponent != null)
+			//				allocComponent.writeFree(codeWriter, "this->audio")
+			//			else
+			//				codeWriter.Call("free", "this->audio")
+			//		}
 
-					if (allocComponent != null)
-						allocComponent.writeMalloc(codeWriter, "", "this->audio", "$frameSize * channels * sizeof(float)")
-					else
-						codeWriter.Statement("this->audio = malloc($frameSize * channels * sizeof(float))")
-				}
-			}
+			//		if (allocComponent != null)
+			//			allocComponent.writeMalloc(codeWriter, "", "this->audio", "$frameSize * channels * sizeof(float)")
+			//		else
+			//			codeWriter.Statement("this->audio = malloc($frameSize * channels * sizeof(float))")
+			//	}
+			//}
 		}
 
 		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {

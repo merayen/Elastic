@@ -20,22 +20,21 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 		override fun onWriteDataSender(codeWriter: CodeWriter) {
 			with(codeWriter) {
 				// Clear our output buffer first
-
-				when {
-					getInletType("in") == Format.SIGNAL -> {
-						alloc.writeCalloc(codeWriter, "float*", "output", "1", frameSize.toString())
+				when (getInletType("in")) {
+					Format.SIGNAL -> {
+						alloc.writeCalloc(codeWriter, "float*", "output", "1", "$frameSize * 4")
 						writeForEachVoice(codeWriter) {
 							writeForEachSample(codeWriter) {
 								Statement("output[sample_index] += ${writeInlet("in")}.signal[sample_index]")
 							}
 						}
 
-						Call("send", "$frameSize, output")
+						Call("send", "$frameSize * sizeof(float), output")
 
 						alloc.writeFree(codeWriter, "output")
-
 					}
-					getInletType("in") == Format.AUDIO -> {
+
+					Format.AUDIO -> {
 						val length = frameSize * channelCount * 4
 						alloc.writeCalloc(codeWriter, "float*", "output", "1", length.toString())
 						writeForEachVoice(codeWriter) {
@@ -48,22 +47,32 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 						Call("send", "$length, output")
 
 						alloc.writeFree(codeWriter, "output")
-
 					}
-					getInletType("in") == Format.MIDI -> {
-						Member("int", "count")
-						writeForEachVoice(codeWriter) {
-							Statement("count += ${writeInlet("in")}.count")
-						}
-						alloc.writeMalloc(codeWriter, "short*", "output", "count * 4")
 
-						Member("int", "offset = 0")
+					Format.MIDI -> {
+						Member("int", "length = 0")
 						writeForEachVoice(codeWriter) {
-							Call("memcpy", "output + offset, ${writeInlet("in")}.midi, ${writeInlet("in")}.count * 4")
-							Statement("offset += ${writeInlet("in")}.count * 4")
+							Statement("length += ${writeInlet("in")}.length")
 						}
 
-						alloc.writeFree(codeWriter, "output")
+						If("length > 0") { // Only send midi output if there is any
+							alloc.writeMalloc(codeWriter, "short*", "output", "length * sizeof(char) * 3")
+
+							Member("int", "offset = 0")
+							writeForEachVoice(codeWriter) {
+								Call(
+									"memcpy",
+									"output + offset, ${writeInlet("in")}.messages, ${writeInlet("in")}.length * sizeof(char) * 3"
+								)
+								Statement("offset += ${writeInlet("in")}.length * sizeof(char) * 3")
+							}
+							Call("send", "length * sizeof(char) * 3, output")
+
+							alloc.writeFree(codeWriter, "output")
+						}
+						Else {
+							Call("send", "0, NULL") // No MIDI to send, we send nothing
+						}
 					}
 				}
 			}
@@ -98,8 +107,8 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 			Format.SIGNAL -> {
 				val signal = FloatArray(frameSize)
-				for (sample in 0 until frameSize)
-					signal[sample] = data.float
+				for (i in 0 until frameSize)
+					signal[i] = data.float
 
 				listOf(
 					Output1NodeSignalOut(nodeId, signal = signal)

@@ -20,7 +20,7 @@ class LLVMDSPModule() : DSPModule() {
 	/**
 	 * Messages queued that will be sent after the DSP backend (C program) has been started
 	 */
-	private val propertyMessages = ArrayList<NodePropertyMessage>()
+	private val queuedMessages = ArrayList<NodeMessage>()
 
 	/**
 	 * Only for debugging. Peek at generated C code.
@@ -37,10 +37,10 @@ class LLVMDSPModule() : DSPModule() {
 					NetListMessages.apply(upcomingNetList!!, message)
 				}
 				is NodePropertyMessage -> {
-					if (upcomingNetList == null) // If we are to recompile soon, we ignore the message as the new backend will have it
-						sendProperty(message)
-					else // We are replacing the netlist, so we need to queue the property-message
-						propertyMessages.add(message) // TODO queue other message types too?
+					queueMessage(message)
+				}
+				is NodeDataMessage -> {
+					queueMessage(message)
 				}
 				is ProcessRequestMessage -> {
 					val upcomingNetList = upcomingNetList
@@ -49,9 +49,10 @@ class LLVMDSPModule() : DSPModule() {
 						currentNetList = upcomingNetList
 						this.upcomingNetList = null
 
-						// Send queued NodePropertyMessages
-						for (propertyMessage in propertyMessages)
-							sendProperty(propertyMessage)
+						// Send messages that got queued when we were rebuilding the netlist
+						for (x in queuedMessages)
+							sendNodeMessage(x)
+
 					} else if (llvmRunner == null) {
 						val netList = NetList() // Temporary, mostly empty NetList
 						val topNode = netList.createNode("temporary_top_node")
@@ -66,7 +67,14 @@ class LLVMDSPModule() : DSPModule() {
 		}
 	}
 
-	private fun sendProperty(message: NodeMessage) = currentTranspiler!!.nodes[message.nodeId]!!.handle(message)
+	private fun queueMessage(message: NodeMessage) {
+		if (upcomingNetList == null) // If we are to recompile soon, we ignore the message as the new backend will have it
+			sendNodeMessage(message)
+		else // We are replacing the netlist, so we need to queue the property-message
+			queuedMessages.add(message)
+	}
+
+	private fun sendNodeMessage(message: NodeMessage) = currentTranspiler!!.nodes[message.nodeId]!!.handle(message)
 
 	private fun startLLVMRunner(netList: NetList) {
 		currentTranspiler = null

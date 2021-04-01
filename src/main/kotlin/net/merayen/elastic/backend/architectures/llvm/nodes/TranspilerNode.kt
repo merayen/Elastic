@@ -116,6 +116,21 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		}
 
 		/**
+		 * Halt the thread executing and wait for a debugger to continue the program.
+		 *
+		 * After attaching a debugger, e.g lldb, do: `stp = 0`
+		 */
+		protected fun startDebug(codeWriter: CodeWriter) {
+			if (!debug) return
+			with(codeWriter) {
+				Block {
+					Member("int", "stp = 1")
+					While("stp") {}
+				}
+			}
+		}
+
+		/**
 		 * The node parameters should be defined here.
 		 */
 		protected open fun onWriteParameters(codeWriter: CodeWriter) {}

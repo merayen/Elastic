@@ -9,13 +9,19 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
  */
 class AllocComponent(log: LogComponent, debug: Boolean = false) : TranspilerComponent(log, debug) {
 	fun writeMalloc(codeWriter: CodeWriter, typeExpression: String, destinationVariable: String, sizeExpression: String) {
-		with(codeWriter) {
-			writeLog(codeWriter, "[AllocComponent] malloc(%lu)", "(unsigned long)$sizeExpression")
+			codeWriter.Member(typeExpression, "$destinationVariable = NULL")
+			writeMalloc(codeWriter, destinationVariable, sizeExpression)
+	}
 
-			Statement("$typeExpression $destinationVariable = malloc($sizeExpression)")
-			If("$destinationVariable == NULL") {
-				panic(codeWriter, "Could not allocate size=%lu", sizeExpression)
+	fun writeMalloc(codeWriter: CodeWriter, destinationVariable: String, sizeExpression: String) {
+		with(codeWriter) {
+			If("$sizeExpression <= 0") {
+				panic(codeWriter, "Could not allocate size=%lu", "(unsigned long)($sizeExpression)")
 			}
+
+			writeLog(codeWriter, "[AllocComponent] malloc(%lu)", "(unsigned long)($sizeExpression)")
+
+			Statement("$destinationVariable = malloc($sizeExpression)")
 		}
 	}
 

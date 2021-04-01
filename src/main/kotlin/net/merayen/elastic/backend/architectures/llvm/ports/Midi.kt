@@ -4,15 +4,20 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CClass
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 
+/**
+ * Midi Outlet.
+ *
+ * TODO support time codes
+ */
 class Midi(frameSize: Int) : PortStruct(frameSize) {
 	override val clsName = "PortDataMidi"
 
-	override val cClass = object : CClass(clsName) {
+	inner class Class :  CClass(clsName) {
 		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
 			super.onWriteInit(codeWriter, allocComponent)
 			with(codeWriter) {
-				Statement("this->capacity = 0")
-				Statement("this->count = 0")
+				//Statement("this->capacity = 0")
+				Statement("this->length = 0")
 				Statement("this->messages = NULL")
 			}
 		}
@@ -30,27 +35,37 @@ class Midi(frameSize: Int) : PortStruct(frameSize) {
 		}
 
 		override fun onWriteMethods(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
-			addInstanceMethod(codeWriter, "void", "prepare", "int count") {
-				codeWriter.If("this->count < count") {
-					codeWriter.If("this->messages != NULL") {
-						if (allocComponent != null)
-							allocComponent.writeFree(codeWriter, "this->messages")
-						else
-							codeWriter.Call("free", "this->messages")
-					}
+			// Method that prepares this outlet
+			addInstanceMethod(codeWriter, "void", "prepare", "int length") {
+				codeWriter.If("this->messages != NULL") {
 					if (allocComponent != null)
-						allocComponent.writeCalloc(codeWriter, "", "this->messages", "3 * count", "sizeof(unsigned char)")
+						allocComponent.writeFree(codeWriter, "this->messages")
 					else
-						codeWriter.Statement("this->messages = calloc(3 * count, sizeof(unsigned char))")
+						codeWriter.Call("free", "this->messages")
 				}
-				codeWriter.Statement("this->count = count")
+				if (allocComponent != null)
+					allocComponent.writeMalloc(codeWriter, "", "this->messages", "length")
+				else
+					codeWriter.Statement("this->messages = malloc(length, sizeof(unsigned char))")
+				codeWriter.Statement("this->length = length")
 			}
 		}
 
 		override fun onWriteMembers(codeWriter: CodeWriter) {
-			codeWriter.Member("int", "capacity")
-			codeWriter.Member("int", "count")
+			//codeWriter.Member("int", "capacity")
+			codeWriter.Member("int", "length") // Length of the buffer
 			codeWriter.Member("unsigned char*", "messages")
 		}
+
+		/**
+		 * Writes code that initializes midi outlet.
+		 *
+		 * @param length How many bytes the midi output is
+		 */
+		fun writePrepare(codeWriter: CodeWriter, instanceExpression: String, lengthExpression: String) {
+			codeWriter.Call("${this.name}_prepare", "&$instanceExpression, $lengthExpression")
+		}
 	}
+
+	override val cClass = Class()
 }

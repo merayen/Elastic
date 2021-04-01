@@ -150,9 +150,10 @@ class WorkUnitsComponent(
 
 					For("int i = 0", "i < ${wudl.size}", "i++") {
 						While("work_units[i] != 2") {
-							workUnitsCond.writeTimedWait(codeWriter, workUnitsMutex, 0.1, onTimeOut = {
+							workUnitsCond.writeTimedWait(codeWriter, workUnitsMutex, 1.0, onTimeOut = {
 								writeLog(codeWriter, "work_units_cond timed out!")
-								panic(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway")
+								//panic(codeWriter, "Timed out. Probably remove this? Though 100ms of processing is too much anyway")
+								Continue()
 							})
 
 							Statement("double now")
