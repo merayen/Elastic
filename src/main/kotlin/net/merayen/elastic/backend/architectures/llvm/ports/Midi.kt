@@ -3,16 +3,17 @@ package net.merayen.elastic.backend.architectures.llvm.ports
 import net.merayen.elastic.backend.architectures.llvm.templating.CClass
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
+import net.merayen.elastic.backend.midi.MidiStatuses
 
 /**
  * Midi Outlet.
  *
  * TODO support time codes
  */
-class Midi(frameSize: Int) : PortStruct(frameSize) {
+class Midi(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
 	override val clsName = "PortDataMidi"
 
-	inner class Class :  CClass(clsName) {
+	inner class Class : CClass(clsName) {
 		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
 			super.onWriteInit(codeWriter, allocComponent)
 			with(codeWriter) {
@@ -64,6 +65,35 @@ class Midi(frameSize: Int) : PortStruct(frameSize) {
 		 */
 		fun writePrepare(codeWriter: CodeWriter, instanceExpression: String, lengthExpression: String) {
 			codeWriter.Call("${this.name}_prepare", "&$instanceExpression, $lengthExpression")
+		}
+
+		/**
+		 * Write a for-loop for each midi message in the loop.
+		 *
+		 * Available parameters in C code:
+		 *
+		 * midi_index - Current position in the `messages` variable
+		 *
+		 * midi_length - The length of the packet (if ordinary midi message, always 3 bytes, while SysEx has variable length)
+		 *
+		 * midi_status - The midi status byte. Use it to figure out what type of midi command this is
+		 */
+		fun writeForEachMidiByte(codeWriter: CodeWriter, instanceExpression: String, block: () -> Unit) {
+			with(codeWriter) {
+				For("int midi_index = 0", "midi_index < $instanceExpression.length", "midi_index++") {
+					Member("unsigned char", "midi_status = ${instanceExpression}.messages[midi_index]")
+					Member("int", "midi_length")
+					If("midi_status == ${MidiStatuses.KEY_DOWN}") {
+						Statement("midi_length = 3")
+						Block(func = block)
+					}
+					// Add SysEx sometime in the future?
+					Else {
+						writePanic(codeWriter, "Unknown MIDI status %d", "(int)midi_status")
+					}
+					Statement("midi_index += midi_length")
+				}
+			}
 		}
 	}
 

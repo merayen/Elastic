@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ProcessBenchmarkTest {
 	@Test
 	fun `benchmark with huge buffer`() {
-		val supervisor = LLVMDSPModule()
+		val supervisor = LLVMDSPModule(true)
 		supervisor.ingoing.send(addOneAndTwo())
 
 		val t = System.currentTimeMillis() + 1000

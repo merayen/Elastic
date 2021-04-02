@@ -1,7 +1,7 @@
 package net.merayen.elastic.backend.analyzer.node_dependency
 
 /**
- * Simple represention of nodes for analyzing.
+ * Simple representation of nodes for analyzing.
  * Format: Map<node, Set<nodes connected to inputs of this node>>
  */
 open class DependencyList<T> : HashMap<T, HashSet<T>>() {

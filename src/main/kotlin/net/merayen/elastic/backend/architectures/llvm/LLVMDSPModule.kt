@@ -9,7 +9,7 @@ import net.merayen.elastic.util.NetListMessages
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class LLVMDSPModule() : DSPModule() {
+class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null
 	private var upcomingNetList: NetList? = null
@@ -78,7 +78,7 @@ class LLVMDSPModule() : DSPModule() {
 
 	private fun startLLVMRunner(netList: NetList) {
 		currentTranspiler = null
-		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, true) // ???
+		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, debug) // ???
 		val c = tr.transpile()
 		currentTranspiler = tr
 

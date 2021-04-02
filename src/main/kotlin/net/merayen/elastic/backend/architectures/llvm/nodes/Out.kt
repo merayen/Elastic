@@ -14,6 +14,8 @@ import java.nio.ByteBuffer
  *
  * The parent node decides what happens with the data send into this node. If this node is under the topmost node,
  * it probably gets played onto your speakers.
+ *
+ * TODO We might want the parent node of this Out-node to actually read the data it receives, in the C code...? Not just forward it? The parent node probably wants to process the data... Maybe store the output data in a buffer instead? Or just let the parent node read the outlet connected to this node?
  */
 class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 	override val nodeClass = object : NodeClass() {

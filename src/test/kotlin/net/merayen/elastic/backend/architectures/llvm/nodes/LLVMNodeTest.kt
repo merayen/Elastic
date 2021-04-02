@@ -4,8 +4,8 @@ import net.merayen.elastic.backend.architectures.llvm.LLVMDSPModule
 import net.merayen.elastic.system.intercom.CreateNodeMessage
 
 internal abstract class LLVMNodeTest {
-	protected fun createSupervisor(): LLVMDSPModule {
-		val supervisor = LLVMDSPModule()
+	protected fun createSupervisor(debug: Boolean = true): LLVMDSPModule {
+		val supervisor = LLVMDSPModule(debug)
 
 		supervisor.ingoing.send(CreateNodeMessage("top", "group", 1, null))
 		supervisor.onUpdate()

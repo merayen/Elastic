@@ -96,7 +96,7 @@ class WorkUnitsComponent(
 							}
 						}
 						If("!all_finished") {
-							writeLog(codeWriter, "process_workunit_$workUnitId: not all dependencies has processed", "")
+							writeLog(codeWriter, "process_workunit_$workUnitId: not all dependencies has processed (this should probably be reduced, as it adds overhead)")
 							Return() // Need to wait for additional work units we depend on to get finished")
 						}
 					}

@@ -142,7 +142,20 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		protected open fun onWritePrepare(codeWriter: CodeWriter) {}
 
 		/**
-		 * Return your processing code here.
+		 * Build your pre-processing code here.
+		 *
+		 * This code is run when all input data has been processsed, before any children nodes has been processed.
+		 *
+		 * Use this to e.g create voices on children node before they process.
+		 *
+		 * TODO make it work. How...?
+		 */
+		protected open fun onWritePreprocess(codeWriter: CodeWriter) {}
+
+		/**
+		 * Build your processing code here.
+		 *
+		 * This code is run when all input data has been processed and all children nodes has been processed.
 		 */
 		protected open fun onWriteProcess(codeWriter: CodeWriter) {}
 
@@ -194,6 +207,9 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 * Variable: voice_index
 		 */
 		protected fun writeForEachVoice(codeWriter: CodeWriter, block: () -> Unit) {
+			if (getParent() == null)
+				error("Can not iterate over the voices on the topmost node")
+
 			with(codeWriter) {
 				For("int voice_index = 0", "voice_index < ${shared.voiceCount}", "voice_index++") {
 					If("${writeVoicesVariable()}[voice_index] == 0") {
@@ -338,10 +354,12 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		return "nodedata_$nodeId->parameters.$parameterName"
 	}
 
+	/**
+	 * Returns the voices variable containing which voices are active in the session the current node has.
+	 *
+	 * If this is the topmost node, there are no session.
+	 */
 	fun writeVoicesVariable(): String {
-		if (this is GroupInterface)
-			return "nodedata_$nodeId->voices"
-		else
 			return "nodedata_${getParent()!!.nodeId}->voices"
 	}
 
@@ -389,6 +407,8 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	 * Writes code that calls all children nodes' voice creation logic.
 	 *
 	 * Must be run only when preparing (all nodes gets prepare() called, also not when processing a frame.
+	 *
+	 * TODO allow creation of voice in onWriteProcess() too? Why does it not work? Does it really not work?
 	 */
 	fun writeVoiceCreation(codeWriter: CodeWriter) {
 		if (this !is GroupInterface)
@@ -455,13 +475,15 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 			val nodePort = shared.netList.getPort(node, port)
 			val format = shared.nodeProperties.getFormat(nodePort)
 
-			val portStruct = PortRegistry.getPortStruct(format, shared.frameSize)
+			val portStruct = PortRegistry.getPortStruct(format, shared.frameSize, debug)
 
 			result[port] = portStruct
 		}
 
 		return result
 	}
+
+	fun getPortStruct(name: String): PortStruct = PortRegistry.getPortStruct(getInletType(name)!!, frameSize, debug)
 
 	protected fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "") {
 		writePanic(codeWriter, message, args, debug)

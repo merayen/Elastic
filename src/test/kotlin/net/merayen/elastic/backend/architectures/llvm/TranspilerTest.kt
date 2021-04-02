@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class TranspilerTest {
 	@Test
 	fun `1 + 2 = 3`() {
-		val supervisor = LLVMDSPModule()
+		val supervisor = LLVMDSPModule(true)
 		// supervisor.listenCodeGen = {
 		// 	println(it.split("\n").mapIndexed { i, x -> "${i + 1}\t$x" }.joinToString("\n"))
 		// }

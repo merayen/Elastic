@@ -1,8 +1,11 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
+import net.merayen.elastic.backend.architectures.llvm.ports.Midi
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
+import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.midi_poly_1.Properties
+import net.merayen.elastic.backend.midi.MidiStatuses
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 
 /**
@@ -41,16 +44,37 @@ class MidiPoly(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeInde
 				If("*(unsigned char*)(data) == ${Operations.VOICE_MULTIPLICATOR.ordinal} && length == 2") {
 					Statement("${writeOuterParameterVariable("voice_multiplicator")} = *(unsigned char*)(data+1)")
 				}
+				Else {
+					writePanic(codeWriter, "Invalid operation")
+				}
+			}
+		}
+
+		override fun onWriteProcess(codeWriter: CodeWriter) {
+			if (getInletType("in") == Format.MIDI) {
+				writeForEachVoice(codeWriter) {
+					with(codeWriter) {
+						val midiPort = getPortStruct("in") as Midi
+						midiPort.cClass.writeForEachMidiByte(codeWriter, writeInlet("in")) {
+							If("midi_status == ${MidiStatuses.KEY_DOWN}") {
+								writeVoiceCreation(codeWriter)
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 
 	override fun onMessage(message: NodePropertyMessage) {
 		val instance = message.instance as Properties
-		if (instance.midiScoreData != null) {
+		val midiScoreData = instance.midiScoreData
+		val midiScoreDataTiming = instance.midiScoreDataTiming
+
+		if (midiScoreData != null) {
 			TODO()
 		}
-		if (instance.midiScoreDataTiming != null) {
+		if (midiScoreDataTiming != null) {
 			TODO()
 		}
 	}

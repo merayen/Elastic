@@ -10,8 +10,8 @@ enum class PortRegistry(val cls: KClass<out PortStruct>, val format: Format) {
 	MIDI(Midi::class, Format.MIDI);
 
 	companion object {
-		fun getPortStruct(format: Format, frameSize: Int): PortStruct {
-			return values().first { it.format == format }.cls.primaryConstructor!!.call(frameSize)
+		fun getPortStruct(format: Format, frameSize: Int, debug: Boolean): PortStruct {
+			return values().first { it.format == format }.cls.primaryConstructor!!.call(frameSize, debug)
 		}
 	}
 }

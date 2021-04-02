@@ -193,7 +193,7 @@ class Transpiler(
 
 	private fun writePortClasses(codeWriter: CodeWriter) {
 		for (port in PortRegistry.values()) {
-			with(PortRegistry.getPortStruct(port.format, frameSize).cClass) {
+			with(PortRegistry.getPortStruct(port.format, frameSize, debug).cClass) {
 				writeStruct(codeWriter)
 				writeMethods(codeWriter, allocComponent)
 			}

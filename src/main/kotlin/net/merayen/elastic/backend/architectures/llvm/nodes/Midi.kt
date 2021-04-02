@@ -119,7 +119,7 @@ class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 						// TODO merge with the usual MIDI_SCORE_DATA midi data, so that we send that onto our outlet too
 						writeForEachVoice(codeWriter) {
-							Midi(frameSize).cClass.writePrepare(codeWriter, writeOutlet("out"), "this->parameters.direct_midi_length")
+							Midi(frameSize, debug).cClass.writePrepare(codeWriter, writeOutlet("out"), "this->parameters.direct_midi_length")
 
 							Call(
 								"memcpy",

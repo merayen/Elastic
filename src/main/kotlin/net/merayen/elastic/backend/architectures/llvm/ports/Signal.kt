@@ -4,7 +4,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CClass
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 
-class Signal(frameSize: Int) : PortStruct(frameSize) {
+class Signal(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
 	override val clsName = "PortDataSignal"
 
 	override val cClass = object : CClass(clsName) {
