@@ -63,6 +63,7 @@ class MidiPoly(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeInde
 					}
 				}
 			}
+			// TODO then run process() on all our children node ourself...? Instead of having DependencyList do it? Perhaps we run a process_workunit_123()?
 		}
 	}
 
