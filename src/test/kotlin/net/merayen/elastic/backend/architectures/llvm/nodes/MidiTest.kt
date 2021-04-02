@@ -1,11 +1,14 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
+import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.midi_1.DirectMidiMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeMidiOut
 import net.merayen.elastic.backend.midi.MidiMessagesCreator
+import net.merayen.elastic.backend.midi.MidiStatuses
 import net.merayen.elastic.system.intercom.*
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class MidiTest : LLVMNodeTest() {
@@ -16,6 +19,8 @@ internal class MidiTest : LLVMNodeTest() {
 	fun `output direct midi`() {
 		val supervisor = createSupervisor()
 
+		val midiMessage = MidiMessagesCreator.keyDown(10, 1f)
+
 		// Create the nodes and netlist
 		supervisor.ingoing.send(CreateNodeMessage("midi", "midi", "top"))
 		supervisor.ingoing.send(CreateNodeMessage("out", "out", "top"))
@@ -23,35 +28,39 @@ internal class MidiTest : LLVMNodeTest() {
 		supervisor.ingoing.send(CreateNodePortMessage("out", "in"))
 		supervisor.ingoing.send(NodeConnectMessage("midi", "out", "out", "in"))
 
-		// Create a midi score
-		//val eventZones = Properties.EventZones()
-		//eventZones.add(
-		//	Properties.EventZone(
-		//		"1",
-		//		0.0f,
-		//		1.0f,
-		//		MidiData(
-		//			mutableListOf(
-		//				MidiData.MidiMessage(
-		//					"1",
-		//					0.0,
-		//					mutableListOf(MidiStatuses.KEY_DOWN, 32, 64)
-		//				),
-		//				MidiData.MidiMessage(
-		//					"2",
-		//					0.1,
-		//					mutableListOf(MidiStatuses.KEY_UP, 32, 64)
-		//				)
-		//			)
-		//		)
-		//	)
-		//)
-
-		supervisor.ingoing.send(DirectMidiMessage("midi", MidiMessagesCreator.keyDown(10, 1f)))
+		supervisor.ingoing.send(DirectMidiMessage("midi", midiMessage))
 		supervisor.ingoing.send(ProcessRequestMessage())
 		supervisor.onUpdate()
 
 		val result = supervisor.outgoing.receive() as Output1NodeMidiOut
-		println(result.midi.size)
+		assertEquals(midiMessage.toList(), result.midi.toList())
+	}
+
+	@Test
+	fun `output score`() {
+		// Create a midi score
+		val eventZones = Properties.EventZones()
+		eventZones.add(
+			Properties.EventZone(
+				"1",
+				0.0f,
+				1.0f,
+				MidiData(
+					mutableListOf(
+						MidiData.MidiMessage(
+							"1",
+							0.0,
+							mutableListOf(MidiStatuses.KEY_DOWN, 32, 64)
+						),
+						MidiData.MidiMessage(
+							"2",
+							0.1,
+							mutableListOf(MidiStatuses.KEY_UP, 32, 64)
+						)
+					)
+				)
+			)
+		)
+		TODO()
 	}
 }

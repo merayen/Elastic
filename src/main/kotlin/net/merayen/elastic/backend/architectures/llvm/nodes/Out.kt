@@ -66,7 +66,7 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 								)
 								Statement("offset += ${writeInlet("in")}.length * sizeof(char) * 3")
 							}
-							Call("send", "length * sizeof(char) * 3, output")
+							Call("send", "length, output")
 
 							alloc.writeFree(codeWriter, "output")
 						}
@@ -117,8 +117,13 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 
 			Format.MIDI -> {
 				val midi = ShortArray(data.limit())
-				for (i in 0 until data.limit())
-					midi[i] = data.get().toShort()
+				for (i in 0 until data.limit()) {
+					val v = data.get().toShort()
+					if (v >= 0)
+						midi[i] = v
+					else
+						midi[i] = (v + 256).toShort()
+				}
 
 				listOf(
 					Output1NodeMidiOut(nodeId, midi = midi)
