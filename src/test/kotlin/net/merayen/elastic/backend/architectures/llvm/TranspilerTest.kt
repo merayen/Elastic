@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm
 
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
+import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeSignalOut
 import net.merayen.elastic.system.intercom.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -19,18 +20,14 @@ internal class TranspilerTest {
 		supervisor.ingoing.send(ProcessRequestMessage())
 		supervisor.onUpdate()
 
-		Thread.sleep(1000) // Meh, fix
-
 		supervisor.onEnd()
 
-		val result = supervisor.outgoing.receiveAll().first { it is Output1NodeAudioOut }
+		val result = supervisor.outgoing.receiveAll().first()
 
-		assertTrue { result is Output1NodeAudioOut }
+		assertTrue { result is Output1NodeSignalOut }
 
-		result as Output1NodeAudioOut
+		result as Output1NodeSignalOut
 
-		assertTrue { result.audio.size == 2 }
-
-		assertTrue { result.audio[0]!!.all { it == 3f } }
+		assertTrue { result.signal.all { it == 3f } }
 	}
 }

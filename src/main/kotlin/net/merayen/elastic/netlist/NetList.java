@@ -6,10 +6,26 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public final class NetList {
-	@SuppressWarnings("serial") public static class NetListException extends RuntimeException {}
-	@SuppressWarnings("serial") public static class NodeNotFound extends NetListException {}
-	@SuppressWarnings("serial") public static class PortNotFound extends NetListException {}
-	@SuppressWarnings("serial") public static class ConnectionNotFound extends NetListException {}
+	@SuppressWarnings("serial") public static class NetListException extends RuntimeException {
+		public NetListException(String message) {
+			super(message);
+		}
+
+		public NetListException() {}
+	}
+	@SuppressWarnings("serial") public static class NodeNotFound extends NetListException {
+		public NodeNotFound(String node) {
+			super(node);
+		}
+	}
+
+	@SuppressWarnings("serial") public static class PortNotFound extends NetListException {
+		public PortNotFound(String nodeId, String port) {
+			super(String.format("Node=%s, port=%s", nodeId, port));
+		}
+	}
+
+	@SuppressWarnings("serial") public static class ConnectionNotFound extends NetListException { }
 	@SuppressWarnings("serial") public static class AlreadyConnected extends NetListException {}
 
 	final List<Node> nodes = new ArrayList<>();
@@ -80,7 +96,7 @@ public final class NetList {
 
 	public void remove(Node node) {
 		if(!nodes.contains(node))
-			throw new NodeNotFound();
+			throw new NodeNotFound(node.id);
 
 		// Disconnect all lines for this node
 		for(String p : node.ports.keySet())
@@ -138,7 +154,7 @@ public final class NetList {
 			if(node.id.equals(id))
 				return node;
 
-		throw new NodeNotFound();
+		throw new NodeNotFound(id);
 	}
 
 	public boolean hasNode(String id) {
@@ -160,8 +176,11 @@ public final class NetList {
 		if(node_a == node_b)
 			throw new RuntimeException("Node '" + node_a.id + "' can not connect to itself");
 
-		if(!node_a.ports.containsKey(port_a) || !node_b.ports.containsKey(port_b))
-			throw new PortNotFound();
+		if(!node_a.ports.containsKey(port_a))
+			throw new PortNotFound(node_a.id, port_a);
+
+		if(!node_b.ports.containsKey(port_b))
+			throw new PortNotFound(node_b.id, port_b);
 
 		if(hasConnection(node_a, port_a, node_b, port_b))
 			throw new AlreadyConnected();
