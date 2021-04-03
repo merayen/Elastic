@@ -12,15 +12,15 @@ import net.merayen.elastic.util.NetListMessages
 import net.merayen.elastic.util.UniqueID
 
 /**
- * Creates specialized NetList for the LLVM backend.
+ * Changes the NetList to a LLVM backend specialized one.
  *
- * Copies the NetList, so there shouldn't be any changes to the input NetList.
- *
- * Run it by: `process(yourNetList)`
+ * Does not copy the NetList, be careful.
  */
 class LLVMNetList private constructor(private val netList: NetList) {
 	companion object {
-		fun process(netList: NetList) = LLVMNetList(netList.copy()).netList
+		fun process(netList: NetList) {
+			LLVMNetList(netList)
+		}
 	}
 
 	private val nodeProperties = NodeProperties(netList)

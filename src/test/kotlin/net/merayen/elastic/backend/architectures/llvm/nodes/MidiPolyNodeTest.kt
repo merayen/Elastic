@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class MidiPolyNodeTest : LLVMNodeTest() {
 	@Test
 	fun `create voices`() {
-		val supervisor = createSupervisor(false)
+		val supervisor = createSupervisor(true)
 
 		supervisor.ingoing.send(
 			listOf(
@@ -46,7 +46,7 @@ internal class MidiPolyNodeTest : LLVMNodeTest() {
 
 			supervisor.onUpdate()
 
-			val result = supervisor.outgoing.receive() as Output1NodeSignalOut
+			val result = supervisor.outgoing.receiveAll().first { it is Output1NodeSignalOut && it.nodeId == "output" } as Output1NodeSignalOut
 			assertEquals((0 until 256).map { i.toFloat() }, result.signal.toList())
 
 			// Send a key-down event which should create another voice of all the children of the midi_poly node

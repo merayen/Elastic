@@ -45,6 +45,7 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 				is ProcessRequestMessage -> {
 					val upcomingNetList = upcomingNetList
 					if (upcomingNetList != null) { // Begin compiling, but continue to use old backend
+						LLVMNetList.process(upcomingNetList) // Prepare the NetList
 						startLLVMRunner(upcomingNetList)
 						currentNetList = upcomingNetList
 						this.upcomingNetList = null

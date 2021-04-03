@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocCompon
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.LogComponent
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.writePanic
 import net.merayen.elastic.backend.logicnodes.Format
+import net.merayen.elastic.netlist.Line
 import net.merayen.elastic.netlist.Node
 import net.merayen.elastic.netlist.Port
 import net.merayen.elastic.system.intercom.NodeDataMessage
@@ -148,9 +149,10 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 *
 		 * Use this to e.g create voices on children node before they process.
 		 *
-		 * TODO make it work. How...?
+		 * You can safely read data from the input ports on this node, but do note that none of the children nodes
+		 * of this node has processed.
 		 */
-		protected open fun onWritePreprocess(codeWriter: CodeWriter) {}
+		open fun onWritePreprocess(codeWriter: CodeWriter) {}
 
 		/**
 		 * Build your processing code here.
@@ -206,7 +208,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 *
 		 * Variable: voice_index
 		 */
-		protected fun writeForEachVoice(codeWriter: CodeWriter, block: () -> Unit) {
+		fun writeForEachVoice(codeWriter: CodeWriter, block: () -> Unit) {
 			if (getParent() == null)
 				error("Can not iterate over the voices on the topmost node")
 
@@ -225,7 +227,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 *
 		 * Variable: sample_index
 		 */
-		protected fun writeForEachSample(codeWriter: CodeWriter, block: () -> Unit) {
+		fun writeForEachSample(codeWriter: CodeWriter, block: () -> Unit) {
 			codeWriter.For("int sample_index = 0", "sample_index < $frameSize", "sample_index++") {
 				block()
 			}
@@ -236,7 +238,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 *
 		 * Variable: channel_index
 		 */
-		protected fun writeForEachChannel(codeWriter: CodeWriter, block: () -> Unit) {
+		fun writeForEachChannel(codeWriter: CodeWriter, block: () -> Unit) {
 			codeWriter.For("int channel_index = 0", "channel_index < $channelCount", "channel_index++") {
 				block()
 			}
@@ -245,7 +247,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		/**
 		 * Write code to access an outlet from another node.
 		 */
-		protected fun writeInlet(portName: String, voiceIndex: String = "voice_index"): String {
+		fun writeInlet(portName: String, voiceIndex: String = "voice_index"): String {
 			val lines = shared.netList.getConnections(node, portName)
 			if (lines.size != 1)
 				throw RuntimeException("Should not happen")
@@ -379,36 +381,43 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	/**
 	 * Check if the current node has inlet by name and that it is connected.
 	 */
-	protected fun getInletType(name: String): Format? {
-		val ports = shared.nodeProperties.getInputPorts(node)
+	fun getInletType(name: String): Format? {
+		val ports = shared.nodeProperties.getInputPorts(node).filter { it == name }
 
-		if (!ports.any { it == name })
-			return null
-
-		if (ports.size != 1)
+		if (ports.size != 1) // Just checking, to be sure
 			error("A node should not have multiple ports with the same name")
 
 		val lines = shared.netList.getConnections(node, name)
 		if (lines.isEmpty())
-			return null
+			return null // Not connected
 
 		if (lines.size != 1)
 			error("Inlet should never have more than 1 line connected")
 
-		if (lines[0].node_a === node)
-			return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
+		return if (lines[0].node_a === node)
+			shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
 		else if (lines[0].node_b === node)
-			return shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
+			shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
 		else
 			error("Invalid connection")
+	}
+
+	protected fun getOutletType(name: String): Format? {
+		val ports = shared.nodeProperties.getOutputPorts(node).filter { it == name }
+
+		if (ports.size != 1) // Just checking, to be sure
+			error("A node should not have multiple ports with the same name")
+
+		if (shared.netList.getConnections(node, name).isEmpty())
+			return null // Not connected
+
+		return shared.nodeProperties.getFormat(node, name)
 	}
 
 	/**
 	 * Writes code that calls all children nodes' voice creation logic.
 	 *
-	 * Must be run only when preparing (all nodes gets prepare() called, also not when processing a frame.
-	 *
-	 * TODO allow creation of voice in onWriteProcess() too? Why does it not work? Does it really not work?
+	 * Must be run only in onWritePrepare() or onWritePreprocess()
 	 */
 	fun writeVoiceCreation(codeWriter: CodeWriter) {
 		if (this !is GroupInterface)
@@ -484,6 +493,9 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	}
 
 	fun getPortStruct(name: String): PortStruct = PortRegistry.getPortStruct(getInletType(name)!!, frameSize, debug)
+
+	fun getOutputPorts() = shared.nodeProperties.getOutputPorts(node)
+	fun getInputPorts() = shared.nodeProperties.getInputPorts(node)
 
 	protected fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "") {
 		writePanic(codeWriter, message, args, debug)

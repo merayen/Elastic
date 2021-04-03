@@ -44,21 +44,21 @@ internal class LLVMNetListTest {
 
 		assertEquals(6, netList.nodes.size, "Something else is wrong with NetList or NetListMessages...?")
 
-		val result = LLVMNetList.process(netList)
+		LLVMNetList.process(netList)
 
-		val nodeProperties = NodeProperties(result)
+		val nodeProperties = NodeProperties(netList)
 
 		assertEquals(
 			listOf("top", "midi", "midi_poly", "value", "_preprocessor", "out", "out").sorted(),
-			result.nodes.map { nodeProperties.getName(it) }.sorted(),
+			netList.nodes.map { nodeProperties.getName(it) }.sorted(),
 			"Expected to find all the nodes we added, plus the _preprocessor node that should have been added automatically"
 		)
 
 		// Find the preprocessor
-		val preprocessorId = result.nodes.first { nodeProperties.getName(it) == getName(PreProcessor::class) }.id
+		val preprocessorId = netList.nodes.first { nodeProperties.getName(it) == getName(PreProcessor::class) }.id
 
-		val dependencyList = toDependencyList(result)
-		flattenDependencyList(dependencyList, result)
+		val dependencyList = toDependencyList(netList)
+		flattenDependencyList(dependencyList, netList)
 
 		assertEquals(
 			mapOf(

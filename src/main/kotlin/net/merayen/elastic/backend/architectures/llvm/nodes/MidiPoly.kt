@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
+import net.merayen.elastic.backend.architectures.llvm.getName
 import net.merayen.elastic.backend.architectures.llvm.ports.Midi
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
@@ -50,7 +51,7 @@ class MidiPoly(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeInde
 			}
 		}
 
-		override fun onWriteProcess(codeWriter: CodeWriter) {
+		override fun onWritePreprocess(codeWriter: CodeWriter) {
 			if (getInletType("in") == Format.MIDI) {
 				writeForEachVoice(codeWriter) {
 					with(codeWriter) {
@@ -63,7 +64,47 @@ class MidiPoly(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeInde
 					}
 				}
 			}
-			// TODO then run process() on all our children node ourself...? Instead of having DependencyList do it? Perhaps we run a process_workunit_123()?
+		}
+
+		override fun onWriteProcess(codeWriter: CodeWriter) {
+			// TODO support labeling of internal out-nodes and forward them to the output ports with the same name
+			val outputPorts = getOutputPorts()
+
+			if (outputPorts.size != 1)
+				TODO("add support for dynamic output port count (forwarding from multiple out-nodes children)")
+
+			val childrenOutNodes = getChildren().filter { shared.nodeProperties.getName(it.node) == getName(Out::class) }
+
+			if (childrenOutNodes.size != 1)
+				TODO("add support for dynamic out node count and forwarding. Got ${childrenOutNodes.size} Out children nodes")
+
+			val outNode = childrenOutNodes[0]
+			val outNodePortFormat = outNode.getInletType("in") ?: TODO("Allow out-nodes to have on inputs")
+
+			with(codeWriter) {
+				when (outNodePortFormat) {
+					Format.SIGNAL -> {
+						if (getOutletType("out") != Format.SIGNAL)
+							error("Out node child has SIGNAL format while midi_poly's out has another format")
+
+						Member("float", "result[$frameSize]")
+						Call("memset", "result, 0, $frameSize * sizeof(float)")
+
+						// Sum all the voices for the out-node into our output buffer
+						outNode.nodeClass.writeForEachVoice(codeWriter) { // FIXME more intelligently add voices...? respect hierarchy?
+							outNode.nodeClass.writeForEachSample(codeWriter) {
+								Statement("result[sample_index] += ${outNode.nodeClass.writeInlet("in")}.signal[sample_index]")
+							}
+						}
+
+						// Then copy our output buffer to out output port
+						writeForEachVoice(codeWriter) {
+							Call("memcpy", "${writeOutlet("out")}.signal, result, $frameSize * sizeof(float)")
+						}
+					}
+					else -> TODO("add support forwarding port format '${outNodePortFormat.name}'")
+				}
+			}
 		}
 	}
 

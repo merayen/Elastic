@@ -1,15 +1,18 @@
 package net.merayen.elastic.backend.analyzer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 import net.merayen.elastic.netlist.Port;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * TODO Merge this class into NetListUtil?
+ */
 public class NodeProperties {
 	private final NetList netlist;
 
@@ -109,6 +112,10 @@ public class NodeProperties {
 		String format = (String)port.properties.get("format");
 
 		return format != null ? Format.get(format) : null;
+	}
+
+	public Format getFormat(Node node, String port) {
+		return getFormat(netlist.getPort(node, port));
 	}
 
 	public List<String> getInputPorts(Node node) {

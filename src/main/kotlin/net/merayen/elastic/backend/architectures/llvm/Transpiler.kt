@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm
 
+import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.backend.architectures.llvm.nodes.GroupInterface
 import net.merayen.elastic.backend.architectures.llvm.nodes.TranspilerNode
@@ -49,6 +50,8 @@ class Transpiler(
 
 		val groups: Map<TranspilerNode, List<TranspilerNode>>
 			get() = this@Transpiler.groups
+
+		val netListUtil = NetListUtil(netList)
 	}
 
 	private val log = LogComponent()

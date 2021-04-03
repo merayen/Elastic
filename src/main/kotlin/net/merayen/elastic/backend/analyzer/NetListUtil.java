@@ -1,9 +1,11 @@
 package net.merayen.elastic.backend.analyzer;
 
+import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,5 +69,23 @@ public class NetListUtil {
 	 */
 	public Set<String> getGroupNodeIds() {
 		return netlist.getNodes().stream().map(node_properties::getParent).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Retrieve all nodes connected to the right side of a node.
+	 */
+	public Set<Node> getRightNodes(Node node) {
+		Set<Node> result = new HashSet<>();
+
+		for (String port : node_properties.getOutputPorts(node)) {
+			for (Line line : netlist.getConnections(node, port)) {
+				if (line.node_a == node)
+					result.add(line.node_b);
+				else
+					result.add(line.node_a);
+			}
+		}
+
+		return result;
 	}
 }

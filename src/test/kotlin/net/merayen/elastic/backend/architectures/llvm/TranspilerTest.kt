@@ -1,6 +1,5 @@
 package net.merayen.elastic.backend.architectures.llvm
 
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeSignalOut
 import net.merayen.elastic.system.intercom.*
 import org.junit.jupiter.api.Assertions.*
