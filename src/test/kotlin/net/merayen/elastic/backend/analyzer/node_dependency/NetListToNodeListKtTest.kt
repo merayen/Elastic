@@ -18,12 +18,10 @@ internal class NetListToNodeListKtTest {
 		NetListMessages.apply(netlist, CreateNodeMessage("b", "b", 1, null))
 
 		val nodelist = toDependencyList(netlist)
-		assertTrue { "a" in nodelist }
-		assertTrue { "b" in nodelist }
+		assertEquals(setOf("a", "b"), nodelist.keys)
 
 		flattenDependencyList(nodelist, netlist) // Should make no difference
-		assertTrue { "a" in nodelist }
-		assertTrue { "b" in nodelist }
+		assertEquals(setOf("a", "b"), nodelist.keys)
 	}
 
 	@Test
@@ -63,6 +61,50 @@ internal class NetListToNodeListKtTest {
 		assertEquals(setOf("d"), nodelist.getTargets())
 
 		assertEquals(setOf("a", "b", "c", "d", "A", "B", "C", "D"), nodelist.keys)
+	}
+
+	@Test
+	fun `all group nodes depends on their children`() {
+		val netlist = NetList()
+		listOf(
+			CreateNodeMessage("top", "top", null),
+			CreateNodeMessage("a", "a", "top"),
+			CreateNodePortMessage("a", "out", Format.SIGNAL),
+
+			CreateNodeMessage("b", "b", "top"),
+			CreateNodePortMessage("b", "in"),
+			CreateNodePortMessage("b", "out", Format.SIGNAL),
+
+			NodeConnectMessage("a", "out", "b", "in"),
+
+			CreateNodeMessage("c", "c", "b"),
+			CreateNodePortMessage("c", "out", Format.SIGNAL),
+
+			CreateNodeMessage("d", "d", "b"),
+			CreateNodePortMessage("d", "in"),
+
+			NodeConnectMessage("c", "out", "d", "in"),
+
+			CreateNodeMessage("e", "e", "top"),
+			CreateNodePortMessage("e", "in"),
+
+			NodeConnectMessage("b", "out", "e", "in"),
+		).forEach { NetListMessages.apply(netlist, it) }
+
+		val nodelist = toDependencyList(netlist)
+		flattenDependencyList(nodelist, netlist)
+
+		assertEquals(
+			mapOf(
+				"top" to setOf("a", "b", "e"),
+				"a" to setOf(),
+				"b" to setOf("a", "c", "d"),
+				"c" to setOf("a"),
+				"d" to setOf("a", "c"),
+				"e" to setOf("b"),
+			),
+			nodelist
+		)
 	}
 
 	@Test

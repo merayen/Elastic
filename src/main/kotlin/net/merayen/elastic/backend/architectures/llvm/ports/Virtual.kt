@@ -4,12 +4,12 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CClass
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 
-class Signal(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
-	override val cClass = object : CClass("PortDataSignal") {
-		override fun onWriteMembers(codeWriter: CodeWriter) {
-			codeWriter.Member("float", "signal[$frameSize]")
-		}
-
+/**
+ * Virtual port that has no data, only connecting nodes.
+ */
+class Virtual(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
+	override val cClass = object : CClass("virtual") {
 		override fun onWriteMethods(codeWriter: CodeWriter, allocComponent: AllocComponent?) {}
+		override fun onWriteMembers(codeWriter: CodeWriter) {}
 	}
 }

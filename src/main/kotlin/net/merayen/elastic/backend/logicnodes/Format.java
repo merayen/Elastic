@@ -3,7 +3,12 @@ package net.merayen.elastic.backend.logicnodes;
 public enum Format {
 	AUDIO("audio"),
 	MIDI("midi"),
-	SIGNAL("signal");
+	SIGNAL("signal"),
+
+	/**
+	 * Virtual port that does not transfer any data.
+	 */
+	VIRTUAL("virtual");
 
 	public String name;
 

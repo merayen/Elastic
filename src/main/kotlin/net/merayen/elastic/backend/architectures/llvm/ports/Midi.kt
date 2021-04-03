@@ -11,9 +11,7 @@ import net.merayen.elastic.backend.midi.MidiStatuses
  * TODO support time codes
  */
 class Midi(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
-	override val clsName = "PortDataMidi"
-
-	inner class Class : CClass(clsName) {
+	inner class Class : CClass("PortDataMidi") {
 		override fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
 			super.onWriteInit(codeWriter, allocComponent)
 			with(codeWriter) {

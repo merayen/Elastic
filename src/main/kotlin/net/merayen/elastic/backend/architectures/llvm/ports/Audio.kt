@@ -5,9 +5,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 
 internal class Audio(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
-	override val clsName = "PortDataAudio"
-
-	override val cClass = object : CClass(clsName) {
+	override val cClass = object : CClass("PortDataAudio") {
 		override fun onWriteDestroy(codeWriter: CodeWriter, allocComponent: AllocComponent?) {
 			super.onWriteDestroy(codeWriter, allocComponent)
 			with(codeWriter) {

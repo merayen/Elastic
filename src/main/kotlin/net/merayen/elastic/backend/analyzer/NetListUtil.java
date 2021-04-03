@@ -5,6 +5,8 @@ import net.merayen.elastic.netlist.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NetListUtil {
 	private final NetList netlist;
@@ -26,7 +28,7 @@ public class NetListUtil {
 				result.add(node);
 
 		if (result.size() != 1)
-			throw new RuntimeException("Expected 1 and only 1 top-node");
+			throw new RuntimeException("Expected 1 and only 1 top-node, but got " + result.size());
 
 		return result.get(0);
 	}
@@ -58,5 +60,12 @@ public class NetListUtil {
 			result.addAll(getChildrenDeep(n));
 
 		return result;
+	}
+
+	/**
+	 * Get all ids on nodes that has children.
+	 */
+	public Set<String> getGroupNodeIds() {
+		return netlist.getNodes().stream().map(node_properties::getParent).collect(Collectors.toSet());
 	}
 }

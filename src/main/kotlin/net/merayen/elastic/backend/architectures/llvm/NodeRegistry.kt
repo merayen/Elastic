@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm
 
 import net.merayen.elastic.backend.architectures.llvm.nodes.*
+import kotlin.reflect.KClass
 
 val nodeRegistry = mapOf(
 	"group" to Group::class,
@@ -17,4 +18,12 @@ val nodeRegistry = mapOf(
 	"output" to Out::class,
 	"wave" to Wave::class,
 	"to_audio" to ToAudio::class,
+	"_preprocessor" to PreProcessor::class, // Special node only used by LLVM backend
 )
+
+/**
+ * Get the name (used in e.g CreateNodeMessage("<this name>", ...) ) of a TranspilerNode
+ */
+fun getName(cls: KClass<out TranspilerNode>): String {
+	return nodeRegistry.entries.first { it.value == cls }.key
+}

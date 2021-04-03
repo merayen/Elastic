@@ -158,7 +158,7 @@ public final class NetList {
 			throw new RuntimeException("Node(s) does not belong to this NetList");
 
 		if(node_a == node_b)
-			throw new RuntimeException("Node can not connect to itself");
+			throw new RuntimeException("Node '" + node_a.id + "' can not connect to itself");
 
 		if(!node_a.ports.containsKey(port_a) || !node_b.ports.containsKey(port_b))
 			throw new PortNotFound();

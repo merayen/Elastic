@@ -37,6 +37,13 @@ public class CreateNodeMessage extends NetListMessage implements NodeMessage {
 		this.parent = parent;
 	}
 
+	public CreateNodeMessage(String name, String parent) {
+		this.node_id = null;
+		this.name = name;
+		this.version = 1;
+		this.parent = parent;
+	}
+
 	public String toString() {
 		return super.toString() + String.format(" (nodeId=%s, name=%s, version=%d, parent=%s)", node_id, name, version, parent);
 	}
