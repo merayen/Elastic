@@ -146,7 +146,7 @@ class LNode : LocalNode(LProcessor::class.java), GroupLNode {
 		}
 
 		// Report back playback position
-		outgoing = Group1OutputFrameData(nodeId = id, currentPlayheadPosition = currentCursorBeatPosition.toFloat(), currentBPM = bpm.toFloat())
+		outgoing = Group1OutputFrameData(nodeId = id, currentPlayheadPosition = currentCursorBeatPosition.toFloat(), currentBPM = bpm.toFloat(), mapOf(), mapOf(), mapOf())
 	}
 
 	override fun onDestroy() {}

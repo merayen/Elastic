@@ -28,6 +28,12 @@ public final class NetList {
 	@SuppressWarnings("serial") public static class ConnectionNotFound extends NetListException { }
 	@SuppressWarnings("serial") public static class AlreadyConnected extends NetListException {}
 
+	public static class PortExists extends NetListException {
+		public PortExists(String nodeId, String port) {
+			super(String.format("Node=%s, port=%s", nodeId, port));
+		}
+	}
+
 	final List<Node> nodes = new ArrayList<>();
 	final List<Line> lines = new ArrayList<>();
 
@@ -118,6 +124,9 @@ public final class NetList {
 	}
 
 	public Port createPort(Node node, String port) {
+		if (node.ports.containsKey(port))
+			throw new PortExists(node.id, port);
+
 		Port p = new Port();
 		node.ports.put(port, p);
 		return p;

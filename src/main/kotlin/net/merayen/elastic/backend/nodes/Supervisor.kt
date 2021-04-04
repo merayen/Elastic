@@ -145,6 +145,9 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 	 * Messages sent from processing should be sent into this function.
 	 */
 	private fun handleResponseFromProcessor(message: ProcessResponseMessage) {
+		if (!is_processing)
+			error("Expected to be processing when receiving the ProcessResponseMessage")
+
 		val project = env.project
 
 		val netList = project.netList

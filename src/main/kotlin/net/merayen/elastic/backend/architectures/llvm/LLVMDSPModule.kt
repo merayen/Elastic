@@ -9,7 +9,8 @@ import net.merayen.elastic.util.NetListMessages
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
+class LLVMDSPModule : DSPModule() {
+	var debug: Boolean = false
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null
 	private var upcomingNetList: NetList? = null
@@ -29,6 +30,7 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 
 	private fun handle(messages: Collection<ElasticMessage>) {
 		for (message in messages) {
+			//println("LLVM: Got message $message")
 			when (message) {
 				is NetListMessage -> { // These messages changes the structure of the netlist, so we will need to recompile
 					if (upcomingNetList == null)
@@ -45,6 +47,7 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 				is ProcessRequestMessage -> {
 					val upcomingNetList = upcomingNetList
 					if (upcomingNetList != null) { // Begin compiling, but continue to use old backend
+						val t = System.currentTimeMillis()
 						LLVMNetList.process(upcomingNetList) // Prepare the NetList
 						startLLVMRunner(upcomingNetList)
 						currentNetList = upcomingNetList
@@ -53,6 +56,8 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 						// Send messages that got queued when we were rebuilding the netlist
 						for (x in queuedMessages)
 							sendNodeMessage(x)
+
+						println("LLVM: recompiling took ${System.currentTimeMillis() - t}ms")
 
 					} else if (llvmRunner == null) {
 						val netList = NetList() // Temporary, mostly empty NetList
@@ -64,6 +69,8 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 
 					process()
 				}
+				is BackendReadyMessage -> {} // I don't think we need to handle this one...? Or?
+				else -> error("Not sure how to handle message '$message'")
 			}
 		}
 	}
@@ -144,8 +151,6 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 			outgoing.send(node.onDataFromDSP(nodeData))
 		}
 
-		outgoing.send(ProcessResponseMessage()) // TODO always send empty message? Send data individually as below?
-
 		val doneResponse = llvmRunner.communicator.poll()
 
 		// Expect "DONE" sent from DSP now
@@ -156,6 +161,8 @@ class LLVMDSPModule(private val debug: Boolean) : DSPModule() {
 
 		//println("DSP timings: Total=${startTime / 1000 / 1000.0}ms, DSP process=${startProcess / 1000 / 1000.0}ms")
 		processing = false
+
+		outgoing.send(ProcessResponseMessage()) // TODO always send empty message? Send data individually as below?
 	}
 
 	override fun onInit() {}

@@ -23,6 +23,7 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 			with(codeWriter) {
 				// Clear our output buffer first
 				when (getInletType("in")) {
+					null -> return
 					Format.SIGNAL -> {
 						alloc.writeCalloc(codeWriter, "float*", "output", "1", "$frameSize * 4")
 						writeForEachVoice(codeWriter) {
@@ -76,13 +77,13 @@ class Out(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
 							Call("send", "0, NULL") // No MIDI to send, we send nothing
 						}
 					}
-					else -> TODO("port format not supported yet")
+					else -> TODO("port format '${getInletType("in")}' not supported yet")
 				}
 			}
 		}
 	}
 
-	override fun onDataFromDSP(data: ByteBuffer): List<NodeDataMessage> {
+	override fun onDataFromDSP(data: ByteBuffer): List<NodeDataMessage> { // TODO out node should send nothing! Remove whole function!
 		return when (getInletType("in")) {
 			Format.AUDIO -> {
 				val audio = ArrayList<FloatArray>()

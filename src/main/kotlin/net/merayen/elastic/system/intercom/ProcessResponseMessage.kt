@@ -9,6 +9,8 @@ import java.util.*
 class ProcessResponseMessage : ElasticMessage { // TODO tissue:llvm remove, will send individual messages using NodeDataMessage instead
 	/**
 	 * Resulting data from the processing backend
+	 *
+	 * TODO remove, nodes will send data individually instead
 	 */
 	var output: Map<String, OutputFrameData> = HashMap()
 

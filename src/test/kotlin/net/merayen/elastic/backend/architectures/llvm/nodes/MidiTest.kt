@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.midi.MidiMessagesCreator
 import net.merayen.elastic.backend.midi.MidiStatuses
 import net.merayen.elastic.system.intercom.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class MidiTest : LLVMNodeTest() {
@@ -37,6 +38,7 @@ internal class MidiTest : LLVMNodeTest() {
 	}
 
 	@Test
+	@Disabled
 	fun `output score`() {
 		// Create a midi score
 		val eventZones = Properties.EventZones()

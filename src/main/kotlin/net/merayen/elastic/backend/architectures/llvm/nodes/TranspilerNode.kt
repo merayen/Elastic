@@ -307,6 +307,8 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 
 	/**
 	 * Data from the DSP. In the same format as the one sent with sendDataToDSP()
+	 *
+	 * Called once after each processed frame.
 	 */
 	open fun onDataFromDSP(data: ByteBuffer): List<NodeDataMessage> = listOf()
 
@@ -384,7 +386,10 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	fun getInletType(name: String): Format? {
 		val ports = shared.nodeProperties.getInputPorts(node).filter { it == name }
 
-		if (ports.size != 1) // Just checking, to be sure
+		if (ports.isEmpty())
+			return null // Port not found
+
+		if (ports.size > 1) // Just checking, to be sure
 			error("A node should not have multiple ports with the same name")
 
 		val lines = shared.netList.getConnections(node, name)
@@ -502,7 +507,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	}
 
 	protected fun writeLog(codeWriter: CodeWriter, message: String, args: String = "") {
-		log?.write(codeWriter, message, args)
+		log?.write(codeWriter, "[node_name=${shared.nodeProperties.getName(node)}, node_id=$nodeId] $message", args)
 	}
 
 	private fun hasOutlets() = shared.nodeProperties.getOutputPorts(node).isNotEmpty()

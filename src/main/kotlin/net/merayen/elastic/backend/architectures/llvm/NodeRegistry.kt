@@ -22,7 +22,9 @@ val nodeRegistry = mapOf(
 )
 
 /**
- * Get the name (used in e.g CreateNodeMessage("<this name>", ...) ) of a TranspilerNode
+ * Get the node name of a TranspilerNode
+ *
+ * Name is used in e.g CreateNodeMessage("&lt;this name&gt;", ...)
  */
 fun getName(cls: KClass<out TranspilerNode>): String {
 	return nodeRegistry.entries.first { it.value == cls }.key

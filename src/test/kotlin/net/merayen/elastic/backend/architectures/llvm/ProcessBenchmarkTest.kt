@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ProcessBenchmarkTest {
 	@Test
 	fun `benchmark with huge buffer`() {
-		val supervisor = LLVMDSPModule(true)
+		val supervisor = LLVMDSPModule()
 		supervisor.ingoing.send(addOneAndTwo())
 
 		val t = System.currentTimeMillis() + 1000
@@ -21,8 +21,8 @@ internal class ProcessBenchmarkTest {
 				Thread.sleep(0)
 
 			val messages = supervisor.outgoing.receiveAll()
-			assertEquals(1, messages.size)
-			messages.all { message ->
+			assertEquals(2, messages.size)
+			messages.any { message ->
 				message is Output1NodeAudioOut && message.audio.first()!!.all { it == 3.0f }
 			}
 			framesProcessed++
