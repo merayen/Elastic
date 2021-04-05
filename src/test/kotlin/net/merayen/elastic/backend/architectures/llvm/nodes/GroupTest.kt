@@ -53,14 +53,46 @@ internal class GroupTest : LLVMNodeTest() {
 	}
 
 	@Test
-	@Disabled
 	fun `forward audio out nodes and sum them`() {
 		val supervisor = createSupervisor(true)
 		supervisor.ingoing.send(
 			listOf(
-				TODO()
+				CreateNodeMessage("value", "value", "top"),
+				CreateNodePortMessage("value", "out", Format.SIGNAL),
+				NodePropertyMessage("value", Properties(value = 123f)),
+
+				CreateNodeMessage("to_audio", "to_audio", "top"),
+				CreateNodePortMessage("to_audio", "in"),
+				CreateNodePortMessage("to_audio", "out", Format.AUDIO),
+
+				NodeConnectMessage("value", "out", "to_audio", "in"),
+
+				CreateNodeMessage("out", "out", "top"),
+				CreateNodePortMessage("out", "in"),
+
+				NodeConnectMessage("to_audio", "out", "out", "in"),
+
+				ProcessRequestMessage(),
 			)
 		)
+
+		supervisor.onUpdate()
+
+		val result = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
+
+		assertEquals(0, result.outSignal.size)
+		assertEquals(1, result.outAudio.size)
+		assertEquals(0, result.outMidi.size)
+
+		val audio = result.outAudio["out"]
+
+		assertNotNull(audio)
+		audio!!
+
+		assertEquals(2, audio.size)
+
+		for (sample in audio[0])
+			assertEquals(123f, sample)
 	}
 
 	@Test

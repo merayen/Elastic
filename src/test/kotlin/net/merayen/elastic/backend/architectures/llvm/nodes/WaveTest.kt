@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.logicnodes.Format
+import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeSignalOut
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.system.intercom.*
@@ -21,10 +22,11 @@ internal class WaveTest : LLVMNodeTest() {
 		supervisor.ingoing.send(NodeConnectMessage("wave", "out", "out", "in"))
 		supervisor.ingoing.send(ProcessRequestMessage())
 		supervisor.onUpdate()
-		val result = supervisor.outgoing.receive() as Output1NodeSignalOut
+
+		val result = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
 
 		var position = 0.0
-		for ((i, sample) in result.signal.withIndex()) {
+		for ((i, sample) in result.outSignal["out"]!!.withIndex()) {
 			assertEquals((sin(position * 2 * PI) * 1000).toInt() / 1000.0, (sample * 1000).toInt() / 1000.0)
 			position += 10.0 / 44100.0
 		}

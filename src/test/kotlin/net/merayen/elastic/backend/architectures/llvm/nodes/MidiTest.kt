@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.data.eventdata.MidiData
 import net.merayen.elastic.backend.logicnodes.Format
+import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.DirectMidiMessage
 import net.merayen.elastic.backend.logicnodes.list.midi_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeMidiOut
@@ -33,8 +34,8 @@ internal class MidiTest : LLVMNodeTest() {
 		supervisor.ingoing.send(ProcessRequestMessage())
 		supervisor.onUpdate()
 
-		val result = supervisor.outgoing.receive() as Output1NodeMidiOut
-		assertEquals(midiMessage.toList(), result.midi.toList())
+		val result = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
+		assertEquals(midiMessage.toList(), result.outMidi["out"]!!.toList())
 	}
 
 	@Test

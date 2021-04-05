@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.logicnodes.Format
+import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.system.intercom.*
@@ -31,11 +32,9 @@ internal class ToAudioTest : LLVMNodeTest() {
 
 		supervisor.onUpdate()
 
-		val result = supervisor.outgoing.receive() as Output1NodeAudioOut
+		val result = supervisor.outgoing.receiveAll().first {it is Group1OutputFrameData } as Group1OutputFrameData
 
-		assertNotEquals(0.0f, result.audio[0]!![10])
-
-		for ((i, sample) in result.audio[0]!!.withIndex()) {
+		for ((i, sample) in result.outAudio["out"]!![0].withIndex()) {
 			assertEquals((sin(i * (10 / 44100.0) * 2 * PI) * 1000).toInt() / 1000f, (sample * 1000).toInt() / 1000f)
 		}
 	}

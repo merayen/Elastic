@@ -1,6 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.logicnodes.Format
+import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
 import net.merayen.elastic.backend.logicnodes.list.midi_1.DirectMidiMessage
 import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeSignalOut
 import net.merayen.elastic.backend.logicnodes.list.value_1.Properties
@@ -46,8 +47,8 @@ internal class MidiPolyNodeTest : LLVMNodeTest() {
 
 			supervisor.onUpdate()
 
-			val result = supervisor.outgoing.receiveAll().first { it is Output1NodeSignalOut && it.nodeId == "output" } as Output1NodeSignalOut
-			assertEquals((0 until 256).map { i.toFloat() }, result.signal.toList())
+			val result = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
+			assertEquals((0 until 256).map { i.toFloat() }, result.outSignal["output"]!!.toList())
 
 			// Send a key-down event which should create another voice of all the children of the midi_poly node
 			supervisor.ingoing.send(
