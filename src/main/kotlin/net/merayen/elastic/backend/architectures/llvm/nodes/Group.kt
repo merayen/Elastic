@@ -27,20 +27,24 @@ class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex),
 						outNodes.audio.size * 4 * frameSize * channelCount
 					)
 
-				// Calculate the dynamic size of the data, which comes from midi
+				// Calculate the dynamic size of the data, which comes from Format.MIDI
 				Member("int", "size = $byteCountStatic")
 				for (midiOut in outNodes.midi) {
 					midiOut.nodeClass.writeForEachVoice(codeWriter) {
-						Statement("size += ${midiOut.nodeClass.writeInlet("in")}.length")
+						// Also adds 4 bytes for each outlet as int, as this describes the length of the outnode midi in bytes
+						Statement("size += 4 + ${midiOut.nodeClass.writeInlet("in")}.length")
 					}
 				}
 
+				// Create the output buffer byte array we will send to host program
 				alloc.writeCalloc(codeWriter, "void*", "result", "size", "1")
 
 				writeLog(codeWriter, "Size: %i", "size")
 
-				// Place data received on the out-nodes (signal inlets) onto our output buffer
-				Member("float", "buffer[$frameSize]")
+				// Create temporary buffer, used by both Format.SIGNAL and Format.AUDIO, allocating highest capacity
+				Member("float", "buffer[${frameSize * channelCount}]")
+
+				// Place the out-nodes that receives Format.SIGNAL data and lay the result into the output buffer
 				for ((outNodeIndex, outNode) in outNodes.signal.withIndex()) {
 					Call("memset", "buffer, 0, $frameSize * sizeof(float)")
 
@@ -58,12 +62,56 @@ class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex),
 					)
 				}
 
+				// Then do the out-nodes that receives Format.AUDIO data and put onto the output buffer
 				for ((outNodeIndex, outNode) in outNodes.audio.withIndex()) {
-					TODO("support forwarding audio out nodes")
+					Call("memset", "buffer, 0, ${frameSize * channelCount * 4}")
+
+					outNode.nodeClass.writeForEachVoice(codeWriter) {
+						outNode.nodeClass.writeForEachChannel(codeWriter) {
+							outNode.nodeClass.writeForEachSample(codeWriter) {
+								Statement("buffer[sample_index + channel_index * $frameSize] += ${outNode.nodeClass.writeInlet("in")}.audio[sample_index + channel_index * $frameSize]")
+							}
+						}
+					}
+
+					// Copy the resulting buffer of this out-node to the output buffer
+					Call(
+						"memcpy",
+						"result + ${frameSize * outNodes.signal.size + frameSize * outNodeIndex * 4}, buffer, ${frameSize * 4}"
+					)
 				}
 
-				for ((outNodeIndex, outNode) in outNodes.midi.withIndex()) {
-					TODO("support forwarding midi out nodes")
+				if (outNodes.midi.isNotEmpty()) {
+					Member("int", "length")
+					for (outNode in outNodes.midi) {
+						Statement("length = 0")
+						outNode.nodeClass.writeForEachVoice(codeWriter) {
+							Statement("length += ${outNode.nodeClass.writeInlet("in")}.length")
+						}
+
+						If("length > 0") { // Only send midi output if there is any
+							Member("int", "offset = $byteCountStatic") // Set offset right after Format.SIGNAL + Format.AUDIO data
+
+							// First write the size of the midi that is coming out of current outNode
+							Statement("*(int *)(result + offset) = length")
+
+							Member("char", "temp_midi[length]")
+							Call("memset", "temp_midi, 0, length")
+
+							Member("int", "midi_index = 0")
+							outNode.nodeClass.writeForEachVoice(codeWriter) {
+								For("int i = 0", "i < ${outNode.nodeClass.writeInlet("in")}.length", "i++") {
+									Statement("temp_midi[midi_index++] = ${outNode.nodeClass.writeInlet("in")}.messages[i]")
+								}
+							}
+
+							// Then copy the result
+							Call("memcpy", "result + offset + 4, temp_midi, length")
+
+							// Move offset, plus 4 bytes of size in int
+							Statement("offset += length + 4")
+						}
+					}
 				}
 
 				Call("send", "size, result")
@@ -108,8 +156,18 @@ class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex),
 
 		// Then read the MIDI part
 		val midi = HashMap<String, ShortArray>()
-		for (outMidi in outNodes.midi)
-			TODO("make group node forward midi too")
+		for (outMidi in outNodes.midi) {
+			val size = data.int
+			val midiPacket = ShortArray(size)
+			for (i in 0 until size) {
+				val midiByte = data.get().toShort()
+				if (midiByte >= 0)
+					midiPacket[i] = midiByte
+				else
+					midiPacket[i] = (midiByte + 256).toShort()
+			}
+			midi[outMidi.nodeId] = midiPacket
+		}
 
 		return listOf(
 			Group1OutputFrameData(
@@ -131,7 +189,8 @@ class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex),
 
 	private fun getOutNodes(): OutNodes {
 		val outs = getChildren().filter { shared.nodeProperties.getName(it.node) == getName(Out::class) }
-		val signalOuts = outs.filter { it.getInletType("in") == Format.SIGNAL }.sortedBy { it.node.id }
+		val signalOuts = outs.filter { it.getInletType("in") == Format.SIGNAL }
+			.sortedBy { it.node.id } // Note that we sort, as we don't store the order the out node data are stored
 		val audioOuts = outs.filter { it.getInletType("in") == Format.AUDIO }.sortedBy { it.node.id }
 		val midiOuts = outs.filter { it.getInletType("in") == Format.MIDI }.sortedBy { it.node.id }
 

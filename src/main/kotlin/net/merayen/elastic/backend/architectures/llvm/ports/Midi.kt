@@ -59,7 +59,7 @@ class Midi(frameSize: Int, debug: Boolean) : PortStruct(frameSize, debug) {
 		/**
 		 * Writes code that initializes midi outlet.
 		 *
-		 * @param length How many bytes the midi output is
+		 * @param lengthExpression How many bytes the midi output is
 		 */
 		fun writePrepare(codeWriter: CodeWriter, instanceExpression: String, lengthExpression: String) {
 			codeWriter.Call("${this.name}_prepare", "&$instanceExpression, $lengthExpression")

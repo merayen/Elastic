@@ -11,7 +11,6 @@ val nodeRegistry = mapOf(
 	"midi_poly" to MidiPoly::class,
 	"poly" to MidiPoly::class,
 	"midi" to Midi::class,
-	"midi_out" to MidiOut::class,
 	//"multiply" to Multiply::class,
 	//"sine" to Sine::class,
 	"out" to Out::class,

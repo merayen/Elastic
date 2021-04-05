@@ -249,8 +249,11 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		 */
 		fun writeInlet(portName: String, voiceIndex: String = "voice_index"): String {
 			val lines = shared.netList.getConnections(node, portName)
+			if (lines.isEmpty())
+				throw error("Inlet '$portName' on node '${node.id}' does not exist")
+
 			if (lines.size != 1)
-				throw RuntimeException("Should not happen")
+				throw error("Inlet should have exactly 1 connection only")
 
 			val line = lines[0]
 
