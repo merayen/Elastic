@@ -40,7 +40,7 @@ internal class GroupTest : LLVMNodeTest() {
 			assertEquals(256, signal.size, "Expected signal output to be exact 256 samples")
 
 			for (i in 0 until 256)
-				assertEquals(outNodeIndex + 1f, signal[i])
+				assertEquals(outNodeIndex + 1f, signal[i], "For out_$i node, expected ${outNodeIndex + 1f} but got ${signal[i]} at position $i")
 		}
 	}
 }

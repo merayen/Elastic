@@ -35,27 +35,34 @@ class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex),
 					}
 				}
 
-				Member("void*", "result")
-				alloc.writeMalloc(codeWriter, "result", "size")
+				alloc.writeCalloc(codeWriter, "void*", "result", "size", "1")
 
 				writeLog(codeWriter, "Size: %i", "size")
 
-				// Copy signal data to output buffer
-				for ((i, signalOut) in outNodes.signal.withIndex()) {
-					signalOut.nodeClass.writeForEachVoice(codeWriter) {
-						fortsett_her()
-						Call( // TODO wrong! you need to sum all the out node voices...
-							"memcpy",
-							"result + $frameSize * sizeof(float) * $i, ${signalOut.nodeClass.writeInlet("in")}.signal, $frameSize"
-						)
+				// Place data received on the out-nodes (signal inlets) onto our output buffer
+				Member("float", "buffer[$frameSize]")
+				for ((outNodeIndex, outNode) in outNodes.signal.withIndex()) {
+					Call("memset", "buffer, 0, $frameSize * sizeof(float)")
+
+					// Merge all the voices of this out-node
+					outNode.nodeClass.writeForEachVoice(codeWriter) {
+						outNode.nodeClass.writeForEachSample(codeWriter) {
+							Statement("buffer[sample_index] += ${outNode.nodeClass.writeInlet("in")}.signal[sample_index]")
+						}
 					}
+
+					// Copy the resulting buffer of this out-node to the output buffer
+					Call(
+						"memcpy",
+						"result + sizeof(float) * $frameSize * $outNodeIndex, buffer, $frameSize * sizeof(float)"
+					)
 				}
 
-				for ((i, audioOut) in outNodes.audio.withIndex()) {
+				for ((outNodeIndex, outNode) in outNodes.audio.withIndex()) {
 					TODO("support forwarding audio out nodes")
 				}
 
-				for ((i, midiOut) in outNodes.midi.withIndex()) {
+				for ((outNodeIndex, outNode) in outNodes.midi.withIndex()) {
 					TODO("support forwarding midi out nodes")
 				}
 

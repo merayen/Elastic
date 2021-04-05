@@ -52,7 +52,7 @@ class LLVMCommunicator(private val backend: LLVMBackend) { // Is this bullshit?
 		}
 
 		if (size > 1073741824)
-			throw RuntimeException("Message received from subprocess is larger than 1MB!")
+			throw RuntimeException("Message received from subprocess is larger than 1GB!")
 
 		if (size < 0)
 			throw RuntimeException("Negative size in package from subprocess. Data corrupt?")

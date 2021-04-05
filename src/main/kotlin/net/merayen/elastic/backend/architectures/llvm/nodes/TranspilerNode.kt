@@ -503,7 +503,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	fun getInputPorts() = shared.nodeProperties.getInputPorts(node)
 
 	protected fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "") {
-		writePanic(codeWriter, message, args, debug)
+		writePanic(codeWriter, "[node_name=${shared.nodeProperties.getName(node)}, node_id=$nodeId] $message", args, debug)
 	}
 
 	protected fun writeLog(codeWriter: CodeWriter, message: String, args: String = "") {
