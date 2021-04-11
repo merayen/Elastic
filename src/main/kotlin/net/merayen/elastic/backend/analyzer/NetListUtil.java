@@ -1,8 +1,10 @@
 package net.merayen.elastic.backend.analyzer;
 
+import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.Line;
 import net.merayen.elastic.netlist.NetList;
 import net.merayen.elastic.netlist.Node;
+import net.merayen.elastic.netlist.Port;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -87,5 +89,58 @@ public class NetListUtil {
 		}
 
 		return result;
+	}
+
+	public Format getInputPortFormat(Node node, String portName) {
+		List<String> ports = node_properties.getInputPorts(node).stream().filter((name) -> name.equals(portName)).collect(Collectors.toList());
+
+		if (ports.isEmpty())
+			return null;
+
+		if (ports.size() != 1)
+			throw new RuntimeException("A node should not have multiple ports with the same name");
+
+		List<Line> lines = netlist.getConnections(node, portName);
+
+		if (lines.isEmpty())
+			return null; // if there is nothing connected to the line, we have no idea what format it is
+
+		if (lines.size() != 1)
+			throw new RuntimeException("Inlet should never have more than 1 line connected");
+
+		if (lines.get(0).node_a == node)
+			return node_properties.getFormat(netlist.getPort(lines.get(0).node_b, lines.get(0).port_b));
+		else
+			return node_properties.getFormat(netlist.getPort(lines.get(0).node_a, lines.get(0).port_a));
+	}
+
+	public Format getOutputPortFormat(Node node, String portName) {
+		List<String> ports = node_properties.getOutputPorts(node).stream().filter((name) -> name.equals(portName)).collect(Collectors.toList());
+		if (ports.isEmpty())
+			return null;
+
+		if (ports.size() != 1)
+			throw new RuntimeException("A node should not have multiple ports with the same name");
+
+		Port port = netlist.getPort(node, ports.get(0));
+
+		return node_properties.getFormat(port);
+	}
+
+	public boolean hasInputPort(Node node, String portName) {
+		List<String> ports = node_properties.getInputPorts(node).stream().filter((name) -> name.equals(portName)).collect(Collectors.toList());
+
+		if (ports.isEmpty())
+			return false;
+
+		if (ports.size() != 1)
+			throw new RuntimeException("A node should not have multiple ports with the same name");
+
+		return true;
+	}
+
+	public boolean hasOutputPort(Node node, String portName) {
+		List<String> ports = node_properties.getOutputPorts(node).stream().filter((name) -> name.equals(portName)).collect(Collectors.toList());
+		return !ports.isEmpty();
 	}
 }

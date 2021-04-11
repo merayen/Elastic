@@ -16,7 +16,6 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 	implementation("com.googlecode.json-simple:json-simple:1.1.1")
-	//implementation("com.google.code.gson:gson:2.8.5")
 }
 
 tasks.withType<Test> {

@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.nodes;
 
+import net.merayen.elastic.backend.analyzer.NetListUtil;
+import net.merayen.elastic.backend.analyzer.NodeProperties;
 import net.merayen.elastic.backend.context.JavaBackend;
 import net.merayen.elastic.backend.logicnodes.Format;
 import net.merayen.elastic.netlist.NetList;
@@ -16,6 +18,8 @@ public abstract class BaseLogicNode {
 	private Supervisor supervisor;
 	Node node; // NetList-node that this LogicNode represents
 	private NetList netlist;
+	private NetListUtil netListUtil = new NetListUtil(netlist);
+	private NodeProperties nodeProperties = new NodeProperties(netlist);
 
 	private JSONObjectMapper mapper;
 	public BaseNodeProperties properties;
@@ -62,7 +66,7 @@ public abstract class BaseLogicNode {
 
 	/**
 	 * Call this to create a port.
-	 * All LogicNodes needs to this on creation. This will add the ports in the UI and the processor.
+	 * Only LogicNodes are able to create ports.
 	 */
 	private void createPort(String name, Format format) {
 		boolean output = format != null;
@@ -84,6 +88,17 @@ public abstract class BaseLogicNode {
 
 	protected void createOutputPort(String name, Format format) {
 		createPort(name, format);
+	}
+
+	/**
+	 * Retrieves the format of a port. Returns null if port does not exist.
+	 */
+	protected Format getInputPortFormat(String name) {
+		return netListUtil.getInputPortFormat(node, name);
+	}
+
+	protected Format getOutputPortFormat(String name) {
+		return netListUtil.getOutputPortFormat(node, name);
 	}
 
 	protected void removePort(String name) {

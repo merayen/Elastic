@@ -36,11 +36,7 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 	private fun createNode(node_id: String?, name: String, version: Int, parent: String?) {
 		val project = env.project
 
-		val node: Node
-		if (node_id == null)
-			node = project.netList.createNode()
-		else
-			node = project.netList.createNode(node_id)
+		val node = if (node_id == null) project.netList.createNode() else project.netList.createNode(node_id)
 
 		project.nodeProperties.setName(node, name)
 		project.nodeProperties.setVersion(node, version)

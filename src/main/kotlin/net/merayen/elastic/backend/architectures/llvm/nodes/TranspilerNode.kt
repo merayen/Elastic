@@ -402,12 +402,11 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		if (lines.size != 1)
 			error("Inlet should never have more than 1 line connected")
 
-		return if (lines[0].node_a === node)
-			shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
-		else if (lines[0].node_b === node)
-			shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
-		else
-			error("Invalid connection")
+		return when {
+			lines[0].node_a === node -> shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
+			lines[0].node_b === node -> shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
+			else -> error("Invalid connection")
+		}
 	}
 
 	protected fun getOutletType(name: String): Format? {
