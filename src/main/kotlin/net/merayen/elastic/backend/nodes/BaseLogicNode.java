@@ -22,7 +22,6 @@ public abstract class BaseLogicNode {
 
 	/**
 	 * Called every time the LogicNode class is created (either by creating a new node or loading from existing node).
-	 * Called after onCreate().
 	 */
 	protected abstract void onInit();
 

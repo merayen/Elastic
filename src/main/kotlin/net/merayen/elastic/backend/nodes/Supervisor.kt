@@ -18,7 +18,8 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 	val logicnode_list = LogicNodeList(this)
 
 	@Volatile
-	private var is_processing: Boolean = false // Set to true when LogicNodes (and nodes) are processing, as we then can not take any messages
+	private var is_processing: Boolean =
+		false // Set to true when LogicNodes (and nodes) are processing, as we then can not take any messages
 
 	interface Handler {
 		// TODO soon: Replace these two with just "onSendMessage", as ElasticSystem should route them correctly
@@ -53,11 +54,6 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 
 	@Synchronized
 	fun receiveMessage(message: ElasticMessage) {
-		executeMessage(message)
-	}
-
-	@Synchronized
-	private fun executeMessage(message: ElasticMessage) {
 		val project = env.project
 
 		val netlist = project.netList

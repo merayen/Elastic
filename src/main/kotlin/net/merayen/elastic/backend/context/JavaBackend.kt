@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.queue.Queue
 import net.merayen.elastic.system.BackendModule
 import net.merayen.elastic.system.actions.ImportFileIntoNodeGroup
 import net.merayen.elastic.system.intercom.BackendReadyMessage
+import net.merayen.elastic.system.intercom.CreateNodePortMessage
 import net.merayen.elastic.system.intercom.ElasticMessage
 import net.merayen.elastic.system.intercom.ProcessRequestMessage
 import net.merayen.elastic.system.intercom.backend.CreateCheckpointMessage
@@ -85,6 +86,7 @@ class JavaBackend(projectPath: String) : BackendModule(projectPath) {
 				is CreateCheckpointMessage -> environment.project.checkpoint.create()
 				is TidyProjectMessage -> environment.project.tidy()
 				is ImportFileIntoNodeGroupMessage -> ImportFileIntoNodeGroup(environment, message).run()
+				is CreateNodePortMessage -> {} // Ignore these messages, as only LogicNodes can create ports
 				else -> backendSupervisor.receiveMessage(message)
 			}
 		}
