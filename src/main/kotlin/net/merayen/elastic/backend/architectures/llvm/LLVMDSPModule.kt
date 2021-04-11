@@ -88,6 +88,8 @@ class LLVMDSPModule : DSPModule() {
 	private fun sendNodeMessage(message: NodeMessage) = currentTranspiler!!.nodes[message.nodeId]!!.handle(message)
 
 	private fun startLLVMRunner(netList: NetList) {
+		llvmRunner?.end()
+
 		currentTranspiler = null
 		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, debug) // ???
 		val c = tr.transpile()
