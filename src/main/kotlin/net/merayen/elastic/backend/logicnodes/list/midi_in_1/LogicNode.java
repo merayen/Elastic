@@ -8,7 +8,6 @@ import net.merayen.elastic.backend.nodes.BaseLogicNode;
 import net.merayen.elastic.backend.nodes.BaseNodeProperties;
 import net.merayen.elastic.system.intercom.InputFrameData;
 import net.merayen.elastic.system.intercom.NodeDataMessage;
-import net.merayen.elastic.system.intercom.OutputFrameData;
 
 public class LogicNode extends BaseLogicNode {
 	MidiInputDevice device;
@@ -58,9 +57,6 @@ public class LogicNode extends BaseLogicNode {
 
 		return new MidiIn1InputFrameData(getID(), midi);
 	}
-
-	@Override
-	protected void onFinishFrame(OutputFrameData data) {}
 
 	@Override
 	protected void onData(NodeDataMessage data) {}

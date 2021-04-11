@@ -45,6 +45,19 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 				stopPlaying = true
 				isPlaying = false
 			}
+			is Group1OutputFrameData -> {
+				if (nextReportToUI < System.currentTimeMillis()) {
+					nextReportToUI = System.currentTimeMillis() + 50
+					sendMessage(
+						PlaybackStatusMessage(
+							nodeId = id,
+							currentPlayheadPosition = message.currentPlayheadPosition,
+							currentBPM = message.currentBPM,
+							isPlaying = isPlaying
+						)
+					)
+				}
+			}
 		}
 	}
 
@@ -87,14 +100,5 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 		playheadPosition = null
 
 		return data
-	}
-
-	override fun onFinishFrame(data: OutputFrameData?) {
-		data as? Group1OutputFrameData ?: return
-
-		if (nextReportToUI < System.currentTimeMillis()) {
-			nextReportToUI = System.currentTimeMillis() + 50
-			sendMessage(PlaybackStatusMessage(nodeId = id, currentPlayheadPosition = data.currentPlayheadPosition, currentBPM = data.currentBPM, isPlaying = isPlaying))
-		}
 	}
 }

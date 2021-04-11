@@ -45,6 +45,4 @@ class LogicNode : BaseLogicNode() {
 			if (port !in ports)
 				createInputPort(port)
 	}
-
-	override fun onFinishFrame(data: OutputFrameData?) {}
 }

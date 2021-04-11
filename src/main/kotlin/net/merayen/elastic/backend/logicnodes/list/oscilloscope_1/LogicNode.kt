@@ -21,22 +21,7 @@ class LogicNode : BaseLogicNode() {
 		createInputPort("in")
 	}
 
-	override fun onData(data: NodeDataMessage?) {}
-	override fun onDisconnect(port: String?) {}
-	override fun onConnect(port: String?) {}
-	override fun onRemove() {}
-	override fun onParameterChange(instance: BaseNodeProperties?) {
-		instance as Properties
-
-		amplitude = instance.amplitude ?: amplitude
-		offset = instance.offset ?: offset
-		trigger = instance.trigger ?: trigger
-		auto = instance.auto ?: auto
-
-		updateProperties(instance)
-	}
-
-	override fun onFinishFrame(data: OutputFrameData?) {
+	override fun onData(data: NodeDataMessage?) {
 		if (data is OscilloscopeSignalDataMessage) {
 			sendDataToUI(data)
 
@@ -61,5 +46,19 @@ class LogicNode : BaseLogicNode() {
 				)
 			}
 		}
+	}
+
+	override fun onDisconnect(port: String?) {}
+	override fun onConnect(port: String?) {}
+	override fun onRemove() {}
+	override fun onParameterChange(instance: BaseNodeProperties?) {
+		instance as Properties
+
+		amplitude = instance.amplitude ?: amplitude
+		offset = instance.offset ?: offset
+		trigger = instance.trigger ?: trigger
+		auto = instance.auto ?: auto
+
+		updateProperties(instance)
 	}
 }

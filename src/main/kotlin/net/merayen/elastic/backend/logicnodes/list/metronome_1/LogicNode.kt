@@ -16,12 +16,7 @@ class LogicNode : BaseLogicNode() {
 		updateProperties(instance)
 	}
 
-	override fun onData(data: NodeDataMessage?) {}
-	override fun onConnect(port: String?) {}
-	override fun onDisconnect(port: String?) {}
-	override fun onRemove() {}
-
-	override fun onFinishFrame(data: OutputFrameData?) {
+	override fun onData(data: NodeDataMessage?) {
 		if (data !is Metronome1OutputFrameData) return
 
 		val currentBeat = data.currentBeat
@@ -30,4 +25,8 @@ class LogicNode : BaseLogicNode() {
 		if (currentBeat != null && currentDivision != null)
 			sendMessage(MetronomeBeatMessage(id, current = currentBeat, division = currentDivision))
 	}
+
+	override fun onConnect(port: String?) {}
+	override fun onDisconnect(port: String?) {}
+	override fun onRemove() {}
 }

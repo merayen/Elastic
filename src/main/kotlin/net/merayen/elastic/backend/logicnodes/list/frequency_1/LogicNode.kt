@@ -16,8 +16,12 @@ class LogicNode : BaseLogicNode() {
 	override fun onParameterChange(instance: BaseNodeProperties?) { }
 
 	override fun onData(data: NodeDataMessage?) {
-		if (data is FrequencyRequestMessage)
-			requestSpectrumData = true
+		when (data) {
+			is FrequencyRequestMessage -> requestSpectrumData = true
+			is FrequencyOutputFrameData -> {
+				sendDataToUI(FrequencyUpdateMessage(id, data.spectrum))
+			}
+		}
 	}
 
 	override fun onConnect(port: String?) {}
@@ -30,11 +34,5 @@ class LogicNode : BaseLogicNode() {
 			return FrequencyInputFrameData(id)
 		}
 		return super.onPrepareFrame()
-	}
-
-	override fun onFinishFrame(data: OutputFrameData?) {
-		if (data is FrequencyOutputFrameData) {
-			sendDataToUI(FrequencyUpdateMessage(id, data.spectrum))
-		}
 	}
 }

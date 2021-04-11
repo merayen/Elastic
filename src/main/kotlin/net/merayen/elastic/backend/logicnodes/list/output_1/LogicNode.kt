@@ -37,11 +37,12 @@ class LogicNode : BaseLogicNode() {
 		updateProperties(instance)
 	}
 
-	override fun onFinishFrame(data: OutputFrameData?) {
-		if (data == null)  // FIXME Should this really be checked for? This seem to happen if node gets created while processing a frame in the DSP backend
-			return
+	private var loltid = System.currentTimeMillis()
 
- 		val output = data as Output1NodeAudioOut
+	override fun onRemove() {}
+
+	override fun onData(data: NodeDataMessage) {
+		val output = data as Output1NodeAudioOut
 
 		// Count max channels
 		val channelCount = output.audio.size
@@ -63,11 +64,11 @@ class LogicNode : BaseLogicNode() {
 		}
 
 		sendDataToUI(
-				OutputNodeStatisticsMessage(
-						id,
-						data.amplitudes,
-						data.offsets
-				)
+			OutputNodeStatisticsMessage(
+				id,
+				data.amplitudes,
+				data.offsets
+			)
 		)
 
 		val mixer = env.mixer
@@ -82,19 +83,15 @@ class LogicNode : BaseLogicNode() {
 				loltid = System.currentTimeMillis() + 1000
 			}
 			sendMessage(
-					OutputNodeStatisticsData(
-							id,
-							statistics.id,
-							statistics.available_before.avg,
-							statistics.available_before.min,
-							statistics.available_after.avg,
-							statistics.available_after.min
-					)
+				OutputNodeStatisticsData(
+					id,
+					statistics.id,
+					statistics.available_before.avg,
+					statistics.available_before.min,
+					statistics.available_after.avg,
+					statistics.available_after.min
+				)
 			)
 		}
 	}
-	private var loltid = System.currentTimeMillis()
-
-	override fun onRemove() {}
-	override fun onData(data: NodeDataMessage) {}
 }

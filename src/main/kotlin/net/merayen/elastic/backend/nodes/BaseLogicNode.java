@@ -59,12 +59,6 @@ public abstract class BaseLogicNode {
 	}
 
 	/**
-	 * Called when the processor has processed.
-	 * The result data is put into the data argument.
-	 */
-	protected abstract void onFinishFrame(OutputFrameData data);
-
-	/**
 	 * Call this to create a port.
 	 * Only LogicNodes are able to create ports.
 	 */

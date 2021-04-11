@@ -8,16 +8,15 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.OutputFrameData
 
 class LogicNode : BaseLogicNode() {
-	override fun onData(data: NodeDataMessage) {}
+	override fun onData(data: NodeDataMessage) {
+		if (data is CompressorNodeOutputFrameData)
+			sendDataToUI(data)
+	}
+
 	override fun onConnect(port: String?) {}
 	override fun onDisconnect(port: String?) {}
 	override fun onRemove() {}
 	override fun onPrepareFrame(): InputFrameData = InputFrameData(id)
-
-	override fun onFinishFrame(data: OutputFrameData?) {
-		if (data is CompressorNodeOutputFrameData)
-			sendDataToUI(data)
-	}
 
 	override fun onParameterChange(instance: BaseNodeProperties) = updateProperties(instance)
 

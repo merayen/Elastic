@@ -140,16 +140,6 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 		if (!is_processing)
 			error("Expected to be processing when receiving the ProcessResponseMessage")
 
-		val project = env.project
-
-		val netList = project.netList
-
-		// Call all LogicNodes to work on the frame
-		for (node in netList.nodes) {
-			val bln = logicnode_list.get(node.id)
-			bln.onFinishFrame(message.output[node.id])
-		}
-
 		handler.onProcessDone()
 
 		// Execute all messages that are waiting due to LogicNode and processor processing a frame previously

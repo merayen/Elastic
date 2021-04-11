@@ -15,13 +15,12 @@ class LogicNode : BaseLogicNode() {
 		createInputPort("data")
 	}
 
-	override fun onData(data: NodeDataMessage?) {}
-	override fun onConnect(port: String?) {}
-	override fun onDisconnect(port: String?) {}
-	override fun onRemove() {}
-
-	override fun onFinishFrame(data: OutputFrameData?) {
+	override fun onData(data: NodeDataMessage?) {
 		if (data is Histogram1NodeOutputFrameData)
 			sendDataToUI(HistogramUpdateMessage(nodeId = id, buckets = data.buckets))
 	}
+
+	override fun onConnect(port: String?) {}
+	override fun onDisconnect(port: String?) {}
+	override fun onRemove() {}
 }
