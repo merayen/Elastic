@@ -122,6 +122,11 @@ class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex),
 	}
 
 	override fun onDataFromDSP(data: ByteBuffer): List<NodeDataMessage> {
+		if (node.id == "temporary_top_node") {
+			// When we have this name, it means that we are create temporarily by the LLVM backend itself. Do not send anything
+			return listOf()
+		}
+
 		val outNodes = getOutNodes()
 
 		val fixedLength = outNodes.signal.size * frameSize * 4 + outNodes.audio.size * 4 * frameSize * channelCount
