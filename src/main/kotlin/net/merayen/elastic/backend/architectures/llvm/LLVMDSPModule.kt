@@ -5,6 +5,7 @@ import net.merayen.elastic.backend.analyzer.node_dependency.toDependencyList
 import net.merayen.elastic.netlist.NetList
 import net.merayen.elastic.system.DSPModule
 import net.merayen.elastic.system.intercom.*
+import net.merayen.elastic.util.AverageStat
 import net.merayen.elastic.util.NetListMessages
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -17,6 +18,8 @@ class LLVMDSPModule : DSPModule() {
 	private var currentNetList: NetList = NetList()
 
 	private var llvmRunner: LLVMRunner? = null
+
+	private val processDuration = AverageStat<Double>(1000)
 
 	/**
 	 * Messages queued that will be sent after the DSP backend (C program) has been started
@@ -108,6 +111,7 @@ class LLVMDSPModule : DSPModule() {
 	}
 
 	private var processing = false
+	private var lastDurationPrint = 0L
 	private fun process() {
 		if (processing) error("Should not happen")
 		processing = true
@@ -159,7 +163,14 @@ class LLVMDSPModule : DSPModule() {
 
 		startTime += System.nanoTime()
 
-		//println("DSP timings: Total=${startTime / 1000 / 1000.0}ms, DSP process=${startProcess / 1000 / 1000.0}ms")
+		processDuration.add(startTime / 1000000.0)
+
+		//println("LLVM DSP timings: Total=${startTime / 1000 / 1000.0}ms, DSP process=${startProcess / 1000 / 1000.0}ms")
+
+		if (lastDurationPrint < System.currentTimeMillis()) {
+			println("LLVM DSP process: ${processDuration.info()} (ms)")
+			lastDurationPrint = System.currentTimeMillis() + 1000
+		}
 		processing = false
 
 		outgoing.send(ProcessResponseMessage()) // TODO always send empty message? Send data individually as below?
