@@ -1,6 +1,12 @@
 package net.merayen.elastic.backend.logicnodes.list.group_1
 
 import net.merayen.elastic.Temporary
+import net.merayen.elastic.backend.context.JavaBackend
+import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
+import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
+import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsData
+import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsMessage
+import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.backend.nodes.GroupLogicNode
@@ -26,11 +32,32 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 
 	private var nextReportToUI = System.currentTimeMillis()
 
-	override fun onInit() {}
+	companion object {
+		val knownOutputDevices = arrayOf(
+			"oracle_java:Default Audio Device", // Mac OS X 10.9
+			"oracle_java:PulseAudio Mixer", // Ubuntu 16.04
+			"oracle_java:default [default]"
+		)
+	}
+	private var output_device: String? = null
+
+	override fun onInit() {
+		createInputPort("in")
+
+		val env = env as JavaBackend.Environment
+		for (ad in env.mixer.availableDevices)
+			if (ad is AudioDevice)
+				if (ad.isOutput)
+					if (ad.id in knownOutputDevices)
+						output_device = ad.id
+	}
+
 	override fun onConnect(port: String) {}
 	override fun onDisconnect(port: String) {}
 	override fun onRemove() {}
 
+
+	private var loltid = System.currentTimeMillis()
 	override fun onData(message: NodeDataMessage) {
 		when (message) {
 			is SetBPMMessage -> {
@@ -57,6 +84,59 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 						)
 					)
 				}
+				// Count max channels
+				val channelCount = message.outAudio.size
+
+				if (channelCount == 0) {
+					env.mixer.send(output_device, Audio(arrayOf(FloatArray(bufferSize)))) // Send some silence TODO do we need to do this?
+					return  // Don't bother
+				}
+
+				val sampleCount = bufferSize // TODO should be a field sent from group-node? as it decides the frame size...?
+
+				val out = arrayOfNulls<FloatArray>(channelCount)/* channel no *//* sample no */
+
+				TODO("forward each out-node to correct output device...?")
+
+				//for (channelNumber in 0 until channelCount) {
+				//	val channel = message.outAudio[channelNumber]
+
+				//	if (channel != null)
+				//		out[channelNumber] = channel
+				//	else
+				//		out[channelNumber] = FloatArray(sampleCount)
+				//}
+
+				//sendDataToUI(
+				//	OutputNodeStatisticsMessage(
+				//		id,
+				//		message.amplitudes,
+				//		message.offsets
+				//	)
+				//)
+
+				val mixer = env.mixer
+
+				mixer.send(output_device, Audio(out))
+
+				//val statistics = mixer.statistics[output_device]
+
+				//if (statistics != null) {
+				//	if (loltid < System.currentTimeMillis()) {
+				//		println(statistics.describe())
+				//		loltid = System.currentTimeMillis() + 1000
+				//	}
+				//	sendMessage(
+				//		OutputNodeStatisticsData(
+				//			id,
+				//			statistics.id,
+				//			statistics.available_before.avg,
+				//			statistics.available_before.min,
+				//			statistics.available_after.avg,
+				//			statistics.available_after.min
+				//		)
+				//	)
+				//}
 			}
 		}
 	}

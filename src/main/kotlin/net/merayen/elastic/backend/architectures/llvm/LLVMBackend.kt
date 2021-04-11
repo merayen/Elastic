@@ -8,7 +8,7 @@ import java.io.OutputStream
  * Uses LLVM with clang to generate an executable and runs it afterwards, making the streams to the executable
  * available.
  */
-class LLVMBackend(code: String) {
+class LLVMBackend(code: String, debug: Boolean = true) {
 	class ProcessDead(signal: Int) : RuntimeException("Signal: $signal")
 	class DoesNotCompile(signal: Int) : RuntimeException("Signal: $signal")
 
@@ -28,7 +28,12 @@ class LLVMBackend(code: String) {
 		if (outputFile.exists())
 			outputFile.delete()
 
-		with(ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-lm", "-g", "-Wall"))) {
+		val args = if (debug)
+			ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-lm", "-g", "-Wall"))
+		else
+			ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-lm", "-O3", "-Wall"))
+
+		with(args) {
 			redirectOutput(ProcessBuilder.Redirect.INHERIT)
 			redirectError(ProcessBuilder.Redirect.INHERIT)
 			val t = System.currentTimeMillis()

@@ -92,7 +92,7 @@ class LLVMDSPModule : DSPModule() {
 
 		listenCodeGen?.invoke(c)
 
-		val llvm = LLVMBackend(c)
+		val llvm = LLVMBackend(c, false) // TODO make debug mode toggle able
 		val llvmCommunicator = LLVMCommunicator(llvm)
 		llvmCommunicator.send("PING".toByteArray())
 
@@ -163,6 +163,7 @@ class LLVMDSPModule : DSPModule() {
 		processing = false
 
 		outgoing.send(ProcessResponseMessage()) // TODO always send empty message? Send data individually as below?
+		notifyElasticSystem()
 	}
 
 	override fun onInit() {}

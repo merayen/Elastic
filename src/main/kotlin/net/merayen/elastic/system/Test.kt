@@ -1,8 +1,6 @@
 package net.merayen.elastic.system
 
-import net.merayen.elastic.backend.architectures.llvm.LLVMBackend
 import net.merayen.elastic.backend.architectures.llvm.LLVMDSPModule
-import net.merayen.elastic.backend.architectures.local.JavaLocalDSPBackend
 import net.merayen.elastic.backend.context.JavaBackend
 import net.merayen.elastic.system.intercom.BackendReadyMessage
 import net.merayen.elastic.system.intercom.CreateDefaultProjectMessage
@@ -61,10 +59,8 @@ class Test private constructor() {
 
 	private fun waitFor(func: () -> Boolean) {
 		try {
-			while (!func()) {
+			while (!func())
 				system.update(1000)
-				//Thread.sleep(1)
-			}
 		} catch (e: InterruptedException) {
 			e.printStackTrace()
 		}
