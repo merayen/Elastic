@@ -8,7 +8,7 @@ import net.merayen.elastic.backend.logicnodes.Format
  *
  * Gives options on how the signal should be put into the audio tracks.
  */
-class ToAudio(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
+class ToAudio(nodeId: String) : TranspilerNode(nodeId) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			with(codeWriter) {

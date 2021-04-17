@@ -10,7 +10,7 @@ import kotlin.math.sin
 /**
  * Outputs signals, like a sine.
  */
-class Wave(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
+class Wave(nodeId: String) : TranspilerNode(nodeId) {
 	private enum class Operation {
 		CHANGE_MODE,
 		SET_FREQUENCY,

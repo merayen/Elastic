@@ -7,7 +7,7 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
 /**
  * Takes two inputs and adds them together.
  */
-class Add(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
+class Add(nodeId: String) : TranspilerNode(nodeId) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteParameters(codeWriter: CodeWriter) {}
 

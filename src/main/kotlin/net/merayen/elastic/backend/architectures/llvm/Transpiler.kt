@@ -23,7 +23,7 @@ class Transpiler(
 	private val voiceCount: Int = 256,
 	private val debug: Boolean = false
 ) {
-	inner class TranspilerData { // To share data with the TranspileNodes without giving direct access to us
+	inner class TranspilerData(val nodeIndex: Int) { // To share data with the TranspileNodes without giving direct access to us
 		val debug: Boolean
 			get() = this@Transpiler.debug
 
@@ -56,7 +56,6 @@ class Transpiler(
 
 	private val log = LogComponent()
 	private val allocComponent = AllocComponent(log, debug)
-	private val shared = TranspilerData()
 	private val nodeProperties = NodeProperties(netList)
 	val nodes: Map<String, TranspilerNode> = createNodes()
 
@@ -71,9 +70,6 @@ class Transpiler(
 		val top = topNodes[0]
 		if (nodeProperties.getName(top) != "group")
 			throw RuntimeException("Top-most node must be a group-node. Got ${nodeProperties.getName(top)}")
-
-		for (node in nodes.values)
-			node.shared = shared
 
 		val nodeDataComponent = NodeDataComponent(log, debug)
 		val pipeCode = PipeComponent(allocComponent, log, debug)
@@ -160,7 +156,8 @@ class Transpiler(
 		for ((index, node) in netList.nodes.withIndex()) {
 			val name = nodeProperties.getName(node)
 			val transpilerNodeCls = nodeRegistry[name] ?: throw RuntimeException("TranspilerNode '$name' not found")
-			val transpilerNode = transpilerNodeCls.primaryConstructor!!.call(node.id, index)
+			val transpilerNode = transpilerNodeCls.primaryConstructor!!.call(node.id)
+			transpilerNode.shared = TranspilerData(index)
 
 			if (debug) {
 				transpilerNode.log = log
@@ -168,7 +165,6 @@ class Transpiler(
 			}
 
 			transpilerNode.alloc = allocComponent
-			transpilerNode.shared = shared
 			transpilerNode.node = node
 			result[node.id] = transpilerNode
 		}

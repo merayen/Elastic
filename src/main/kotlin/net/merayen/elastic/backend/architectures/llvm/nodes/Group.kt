@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
  *
  * Sends data from its direct out-node children.
  */
-class Group(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex), GroupInterface {
+class Group(nodeId: String) : TranspilerNode(nodeId), GroupInterface {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteDataSender(codeWriter: CodeWriter) { // Send data from our direct out-node children
 			with(codeWriter) {

@@ -8,7 +8,7 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
 /**
  * A node that adds two inputs.
  */
-class Value(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
+class Value(nodeId: String) : TranspilerNode(nodeId) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteParameters(codeWriter: CodeWriter) {
 			codeWriter.Member("float", "value")

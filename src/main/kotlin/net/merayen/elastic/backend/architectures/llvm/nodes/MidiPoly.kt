@@ -14,7 +14,7 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
  *
  * Allows for creating several voices for each key pressed down to create full and wide sounds.
  */
-class MidiPoly(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex), GroupInterface {
+class MidiPoly(nodeId: String) : TranspilerNode(nodeId), GroupInterface {
 	private enum class Operations {
 		/**
 		 * How many voices to create for each key being pressed down.

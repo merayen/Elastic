@@ -9,7 +9,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
  * node gets run. This is to e.g allow the group node to create a voice of all its children nodes before they
  * process. Then the group node will have its process() method run after all the children nodes has processed.
  */
-class PreProcessor(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
+class PreProcessor(nodeId: String) : TranspilerNode(nodeId) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			// We run code our right side (a group node) that it will soon processs

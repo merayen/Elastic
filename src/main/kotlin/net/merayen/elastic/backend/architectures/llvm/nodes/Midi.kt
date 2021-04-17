@@ -13,7 +13,7 @@ import net.merayen.elastic.system.intercom.NodePropertyMessage
  *
  * Allows user to write midi notes and plays them on the timeline.
  */
-class Midi(nodeId: String, nodeIndex: Int) : TranspilerNode(nodeId, nodeIndex) {
+class Midi(nodeId: String) : TranspilerNode(nodeId) {
 	private enum class Operations {
 		/**
 		 * Receive the whole midi data for this node.

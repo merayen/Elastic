@@ -24,7 +24,7 @@ import kotlin.collections.HashMap
 /**
  * Generic transpiler node that all nodes should inherit.
  */
-abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
+abstract class TranspilerNode(val nodeId: String) {
 	var debug = false
 	lateinit var shared: Transpiler.TranspilerData // Gets set by Transpiler
 	lateinit var node: Node
@@ -36,6 +36,9 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 		get() = shared.frameSize
 
 	val dataToDSP = ArrayList<ByteBuffer>()
+
+	val nodeIndex: Int
+		get() = shared.nodeIndex
 
 	abstract inner class NodeClass : CClass("Node_$nodeId") {
 		override fun onWriteMethodHeaders(codeWriter: CodeWriter) {
@@ -367,7 +370,7 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 	 * If this is the topmost node, there are no session.
 	 */
 	fun writeVoicesVariable(): String {
-			return "nodedata_${getParent()!!.nodeId}->voices"
+		return "nodedata_${getParent()!!.nodeId}->voices"
 	}
 
 	val instanceVariable = "nodedata_$nodeId"
@@ -403,8 +406,18 @@ abstract class TranspilerNode(val nodeId: String, val nodeIndex: Int) {
 			error("Inlet should never have more than 1 line connected")
 
 		return when {
-			lines[0].node_a === node -> shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_b, lines[0].port_b))
-			lines[0].node_b === node -> shared.nodeProperties.getFormat(shared.netList.getPort(lines[0].node_a, lines[0].port_a))
+			lines[0].node_a === node -> shared.nodeProperties.getFormat(
+				shared.netList.getPort(
+					lines[0].node_b,
+					lines[0].port_b
+				)
+			)
+			lines[0].node_b === node -> shared.nodeProperties.getFormat(
+				shared.netList.getPort(
+					lines[0].node_a,
+					lines[0].port_a
+				)
+			)
 			else -> error("Invalid connection")
 		}
 	}
