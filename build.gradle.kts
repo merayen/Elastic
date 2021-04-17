@@ -11,7 +11,6 @@ repositories {
 }
 
 dependencies {
-	// Use the Kotlin JDK 8 standard library.
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
@@ -45,10 +44,12 @@ tasks.jar {
 		configurations["compileClasspath"].map { if (it.isDirectory) it else zipTree(it) }
 	})
 }
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
 	jvmTarget = "1.8"
 }
+
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
 	jvmTarget = "1.8"

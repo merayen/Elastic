@@ -2,6 +2,9 @@ package net.merayen.elastic.util.math.dft
 
 import kotlin.math.*
 
+/**
+ * TODO make unit tests work
+ */
 class DFT(private val window: FloatArray) {
 	fun handle(samples: FloatArray): FloatArray {
 		if (samples.size != window.size)

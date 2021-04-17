@@ -2,6 +2,7 @@ package net.merayen.elastic.util.math.dft
 
 
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.math.PI
 import kotlin.math.round
@@ -9,6 +10,7 @@ import kotlin.math.sin
 
 internal class DFTTest {
 	@Test
+	@Disabled("Will probably not need this in Java space...? Or?")
 	fun singleSineWaveWithNoWindow() {
 		val dft = DFT(FloatArray(100) { 1f }) // DFT with flat window
 
@@ -23,10 +25,5 @@ internal class DFTTest {
 				else
 					Assertions.assertEquals(0f, round(result[i] * 100000)) // Should be flat here
 		}
-	}
-
-	@Test
-	fun throughputTest() {
-		val dft = DFT(FloatArray(1000) { 1f })
 	}
 }

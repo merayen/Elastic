@@ -2,13 +2,13 @@ package net.merayen.elastic.backend.interfacing.platforms.oracle_java
 
 import net.merayen.elastic.backend.interfacing.AbstractDevice
 import net.merayen.elastic.backend.interfacing.AbstractDeviceScanner
-import net.merayen.elastic.backend.logicnodes.list.output_1.LogicNode
+import net.merayen.elastic.backend.logicnodes.list.group_1.LogicNode
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import kotlin.math.PI
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class OracleAudioOutputDeviceTest {
@@ -34,6 +34,7 @@ class OracleAudioOutputDeviceTest {
 	}
 
 	@Test
+	@Disabled("It doesn't check anything")
 	fun testOutputFlow() {
 		val outputDevice = outputDevice!!
 

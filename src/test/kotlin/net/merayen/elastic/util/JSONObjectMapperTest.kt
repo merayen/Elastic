@@ -173,7 +173,7 @@ internal class JSONObjectMapperTest {
 
 	@Test
 	fun testConvertingNumbers() {
-		data class Test(val p0: Double, val p1: Float, val p2: Long, val p3: Int, val p4: Short, val p5: Byte, val p6: Char)
+		data class Test(val p0: Double, val p1: Float, val p2: Long, val p3: Int, val p4: Short, val p5: Byte)
 
 		val number = JSONParser().parse("37.5")
 
@@ -184,7 +184,6 @@ internal class JSONObjectMapperTest {
 		assertEquals(37, mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[3].type.jvmErasure))
 		assertEquals(37.toShort(), mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[4].type.jvmErasure))
 		assertEquals(37.toByte(), mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[5].type.jvmErasure))
-		assertEquals(37.toChar(), mapper.argConvert(number, Test::class.primaryConstructor!!.parameters[6].type.jvmErasure))
 	}
 
 	@Test
@@ -233,7 +232,7 @@ internal class JSONObjectMapperTest {
 		assertEquals(3, obj.array!![2])
 
 		assertThrows(ClassCastException::class.java) {
-			obj.array!![0]
+			val test = obj.array!![0]
 		}
 	}
 

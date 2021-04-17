@@ -1,22 +1,16 @@
 package net.merayen.elastic.backend.queue
 
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class QueueTest {
-
-	@BeforeEach
-	fun setUp() {
-	}
-
-	@AfterEach
-	fun tearDown() {
-	}
-
 	@Test
-	fun testIt() {
+	@Disabled("Needs more work in general")
+	fun order() {
 		val queue = Queue(4)
 
 		class TestData(
@@ -28,9 +22,7 @@ internal class QueueTest {
 		val testData = TestData()
 
 		queue.addTask(object : QueueTask() {
-			override fun onCleanup() {
-
-			}
+			override fun onCleanup() {}
 
 			override fun onProcess() {
 				testData.task1Finished = true
@@ -47,7 +39,7 @@ internal class QueueTest {
 		val someSequence = Any()
 		val resultArray = IntArray(100)
 
-		for (u in 0 until resultArray.size) {
+		for (u in resultArray.indices) {
 			queue.addTask(object : QueueTask(someSequence) {
 				override fun onCleanup() {
 					if (u == 90)
@@ -56,7 +48,7 @@ internal class QueueTest {
 
 				override fun onProcess() {
 					//Thread.sleep(resultArray.size.toLong() - i)
-					Thread.sleep(500)
+					Thread.sleep(10)
 					synchronized(testData.task2Counter) {
 						resultArray[u] = testData.task2Counter
 						//println("Kjører $u ${testData.task2Counter}")
@@ -68,15 +60,8 @@ internal class QueueTest {
 			})
 		}
 
-		//queue.join()
+		queue.join()
 
-		Thread.sleep(10000)
-
-		assertTrue {
-			var i = 0
-			resultArray.all {
-				it == i++
-			}
-		}
+		assertEquals((0 until 100).toList(), resultArray.toList())
 	}
 }

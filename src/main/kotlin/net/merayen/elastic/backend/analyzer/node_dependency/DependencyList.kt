@@ -133,7 +133,9 @@ open class DependencyList<T> : HashMap<T, HashSet<T>>() {
 	 *
 	 * Not thread safe, and does not support concurrent changes while using the iterator.
 	 *
-	 * Can walk over the same nodes multiple times if the node is a joining node.
+	 * Does not walk over the same node twice.
+	 *
+	 * A bit unsure why we want to walk...?
 	 */
 	fun walk(): List<Pair<T, List<T>>> {
 		if (hasCyclicDependencies())

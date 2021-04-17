@@ -65,7 +65,7 @@ abstract class ElasticModule : Thread(), Closeable {
 	 */
 	abstract fun onEnd()
 
-	protected fun notifyElasticSystem() = handler!!.onWakeUp()
+	protected fun notifyElasticSystem() = handler?.onWakeUp()
 
 	/**
 	 * Notifies this module that something is ready for it, usually a message.

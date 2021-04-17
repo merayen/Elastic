@@ -3,10 +3,12 @@ package net.merayen.elastic.backend.mix
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioOutputDevice
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.util.SoundTest
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class MixerTest {
 	@Test
+	@Disabled("It doesn't check anything!")
 	fun testSendingAudio() {
 		val mixer = Mixer()
 
@@ -44,6 +46,7 @@ class MixerTest {
 	}
 
 	@Test
+	@Disabled("It doesn't check anything!")
 	fun testSynchronization() {
 		val mixer = Mixer()
 

@@ -113,7 +113,7 @@ internal class DependencyListTest {
 
 		val result = dl.walk()
 		assertEquals(1, result.size)
-		assertEquals(listOf("a"), result[0])
+		assertEquals(Pair<String, List<String>>("a", listOf()), result[0])
 	}
 
 	@Test
@@ -123,9 +123,14 @@ internal class DependencyListTest {
 		dl["b"] = hashSetOf("a")
 		dl["c"] = hashSetOf("a")
 
-		val result = dl.walk()
-		assertEquals(3, result.size)
-		assertTrue(result == listOf(listOf("a"), listOf("a", "b"), listOf("a", "c")) || result == listOf(listOf("a"), listOf("a", "c"), listOf("a", "b")))
+		assertEquals(
+			listOf(
+				Pair("a", listOf("a")),
+				Pair("b", listOf("a", "b")),
+				Pair("c", listOf("a", "c")),
+			),
+			dl.walk()
+		)
 	}
 
 	@Test
@@ -134,8 +139,16 @@ internal class DependencyListTest {
 		dl["a"] = hashSetOf()
 		dl["b"] = hashSetOf()
 		dl["c"] = hashSetOf("a", "b")
+		dl["d"] = hashSetOf("c")
 
-		val result = dl.walk()
-		assertEquals(4, result.size)
+		assertEquals(
+			listOf(
+				Pair("a", listOf("a")),
+				Pair("c", listOf("a", "c")),
+				Pair("d", listOf("a", "c", "d")),
+				Pair("b", listOf("b"))
+			),
+			dl.walk()
+		)
 	}
 }

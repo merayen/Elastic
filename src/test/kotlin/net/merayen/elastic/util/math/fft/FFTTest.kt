@@ -1,6 +1,7 @@
 package net.merayen.elastic.util.math.fft
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -36,6 +37,7 @@ internal class FFTTest {
 	}
 
 	@Test
+	@Disabled("Unit tests are not for benchmarking")
 	fun `benchmark double precision`() {
 		val rex = DoubleArray(2f.pow(16).roundToInt())
 		val imx = DoubleArray(rex.size)
@@ -61,6 +63,7 @@ internal class FFTTest {
 	}
 
 	@Test
+	@Disabled("Unit tests are not for benchmarking")
 	fun `benchmark float precision`() {
 		val rex = FloatArray(2f.pow(16).roundToInt())
 		val imx = FloatArray(rex.size)
@@ -86,6 +89,7 @@ internal class FFTTest {
 	}
 
 	@Test
+	@Disabled("Unit tests are not for benchmarking")
 	fun `benchmark float to double precision and fft`() {
 		val rex = FloatArray(2f.pow(16).roundToInt())
 		val imx = FloatArray(rex.size)

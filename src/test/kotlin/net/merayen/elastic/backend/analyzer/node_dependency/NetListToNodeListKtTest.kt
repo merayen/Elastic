@@ -172,7 +172,6 @@ internal class NetListToNodeListKtTest {
 		NetListMessages.apply(netlist, CreateNodePortMessage("B", "out", true, Format.AUDIO))
 		NetListMessages.apply(netlist, CreateNodePortMessage("C", "in", false, null))
 		NetListMessages.apply(netlist, CreateNodePortMessage("C", "out", true, Format.AUDIO))
-		NetListMessages.apply(netlist, CreateNodePortMessage("C", "in", false, null))
 		NetListMessages.apply(netlist, CreateNodePortMessage("D", "in1", false, null))
 		NetListMessages.apply(netlist, CreateNodePortMessage("D", "in2", false, null))
 
