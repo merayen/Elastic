@@ -2,6 +2,7 @@ package net.merayen.elastic.backend.architectures.llvm
 
 import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.backend.analyzer.node_dependency.toDependencyList
+import net.merayen.elastic.backend.architectures.llvm.nodes.TranspilerNode
 import net.merayen.elastic.netlist.NetList
 import net.merayen.elastic.system.DSPModule
 import net.merayen.elastic.system.intercom.*
@@ -10,7 +11,7 @@ import net.merayen.elastic.util.NetListMessages
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class LLVMDSPModule : DSPModule() {
+class LLVMDSPModule(private val nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry) : DSPModule() {
 	var debug: Boolean = false
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null
@@ -91,13 +92,13 @@ class LLVMDSPModule : DSPModule() {
 		llvmRunner?.end()
 
 		currentTranspiler = null
-		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, debug) // ???
+		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, debug, nodeRegistrySource) // ???
 		val c = tr.transpile()
 		currentTranspiler = tr
 
 		listenCodeGen?.invoke(c)
 
-		val llvm = LLVMBackend(c, false) // TODO make debug mode toggle able
+		val llvm = LLVMBackend(c, debug) // TODO make debug mode toggle able
 		val llvmCommunicator = LLVMCommunicator(llvm)
 		llvmCommunicator.send("PING".toByteArray())
 
@@ -155,6 +156,9 @@ class LLVMDSPModule : DSPModule() {
 			nodeData.rewind()
 
 			outgoing.send(node.onDataFromDSP(nodeData))
+
+			if (nodeData.hasRemaining())
+				error("onDataFromDSP did not read the remaining ${nodeData.remaining()} bytes. Node: ${node.nodeId}, ${node.name}")
 		}
 
 		val doneResponse = llvmRunner.communicator.poll()

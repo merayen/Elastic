@@ -21,6 +21,13 @@ abstract class CClass(val name: String) {
 		codeWriter.Method(returnType, "${this.name}_$name", "struct ${this@CClass.name}* this${if (args.isNotEmpty()) ", $args" else ""}")
 	}
 
+	/**
+	 * Write out initialization code here.
+	 *
+	 * Example:
+	 *
+	 * this.some_variable = 123
+	 */
 	protected open fun onWriteInit(codeWriter: CodeWriter, allocComponent: AllocComponent?) {}
 
 	protected open fun onWriteDestroy(codeWriter: CodeWriter, allocComponent: AllocComponent?) {}

@@ -99,7 +99,7 @@ class PipeComponent(
 					Call("fread", "&message_size, 1, 4, stdin")
 
 					If("feof(stdin)") {
-						writeLog(this, "Host closed the stream", "")
+						writeLog(this, "Host closed the pipe", "")
 						Call("exit_failure")
 					}
 
@@ -120,7 +120,7 @@ class PipeComponent(
 					Call("fread", "data, message_size, 1, stdin")
 
 					If("feof(stdin)") {
-						writeLog(this, "Host closed the stream", "")
+						writeLog(this, "Host closed the pipe", "")
 						allocComponent.writeFree(codeWriter, "data")
 						Call("exit_failure")
 					}

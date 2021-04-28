@@ -40,6 +40,9 @@ abstract class TranspilerNode(val nodeId: String) {
 	val nodeIndex: Int
 		get() = shared.nodeIndex
 
+	val name: String
+		get() = shared.nodeProperties.getName(node)
+
 	abstract inner class NodeClass : CClass("Node_$nodeId") {
 		override fun onWriteMethodHeaders(codeWriter: CodeWriter) {
 			addInstanceMethodHeader(codeWriter, "void", "prepare")
@@ -140,8 +143,7 @@ abstract class TranspilerNode(val nodeId: String) {
 		protected open fun onWriteParameters(codeWriter: CodeWriter) {}
 
 		/**
-		 * Code that gets run every time before processing a frame. May also be run right after PROCESS as to make the
-		 * backend responsive as possible for next PROCESS-request.
+		 * Code that gets run every time before processing a frame.
 		 */
 		protected open fun onWritePrepare(codeWriter: CodeWriter) {}
 

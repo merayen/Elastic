@@ -29,7 +29,6 @@ class LNode : LocalNode(LProcessor::class.java) {
 	override fun onInit() {}
 	override fun onSpawnProcessor(lp: LocalProcessor?) {}
 
-	@ExperimentalStdlibApi
 	override fun onFinishFrame() {
 		//val processor = processors.filter { (it as LProcessor).samplesAvailable }.randomOrNull() as? LProcessor ?: return
 		val processor = (processors.firstOrNull() ?: return) as LProcessor

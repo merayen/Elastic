@@ -42,7 +42,10 @@ class Group(nodeId: String) : TranspilerNode(nodeId), GroupInterface {
 				writeLog(codeWriter, "Size: %i", "size")
 
 				// Create temporary buffer, used by both Format.SIGNAL and Format.AUDIO, allocating highest capacity
-				Member("float", "buffer[${frameSize * channelCount}]")
+				if (outNodes.audio.isNotEmpty())
+					Member("float", "buffer[${frameSize * channelCount}]")
+				else if (outNodes.signal.isNotEmpty()) // No audio, just allocate enough for Format.SIGNAL
+					Member("float", "buffer[$frameSize]")
 
 				// Place the out-nodes that receives Format.SIGNAL data and lay the result into the output buffer
 				for ((outNodeIndex, outNode) in outNodes.signal.withIndex()) {

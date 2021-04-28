@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.*
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.QueueComponent
 import net.merayen.elastic.netlist.NetList
+import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
 /**
@@ -21,7 +22,8 @@ class Transpiler(
 	private val frameSize: Int,
 	private val threadCount: Int,
 	private val voiceCount: Int = 256,
-	private val debug: Boolean = false
+	private val debug: Boolean = false,
+	private val nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry,
 ) {
 	inner class TranspilerData(val nodeIndex: Int) { // To share data with the TranspileNodes without giving direct access to us
 		val debug: Boolean
@@ -155,7 +157,7 @@ class Transpiler(
 
 		for ((index, node) in netList.nodes.withIndex()) {
 			val name = nodeProperties.getName(node)
-			val transpilerNodeCls = nodeRegistry[name] ?: throw RuntimeException("TranspilerNode '$name' not found")
+			val transpilerNodeCls = nodeRegistrySource[name] ?: throw RuntimeException("TranspilerNode '$name' not found")
 			val transpilerNode = transpilerNodeCls.primaryConstructor!!.call(node.id)
 			transpilerNode.shared = TranspilerData(index)
 
