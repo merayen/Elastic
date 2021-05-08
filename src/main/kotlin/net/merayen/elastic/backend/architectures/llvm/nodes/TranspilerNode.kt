@@ -144,6 +144,8 @@ abstract class TranspilerNode(val nodeId: String) {
 
 		/**
 		 * Code that gets run every time before processing a frame.
+		 *
+		 * Here voices can be created.
 		 */
 		protected open fun onWritePrepare(codeWriter: CodeWriter) {}
 
@@ -182,7 +184,7 @@ abstract class TranspilerNode(val nodeId: String) {
 		 *
 		 * Code gets run when all nodes has processed.
 		 *
-		 * The code MUST call send() even if it has nothing!
+		 * The code MUST call send() exactly once, even if it has nothing!
 		 *
 		 * Don't override if no data is to be sent.
 		 */

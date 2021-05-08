@@ -33,9 +33,14 @@ class WorkUnitsComponent(
 		codeWriter.Statement("char work_units[${wudl.size}]")
 
 		codeWriter.Method("void", "prepare_workunits") {
-			workUnitsMutex.writeLock(codeWriter) {
-				for (i in 0 until wudl.size)
-					codeWriter.Statement("work_units[$i] = 0")
+			with(codeWriter) {
+				workUnitsMutex.writeLock(codeWriter) {
+					for (i in 0 until wudl.size)
+						Statement("work_units[$i] = 0")
+
+					for (node in nodes.values)
+						node.nodeClass.writeCall(codeWriter, "prepare", node.instanceVariable)
+				}
 			}
 		}
 	}
@@ -58,7 +63,7 @@ class WorkUnitsComponent(
 	/**
 	 * Write all the WorkUnit C methods
 	 */
-	fun writeWorkUnitMethods(codeWriter: CodeWriter) {
+	private fun writeWorkUnitMethods(codeWriter: CodeWriter) {
 		with(codeWriter) {
 			// Write headers to all the workunits
 			for (index in workUnitToIndexMap.values)
@@ -96,7 +101,10 @@ class WorkUnitsComponent(
 							}
 						}
 						If("!all_finished") {
-							writeLog(codeWriter, "process_workunit_$workUnitId: not all dependencies has processed (this should probably be reduced, as it adds overhead)")
+							writeLog(
+								codeWriter,
+								"process_workunit_$workUnitId: not all dependencies has processed (this should probably be reduced, as it adds overhead)"
+							)
 							Return() // Need to wait for additional work units we depend on to get finished")
 						}
 					}
