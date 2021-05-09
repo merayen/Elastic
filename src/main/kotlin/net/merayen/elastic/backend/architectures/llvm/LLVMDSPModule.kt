@@ -11,7 +11,8 @@ import net.merayen.elastic.util.NetListMessages
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-class LLVMDSPModule(private val nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry) : DSPModule() {
+class LLVMDSPModule : DSPModule() {
+	var nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry
 	var debug: Boolean = false
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null

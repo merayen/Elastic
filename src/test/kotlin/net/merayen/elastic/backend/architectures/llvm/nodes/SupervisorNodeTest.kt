@@ -3,10 +3,8 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocComponent
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.system.intercom.CreateNodeMessage
-import net.merayen.elastic.system.intercom.CreateNodePortMessage
-import net.merayen.elastic.system.intercom.NodeConnectMessage
-import net.merayen.elastic.system.intercom.ProcessRequestMessage
+import net.merayen.elastic.system.intercom.*
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 /**
@@ -14,7 +12,7 @@ import org.junit.jupiter.api.Test
  */
 internal class SupervisorNodeTest : LLVMNodeTest() {
 	@Test
-	fun `process nodes only once`() {
+	fun `process nodes only once per frame`() {
 		/**
 		 * Test node that ensures that it is processed only once per frame
 		 */
@@ -66,7 +64,10 @@ internal class SupervisorNodeTest : LLVMNodeTest() {
 		for (i in 0 until 2) {
 			supervisor.ingoing.send(ProcessRequestMessage())
 			supervisor.onUpdate()
+			assertTrue(supervisor.outgoing.receiveAll().any { it is ProcessResponseMessage })
 		}
+
+		supervisor.onEnd()
 
 		// If we get here without the LLVM backend crashing, also, the node over panicing (see writePanic), we are good!
 	}
@@ -128,11 +129,13 @@ internal class SupervisorNodeTest : LLVMNodeTest() {
 		)
 
 		supervisor.ingoing.send(CreateNodeMessage("a", "test", "top"))
-
 		supervisor.onUpdate()
 
 		supervisor.ingoing.send(ProcessRequestMessage())
-
 		supervisor.onUpdate()
+
+		assertTrue(supervisor.outgoing.receiveAll().any { it is ProcessResponseMessage })
+
+		supervisor.onEnd()
 	}
 }

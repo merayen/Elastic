@@ -10,7 +10,8 @@ internal abstract class LLVMNodeTest {
 		debug: Boolean = true,
 		nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry
 	): LLVMDSPModule {
-		val supervisor = LLVMDSPModule(nodeRegistrySource)
+		val supervisor = LLVMDSPModule()
+		supervisor.nodeRegistrySource = nodeRegistrySource
 		supervisor.debug = debug
 
 		supervisor.ingoing.send(CreateNodeMessage("top", "group", 1, null))

@@ -1,5 +1,5 @@
 # Elastic IDE
-An IDE for audio, create sounds and compose music using nodes.
+An IDE + DAW to quickly create/manipulate sounds and music using nodes.
 
 ## Goals
 - Learn to build and understand everything from UI-design, user interaction methods and go deep into math (wave physics, execution speed optimalizations)
