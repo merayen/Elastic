@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm
 
+import net.merayen.elastic.Temporary
 import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.backend.analyzer.node_dependency.toDependencyList
 import net.merayen.elastic.backend.architectures.llvm.nodes.TranspilerNode
@@ -93,7 +94,7 @@ class LLVMDSPModule : DSPModule() {
 		llvmRunner?.end()
 
 		currentTranspiler = null
-		val tr = transpiler.primaryConstructor!!.call(netList, 44100, 16, 256, 4, 256, debug, nodeRegistrySource) // ???
+		val tr = transpiler.primaryConstructor!!.call(netList, Temporary.sampleRate, Temporary.depth, Temporary.bufferSize, 4, 256, debug, nodeRegistrySource) // ???
 		val c = tr.transpile()
 		currentTranspiler = tr
 

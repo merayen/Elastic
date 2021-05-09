@@ -11,7 +11,7 @@ class UI : UINode() {
 
 	override fun onInit() {
 		super.onInit()
-		layoutWidth = 100f
+		layoutWidth = 120f
 		layoutHeight = 40f
 		titlebar.title = "Out"
 
