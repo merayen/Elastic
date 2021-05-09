@@ -39,6 +39,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 			"oracle_java:default [default]"
 		)
 	}
+
 	private var output_device: String? = null
 
 	override fun onInit() {
@@ -84,19 +85,28 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 						)
 					)
 				}
-				// Count max channels
-				val channelCount = message.outAudio.size
 
-				if (channelCount == 0) {
-					env.mixer.send(output_device, Audio(arrayOf(FloatArray(bufferSize)))) // Send some silence TODO do we need to do this?
+				// TODO handle outgoing midi
+				// TODO handle audio out
+
+				if (message.outAudio.isEmpty() && message.outSignal.isEmpty()) {
+					env.mixer.send(output_device, Audio(arrayOf(FloatArray(bufferSize)))) // Send silence TODO necessary?
 					return  // Don't bother
 				}
 
-				val sampleCount = bufferSize // TODO should be a field sent from group-node? as it decides the frame size...?
+				// TODO handle device mapping (send audio to mapped devices)
+				// TODO should bufferSize be a field sent from group-node? as it decides the frame size...?
 
-				val out = arrayOfNulls<FloatArray>(channelCount)/* channel no *//* sample no */
+				// Stereo output. TODO make dynamic and individual for each out-node
+				val result = listOf(FloatArray(bufferSize), FloatArray(bufferSize)) // Stereo, whatever
 
-				TODO("forward each out-node to correct output device...?")
+				// Signal
+				for ((nodeId, samples) in message.outSignal) {
+					for ((i, sample) in samples.withIndex()) {
+						result[0][i] += sample
+						result[1][i] += sample
+					}
+				}
 
 				//for (channelNumber in 0 until channelCount) {
 				//	val channel = message.outAudio[channelNumber]
@@ -117,7 +127,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 
 				val mixer = env.mixer
 
-				mixer.send(output_device, Audio(out))
+				mixer.send(output_device, Audio(result.toTypedArray()))
 
 				//val statistics = mixer.statistics[output_device]
 
