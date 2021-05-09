@@ -12,7 +12,7 @@ class ToAudio(nodeId: String) : TranspilerNode(nodeId) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteProcess(codeWriter: CodeWriter) {
 			with(codeWriter) {
-				if (getInletType("in") == Format.SIGNAL) { // TODO allow ports like in_0, in_1 etc, for spreading input onto audio channels
+				if (getInletType("in") == Format.SIGNAL) { // TODO allow ports like in_0, in_1 etc, for spreading input onto multiple audio channels
 					writeForEachVoice(codeWriter) {
 						writeForEachChannel(codeWriter) {
 							writeForEachSample(codeWriter) {

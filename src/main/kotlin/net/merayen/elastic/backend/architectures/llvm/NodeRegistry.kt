@@ -4,21 +4,22 @@ import net.merayen.elastic.backend.architectures.llvm.nodes.*
 import kotlin.reflect.KClass
 
 val nodeRegistry = mapOf(
-	"group" to Group::class,
-	"value" to Value::class,
-	//"elapsed" to Elapsed::class,
+	"_preprocessor" to PreProcessor::class, // Special node only used by LLVM backend
 	"add" to Add::class,
-	"midi_poly" to MidiPoly::class,
-	"poly" to MidiPoly::class,
+	"group" to Group::class,
 	"midi" to Midi::class,
-	//"multiply" to Multiply::class,
-	//"sine" to Sine::class,
+	"midi_poly" to MidiPoly::class,
 	"oscilloscope" to Oscilloscope::class,
 	"out" to Out::class,
 	"output" to Out::class,
-	"wave" to Wave::class,
+	"poly" to MidiPoly::class,
+	"projectcars2" to ProjectCars2::class,
 	"to_audio" to ToAudio::class,
-	"_preprocessor" to PreProcessor::class, // Special node only used by LLVM backend
+	"value" to Value::class,
+	"wave" to Wave::class,
+	//"elapsed" to Elapsed::class,
+	//"multiply" to Multiply::class,
+	//"sine" to Sine::class,
 )
 
 /**

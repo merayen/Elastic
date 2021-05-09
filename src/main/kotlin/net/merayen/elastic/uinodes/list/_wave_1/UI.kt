@@ -1,5 +1,7 @@
 package net.merayen.elastic.uinodes.list._wave_1
 
+// TODO before deleting this, move over the wave-selection function
+
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
