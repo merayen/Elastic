@@ -1,4 +1,4 @@
-package net.merayen.elastic.uinodes.list.output_1;
+package net.merayen.elastic.uinodes.list.out_1;
 
 import net.merayen.elastic.ui.Draw;
 import net.merayen.elastic.ui.UIObject;

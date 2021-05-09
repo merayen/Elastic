@@ -3,16 +3,12 @@ package net.merayen.elastic.backend.logicnodes.list.group_1
 import net.merayen.elastic.Temporary
 import net.merayen.elastic.backend.context.JavaBackend
 import net.merayen.elastic.backend.interfacing.devicetypes.AudioDevice
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
-import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsData
-import net.merayen.elastic.backend.logicnodes.list.output_1.OutputNodeStatisticsMessage
 import net.merayen.elastic.backend.mix.datatypes.Audio
 import net.merayen.elastic.backend.nodes.BaseLogicNode
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.backend.nodes.GroupLogicNode
 import net.merayen.elastic.system.intercom.InputFrameData
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.OutputFrameData
 
 /**
  * Doesn't do anything, other than having children.
@@ -94,7 +90,6 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 					return  // Don't bother
 				}
 
-				// TODO handle device mapping (send audio to mapped devices)
 				// TODO should bufferSize be a field sent from group-node? as it decides the frame size...?
 
 				// Stereo output. TODO make dynamic and individual for each out-node
@@ -102,28 +97,21 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 
 				// Signal
 				for ((nodeId, samples) in message.outSignal) {
+					// TODO handle device mapping on out-node basis (send audio to mapped devices)
 					for ((i, sample) in samples.withIndex()) {
 						result[0][i] += sample
 						result[1][i] += sample
 					}
+
+					//sendDataToUI(
+					//	OutNodeStatisticsMessage(
+					//		nodeId,
+					//		floatArrayOf(.3f, .5f),
+					//		floatArrayOf(.1f, .2f),
+					//	)
+					//)
 				}
 
-				//for (channelNumber in 0 until channelCount) {
-				//	val channel = message.outAudio[channelNumber]
-
-				//	if (channel != null)
-				//		out[channelNumber] = channel
-				//	else
-				//		out[channelNumber] = FloatArray(sampleCount)
-				//}
-
-				//sendDataToUI(
-				//	OutputNodeStatisticsMessage(
-				//		id,
-				//		message.amplitudes,
-				//		message.offsets
-				//	)
-				//)
 
 				val mixer = env.mixer
 

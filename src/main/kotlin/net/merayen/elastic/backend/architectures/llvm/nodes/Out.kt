@@ -2,11 +2,8 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeAudioOut
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeMidiOut
-import net.merayen.elastic.backend.logicnodes.list.output_1.Output1NodeSignalOut
+import net.merayen.elastic.backend.logicnodes.list.out_1.OutNodeStatisticsMessage
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.system.intercom.OutputFrameData
 import java.nio.ByteBuffer
 
 /**
@@ -18,5 +15,39 @@ import java.nio.ByteBuffer
  * TODO We might want the parent node of this Out-node to actually read the data it receives, in the C code...? Not just forward it? The parent node probably wants to process the data... Maybe store the output data in a buffer instead? Or just let the parent node read the outlet connected to this node?
  */
 class Out(nodeId: String) : TranspilerNode(nodeId) {
-	override val nodeClass = object : NodeClass() {}
+	override val nodeClass = object : NodeClass() {
+		override fun onWriteDataSender(codeWriter: CodeWriter) {
+			with(codeWriter) {
+				if (getInletType("in") == Format.SIGNAL) {
+					Member("float", "amplitude = 0")
+					Member("float", "offset = 0")
+
+					writeForEachVoice(codeWriter) {
+						writeForEachSample(codeWriter) {
+							Member("float", "sample = ${writeInlet("in")}.signal[sample_index]")
+							If("fabsf(sample) > amplitude") {
+								Statement("amplitude = fabsf(sample)")
+							}
+							Statement("offset += sample")
+						}
+					}
+
+					Statement("offset /= $frameSize")
+				}
+
+				alloc.writeMalloc(codeWriter, "void*", "data", "8")
+
+				Statement("*(((float *)data) + 0) = amplitude")
+				Statement("*(((float *)data) + 1) = offset")
+
+				Call("send", "8, data")
+
+				alloc.writeFree(codeWriter, "data")
+			}
+		}
+	}
+
+	override fun onDataFromDSP(data: ByteBuffer): List<NodeDataMessage> {
+		return listOf(OutNodeStatisticsMessage(nodeId, floatArrayOf(data.float), floatArrayOf(data.float)))
+	}
 }
