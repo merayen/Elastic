@@ -10,6 +10,8 @@ class LogicNode : BaseLogicNode() {
 	override fun onInit() {
 		createInputPort("frequency")
 		createOutputPort("out", Format.SIGNAL)
+
+		(properties as Properties).frequency = 440f
 	}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {

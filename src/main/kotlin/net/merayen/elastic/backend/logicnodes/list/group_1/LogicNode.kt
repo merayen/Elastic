@@ -96,45 +96,17 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 				val result = listOf(FloatArray(bufferSize), FloatArray(bufferSize)) // Stereo, whatever
 
 				// Signal
-				for ((nodeId, samples) in message.outSignal) {
+				for ((_, samples) in message.outSignal) {
 					// TODO handle device mapping on out-node basis (send audio to mapped devices)
 					for ((i, sample) in samples.withIndex()) {
 						result[0][i] += sample
 						result[1][i] += sample
 					}
-
-					//sendDataToUI(
-					//	OutNodeStatisticsMessage(
-					//		nodeId,
-					//		floatArrayOf(.3f, .5f),
-					//		floatArrayOf(.1f, .2f),
-					//	)
-					//)
 				}
-
 
 				val mixer = env.mixer
 
 				mixer.send(output_device, Audio(result.toTypedArray()))
-
-				//val statistics = mixer.statistics[output_device]
-
-				//if (statistics != null) {
-				//	if (loltid < System.currentTimeMillis()) {
-				//		println(statistics.describe())
-				//		loltid = System.currentTimeMillis() + 1000
-				//	}
-				//	sendMessage(
-				//		OutputNodeStatisticsData(
-				//			id,
-				//			statistics.id,
-				//			statistics.available_before.avg,
-				//			statistics.available_before.min,
-				//			statistics.available_after.avg,
-				//			statistics.available_after.min
-				//		)
-				//	)
-				//}
 			}
 		}
 	}

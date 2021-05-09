@@ -2,7 +2,6 @@ package net.merayen.elastic.backend.architectures.local.nodes.from_midi_1
 
 import net.merayen.elastic.backend.architectures.local.LocalNode
 import net.merayen.elastic.backend.architectures.local.LocalProcessor
-import net.merayen.elastic.backend.architectures.local.nodes.signalgenerator_1.ResamplingFactory
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.InputFrameData
 

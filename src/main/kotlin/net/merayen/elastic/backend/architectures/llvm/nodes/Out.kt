@@ -18,10 +18,10 @@ class Out(nodeId: String) : TranspilerNode(nodeId) {
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteDataSender(codeWriter: CodeWriter) {
 			with(codeWriter) {
-				if (getInletType("in") == Format.SIGNAL) {
-					Member("float", "amplitude = 0")
-					Member("float", "offset = 0")
+				Member("float", "amplitude = 0")
+				Member("float", "offset = 0")
 
+				if (getInletType("in") == Format.SIGNAL) {
 					writeForEachVoice(codeWriter) {
 						writeForEachSample(codeWriter) {
 							Member("float", "sample = ${writeInlet("in")}.signal[sample_index]")

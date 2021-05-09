@@ -1,6 +1,6 @@
-package net.merayen.elastic.uinodes.list.signalgenerator_1
+package net.merayen.elastic.uinodes.list.wave_1
 
-import net.merayen.elastic.backend.logicnodes.list.signalgenerator_1.Properties
+import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage

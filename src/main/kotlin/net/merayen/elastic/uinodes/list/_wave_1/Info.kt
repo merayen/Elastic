@@ -1,4 +1,4 @@
-package net.merayen.elastic.uinodes.list.wave_1
+package net.merayen.elastic.uinodes.list._wave_1
 
 import net.merayen.elastic.uinodes.BaseInfo
 
