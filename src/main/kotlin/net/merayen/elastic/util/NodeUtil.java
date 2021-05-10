@@ -13,6 +13,6 @@ public class NodeUtil {
 
 	public static int getNodeVersion(String text) {
 		String[] parts = text.split("_");
-		return Integer.valueOf(parts[parts.length - 1]);
+		return Integer.parseInt(parts[parts.length - 1]);
 	}
 }

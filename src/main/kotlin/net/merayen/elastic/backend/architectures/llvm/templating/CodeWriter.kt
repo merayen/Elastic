@@ -1,5 +1,7 @@
 package net.merayen.elastic.backend.architectures.llvm.templating
 
+import kotlin.math.min
+
 /**
  * Encapsulates a StringBuilder and takes care of indentation.
  *
@@ -83,6 +85,10 @@ open class CodeWriter {
 	private fun add(text: String = "", func: (() -> Unit)? = null, after: String = "") = internalAdd(text.trimIndent(), func, after)
 
 	private fun internalAdd(text: String = "", func: (() -> Unit)? = null, after: String = "") {
+		//val writer = Thread.currentThread().stackTrace.filter {
+		//	it.className != CodeWriter::class.qualifiedName && it.className.startsWith("net.merayen.elastic.")
+		//}.map { it.toString() }
+
 		if (func != null) {
 			result.appendLine(text.prependIndent("\t".repeat(level)) + " {")
 			level += 1

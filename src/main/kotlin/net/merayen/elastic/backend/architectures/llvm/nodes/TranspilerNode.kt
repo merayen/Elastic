@@ -93,7 +93,7 @@ abstract class TranspilerNode(val nodeId: String) {
 
 					// Init all the outlets on our outlets
 					for ((name, portStruct) in getPortStructs())
-						portStruct.cClass.writeCall(codeWriter, "init", "&$instanceVariable->outlets[voice_index]->$name")
+						portStruct.cClass.writeCall(codeWriter, "init", "&$instanceVariable->outlets[voice_index]->${name}_let")
 
 					// Then run the custom code for creating the voice of this node
 					onWriteCreateVoice(codeWriter)
@@ -110,7 +110,7 @@ abstract class TranspilerNode(val nodeId: String) {
 			with(codeWriter) {
 				Struct("NodePorts_$nodeId", listOf("*outlets[${shared.voiceCount}]")) {
 					for ((name, struct) in getPortStructs())
-						Member("struct ${struct.cClass.name}", name)
+						Member("struct ${struct.cClass.name}", "${name}_let")
 				}
 
 				Struct("", listOf("parameters")) {
@@ -267,7 +267,7 @@ abstract class TranspilerNode(val nodeId: String) {
 			val outputNode = if (line.node_a == node) line.node_b else line.node_a
 			val outputPort = if (line.node_a == node) line.port_b else line.port_a
 
-			return "nodedata_${outputNode.id}->outlets[$voiceIndex]->$outputPort"
+			return "nodedata_${outputNode.id}->outlets[$voiceIndex]->${outputPort}_let"
 		}
 
 
@@ -355,7 +355,7 @@ abstract class TranspilerNode(val nodeId: String) {
 	fun prepareFrame() = onPrepareFrame()
 
 	protected fun writeOutlet(portName: String, voiceIndex: String = "voice_index"): String {
-		return "nodedata_$nodeId->outlets[$voiceIndex]->$portName"
+		return "nodedata_$nodeId->outlets[$voiceIndex]->${portName}_let"
 	}
 
 	/**

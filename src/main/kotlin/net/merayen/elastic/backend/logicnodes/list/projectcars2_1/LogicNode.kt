@@ -12,6 +12,9 @@ class LogicNode : BaseLogicNode() {
 		createOutputPort("hp", Format.SIGNAL)
 		createOutputPort("running", Format.SIGNAL) // 1.0f if game is running, no pause screen
 		createOutputPort("engine_on", Format.SIGNAL) // 1.0f if engine is on
+		createOutputPort("throttle", Format.SIGNAL)
+		createOutputPort("break", Format.SIGNAL)
+		createOutputPort("clutch", Format.SIGNAL)
 	}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {
