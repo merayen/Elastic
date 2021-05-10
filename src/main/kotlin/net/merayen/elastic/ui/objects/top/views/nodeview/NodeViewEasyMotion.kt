@@ -15,10 +15,7 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.AddNodeIn
 import net.merayen.elastic.ui.objects.top.views.nodeview.inlinewindows.FindNodeInlineWindow
 import net.merayen.elastic.ui.util.ArrowNavigation
 import net.merayen.elastic.uinodes.BaseInfo
-import net.merayen.elastic.util.NodeUtil
-import net.merayen.elastic.util.logDebug
-import net.merayen.elastic.util.logError
-import net.merayen.elastic.util.logInfo
+import net.merayen.elastic.util.*
 import kotlin.math.roundToInt
 
 class NodeViewEasyMotion(private val nodeView: NodeView) {
@@ -359,7 +356,7 @@ class NodeViewEasyMotion(private val nodeView: NodeView) {
 					val nodeName = NodeUtil.getNodeName(name)
 					val nodeVersion = NodeUtil.getNodeVersion(name)
 
-					val nodeId = NodeUtil.createID()
+					val nodeId = UniqueID.create()
 
 					nodeView.sendMessage(
 						CreateNodeMessage(

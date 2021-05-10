@@ -15,8 +15,4 @@ public class NodeUtil {
 		String[] parts = text.split("_");
 		return Integer.valueOf(parts[parts.length - 1]);
 	}
-
-	public static String createID() {
-		return Integer.toString(UUID.randomUUID().hashCode());
-	}
 }

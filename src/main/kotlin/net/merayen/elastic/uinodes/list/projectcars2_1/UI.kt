@@ -19,6 +19,8 @@ class UI : UINode() {
 			"rpm" -> port.translation.y = 20f
 			"nm" -> port.translation.y = 40f
 			"hp" -> port.translation.y = 60f
+			"running" -> port.translation.y = 80f
+			"engine_on" -> port.translation.y = 100f
 		}
 	}
 

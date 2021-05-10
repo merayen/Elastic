@@ -9,6 +9,7 @@ import net.merayen.elastic.ui.objects.components.dragdrop.TargetItem
 import net.merayen.elastic.ui.objects.top.mouse.MouseCarryItem
 import net.merayen.elastic.ui.objects.top.views.filebrowserview.FileListItemDragable
 import net.merayen.elastic.util.NodeUtil
+import net.merayen.elastic.util.UniqueID
 
 class NodeViewDropTarget(private val nodeview: NodeView) : TargetItem(nodeview.container) {
 	var interested = false
@@ -45,7 +46,7 @@ class NodeViewDropTarget(private val nodeview: NodeView) : TargetItem(nodeview.c
 			val data = createNewNodeProperties(name, version)
 			data.uiTranslation = BaseNodeProperties.UITranslation(x = p.x, y = p.y)
 
-			val nodeId = NodeUtil.createID()
+			val nodeId = UniqueID.create()
 			nodeview.sendMessage(CreateNodeMessage(nodeId, name, version, nodeview.currentNodeId))
 			nodeview.sendMessage(NodePropertyMessage(nodeId, data))
 			// TODO implement actual sending of the filename to the node, for import

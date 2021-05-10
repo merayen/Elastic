@@ -14,6 +14,7 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.addnode.AddNodePopup
 import net.merayen.elastic.uinodes.BaseInfo
 import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.NodeUtil
+import net.merayen.elastic.util.UniqueID
 
 class NodeViewContextMenu(background: UIObject, private val node_id: String?) : UIObject() {
 	interface Handler {
@@ -54,7 +55,7 @@ class NodeViewContextMenu(background: UIObject, private val node_id: String?) : 
 		val path = info.javaClass.name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 		val name = path[path.size - 2]
 
-		val node_id = NodeUtil.createID()
+		val node_id = UniqueID.create()
 
 		val nodeName = NodeUtil.getNodeName(name)
 		val nodeVersion = NodeUtil.getNodeVersion(name)

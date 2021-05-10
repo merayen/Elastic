@@ -4,7 +4,6 @@ package net.merayen.elastic.system.intercom;
  * Sent to backend to request creation of this node
  */
 public class CreateNodeMessage extends NetListMessage implements NodeMessage {
-
 	public final String node_id;
 	public final String name;
 	public final Integer version;
