@@ -95,9 +95,9 @@ class UI : UINode() {
 			val value = max(minValue, min(maxValue, value))
 			draw.fillRect(
 				12f,
-				22f,
+				32f,
 				(layoutWidth - 20 - 4) * ((value - minValue) / (maxValue - minValue)),
-				layoutHeight - 54
+				layoutHeight - 64
 			)
 		}
 	}

@@ -8,15 +8,19 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.nio.ByteBuffer
-import java.nio.charset.Charset
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.math.pow
 
 class LogicNode : BaseLogicNode() {
+	companion object {
+		val paramNames = listOf("rpm", "engine_power", "engine_torque", "fuel_level", "oil_temp", "throttle", "breaks", "clutch")
+	}
+
 	private class UDPDataReceiver private constructor() : Thread() {
 		val socket = DatagramSocket(5606)
 		private val buffer = ByteArray(2048)
-		private var outputBuffer = ByteArray(buffer.size)
+		private var outputBuffer = ByteArray(559)
 		val packet = DatagramPacket(buffer, buffer.size)
 		var running = true
 		private val lock = ReentrantLock()
@@ -26,9 +30,13 @@ class LogicNode : BaseLogicNode() {
 		override fun run() {
 			while (running) {
 				socket.receive(packet)
+
+				if (packet.length != 559)
+					continue // Not the message we wanted
+
 				lock.withLock {
-					for ((i, x) in buffer.withIndex())
-						outputBuffer[i] = x
+					for (i in outputBuffer.indices)
+						outputBuffer[i] = buffer[i]
 
 					hasData = true
 
@@ -44,7 +52,7 @@ class LogicNode : BaseLogicNode() {
 					return null
 
 				hasData = false
-				return buffer
+				return outputBuffer
 			}
 		}
 
@@ -58,14 +66,8 @@ class LogicNode : BaseLogicNode() {
 	}
 
 	override fun onInit() {
-		createOutputPort("rpm", Format.SIGNAL)
-		createOutputPort("nm", Format.SIGNAL)
-		createOutputPort("hp", Format.SIGNAL)
-		createOutputPort("running", Format.SIGNAL) // 1.0f if game is running, no pause screen
-		createOutputPort("engine_on", Format.SIGNAL) // 1.0f if engine is on
-		createOutputPort("throttle", Format.SIGNAL)
-		createOutputPort("break", Format.SIGNAL)
-		createOutputPort("clutch", Format.SIGNAL)
+		for (param in paramNames)
+			createOutputPort(param, Format.SIGNAL)
 	}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {
@@ -88,8 +90,24 @@ class LogicNode : BaseLogicNode() {
 			rawTelemetry.position(16)
 			val clutch = readByte() / 255f
 
+			rawTelemetry.position(18)
+			val oilTemp = readByte() + (readByte().let { if (it < 0) (it + 256) else (it) } shl 8).toFloat()
+
+			rawTelemetry.position(28)
+			val fuelCapacity = rawTelemetry.get().toFloat()
+
+			rawTelemetry.position(32)
+			val fuelLevelRaw = rawTelemetry.int
+
+			rawTelemetry.position(364)
+			val engineTorque = rawTelemetry.float
+
+			// TODO check this
+			val fuelLevelLiters = if (fuelLevelRaw < 0) (fuelLevelRaw + 2.0.pow(32)).toInt() else fuelLevelRaw
+			val fuelLevel = fuelLevelLiters / fuelCapacity
+
 			rawTelemetry.position(40)
-			val rpm = (readByte() + readByte() shl 8).toFloat()
+			val rpm = (readByte() + (readByte() shl 8)).toFloat()
 
 			return ProjectCars2UDPData(
 				id,
@@ -97,10 +115,12 @@ class LogicNode : BaseLogicNode() {
 				throttle = throttle,
 				breaks = breaks,
 				clutch = clutch,
-				hp = 0f,
-				nm = 0f,
+				enginePower = 0f,
+				engineTorque = engineTorque,
 				engineOn = true,
 				running = true,
+				fuelLevel = fuelLevel,
+				oilTemp = oilTemp,
 			)
 		} else {
 			return super.onPrepareFrame()

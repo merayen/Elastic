@@ -429,6 +429,9 @@ abstract class TranspilerNode(val nodeId: String) {
 	protected fun getOutletType(name: String): Format? {
 		val ports = shared.nodeProperties.getOutputPorts(node).filter { it == name }
 
+		if (ports.isEmpty())
+			return null
+
 		if (ports.size != 1) // Just checking, to be sure
 			error("A node should not have multiple ports with the same name")
 

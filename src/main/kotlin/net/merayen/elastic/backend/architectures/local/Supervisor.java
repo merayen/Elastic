@@ -211,7 +211,8 @@ class Supervisor {
 		// First let the LocalNode process, so they may create their default sessions and schedule processors to process
 		for (Node node : netlist.getNodes()) {
 			LocalNode ln = nodes.get(node.getID());
-			ln.process(message.getInput().get(node.getID()));
+			throw new RuntimeException("Old Java should not be used anymore");
+			//ln.process(message.getInput().get(node.getID()));
 		}
 
 		for (LocalProcessor lp : processor_list) {

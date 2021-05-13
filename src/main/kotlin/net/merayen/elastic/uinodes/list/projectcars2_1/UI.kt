@@ -1,5 +1,6 @@
 package net.merayen.elastic.uinodes.list.projectcars2_1
 
+import net.merayen.elastic.backend.logicnodes.list.projectcars2_1.LogicNode.Companion.paramNames
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.node.UINode
@@ -9,23 +10,18 @@ class UI : UINode() {
 	override fun onInit() {
 		super.onInit()
 		layoutWidth = 120f
-		layoutHeight = 200f
+		layoutHeight = 220f
 		titlebar.title = "Project Cars 2 UDP"
 	}
 
 	override fun onCreatePort(port: UIPort) {
 		port.translation.x = 120f
 
-		when (port.name) {
-			"rpm" -> port.translation.y = 20f
-			"nm" -> port.translation.y = 40f
-			"hp" -> port.translation.y = 60f
-			"running" -> port.translation.y = 80f
-			"engine_on" -> port.translation.y = 100f
-			"throttle" -> port.translation.y = 120f
-			"break" -> port.translation.y = 140f
-			"clutch" -> port.translation.y = 160f
-		}
+		val index = paramNames.indexOf(port.name)
+		if (index == -1)
+			error("Unknown param/port ${port.name}")
+
+		port.translation.y = (20 + (index * 20)).toFloat()
 	}
 
 	override fun onRemovePort(port: UIPort) {}

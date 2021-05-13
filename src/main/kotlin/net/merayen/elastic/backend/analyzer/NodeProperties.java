@@ -95,6 +95,9 @@ public class NodeProperties {
 	}
 
 	public boolean isOutput(Port port) {
+		if (port == null)
+			throw new NullPointerException("port can not be null");
+
 		if(port.properties.get("output") != null)
 			return (boolean)port.properties.get("output");
 

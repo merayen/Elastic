@@ -179,15 +179,11 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 
 		is_processing = true
 
-		// Build a new ProcessMessage with data from the logic nodes to the processor.
-		val message = ProcessRequestMessage()
+		// Send data from LogicNode for
+		for (n in netlist.nodes)
+			handler.onSendToDSP(logicnode_list[n.id].onPrepareFrame())
 
-		for (n in netlist.nodes) {
-			val bln = logicnode_list.get(n.id)
-
-			message.input[n.id] = bln.onPrepareFrame()
-		}
-
-		handler.onSendToDSP(message) // Forward process request message to processor
+		// ...and ask the DSP to process a frame
+		handler.onSendToDSP(ProcessRequestMessage()) // Forward process request message to processor
 	}
 }
