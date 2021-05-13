@@ -17,6 +17,7 @@ object NodeRegistry {
 		nodes.add("histogram_1")
 		nodes.add("in_1")
 		nodes.add("math_1")
+		nodes.add("meter_1")
 		nodes.add("metronome_1")
 		nodes.add("midi_1")
 		nodes.add("midi_in_1")

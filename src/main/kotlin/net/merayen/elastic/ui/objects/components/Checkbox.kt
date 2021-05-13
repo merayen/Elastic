@@ -33,7 +33,7 @@ class Checkbox : UIObject() {
 		}
 
 		draw.setStroke(1f)
-		draw.setColor(150, 150, 150)
+		draw.setColor(.2f, .2f, .2f)
 		draw.rect(0f, 0f, 12f, 12f)
 	}
 

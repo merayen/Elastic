@@ -66,7 +66,7 @@ class UI : UINode(), INodeEditable {
 		if (port.name == "frequency") {
 			val isp = InputSignalParameters(this, "frequency")
 			isp.handler = InputSignalParameters.Handler { amplitude, offset ->
-				sendProperties(
+				send(
 					Properties(
 						inputAmplitude = amplitude,
 						inputOffset = offset
@@ -80,7 +80,7 @@ class UI : UINode(), INodeEditable {
 
 			(frequencyPortParameter!!.notConnected as PopupParameter1D).handler = object : PopupParameter1D.Handler {
 				override fun onMove(value: Float) {
-					sendProperties(Properties(frequency = frequency))
+					send(Properties(frequency = frequency))
 				}
 
 				override fun onChange(value: Float) {}
@@ -112,12 +112,12 @@ class UI : UINode(), INodeEditable {
 		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() {
-				sendProperties(Properties(curve = bwb.bezier.floats))
+				send(Properties(curve = bwb.bezier.floats))
 			}
 
 			override fun onMove() {
 				if (i++ % 10 == 0) // FIXME Should really be based on time
-					sendProperties(Properties(curve = bwb.bezier.floats))
+					send(Properties(curve = bwb.bezier.floats))
 			}
 
 			override fun onDotClick() {}

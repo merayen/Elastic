@@ -7,6 +7,7 @@ val nodeRegistry = mapOf(
 	"_preprocessor" to PreProcessor::class, // Special node only used by LLVM backend
 	"add" to Add::class,
 	"group" to Group::class,
+	"meter" to Meter::class,
 	"midi" to Midi::class,
 	"midi_poly" to MidiPoly::class,
 	"oscilloscope" to Oscilloscope::class,

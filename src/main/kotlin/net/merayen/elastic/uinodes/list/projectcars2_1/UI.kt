@@ -10,6 +10,7 @@ class UI : UINode() {
 		super.onInit()
 		layoutWidth = 120f
 		layoutHeight = 200f
+		titlebar.title = "Project Cars 2 UDP"
 	}
 
 	override fun onCreatePort(port: UIPort) {

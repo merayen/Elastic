@@ -25,7 +25,7 @@ class UI : UINode() {
 
 	private val dropDown = DropDown(object : DropDown.Handler {
 		override fun onChange(selected: DropDown.Item) {
-			sendProperties(Properties(mode = (selected.dropdownItem as Label).text))
+			send(Properties(mode = (selected.dropdownItem as Label).text))
 		}
 	})
 

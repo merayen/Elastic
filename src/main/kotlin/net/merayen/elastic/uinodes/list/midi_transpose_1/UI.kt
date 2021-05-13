@@ -81,7 +81,7 @@ class UI : UINode() {
 	}
 
 	private fun sendTransposeParameters() {
-		sendProperties(
+		send(
 				Properties(
 						transpose = ((toneSlider.value * 48) - 24).roundToInt()
 				)

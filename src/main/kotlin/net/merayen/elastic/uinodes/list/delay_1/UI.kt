@@ -21,7 +21,7 @@ class UI : UINode() {
             }
 
             override fun onChange(value: Double, programatic: Boolean) {
-                self.sendProperties(Properties(delayTime = value.toFloat()))
+                self.send(Properties(delayTime = value.toFloat()))
             }
 
             override fun onButton(offset: Int) {

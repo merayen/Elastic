@@ -79,10 +79,6 @@ class Oscilloscope(nodeId: String) : TranspilerNode(nodeId) {
 
 							Member("float", "sample = buffer[sample_index]")
 
-							If("sample != 1.0f") { // TODO merayen remove
-								writePanic(codeWriter, "WOPS: %f", "sample")
-							}
-
 							If("sample < $instanceVariable->min_value") {
 								Statement("$instanceVariable->min_value = sample")
 							}
@@ -143,16 +139,16 @@ class Oscilloscope(nodeId: String) : TranspilerNode(nodeId) {
 				val length = outputSize * 4 + 4 + 4
 				alloc.writeMalloc(codeWriter, "void*", "result", "$length")
 
-				If("$instanceVariable->max_value != 1.0f") {
-					writePanic(codeWriter, "Noes %f", "$instanceVariable->max_value")
-				}
+				//If("$instanceVariable->max_value != 1.0f") {
+				//	writePanic(codeWriter, "Noes %f", "$instanceVariable->max_value")
+				//}
 				Call("memcpy", "result, $instanceVariable->samples, ${outputSize * 4}")
 				Statement("*(float *)(result + ${outputSize * 4}) = $instanceVariable->min_value")
 				Statement("*(float *)(result + ${outputSize * 4 + 4}) = $instanceVariable->max_value")
 
-				If("*(float *)(result + ${outputSize * 4 + 4}) != 1.0f") {
-					writePanic(codeWriter, "What")
-				}
+				//If("*(float *)(result + ${outputSize * 4 + 4}) != 1.0f") {
+				//	writePanic(codeWriter, "What")
+				//}
 
 				Call("send", "$length, result")
 

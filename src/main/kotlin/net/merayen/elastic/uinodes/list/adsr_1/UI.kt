@@ -45,7 +45,7 @@ class UI : UINode() {
 		attack_slider.translation.y = 190f
 		attack_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendProperties(Properties(attack = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				send(Properties(attack = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.attack_time = Math.pow(attack_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -63,7 +63,7 @@ class UI : UINode() {
 		decay_slider.translation.y = 190f
 		decay_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendProperties(Properties(decay = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				send(Properties(decay = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.decay_time = Math.pow(decay_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}
@@ -81,7 +81,7 @@ class UI : UINode() {
 		sustain_slider.translation.y = 190f
 		sustain_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendProperties(Properties(sustain = value))
+				send(Properties(sustain = value))
 				adsrgraph.sustain_value = sustain_slider.value
 			}
 		}
@@ -99,7 +99,7 @@ class UI : UINode() {
 		release_slider.translation.y = 190f
 		release_slider.handler = object : Knob.Handler {
 			override fun onChange(value: Float) {
-				sendProperties(Properties(release = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
+				send(Properties(release = Math.pow(value.toDouble(), 2.0).toFloat() * 10))
 				adsrgraph.release_time = Math.pow(release_slider.value.toDouble(), 2.0).toFloat() * 10
 			}
 		}

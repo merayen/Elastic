@@ -26,7 +26,7 @@ class UI : UINode() {
 		typeDropDown = DropDown(object : DropDown.Handler {
 			override fun onChange(selected: DropDown.Item) {
 				selected as DropDownItem
-				sendProperties(Properties(type = selected.type.name))
+				send(Properties(type = selected.type.name))
 			}
 		})
 		typeDropDown.addMenuItem(DropDownItem(Properties.Type.SINE, "Sine"))
@@ -53,7 +53,7 @@ class UI : UINode() {
 
 			val isp = InputSignalParameters(this, "frequency")
 			isp.handler = InputSignalParameters.Handler { amplitude, offset ->
-				sendProperties(
+				send(
 					Properties(  // TODO make this Wave
 						inputAmplitude = amplitude,
 						inputOffset = offset

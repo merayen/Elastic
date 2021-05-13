@@ -8,7 +8,6 @@ import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.event.KeyboardEvent
 import net.merayen.elastic.ui.objects.top.easymotion.Branch
-import net.merayen.elastic.ui.objects.top.easymotion.EasyMotion
 import net.merayen.elastic.ui.objects.top.easymotion.EasyMotionBranch
 import net.merayen.elastic.ui.objects.top.views.View
 import net.merayen.elastic.ui.objects.top.views.editview.EditNodeView
@@ -16,7 +15,6 @@ import net.merayen.elastic.ui.objects.top.views.nodeview.NodeView
 import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.NodeUtil
 import net.merayen.elastic.util.Pacer
-import net.merayen.elastic.util.logDebug
 import java.util.*
 
 abstract class UINode : UIObject(), FlexibleDimension, EasyMotionBranch {
@@ -106,7 +104,7 @@ abstract class UINode : UIObject(), FlexibleDimension, EasyMotionBranch {
 		return nodePorts.toList()
 	}
 
-	fun sendProperties(instance: BaseNodeProperties) {
+	fun send(instance: BaseNodeProperties) {
 		sendMessage(NodePropertyMessage(nodeId, instance))
 	}
 
@@ -156,7 +154,7 @@ abstract class UINode : UIObject(), FlexibleDimension, EasyMotionBranch {
 	fun sendUiData() {
 		val data = newNodeData()
 		data.uiTranslation = BaseNodeProperties.UITranslation(targetLocation.x, targetLocation.y)
-		sendProperties(data)
+		send(data)
 	}
 
 	protected fun newNodeData(): BaseNodeProperties {

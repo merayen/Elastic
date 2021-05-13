@@ -7,10 +7,11 @@ import net.merayen.elastic.ui.UIObject
 class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObject() {
 	val color = MutableColor(0.8f, 0.8f, 0.8f)
 	var fontSize = 10f
-	var font_name = "Geneva"
+	var fontName = "Geneva"
 	var align: Align? = null
 	var labelWidth: Float = 0f
 		private set
+	var shadow = true
 
 	enum class Align {
 		LEFT, CENTER, RIGHT
@@ -23,7 +24,7 @@ class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObj
 		if(eventTransparent)
 			draw.disableOutline()
 
-		draw.setFont(font_name, fontSize)
+		draw.setFont(fontName, fontSize)
 		labelWidth = draw.getTextWidth(text)
 
 		var x_offset = 0f
@@ -32,8 +33,10 @@ class Label(var text: String = "", var eventTransparent: Boolean = true) : UIObj
 		else if (align == Align.RIGHT)
 			x_offset = -labelWidth
 
-		draw.setColor(color.red / 2f, color.green / 2f, color.blue / 2)
-		draw.text(text, x_offset - fontSize / 10f, fontSize - fontSize / 10f)
+		if (shadow) {
+			draw.setColor(color.red / 2f, color.green / 2f, color.blue / 2)
+			draw.text(text, x_offset - fontSize / 10f, fontSize - fontSize / 10f)
+		}
 		draw.setColor(color)
 		draw.text(text, x_offset, fontSize)
 	}

@@ -27,7 +27,7 @@ class UI : UINode(), EasyMotionBranch {
             }
 
             override fun onChange(value: Double, programmatic: Boolean) {
-                sendProperties(Properties(mix=value.toFloat()))
+                send(Properties(mix=value.toFloat()))
             }
         })
 

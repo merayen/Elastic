@@ -24,7 +24,7 @@ class UI : UINode() {
 		frequencyKnob.translation.x = 20f
 		frequencyKnob.translation.y = 30f
 		frequencyKnob.handler = object : Knob.Handler {
-			override fun onChange(value: Float) = sendProperties(Properties(frequency = 1 + value.pow(2) * 100))
+			override fun onChange(value: Float) = send(Properties(frequency = 1 + value.pow(2) * 100))
 			override fun onLabelUpdate(value: Float) = (1 + value.pow(2) * 100).roundToInt().toString()
 		}
 
@@ -32,7 +32,7 @@ class UI : UINode() {
 		dampingKnob.translation.x = 70f
 		dampingKnob.translation.y = 30f
 		dampingKnob.handler = object : Knob.Handler {
-			override fun onChange(value: Float) = sendProperties(Properties(damping = 1 + value.pow(2) * 10))
+			override fun onChange(value: Float) = send(Properties(damping = 1 + value.pow(2) * 10))
 			override fun onLabelUpdate(value: Float) = (1 + value.pow(2) * 10).toInt().toString()
 		}
 	}
