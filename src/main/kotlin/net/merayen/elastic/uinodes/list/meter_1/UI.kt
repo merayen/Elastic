@@ -4,42 +4,52 @@ import net.merayen.elastic.backend.logicnodes.list.meter_1.MeterSignalData
 import net.merayen.elastic.backend.logicnodes.list.meter_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.Checkbox
+import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.buttons.Button
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 class UI : UINode() {
 	private var minValue = 0f
 	private var maxValue = 1f
 	private var value = 0f
+	private var meter: MeterBase? = null
 
 	/**
 	 * Adjust the minValue and maxValue automatically to the maximum/minimum signal value seen
 	 */
 	private var auto = false
 
+	private val typeSelect = DropDown(object : DropDown.Handler {
+		override fun onChange(selected: DropDown.Item) {
+			useMeter(Properties.MeterType.valueOf((selected.dropdownItem as Label).text).cls)
+		}
+	})
+
 	private val autoCheckbox = Checkbox()
 	private val resetButton = Button("Reset")
-	private val minValueLabel = Label()
-	private val maxValueLabel = Label()
 
 	override fun onInit() {
 		super.onInit()
 		layoutWidth = 200f
 		layoutHeight = 80f
 
-		autoCheckbox.translation.x = 10f
-		autoCheckbox.translation.y = layoutHeight - 20
+		for (meterType in Properties.MeterType.values()) {
+			typeSelect.addMenuItem(object : DropDown.Item(Label(meterType.name), TextContextMenuItem(meterType.name)) {})
+		}
+		typeSelect.layoutWidth = 60f
+		add(typeSelect)
+
 		autoCheckbox.label.text = "Auto"
 		add(autoCheckbox)
 
-		resetButton.translation.x = 60f
-		resetButton.translation.y = layoutHeight - 20
 		resetButton.handler = object : Button.IHandler {
 			override fun onClick() {
 				auto = true
@@ -57,47 +67,12 @@ class UI : UINode() {
 		}
 		add(resetButton)
 
-		minValueLabel.translation.x = 12f
-		minValueLabel.translation.y = 20f
-		minValueLabel.shadow = false
-		add(minValueLabel)
-
-		maxValueLabel.translation.x = layoutWidth - 12
-		maxValueLabel.translation.y = 20f
-		maxValueLabel.align = Label.Align.RIGHT
-		maxValueLabel.shadow = false
-		add(maxValueLabel)
-
 		autoCheckbox.whenChanged = {
 			auto = autoCheckbox.checked
 			send(
 				Properties(
 					auto = autoCheckbox.checked
 				)
-			)
-		}
-	}
-
-	override fun onUpdate() {
-		super.onUpdate()
-		minValueLabel.text = "%.3f".format(minValue)
-		maxValueLabel.text = "%.3f".format(maxValue)
-	}
-
-	override fun onDraw(draw: Draw) {
-		super.onDraw(draw)
-
-		draw.setColor(0, 0, 0)
-		draw.fillRect(10f, 20f, layoutWidth - 20, layoutHeight - 50)
-
-		draw.setColor(0f, 1f, 0f)
-		if (maxValue > minValue) {
-			val value = max(minValue, min(maxValue, value))
-			draw.fillRect(
-				12f,
-				32f,
-				(layoutWidth - 20 - 4) * ((value - minValue) / (maxValue - minValue)),
-				layoutHeight - 64
 			)
 		}
 	}
@@ -113,6 +88,24 @@ class UI : UINode() {
 		properties.minValue?.apply { minValue = this }
 		properties.maxValue?.apply { maxValue = this }
 		properties.auto?.apply { auto = this }
+		properties.meterType?.apply {
+			useMeter(Properties.MeterType.valueOf(this).cls)
+		}
+	}
+
+	override fun onUpdate() {
+		super.onUpdate()
+
+		meter?.minValue = minValue
+		meter?.maxValue = maxValue
+		meter?.value = value
+
+		typeSelect.translation.x = 10f
+		typeSelect.translation.y = layoutHeight - 20
+		autoCheckbox.translation.x = 80f
+		autoCheckbox.translation.y = layoutHeight - 20
+		resetButton.translation.x = 130f
+		resetButton.translation.y = layoutHeight - 20
 	}
 
 	override fun onData(message: NodeDataMessage) {
@@ -130,5 +123,23 @@ class UI : UINode() {
 				value = max(minValue, min(maxValue, message.value))
 			}
 		}
+	}
+
+	private fun useMeter(cls: KClass<out MeterBase>) {
+		val meter = meter
+
+		if (meter != null)
+			remove(meter)
+
+		val newMeter = cls.primaryConstructor!!.call()
+
+		newMeter.translation.x = 10f
+		newMeter.translation.y = 20f
+		add(newMeter)
+
+		layoutWidth = max(200f, newMeter.layoutWidth + 20f)
+		layoutHeight = newMeter.layoutHeight + 60f
+
+		this.meter = newMeter
 	}
 }
