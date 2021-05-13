@@ -46,7 +46,6 @@ internal class RowMeter : MeterBase() {
 	}
 
 	override fun onUpdate() {
-		super.onUpdate()
 		minValueLabel.text = "%.3f".format(minValue)
 		maxValueLabel.text = "%.3f".format(maxValue)
 	}

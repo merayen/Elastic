@@ -30,6 +30,7 @@ class UI : UINode() {
 	private val typeSelect = DropDown(object : DropDown.Handler {
 		override fun onChange(selected: DropDown.Item) {
 			useMeter(Properties.MeterType.valueOf((selected.dropdownItem as Label).text).cls)
+			send(Properties(meterType = selected.dropdownItem.text))
 		}
 	})
 
@@ -41,10 +42,20 @@ class UI : UINode() {
 		layoutWidth = 200f
 		layoutHeight = 80f
 
-		for (meterType in Properties.MeterType.values()) {
+		for (meterType in Properties.MeterType.values())
 			typeSelect.addMenuItem(object : DropDown.Item(Label(meterType.name), TextContextMenuItem(meterType.name)) {})
-		}
+
 		typeSelect.layoutWidth = 60f
+		run {
+			val meter = meter
+			if (meter != null) {
+				typeSelect.setViewItem(
+					typeSelect.getItems()
+						.first {
+							(it.dropdownItem as Label).text == Properties.MeterType.values().first { it.cls == meter::class }.name
+						})
+			}
+		}
 		add(typeSelect)
 
 		autoCheckbox.label.text = "Auto"
@@ -96,6 +107,8 @@ class UI : UINode() {
 	override fun onUpdate() {
 		super.onUpdate()
 
+		val meter = meter
+
 		meter?.minValue = minValue
 		meter?.maxValue = maxValue
 		meter?.value = value
@@ -106,6 +119,11 @@ class UI : UINode() {
 		autoCheckbox.translation.y = layoutHeight - 20
 		resetButton.translation.x = 130f
 		resetButton.translation.y = layoutHeight - 20
+
+		if (meter != null) {
+			layoutWidth = max(200f, meter.layoutWidth + 20f)
+			layoutHeight = meter.layoutHeight + 60f
+		}
 	}
 
 	override fun onData(message: NodeDataMessage) {
@@ -136,9 +154,6 @@ class UI : UINode() {
 		newMeter.translation.x = 10f
 		newMeter.translation.y = 20f
 		add(newMeter)
-
-		layoutWidth = max(200f, newMeter.layoutWidth + 20f)
-		layoutHeight = newMeter.layoutHeight + 60f
 
 		this.meter = newMeter
 	}
