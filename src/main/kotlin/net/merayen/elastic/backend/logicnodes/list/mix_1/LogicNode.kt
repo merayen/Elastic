@@ -11,7 +11,7 @@ class LogicNode : BaseLogicNode() {
         createInputPort("a")
         createInputPort("b")
         createInputPort("fac")
-        createOutputPort("out", Format.AUDIO)
+        createOutputPort("out", Format.SIGNAL)
     }
 
     override fun onParameterChange(instance: BaseNodeProperties) {

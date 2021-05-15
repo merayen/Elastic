@@ -85,8 +85,8 @@ internal class MixTest : LLVMNodeTest() {
 				NodeConnectMessage("signal0", "out", "mix", "a"),
 				NodeConnectMessage("signal1", "out", "mix", "b"),
 
-				NodePropertyMessage("signal0", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value=20f)),
-				NodePropertyMessage("signal1", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value=60f)),
+				NodePropertyMessage("signal0", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value = 20f)),
+				NodePropertyMessage("signal1", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value = 60f)),
 				NodePropertyMessage("mix", Properties(mix = 0.5f)),
 
 				ProcessRequestMessage(),
@@ -95,10 +95,28 @@ internal class MixTest : LLVMNodeTest() {
 
 		supervisor.onUpdate()
 
-		val response = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
+		run {
+			val response = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
 
-		assertTrue("out" in response.outSignal)
-		assertTrue(response.outSignal["out"]!!.all { abs(it - 40f) < 0.00001f })
+			assertTrue("out" in response.outSignal)
+			assertTrue(response.outSignal["out"]!!.all { abs(it - 40f) < 0.00001f })
+		}
+
+		// Test with fac input too
+		supervisor.ingoing.send(
+			listOf(
+				NodeConnectMessage("signal2", "out", "mix", "fac"),
+				NodePropertyMessage("signal2", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value = .1f)),
+				ProcessRequestMessage(),
+			)
+		)
+
+		supervisor.onUpdate()
+
+		run {
+			val response = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
+			assertTrue(response.outSignal["out"]!!.all { abs(it - 24f) < 0.00001f })
+		}
 	}
 
 	/**
@@ -114,9 +132,13 @@ internal class MixTest : LLVMNodeTest() {
 				CreateNodeMessage("signal1", "value", "top"),
 				CreateNodePortMessage("signal1", "out", Format.SIGNAL),
 
+				CreateNodeMessage("signal2", "value", "top"),
+				CreateNodePortMessage("signal2", "out", Format.SIGNAL),
+
 				CreateNodeMessage("mix", "mix", "top"),
 				CreateNodePortMessage("mix", "a"),
 				CreateNodePortMessage("mix", "b"),
+				CreateNodePortMessage("mix", "fac"),
 				CreateNodePortMessage("mix", "out", Format.SIGNAL),
 
 				CreateNodeMessage("out", "out", "top"),

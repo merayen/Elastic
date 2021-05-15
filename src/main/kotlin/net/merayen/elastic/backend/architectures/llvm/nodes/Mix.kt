@@ -78,7 +78,9 @@ class Mix(nodeId: String) : TranspilerNode(nodeId) {
 						writeForEachSample(codeWriter) {
 							if (fac == Format.SIGNAL) {
 								val facLet = "${writeInlet("fac")}.signal[sample_index]"
-								Statement("$outLet += $aLet * (1 - $facLet) + $bLet * $facLet")
+								Member("float", "fac = $facLet")
+								Statement("fac = ${clamp("fac")}")
+								Statement("$outLet += $aLet * (1 - fac) + $bLet * fac")
 							} else {
 								Statement("$outLet += $aLet * (1 - this->parameters.mix) + $bLet * this->parameters.mix")
 							}
@@ -92,7 +94,9 @@ class Mix(nodeId: String) : TranspilerNode(nodeId) {
 						writeForEachSample(codeWriter) {
 							if (fac == Format.SIGNAL) {
 								val facLet = "${writeInlet("fac")}.signal[sample_index]"
-								Statement("$outLet += $aLet * (1 - $facLet) + this->parameters.b_value * $facLet")
+								Member("float", "fac = $facLet")
+								Statement("fac = ${clamp("fac")}")
+								Statement("$outLet += $aLet * (1 - fac) + this->parameters.b_value * fac")
 							} else {
 								Statement("$outLet += $aLet * (1 - this->parameters.mix) + this->parameters.b_value * this->parameters.mix")
 							}
@@ -106,7 +110,9 @@ class Mix(nodeId: String) : TranspilerNode(nodeId) {
 						writeForEachSample(codeWriter) {
 							if (fac == Format.SIGNAL) {
 								val facLet = "${writeInlet("fac")}.signal[sample_index]"
-								Statement("$outLet += this->parameters.a_value * (1 - $facLet) + $bLet * $facLet")
+								Member("float", "fac = $facLet")
+								Statement("fac = ${clamp("fac")}")
+								Statement("$outLet += this->parameters.a_value * (1 - fac) + $bLet * fac")
 							} else {
 								Statement("$outLet += this->parameters.a_value * (1 - this->parameters.mix) + $bLet * this->parameters.mix")
 							}
@@ -115,6 +121,10 @@ class Mix(nodeId: String) : TranspilerNode(nodeId) {
 				}
 			}
 		}
+	}
+
+	private fun clamp(string: String): String {
+		return "$string < 0 ? 0 : $string > 1 ? 1 : $string"
 	}
 
 	override fun onMessage(message: NodePropertyMessage) {
