@@ -143,7 +143,7 @@ class Group(nodeId: String) : TranspilerNode(nodeId), GroupInterface {
 		for (outSignal in outNodes.signal) {
 			val result = FloatArray(frameSize)
 			for (i in 0 until frameSize)
-				result[i] = data.float / 10 // TODO remove division
+				result[i] = data.float
 
 			signal[outSignal.nodeId] = result
 		}
@@ -154,7 +154,7 @@ class Group(nodeId: String) : TranspilerNode(nodeId), GroupInterface {
 			for (channel in 0 until channelCount) {
 				val channelResult = FloatArray(frameSize)
 				for (i in 0 until frameSize)
-					channelResult[i] = data.float / 10 // TODO remove division
+					channelResult[i] = data.float
 
 				result.add(channelResult)
 			}

@@ -13,20 +13,8 @@ import kotlin.math.abs
 internal class MixTest : LLVMNodeTest() {
 	@Test
 	fun `mix with no input`() {
-		val supervisor = createSupervisor()
-		supervisor.ingoing.send(
-			listOf(
-				CreateNodeMessage("mix", "mix", "top"),
-				CreateNodePortMessage("mix", "out", Format.SIGNAL),
-
-				CreateNodeMessage("out", "out", "top"),
-				CreateNodePortMessage("out", "in"),
-
-				NodeConnectMessage("mix", "out", "out", "in"),
-
-				ProcessRequestMessage(),
-			)
-		)
+		val supervisor = init()
+		supervisor.ingoing.send(ProcessRequestMessage())
 
 		supervisor.onUpdate()
 
@@ -69,7 +57,7 @@ internal class MixTest : LLVMNodeTest() {
 
 		run {
 			val response = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
-			assertTrue(response.outSignal["out"]!!.all { abs(it - 25f) < 0.00001f })
+			assertTrue(response.outSignal["out"]!!.all { abs(it - 75f) < 0.00001f })
 		}
 
 		// Disconnect input a on mix node, and connect to b instead
@@ -85,10 +73,11 @@ internal class MixTest : LLVMNodeTest() {
 
 		run {
 			val response = supervisor.outgoing.receiveAll().first { it is Group1OutputFrameData } as Group1OutputFrameData
-			assertTrue(response.outSignal["out"]!!.all { abs(it - 75f) < 0.00001f })
+			assertTrue(response.outSignal["out"]!!.all { abs(it - 25f) < 0.00001f })
 		}
 	}
 
+	@Test
 	fun `two signal inputs`() {
 		val supervisor = init()
 		supervisor.ingoing.send(
@@ -134,8 +123,6 @@ internal class MixTest : LLVMNodeTest() {
 				CreateNodePortMessage("out", "in"),
 
 				NodeConnectMessage("mix", "out", "out", "in"),
-
-				ProcessRequestMessage(),
 			)
 		)
 		return supervisor

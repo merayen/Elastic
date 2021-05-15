@@ -30,7 +30,6 @@ class UI : UINode(), EasyMotionBranch {
                 send(Properties(mix=value.toFloat()))
             }
         })
-
     }
 
     override fun onInit() {
