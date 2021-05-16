@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.nodes
 import net.merayen.elastic.backend.analyzer.NetListUtil
 import net.merayen.elastic.backend.analyzer.NodeProperties
 import net.merayen.elastic.backend.context.JavaBackend
-import net.merayen.elastic.netlist.Node
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.util.JSONObjectMapper
 import net.merayen.elastic.util.NetListMessages
@@ -127,10 +126,14 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 	}
 
 	/**
-	 * Used by BaseLogicNode to send messages to UI and DSP.
+	 * Used by BaseLogicNode to send messages to UI.
 	 */
-	fun send(message: ElasticMessage) {
+	fun sendToUI(message: ElasticMessage) {
 		handler.onSendToUI(message)
+	}
+
+	fun sendToDSP(message: NodeDataMessage) {
+		handler.onSendToDSP(message)
 	}
 
 	/**
@@ -168,7 +171,7 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 
 		netlist.removePort(logic_node.node, name)
 
-		send(RemoveNodePortMessage(logic_node.id, name))
+		sendToUI(RemoveNodePortMessage(logic_node.id, name))
 	}
 
 	private fun processFrame() {
@@ -180,7 +183,7 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 		is_processing = true
 
 		// Send data from LogicNode for
-		for (n in netlist.nodes)
+		for (n in netlist.nodes)  // TODO remove this, just use sendToDSP()...?
 			handler.onSendToDSP(logicnode_list[n.id].onPrepareFrame())
 
 		// ...and ask the DSP to process a frame

@@ -149,6 +149,7 @@ class LLVMDSPModule : DSPModule() {
 			throw RuntimeException("Expected to receive NODEDATA")
 
 		// Read response from all nodes
+		// TODO read 4-byte id from all nodes for each packet? allows to send multiple packets from single nodes
 		for (node in currentTranspiler.nodes.toSortedMap().values) {
 			val nodeData = llvmRunner.communicator.poll()
 

@@ -65,7 +65,7 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 	private inner class Overlay : UIObject() {
 		override fun onDraw(draw: Draw) {
 			draw.setColor(50, 50, 0)
-			draw.setStroke(min(curve.layoutWidth / curve.layoutHeight, curve.layoutHeight / curve.layoutWidth) * 0.02f)
+			//draw.setStroke(min(curve.layoutWidth / curve.layoutHeight, curve.layoutHeight / curve.layoutWidth) * 0.02f)
 			draw.line(0f, offset, 1f, offset)
 		}
 	}

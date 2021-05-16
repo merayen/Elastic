@@ -72,7 +72,7 @@ class LogicNode : BaseLogicNode(), GroupLogicNode {
 			is Group1OutputFrameData -> {
 				if (nextReportToUI < System.currentTimeMillis()) {
 					nextReportToUI = System.currentTimeMillis() + 50
-					sendMessage(
+					sendToUI(
 						PlaybackStatusMessage(
 							nodeId = id,
 							currentPlayheadPosition = message.currentPlayheadPosition,

@@ -176,7 +176,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		//draw.setColor(20, 20, 40)
 		//draw.fillRect(0f, 0f, 1f, 1f)
 
-		draw.setColor(150, 150, 150)
+		draw.setColor(.3f, .3f, .3f)
 		draw.setStroke(1 / ((layoutWidth + layoutHeight) / 2))
 		draw.rect(0f, 0f, 1f, 1f)
 

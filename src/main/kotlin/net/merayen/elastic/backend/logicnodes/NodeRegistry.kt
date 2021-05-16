@@ -33,5 +33,6 @@ object NodeRegistry {
 		nodes.add("to_audio_1")
 		nodes.add("value_1")
 		nodes.add("wave_1")
+		nodes.add("xy_map_1")
 	}
 }

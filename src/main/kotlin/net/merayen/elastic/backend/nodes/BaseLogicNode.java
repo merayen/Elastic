@@ -73,7 +73,7 @@ public abstract class BaseLogicNode {
 
 		NetListMessages.INSTANCE.apply(netlist, message); // Apply the port to the NetList
 
-		supervisor.send(message);
+		supervisor.sendToUI(message);
 	}
 
 	protected void createInputPort(String name) {
@@ -108,7 +108,7 @@ public abstract class BaseLogicNode {
 	 */
 	public void updateProperties(BaseNodeProperties instance) {
 		ClassInstanceMerger.Companion.merge(instance, properties, null);
-		supervisor.send(new NodePropertyMessage(node.getID(), instance));
+		supervisor.sendToUI(new NodePropertyMessage(node.getID(), instance));
 
 		Map<String, ?> data = mapper.toMap(properties);
 		node.properties.clear();
@@ -116,7 +116,7 @@ public abstract class BaseLogicNode {
 	}
 
 	protected void sendDataToUI(NodeDataMessage data) {
-		sendMessage(data);
+		sendToUI(data);
 	}
 
 	protected String[] getPorts() {
@@ -125,7 +125,7 @@ public abstract class BaseLogicNode {
 
 	void create(String name, Integer version, String parent) {
 		CreateNodeMessage m = new CreateNodeMessage(id, name, version, parent);
-		supervisor.send(m); // Acknowledges creation of Node
+		supervisor.sendToUI(m); // Acknowledges creation of Node
 
 		onInit();
 	}
@@ -170,8 +170,12 @@ public abstract class BaseLogicNode {
 	/**
 	 * Send message to UI (frontend).
 	 */
-	protected void sendMessage(ElasticMessage message) {
-		supervisor.send(message);
+	protected void sendToUI(ElasticMessage message) {
+		supervisor.sendToUI(message);
+	}
+
+	protected void sendToDSP(NodeDataMessage message) {
+		supervisor.sendToDSP(message);
 	}
 
 	private BaseLogicNode getParent() {

@@ -1,5 +1,6 @@
 package net.merayen.elastic.backend.architectures.llvm.nodes
 
+import net.merayen.elastic.backend.architectures.llvm.cmethods.clamp
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.mix_1.Properties
@@ -121,10 +122,6 @@ class Mix(nodeId: String) : TranspilerNode(nodeId) {
 				}
 			}
 		}
-	}
-
-	private fun clamp(string: String): String {
-		return "$string < 0 ? 0 : $string > 1 ? 1 : $string"
 	}
 
 	override fun onMessage(message: NodePropertyMessage) {
