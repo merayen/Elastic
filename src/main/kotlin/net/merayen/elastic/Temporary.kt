@@ -5,6 +5,6 @@ package net.merayen.elastic
  */
 object Temporary {  // TODO soon: remove, it shouldn't exist
 	const val sampleRate = 44100
-	const val bufferSize = 128 // TODO [tissue] Do something with this!
+	const val bufferSize = 256 // TODO [tissue] Do something with this!
 	const val depth = 16
 }

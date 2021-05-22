@@ -35,14 +35,10 @@ class Out(nodeId: String) : TranspilerNode(nodeId) {
 					Statement("offset /= $frameSize")
 				}
 
-				alloc.writeMalloc(codeWriter, "void*", "data", "8")
-
-				Statement("*(((float *)data) + 0) = amplitude")
-				Statement("*(((float *)data) + 1) = offset")
-
-				Call("send", "8, data")
-
-				alloc.writeFree(codeWriter, "data")
+				sendDataToBackend(codeWriter, "8") { result ->
+					Statement("*(((float *)$result) + 0) = amplitude")
+					Statement("*(((float *)$result) + 1) = offset")
+				}
 			}
 		}
 	}

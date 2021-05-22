@@ -29,9 +29,7 @@ class Meter(nodeId: String) : TranspilerNode(nodeId) {
 		}
 
 		override fun onWriteDataSender(codeWriter: CodeWriter) {
-			with(codeWriter) {
-				Call("send", "4, &this->parameters.value")
-			}
+			sendPointerToBackend(codeWriter, "&this->parameters.value", "4")
 		}
 	}
 

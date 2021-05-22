@@ -5,7 +5,7 @@ import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
 import net.merayen.elastic.backend.logicnodes.list.oscilloscope_1.OscilloscopeSignalDataMessage
 import net.merayen.elastic.backend.logicnodes.list.value_1.Properties
 import net.merayen.elastic.system.intercom.*
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 internal class OscilloscopeTest : LLVMNodeTest() {
@@ -41,17 +41,11 @@ internal class OscilloscopeTest : LLVMNodeTest() {
 			supervisor.onUpdate()
 		}
 
-		var groupMessage: Group1OutputFrameData? = null
-		var oscilloscopeMessage: OscilloscopeSignalDataMessage? = null
+		val oscilloscopeMessage =
+			supervisor.outgoing.receiveAll().first { it is OscilloscopeSignalDataMessage } as OscilloscopeSignalDataMessage
 
-		for (message in supervisor.outgoing.receiveAll()) {
-			if (message is Group1OutputFrameData)
-				groupMessage = message
-			else if (message is OscilloscopeSignalDataMessage)
-				oscilloscopeMessage = message
-		}
-
-		assertNotNull(groupMessage)
 		assertNotNull(oscilloscopeMessage)
+
+		TODO("Complete the test")
 	}
 }

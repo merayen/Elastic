@@ -41,9 +41,9 @@ internal class GroupTest : LLVMNodeTest() {
 		assertEquals(0, result.outMidi.size)
 
 		for ((outNodeIndex, signal) in result.outSignal.entries.sortedBy { it.key }.map { it.value }.withIndex()) {
-			assertEquals(256, signal.size, "Expected signal output to be exact 256 samples")
+			assertEquals(supervisor.frameSize, signal.size, "Expected signal output to be exact ${supervisor.frameSize} samples")
 
-			for (i in 0 until 256)
+			for (i in 0 until supervisor.frameSize)
 				assertEquals(
 					outNodeIndex + 1f,
 					signal[i],

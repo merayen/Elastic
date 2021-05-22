@@ -115,7 +115,6 @@ internal class SupervisorNodeTest : LLVMNodeTest() {
 							writePanic(codeWriter, "Expected onWriteProcess code to be run before onWriteDataSender")
 						}
 						Statement("this->parameters.state = 1") // Reset state, getting ready for next frame
-						Call("send", "0, NULL")
 					}
 				}
 			}

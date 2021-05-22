@@ -20,6 +20,15 @@ class LLVMDSPModule : DSPModule() {
 	private var upcomingNetList: NetList? = null
 	private var currentNetList: NetList = NetList()
 
+	var sampleRate = Temporary.sampleRate
+		private set
+
+	var frameSize = Temporary.bufferSize
+		private set
+
+	var depth = Temporary.depth
+		private set
+
 	private var llvmRunner: LLVMRunner? = null
 
 	private val processDuration = AverageStat<Double>(1000)
@@ -76,6 +85,11 @@ class LLVMDSPModule : DSPModule() {
 					process()
 				}
 				is BackendReadyMessage -> {} // I don't think we need to handle this one...? Or?
+				is ConfigureBackendMessage -> {
+					sampleRate = message.sampleRate
+					frameSize = message.frameSize
+					depth = message.depth
+				}
 				else -> error("Not sure how to handle message '$message'")
 			}
 		}
@@ -94,7 +108,7 @@ class LLVMDSPModule : DSPModule() {
 		llvmRunner?.end()
 
 		currentTranspiler = null
-		val tr = transpiler.primaryConstructor!!.call(netList, Temporary.sampleRate, Temporary.depth, Temporary.bufferSize, 4, 256, debug, nodeRegistrySource) // ???
+		val tr = transpiler.primaryConstructor!!.call(netList, sampleRate, depth, frameSize, 4, 256, debug, nodeRegistrySource) // ???
 		val c = tr.transpile()
 		currentTranspiler = tr
 
@@ -149,19 +163,19 @@ class LLVMDSPModule : DSPModule() {
 			throw RuntimeException("Expected to receive NODEDATA")
 
 		// Read response from all nodes
-		// TODO read 4-byte id from all nodes for each packet? allows to send multiple packets from single nodes
 		for (node in currentTranspiler.nodes.toSortedMap().values) {
-			val nodeData = llvmRunner.communicator.poll()
+			// One node can send multiple packets of data. It will terminate by sending an empty packet
+			while (true) {
+				val nodeData = llvmRunner.communicator.poll()
 
-			if (nodeData.capacity() == 4 && "DONE".all { response.get() == it.toByte() })
-				throw RuntimeException("Retrieval of NODEDATA from DSP offset error")
+				if (nodeData.capacity() == 0)
+					break // Node has sent an empty packet, meaning it has no more data
 
-			nodeData.rewind()
+				outgoing.send(node.onDataFromDSP(nodeData))
 
-			outgoing.send(node.onDataFromDSP(nodeData))
-
-			if (nodeData.hasRemaining())
-				error("onDataFromDSP did not read the remaining ${nodeData.remaining()} bytes. Node: ${node.nodeId}, ${node.name}")
+				if (nodeData.hasRemaining())
+					error("onDataFromDSP did not read the remaining ${nodeData.remaining()} bytes. Node: ${node.nodeId}, ${node.name}")
+			}
 		}
 
 		val doneResponse = llvmRunner.communicator.poll()

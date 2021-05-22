@@ -137,22 +137,18 @@ class Oscilloscope(nodeId: String) : TranspilerNode(nodeId) {
 		override fun onWriteDataSender(codeWriter: CodeWriter) {
 			with(codeWriter) {
 				val length = outputSize * 4 + 4 + 4
-				alloc.writeMalloc(codeWriter, "void*", "result", "$length")
+				sendDataToBackend(codeWriter, "$length") { result ->
+					//If("$instanceVariable->max_value != 1.0f") {
+					//	writePanic(codeWriter, "Noes %f", "$instanceVariable->max_value")
+					//}
+					Call("memcpy", "$result, $instanceVariable->samples, ${outputSize * 4}")
+					Statement("*(float *)($result + ${outputSize * 4}) = $instanceVariable->min_value")
+					Statement("*(float *)($result + ${outputSize * 4 + 4}) = $instanceVariable->max_value")
 
-				//If("$instanceVariable->max_value != 1.0f") {
-				//	writePanic(codeWriter, "Noes %f", "$instanceVariable->max_value")
-				//}
-				Call("memcpy", "result, $instanceVariable->samples, ${outputSize * 4}")
-				Statement("*(float *)(result + ${outputSize * 4}) = $instanceVariable->min_value")
-				Statement("*(float *)(result + ${outputSize * 4 + 4}) = $instanceVariable->max_value")
-
-				//If("*(float *)(result + ${outputSize * 4 + 4}) != 1.0f") {
-				//	writePanic(codeWriter, "What")
-				//}
-
-				Call("send", "$length, result")
-
-				alloc.writeFree(codeWriter, "result")
+					//If("*(float *)($result + ${outputSize * 4 + 4}) != 1.0f") {
+					//	writePanic(codeWriter, "What")
+					//}
+				}
 			}
 		}
 	}

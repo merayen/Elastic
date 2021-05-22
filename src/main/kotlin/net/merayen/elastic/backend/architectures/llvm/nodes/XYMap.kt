@@ -69,15 +69,13 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 			with(codeWriter) {
 				// TODO only send positions if any nodes are actively showing them
 				if (getInletType("fac") == Format.SIGNAL) {
-					alloc.writeCalloc(codeWriter, "float*", "positions", shared.voiceCount.toString(), "4")
-
-					writeForEachVoice(codeWriter) {
-						Statement("positions[voice_index] = ${writeInlet("fac")}.signal[${frameSize - 1}]")
+					sendDataToBackend(codeWriter, "1 + ${shared.voiceCount} * 4") {
+						Statement("*(char *)$it = 0")
+						Member("float*", "positions = (float *)($it + 1)")
+						writeForEachVoice(codeWriter) {
+							Statement("positions[voice_index] = ${writeInlet("fac")}.signal[${frameSize - 1}]")
+						}
 					}
-
-					Call("send", "${shared.voiceCount * 4}, positions")
-
-					alloc.writeFree(codeWriter, "positions")
 				}
 			}
 		}
@@ -98,9 +96,15 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 	}
 
 	override fun onDataFromDSP(data: ByteBuffer): List<NodeDataMessage> {
-		return listOf(
-			StateUpdateData(nodeId, (0 until shared.voiceCount).map { data.float }.toFloatArray() )
-		)
+		val operation = data.get().toInt()
+		when (operation) {
+			0 -> {
+				return listOf(
+					StateUpdateData(nodeId, (0 until shared.voiceCount).map { data.float }.toFloatArray() )
+				)
+			}
+			else -> error("Unknown operation")
+		}
 	}
 
 	override fun onMessage(message: NodeDataMessage) {

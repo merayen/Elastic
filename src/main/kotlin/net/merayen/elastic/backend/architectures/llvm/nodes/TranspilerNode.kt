@@ -9,17 +9,12 @@ import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocCompon
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.LogComponent
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.writePanic
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.netlist.Line
 import net.merayen.elastic.netlist.Node
-import net.merayen.elastic.netlist.Port
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodeMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 /**
  * Generic transpiler node that all nodes should inherit.
@@ -78,6 +73,7 @@ abstract class TranspilerNode(val nodeId: String) {
 
 			addInstanceMethod(codeWriter, "void", "send_data") {
 				onWriteDataSender(codeWriter)
+				codeWriter.Call("send", "0, NULL") // Sending an empty packet indicates that we are done sending data
 			}
 
 			addInstanceMethod(codeWriter, "void", "create_voice", "int voice_index") {
@@ -188,9 +184,7 @@ abstract class TranspilerNode(val nodeId: String) {
 		 *
 		 * Don't override if no data is to be sent.
 		 */
-		protected open fun onWriteDataSender(codeWriter: CodeWriter) {
-			codeWriter.Call("send", "0, NULL")
-		}
+		protected open fun onWriteDataSender(codeWriter: CodeWriter) {}
 
 		/**
 		 * Code that creates a new voice. E.g, calling malloc() for the node's voice data.
@@ -284,6 +278,49 @@ abstract class TranspilerNode(val nodeId: String) {
 				return false
 
 			return true
+		}
+
+		/**
+		 * Writes C code to send data back from DSP (us) to backend.
+		 */
+		private var sendDataToBackendCounter = 0
+		protected fun sendDataToBackend(
+			codeWriter: CodeWriter,
+			lengthExpression: String,
+			zero: Boolean = false,
+			func: (data: String) -> Any
+		) { // TODO maybe do bound checking in debug mode?
+			with(codeWriter) {
+				val variable = "_data_${sendDataToBackendCounter++}"
+				If("$lengthExpression > 0") {
+					// We send empty packet to declare that we are done sending data, therefore we can
+					// not allow node itself send empty packets as that would confuse us when receiving.
+
+					if (zero)
+						alloc.writeCalloc(codeWriter, "void*", variable, lengthExpression, "1")
+					else
+						alloc.writeMalloc(codeWriter, "void*", variable, lengthExpression) // node id + length of payload
+
+					func(variable)
+
+					Call("send", "$lengthExpression, $variable")
+
+					alloc.writeFree(codeWriter, variable)
+				}
+			}
+		}
+
+		/**
+		 * Same as sendDataToBackend(), only that this sends an existing buffer.
+		 */
+		protected fun sendPointerToBackend(codeWriter: CodeWriter, variableExpression: String, lengthExpression: String) {
+			with(codeWriter) {
+				If("$lengthExpression <= 0") {
+					writePanic(codeWriter, "Length must be more than 0")
+				}
+
+				Call("send", "$lengthExpression, $variableExpression")
+			}
 		}
 	}
 
