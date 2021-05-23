@@ -264,6 +264,17 @@ abstract class TranspilerNode(val nodeId: String) {
 			return "nodedata_${outputNode.id}->outlets[$voiceIndex]->${outputPort}_let"
 		}
 
+		protected fun hasInlet(name: String): Boolean {
+			val port = shared.nodeProperties.getInputPorts(node).any { it == name }
+			if (!port)
+				return false
+
+			val lines = shared.netList.getConnections(node, name)
+			if (lines.isEmpty())
+				return false
+
+			return true
+		}
 
 		/**
 		 * Check if the current node has outlet by name and that it is connected.
@@ -558,8 +569,19 @@ abstract class TranspilerNode(val nodeId: String) {
 
 	fun getPortStruct(name: String): PortStruct = PortRegistry.getPortStruct(getInletType(name)!!, frameSize, debug)
 
-	fun getOutputPorts() = shared.nodeProperties.getOutputPorts(node)
-	fun getInputPorts() = shared.nodeProperties.getInputPorts(node)
+	/**
+	 * Returns the actual port on the node, even though it is not connected.
+	 *
+	 * Use getOutletType() and check for null to see if the port really exists in the DSP.
+	 */
+	fun getOutputPorts(): List<String> = shared.nodeProperties.getOutputPorts(node)
+
+	/**
+	 * Returns the actual port on the node, even though it is not connected.
+	 *
+	 * Use getInletType() and check for null to see if the port really exists in the DSP.
+	 */
+	fun getInputPorts(): List<String> = shared.nodeProperties.getInputPorts(node)
 
 	protected fun writePanic(codeWriter: CodeWriter, message: String = "", args: String = "") {
 		writePanic(codeWriter, "[node_name=${shared.nodeProperties.getName(node)}, node_id=$nodeId] $message", args, debug)
