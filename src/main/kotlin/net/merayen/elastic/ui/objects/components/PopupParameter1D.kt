@@ -1,14 +1,18 @@
 package net.merayen.elastic.ui.objects.components
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.framework.PopupParameter
 
 /**
  * Presents UI for a single parameter.
  */
-class PopupParameter1D : UIObject() {
-	// TODO rename to PopupParameter
+class PopupParameter1D : UIObject(), FlexibleDimension {
+	override var layoutWidth = 100f
+	override var layoutHeight = 20f
+	var automaticSizing = true
+
 	interface Handler {
 		fun onMove(value: Float)
 		fun onChange(value: Float)
@@ -27,11 +31,11 @@ class PopupParameter1D : UIObject() {
 	private val minified = object : UIObject() {
 		override fun onDraw(draw: Draw) {
 			draw.setColor(0.2f, 0.2f, 0.2f)
-			draw.fillRect(0f, 0f,  label.labelWidth + margin * 2, 12f + margin * 2)
+			draw.fillRect(0f, 0f,  layoutWidth + margin * 2, 12f + margin * 2)
 
 			draw.setStroke(1f)
 			draw.setColor(0.7f, 0.7f, 0.7f)
-			draw.rect(0f, 0f, label.labelWidth + margin * 2, 12f + margin * 2)
+			draw.rect(0f, 0f, layoutWidth + margin * 2, 12f + margin * 2)
 		}
 	}
 
@@ -41,13 +45,14 @@ class PopupParameter1D : UIObject() {
 	var handler: Handler? = null
 	var popup_height = 200f
 
-	private val margin = 4f
+	private val margin = 4f // ???
 
 	@JvmField
 	val label = Label()
 
 	@JvmField
 	var drag_scale = 1f
+
 	override fun onInit() {
 		add(box)
 		minified.add(label)
@@ -60,6 +65,9 @@ class PopupParameter1D : UIObject() {
 		label.translation.x = margin
 		label.translation.y = margin
 		getWidth()
+
+		if (automaticSizing)
+			layoutWidth = label.labelWidth
 	}
 
 	val pane: UIObject

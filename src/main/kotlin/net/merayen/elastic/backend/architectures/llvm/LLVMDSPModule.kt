@@ -102,6 +102,7 @@ class LLVMDSPModule : DSPModule() {
 			queuedMessages.add(message)
 	}
 
+	// TODO synchronize? currentTranspiler could be null
 	private fun sendNodeMessage(message: NodeMessage) = currentTranspiler!!.nodes[message.nodeId]!!.handle(message)
 
 	private fun startLLVMRunner(netList: NetList) {

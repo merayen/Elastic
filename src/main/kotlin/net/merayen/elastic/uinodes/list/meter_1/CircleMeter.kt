@@ -1,6 +1,7 @@
 package net.merayen.elastic.uinodes.list.meter_1
 
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.util.math.prettyNumber
 import kotlin.math.*
 
 internal class CircleMeter : MeterBase() {
@@ -23,11 +24,11 @@ internal class CircleMeter : MeterBase() {
 
 		// Draw number circle
 		draw.setColor(1f, 1f, 0f)
-		draw.setFont(null, 12f)
+		draw.setFont(null, 10f)
 		for (i in 0 until 11) {
 			val x = sin(-(i / 10f) * range - radiusOffset).toFloat()
 			val y = cos(-(i / 10f) * range - radiusOffset).toFloat()
-			val textValue = "%.1f".format(i / 10f * (maxValue - minValue) + minValue)
+			val textValue = prettyNumber(i / 10f * (maxValue - minValue) + minValue)
 
 			draw.text(
 				textValue,

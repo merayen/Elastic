@@ -2,6 +2,7 @@ package net.merayen.elastic.uinodes.list.meter_1
 
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.Label
+import net.merayen.elastic.util.math.prettyNumber
 import kotlin.math.max
 import kotlin.math.min
 
@@ -46,7 +47,7 @@ internal class RowMeter : MeterBase() {
 	}
 
 	override fun onUpdate() {
-		minValueLabel.text = "%.3f".format(minValue)
-		maxValueLabel.text = "%.3f".format(maxValue)
+		minValueLabel.text = prettyNumber(minValue)
+		maxValueLabel.text = prettyNumber(maxValue)
 	}
 }

@@ -36,33 +36,38 @@ abstract class BaseMath(nodeId: String) : TranspilerNode(nodeId) {
 
 			val inputPorts = getInputPorts().sortedBy { it.substring(2).toInt() }
 
-			if (inputPorts.map { getInletType(it) }.any { it != Format.SIGNAL })
+			if (inputPorts.map { getInletType(it) }.any { it != null && it != Format.SIGNAL })
 				return // Incompatible port found, do nothing (maybe implement a converter later on sometime?)
 
 			with(codeWriter) {
 				// Make pointer variables for each port that are easy to access
-				// TODO what about static numbers?
 				for ((i, input) in inputPorts.withIndex())
-					if (hasInlet(input))
-						Member("float*", "$input = ${writeInlet(input)}.signal")
-					else
+					if (!hasInlet(input))
 						Member("float", "$input = this->parameters.port_values[$i]")
 
 				writeForEachVoice(codeWriter) {
+
+					// Make pointer variables for each port that are easy to access
+					for (input in inputPorts)
+						if (hasInlet(input))
+							Member("float*", "$input = ${writeInlet(input)}.signal")
+
 					writeForEachSample(codeWriter) {
-						onWriteProcessSample(
-							inputPorts.map {
-								if (hasInlet(it))
-									"$it[sample_index]" // Access the buffer of the connected inlet at correct sample index
-								else
-									it // Access the buffered parameters.port_values[...], as port is not connected
-							},
+						codeWriter.Statement(
+							"${writeOutlet("out")}.signal[sample_index] = " +
+							onWriteProcessSample(
+								inputPorts.map {
+									if (hasInlet(it))
+										"$it[sample_index]" // Access the buffer of the connected inlet at correct sample index
+									else
+										it // Access the buffered parameters.port_values[...], as port is not connected
+								},
+							)
 						)
 					}
 				}
 			}
 		}
-
 	}
 
 	abstract fun onWriteProcessSample(inExpressions: List<String>): String
