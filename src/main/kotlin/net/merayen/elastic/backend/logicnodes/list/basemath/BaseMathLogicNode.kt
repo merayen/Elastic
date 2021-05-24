@@ -24,7 +24,9 @@ abstract class BaseMathLogicNode : BaseLogicNode() {
 
 	override fun onData(data: NodeDataMessage?) {}
 	override fun onDisconnect(port: String?) {}
-	override fun onConnect(port: String?) {}
+	override fun onConnect(port: String?) {
+		// TODO See if we should create one more connectable port
+	}
 	override fun onRemove() {}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {

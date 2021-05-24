@@ -36,6 +36,8 @@ abstract class BaseMathUI : UINode() {
 
 		layoutWidth = 120f
 		layoutHeight = 80f
+
+		updateLayout()
 	}
 
 	final override fun onCreatePort(port: UIPort) {
@@ -45,8 +47,6 @@ abstract class BaseMathUI : UINode() {
 		} else if (port.name.startsWith("in")) {
 			val number = port.name.substring(2).toInt()
 			port.translation.y = number * 20f + 45f
-			layoutHeight = max(layoutHeight, port.translation.y + 45f)
-
 
 			val valueSelector = PopupParameter1D()
 			valueSelector.handler = object : PopupParameter1D.Handler {
@@ -75,8 +75,11 @@ abstract class BaseMathUI : UINode() {
 			add(portParameter)
 
 			portParameters.add(portParameter)
+			sortPortParameters()
 
 			port.displayName = onPortDisplayName(port)
+
+			updateLayout()
 
 		} else error("Unknown port ${port.name}")
 	}
@@ -104,8 +107,17 @@ abstract class BaseMathUI : UINode() {
 		if (port.name.startsWith("in")) {
 			val index = port.name.substring(2).toInt()
 			remove(portParameters.removeAt(index))
+			sortPortParameters()
 		}
 	}
 
 	override fun onData(message: NodeDataMessage) {}
+
+	private fun updateLayout() {
+		layoutHeight = getPorts().filter { it.name.startsWith("in") }.maxOf { it.translation.y } + 20f
+	}
+
+	private fun sortPortParameters() {
+		portParameters.sortBy { it.port.name.substring(2).toInt() }
+	}
 }

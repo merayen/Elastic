@@ -5,7 +5,7 @@ import net.merayen.elastic.ui.objects.node.UIPort
 import net.merayen.elastic.uinodes.list.basemath.BaseMathUI
 
 class UI : BaseMathUI() {
-	override val symbol = "clamp(min,value,max)"
+	override val symbol = "clamp"
 	override val propertiesCls = Properties::class
 
 	override fun onPortDisplayName(port: UIPort) = when(port.name) {
