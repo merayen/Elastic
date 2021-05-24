@@ -5,7 +5,6 @@ import net.merayen.elastic.backend.architectures.llvm.transpilercode.AllocCompon
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.system.intercom.NodePropertyMessage
-import kotlin.math.sin
 
 /**
  * Outputs signals, like a sine.
@@ -62,26 +61,38 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 			if (!hasOutlet("out")) // Outlet is not connected, no reason to output anything
 				return
 
-			if (getInletType("frequency") == Format.SIGNAL)
-				writePanic(codeWriter, "Not implemented frequency inlet")
-
-			with(codeWriter) {
-				Statement("double frequency = this->parameters.frequency")
-				Statement("double step = frequency / ${shared.sampleRate}")
-				writeLog(codeWriter, "frequency %f", "frequency")
-				If("this->parameters.type == ${Properties.Type.SINE.ordinal}") { // No frequency input for now
-					writeForEachVoice(codeWriter) {
-						Statement("double position = this->parameters.position[voice_index]")
-						writeForEachSample(codeWriter) {
-							Statement("${writeOutlet("out")}.signal[sample_index] = (float)sin(position * 2 * M_PI)")
-							Statement("position += step")
+			when (getInletType("frequency")) {
+				Format.SIGNAL -> {
+					with(codeWriter) {
+						writeForEachVoice(codeWriter) {
+							writeForEachSample(codeWriter) {
+								Statement("${writeOutlet("out")}.signal[sample_index] = (float)sin(this->parameters.position[voice_index] * 2 * M_PI)")
+								Statement("this->parameters.position[voice_index] += ${writeInlet("frequency")}.signal[sample_index] / 44100.0")
+							}
 						}
-						Statement("this->parameters.position[voice_index] = position")
 					}
 				}
-				Else {
-					writePanic(codeWriter, "Unknown operation %i", "(int)this->parameters.type")
+				null -> {
+					with(codeWriter) {
+						Statement("double frequency = this->parameters.frequency")
+						Statement("double step = frequency / ${shared.sampleRate}")
+						writeLog(codeWriter, "frequency %f", "frequency")
+						If("this->parameters.type == ${Properties.Type.SINE.ordinal}") { // No frequency input for now
+							writeForEachVoice(codeWriter) {
+								Statement("double position = this->parameters.position[voice_index]")
+								writeForEachSample(codeWriter) {
+									Statement("${writeOutlet("out")}.signal[sample_index] = (float)sin(position * 2 * M_PI)")
+									Statement("position += step")
+								}
+								Statement("this->parameters.position[voice_index] = position")
+							}
+						}
+						Else {
+							writePanic(codeWriter, "Unknown operation %i", "(int)this->parameters.type")
+						}
+					}
 				}
+				else -> {} // Whatever, we are silent
 			}
 		}
 	}
