@@ -16,6 +16,7 @@ public class UIPort extends UIObject {
 
 	private MouseHandler port_drag;
 	public final String name;
+	public String displayName;
 	public final boolean output;
 	public final UINode uinode;
 	public boolean draw_default_port = true; // Set to false if subclass wants to draw its own port instead
@@ -24,6 +25,7 @@ public class UIPort extends UIObject {
 	UIPort(String name, boolean output, UINode uinode) {
 		super();
 		this.name = name;
+		this.displayName = name;
 		this.output = output;
 		this.uinode = uinode;
 
@@ -83,9 +85,9 @@ public class UIPort extends UIObject {
 				draw.setColor(255, 255, 255);
 				draw.setFont("SansSerif", 10f);
 				if (output)
-					draw.text(name, 5f, 3);
+					draw.text(displayName, 5f, 3);
 				else
-					draw.text(name, -draw.getTextWidth(name) - 5, 3);
+					draw.text(displayName, -draw.getTextWidth(displayName) - 5, 3);
 			}
 		}
 

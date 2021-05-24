@@ -6,6 +6,7 @@ import kotlin.reflect.KClass
 val nodeRegistry = mapOf(
 	"_preprocessor" to PreProcessor::class, // Special node only used by LLVM backend
 	"add" to Add::class,
+	"clamp" to Clamp::class,
 	"cos" to Cosine::class,
 	"div" to Divide::class,
 	"group" to Group::class,

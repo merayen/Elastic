@@ -6,7 +6,7 @@ import kotlin.math.log10
 import kotlin.math.min
 import kotlin.math.pow
 
-fun prettyNumber(number: Number): String {
+fun prettyNumber(number: Number, decimalPlaces: Int = 1): String {
 	val units = arrayOf("f", "p", "n", "µ", "m", "", "K", "M", "G", "T", "P")
 	val center = 5
 
@@ -21,5 +21,5 @@ fun prettyNumber(number: Number): String {
 
 	val unitIndex = max(0, min(units.size - 1, l / 3 + center))
 
-	return "${if (num < 0) "-" else ""}${"%.1f".format(num / 10.0.pow((l / 3) * 3))}${units[unitIndex]}"
+	return "${if (num < 0) "-" else ""}${"%.${decimalPlaces}f".format(num / 10.0.pow((l / 3) * 3))}${units[unitIndex]}"
 }

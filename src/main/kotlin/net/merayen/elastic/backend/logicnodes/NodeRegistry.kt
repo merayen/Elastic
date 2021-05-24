@@ -17,6 +17,7 @@ object NodeRegistry {
 		//nodes.add("metronome_1")
 		//nodes.add("sample_1")
 		nodes.add("add_1")
+		nodes.add("clamp_1")
 		nodes.add("cos_1")
 		nodes.add("div_1")
 		nodes.add("from_midi_1")

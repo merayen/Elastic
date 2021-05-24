@@ -47,6 +47,7 @@ abstract class BaseMathUI : UINode() {
 			port.translation.y = number * 20f + 45f
 			layoutHeight = max(layoutHeight, port.translation.y + 45f)
 
+
 			val valueSelector = PopupParameter1D()
 			valueSelector.handler = object : PopupParameter1D.Handler {
 				override fun onMove(value: Float) {
@@ -56,7 +57,7 @@ abstract class BaseMathUI : UINode() {
 								propertiesCls.primaryConstructor!!.parameters.first {
 									it.name == "portValues"
 								} to portParameters.map {
-									(it.notConnected as PopupParameter1D).value.pow(2) * 1000000f
+									(it.notConnected as PopupParameter1D).value.pow(10) * 1000000f
 								}
 							)
 						)
@@ -65,7 +66,7 @@ abstract class BaseMathUI : UINode() {
 
 				override fun onChange(value: Float) {}
 
-				override fun onLabel(value: Float) = prettyNumber(value.pow(2) * 1000000f)
+				override fun onLabel(value: Float) = prettyNumber(value.pow(10) * 1000000f, 3)
 			}
 
 			val portParameter = PortParameter(this, port, valueSelector, UIObject())
@@ -75,7 +76,16 @@ abstract class BaseMathUI : UINode() {
 
 			portParameters.add(portParameter)
 
+			port.displayName = onPortDisplayName(port)
+
 		} else error("Unknown port ${port.name}")
+	}
+
+	/**
+	 * Override this to give custom display names of the ports
+	 */
+	open fun onPortDisplayName(port: UIPort): String {
+		return port.name
 	}
 
 	override fun onProperties(properties: BaseNodeProperties) {
@@ -85,7 +95,7 @@ abstract class BaseMathUI : UINode() {
 				if (size <= i)
 					break
 
-				(value.notConnected as PopupParameter1D).value = (get(i) / 1000000f).pow(.5f)
+				(value.notConnected as PopupParameter1D).value = (get(i) / 1000000f).pow(.1f)
 			}
 		}
 	}
