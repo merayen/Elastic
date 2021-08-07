@@ -29,9 +29,9 @@ class LLVMBackend(code: String, debug: Boolean = true) {
 			outputFile.delete()
 
 		val args = if (debug)
-			ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-lm", "-g", "-Wall"))
+			ProcessBuilder(listOf("clang-12", path, "-o", outputPath, "-pthread", "-lm", "-g", "-Wall"))
 		else
-			ProcessBuilder(listOf("clang-11", path, "-o", outputPath, "-pthread", "-lm", "-O3", "-Wall"))
+			ProcessBuilder(listOf("clang-12", path, "-o", outputPath, "-pthread", "-lm", "-O3", "-Wall"))
 
 		with(args) {
 			redirectOutput(ProcessBuilder.Redirect.INHERIT)

@@ -16,6 +16,8 @@ object NodeRegistry {
 		//nodes.add("histogram_1")
 		//nodes.add("metronome_1")
 		//nodes.add("sample_1")
+		nodes.add("gt_1")
+		nodes.add("lt_1")
 		nodes.add("add_1")
 		nodes.add("clamp_1")
 		nodes.add("cos_1")

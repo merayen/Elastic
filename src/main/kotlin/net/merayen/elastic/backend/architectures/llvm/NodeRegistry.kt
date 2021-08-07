@@ -10,6 +10,8 @@ val nodeRegistry = mapOf(
 	"cos" to Cosine::class,
 	"div" to Divide::class,
 	"group" to Group::class,
+	"gt" to GreaterThan::class,
+	"lt" to LessThan::class,
 	"meter" to Meter::class,
 	"midi" to Midi::class,
 	"midi_poly" to MidiPoly::class,
