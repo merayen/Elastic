@@ -17,7 +17,7 @@ private fun log(level: LogLevel, text: String) {
 	if (level.level < logLevel.level)
 		return
 
-	println("[${level.name}][${Thread.currentThread().stackTrace[3].className}]: $text")
+	println("[${level.name}][${Thread.currentThread().stackTrace[3].className}][${Thread.currentThread().stackTrace[3].lineNumber}]: $text")
 }
 
 fun logDebug(text: String) = log(LogLevel.DEBUG, text)

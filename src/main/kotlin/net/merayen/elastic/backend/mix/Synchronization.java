@@ -161,10 +161,10 @@ public class Synchronization {
 
 		statistics.awaiting_data.add((float)((System.nanoTime() - startWaitingData) / 1000000.0));
 
-		if (nextDebugPrint < System.currentTimeMillis()) {
-			System.out.printf("Total time waiting for audio from Elastic: min=%fms, avg=%fms, max=%fms\n", statistics.awaiting_data.getMin(), statistics.awaiting_data.getAvg(), statistics.awaiting_data.getMax());
-			nextDebugPrint = System.currentTimeMillis() + 1000;
-		}
+		//if (nextDebugPrint < System.currentTimeMillis()) {
+		//	System.out.printf("Total time waiting for audio from Elastic: min=%fms, avg=%fms, max=%fms\n", statistics.awaiting_data.getMin(), statistics.awaiting_data.getAvg(), statistics.awaiting_data.getMax());
+		//	nextDebugPrint = System.currentTimeMillis() + 1000;
+		//}
 
 		processing = false;
 		reportedBehind = false;

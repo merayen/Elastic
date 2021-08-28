@@ -6,6 +6,7 @@ import net.merayen.elastic.backend.context.JavaBackend
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.util.JSONObjectMapper
 import net.merayen.elastic.util.NetListMessages
+import net.merayen.elastic.util.logWarning
 
 /**
  * This is the "central control". All node-related messages from UI and processor is sent into this class.
@@ -52,6 +53,15 @@ class Supervisor(val env: JavaBackend.Environment, private val handler: Handler)
 		val project = env.project
 
 		val netlist = project.netList
+
+		if (
+			message is NodeMessage &&
+			message !is CreateNodeMessage &&
+			logicnode_list.get(message.nodeId) == null
+		) {
+			logWarning("Message received on a non-existing node")
+			return
+		}
 
 		when (message) {
 			is CreateNodeMessage -> createNode(message.node_id, message.name, message.version, message.parent)
