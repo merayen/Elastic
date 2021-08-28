@@ -24,6 +24,7 @@ object NodeRegistry {
 		nodes.add("gt_1")
 		nodes.add("in_1")
 		nodes.add("inside_1")
+		nodes.add("lever_1")
 		nodes.add("lt_1")
 		nodes.add("math_1")
 		nodes.add("meter_1")

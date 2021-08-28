@@ -12,6 +12,7 @@ val nodeRegistry = mapOf(
 	"div" to Divide::class,
 	"group" to Group::class,
 	"gt" to GreaterThan::class,
+	"lever" to Lever::class,
 	"lt" to LessThan::class,
 	"meter" to Meter::class,
 	"midi" to Midi::class,
