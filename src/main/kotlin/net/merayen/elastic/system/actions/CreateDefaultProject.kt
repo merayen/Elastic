@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.Action
 import net.merayen.elastic.system.intercom.*
 import net.merayen.elastic.system.intercom.backend.ErrorMessage
+import net.merayen.elastic.util.UniqueID
 import java.util.*
 
 /**
@@ -33,14 +34,14 @@ class CreateDefaultProject(private val message: CreateDefaultProjectMessage) : A
 		}
 
 		// Create the top-most node which will contain everything
-		send(CreateNodeMessage("group", 1, null))
+		send(CreateNodeMessage(UniqueID.create(), "group", 1, null))
 
 		// Wait until the top-most node has been created
 		waitFor { nodes.size == 1 }
 
 		// Create nodes inside our top-most node
-		send(CreateNodeMessage("wave", 1, nodes[0].node_id))
-		send(CreateNodeMessage("out", 1, nodes[0].node_id))
+		send(CreateNodeMessage(UniqueID.create(), "wave", 1, nodes[0].node_id))
+		send(CreateNodeMessage(UniqueID.create(), "out", 1, nodes[0].node_id))
 
 		// Wait until all the nodes has been reported to have been created (we receive async messages back upon backend having created them)
 		waitFor { nodes.size == 3 }

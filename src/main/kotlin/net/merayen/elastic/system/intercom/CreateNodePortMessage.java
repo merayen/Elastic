@@ -1,6 +1,7 @@
 package net.merayen.elastic.system.intercom;
 
 import net.merayen.elastic.backend.logicnodes.Format;
+import org.jetbrains.annotations.NotNull;
 
 public class CreateNodePortMessage extends NetListMessage implements NodeMessage {
 	public final String node_id;
@@ -40,7 +41,7 @@ public class CreateNodePortMessage extends NetListMessage implements NodeMessage
 	}
 
 	@Override
-	public String getNodeId() {
+	public @NotNull String getNodeId() {
 		return node_id;
 	}
 }

@@ -1,5 +1,7 @@
 package net.merayen.elastic.system.intercom;
 
+import org.jetbrains.annotations.NotNull;
+
 public class RemoveNodeMessage extends NetListMessage implements NodeMessage {
 	public final String node_id;
 
@@ -8,7 +10,7 @@ public class RemoveNodeMessage extends NetListMessage implements NodeMessage {
 	}
 
 	@Override
-	public String getNodeId() {
+	public @NotNull String getNodeId() {
 		return node_id;
 	}
 }

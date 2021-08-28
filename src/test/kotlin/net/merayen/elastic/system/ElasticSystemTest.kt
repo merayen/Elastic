@@ -7,6 +7,7 @@ import net.merayen.elastic.system.intercom.CreateNodeMessage
 import net.merayen.elastic.system.intercom.NodeConnectMessage
 import net.merayen.elastic.system.util.ElasticCommunicator
 import net.merayen.elastic.ui.JavaUI
+import net.merayen.elastic.util.UniqueID
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Test
 
@@ -48,7 +49,7 @@ internal class ElasticSystemTest {
 	fun testSimpleSineWave() {
 		val communicator = communicator!!
 
-		communicator.send(CreateNodeMessage("group", 1, null))
+		communicator.send(CreateNodeMessage(UniqueID.create(), "group", 1, null))
 
 		var topId: String? = null
 
@@ -62,8 +63,8 @@ internal class ElasticSystemTest {
 		}
 
 		// Create the nodes that will play the sine-wave
-		communicator.send(CreateNodeMessage("signalgenerator", 1, topId))
-		communicator.send(CreateNodeMessage("output", 1, topId))
+		communicator.send(CreateNodeMessage(UniqueID.create(), "signalgenerator", 1, topId))
+		communicator.send(CreateNodeMessage(UniqueID.create(), "output", 1, topId))
 
 		var signalgeneratorNodeId: String? = null
 		var outputNodeId: String? = null
