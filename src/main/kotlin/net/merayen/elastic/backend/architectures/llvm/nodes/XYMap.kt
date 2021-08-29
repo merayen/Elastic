@@ -116,7 +116,13 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 		val instance = message.instance as Properties
 
 		val curve = instance.curve
-		if (curve != null)
+		if (curve != null) {
 			SignalBezierCurve.getValues(BezierCurve.fromFlat(curve), curveFloats)
+			sendDataToDSP( 1 + curveFloats.size * 4) {
+				it.put(0) // Operation
+				for (x in curveFloats)
+					it.putFloat(x)
+			}
+		}
 	}
 }
