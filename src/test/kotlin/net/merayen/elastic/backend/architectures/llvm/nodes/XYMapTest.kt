@@ -3,7 +3,6 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 import net.merayen.elastic.backend.architectures.llvm.LLVMDSPModule
 import net.merayen.elastic.backend.logicnodes.Format
 import net.merayen.elastic.backend.logicnodes.list.group_1.Group1OutputFrameData
-import net.merayen.elastic.backend.logicnodes.list.xy_map_1.CurveData
 import net.merayen.elastic.system.intercom.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -16,8 +15,12 @@ internal class XYMapTest : LLVMNodeTest() {
 		supervisor.ingoing.send(
 			listOf(
 				NodeConnectMessage("signal1", "out", "xy_map", "fac"),
-				NodePropertyMessage("signal1", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value = 0.26f)),
-				CurveData("xy_map", (0 until 11).map { it.toFloat() }.toFloatArray()),
+				NodePropertyMessage(
+					"signal1",
+					net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties(
+						(0 until 11).map { it.toFloat() }.toList(),
+					)
+				),
 				ProcessRequestMessage(),
 			)
 		)
@@ -52,10 +55,18 @@ internal class XYMapTest : LLVMNodeTest() {
 				NodeConnectMessage("signal0", "out", "xy_map", "in"),
 				NodeConnectMessage("signal1", "out", "xy_map", "fac"),
 
-				NodePropertyMessage("signal0", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value = 100f)),
-				NodePropertyMessage("signal1", net.merayen.elastic.backend.logicnodes.list.value_1.Properties(value = 0.25f)),
-				CurveData("xy_map", (0 until 11).map { it.toFloat() }.toFloatArray()),
-
+				NodePropertyMessage(
+					"signal0",
+					net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties(
+						(0 until 11).map { it.toFloat() }.toList()
+					),
+				),
+				NodePropertyMessage(
+					"signal1",
+					net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties(
+						(0 until 11).map { it.toFloat() }.toList()
+					),
+				),
 				ProcessRequestMessage(),
 			)
 		)

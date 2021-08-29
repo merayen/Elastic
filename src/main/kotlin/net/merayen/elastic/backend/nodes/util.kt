@@ -31,7 +31,6 @@ fun createLogicNode(name: String, version: Int): BaseLogicNode {
 
 
 fun getLogicNodePropertiesClass(name: String, version: Int): Class<out BaseNodeProperties> {
-	val cls: Class<out BaseLogicNode>
 	try {
 		return Class.forName(String.format(
 				CLASS_PATH,

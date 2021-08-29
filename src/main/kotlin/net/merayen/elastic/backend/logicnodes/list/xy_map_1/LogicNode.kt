@@ -14,10 +14,6 @@ class LogicNode : BaseLogicNode() {
 	}
 
 	override fun onParameterChange(instance: BaseNodeProperties?) {
-		instance as Properties
-
-		instance.curve?.let { sendToDSP(CurveData(id, floatArrayOf(1f, 2f, 3f))) } // TODO implement
-
 		updateProperties(instance)
 	}
 

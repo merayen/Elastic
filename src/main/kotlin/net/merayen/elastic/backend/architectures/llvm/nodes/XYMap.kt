@@ -3,12 +3,17 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 import net.merayen.elastic.backend.architectures.llvm.cmethods.clamp
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.backend.logicnodes.list.xy_map_1.CurveData
+import net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.xy_map_1.StateUpdateData
 import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.system.intercom.NodePropertyMessage
+import net.merayen.elastic.util.math.BezierCurve
+import net.merayen.elastic.util.math.SignalBezierCurve
 import java.nio.ByteBuffer
 
 class XYMap(nodeId: String) : TranspilerNode(nodeId) {
+	private val curveFloats = FloatArray(256)
+
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteParameters(codeWriter: CodeWriter) {
 			with(codeWriter) {
@@ -46,7 +51,6 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 									Statement("$outLet = $inLet * this->parameters.curve[(int)roundf(${clamp(facLet)} * (this->parameters.curve_length - 1))]")
 								}
 							}
-
 						}
 						Format.AUDIO -> TODO()
 						null -> {
@@ -107,13 +111,12 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 		}
 	}
 
-	override fun onMessage(message: NodeDataMessage) {
-		if (message is CurveData) {
-			sendDataToDSP(1 + message.curve.size * 4) {
-				it.put(0)
-				for (x in message.curve)
-					it.putFloat(x)
-			}
-		}
+	override fun onMessage(message: NodePropertyMessage) {
+		super.onMessage(message)
+		val instance = message.instance as Properties
+
+		val curve = instance.curve
+		if (curve != null)
+			SignalBezierCurve.getValues(BezierCurve.fromFlat(curve), curveFloats)
 	}
 }
