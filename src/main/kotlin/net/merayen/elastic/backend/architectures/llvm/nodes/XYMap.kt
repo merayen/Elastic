@@ -48,7 +48,7 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 							val inLet = "${writeInlet("in")}.signal[sample_index]"
 							writeForEachVoice(codeWriter) {
 								writeForEachSample(codeWriter) {
-									Statement("$outLet = $inLet * this->parameters.curve[(int)roundf(${clamp(facLet)} * (this->parameters.curve_length - 1))]")
+									Statement("$outLet = $inLet * (1.0f - this->parameters.curve[(int)roundf(${clamp(facLet)} * (this->parameters.curve_length - 1))])")
 								}
 							}
 						}
@@ -57,7 +57,7 @@ class XYMap(nodeId: String) : TranspilerNode(nodeId) {
 							val outLet = "${writeOutlet("out")}.signal[sample_index]"
 							writeForEachVoice(codeWriter) {
 								writeForEachSample(codeWriter) {
-									Statement("$outLet = this->parameters.curve[(int)roundf(${clamp(facLet)} * (this->parameters.curve_length - 1))]")
+									Statement("$outLet = 1.0f - this->parameters.curve[(int)roundf(${clamp(facLet)} * (this->parameters.curve_length - 1))]")
 								}
 							}
 						}

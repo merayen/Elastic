@@ -8,8 +8,6 @@ import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxCo
 import net.merayen.elastic.ui.objects.node.Resizable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
-import net.merayen.elastic.util.math.BezierCurve
-import net.merayen.elastic.util.math.SignalBezierCurve
 import kotlin.math.max
 import kotlin.math.min
 
@@ -25,10 +23,12 @@ class UI : UINode() {
 
 		curve.bezier.setHandler(object : SignalBezierCurveBox.Handler {
 			override fun onChange() {
-				send(Properties(curve=curve.bezier.floats))
+				send(Properties(curve = curve.bezier.floats))
 			}
 
-			override fun onMove() {}
+			override fun onMove() {
+				send(Properties(curve = curve.bezier.floats))
+			}
 
 			override fun onDotClick() {}
 		})
