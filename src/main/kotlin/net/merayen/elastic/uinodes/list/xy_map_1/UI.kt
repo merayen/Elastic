@@ -5,8 +5,6 @@ import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
 import net.merayen.elastic.ui.objects.components.curvebox.MapBezierCurveBox
-import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.node.Resizable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -14,7 +12,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class UI : UINode() {
-	private val curve = SignalBezierCurveBoxControlFrame()
+	private val curve = ACSignalBezierCurveBox()
 	private val bezierGraph = MapBezierCurveBox()
 
 	override fun onInit() {
@@ -24,13 +22,13 @@ class UI : UINode() {
 
 		titlebar.title = "XY Map"
 
-		curve.bezier.handler = object : ACSignalBezierCurveBox.Handler {
+		curve.handler = object : ACSignalBezierCurveBox.Handler {
 			override fun onChange() {
-				send(Properties(curve = curve.bezier.floats))
+				send(Properties(curve = curve.floats))
 			}
 
 			override fun onMove() {
-				send(Properties(curve = curve.bezier.floats))
+				send(Properties(curve = curve.floats))
 			}
 
 			override fun onDotClick() {}
@@ -82,7 +80,7 @@ class UI : UINode() {
 
 		val curve = properties.curve
 		if (curve != null)
-			this.curve.bezier.setPoints(curve)
+			this.curve.setPoints(curve)
 	}
 
 	override fun onData(message: NodeDataMessage) {}

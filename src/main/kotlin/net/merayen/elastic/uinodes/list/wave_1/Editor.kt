@@ -9,8 +9,6 @@ import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
 import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
-import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
 
 class Editor(nodeId: String) : NodeEditor(nodeId) {
@@ -47,19 +45,18 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		val curveData = data.curve
 
 		if (curveData != null) {
-			curve.bezier.setPoints(curveData)
+			curve.setPoints(curveData)
 		}
-
 	}
 
-	private fun createBezierWave(): SignalBezierCurveBoxControlFrame {
-		val bwb = SignalBezierCurveBoxControlFrame()
+	private fun createBezierWave(): ACSignalBezierCurveBox {
+		val bwb = ACSignalBezierCurveBox()
 		bwb.translation.x = 20f
 		bwb.translation.y = 40f
 		bwb.layoutWidth = 160f
 		bwb.layoutHeight = 100f
 
-		bwb.bezier.handler = object : ACSignalBezierCurveBox.Handler {
+		bwb.handler = object : ACSignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() = send()
 
@@ -70,7 +67,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 
 			override fun onDotClick() {}
 
-			private fun send() = sendMessage(NodePropertyMessage(nodeId, Properties(curve = bwb.bezier.floats)))
+			private fun send() = sendMessage(NodePropertyMessage(nodeId, Properties(curve = bwb.floats)))
 		}
 
 		return bwb

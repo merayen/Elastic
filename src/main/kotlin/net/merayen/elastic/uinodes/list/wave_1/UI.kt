@@ -7,8 +7,6 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
 import net.merayen.elastic.ui.objects.components.PopupParameter1D
 import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
-import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.components.framework.PortParameter
 import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.node.UINode
@@ -17,7 +15,7 @@ import kotlin.math.pow
 
 class UI : UINode(), INodeEditable {
 	private var frequencyPortParameter: PortParameter? = null
-	private lateinit var curve: SignalBezierCurveBoxControlFrame
+	private lateinit var curve: ACSignalBezierCurveBox
 
 	private val frequency: Float
 		get() = ((frequencyPortParameter!!.notConnected as PopupParameter1D).value * 10).toDouble().pow(4.301029995663981)
@@ -54,7 +52,7 @@ class UI : UINode(), INodeEditable {
 			}
 
 			if (curveData != null)
-				curve.bezier.setPoints(curveData)
+				curve.setPoints(curveData)
 
 			// TODO should probably fix this...? What does it do? Why are we not just using frequency? Due to amplitude?
 			//	instance.key == "data.InputSignalParameters:frequency" ->
@@ -102,7 +100,7 @@ class UI : UINode(), INodeEditable {
 	}
 
 	private fun createBezierWave() {
-		val bwb = SignalBezierCurveBoxControlFrame()
+		val bwb = ACSignalBezierCurveBox()
 		bwb.translation.x = 20f
 		bwb.translation.y = 60f
 		bwb.layoutWidth = 160f
@@ -110,15 +108,15 @@ class UI : UINode(), INodeEditable {
 		add(bwb)
 		curve = bwb
 
-		bwb.bezier.handler = object : ACSignalBezierCurveBox.Handler {
+		bwb.handler = object : ACSignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() {
-				send(Properties(curve = bwb.bezier.floats))
+				send(Properties(curve = bwb.floats))
 			}
 
 			override fun onMove() {
 				if (i++ % 10 == 0) // FIXME Should really be based on time
-					send(Properties(curve = bwb.bezier.floats))
+					send(Properties(curve = bwb.floats))
 			}
 
 			override fun onDotClick() {}
