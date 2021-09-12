@@ -254,13 +254,11 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		start.left_dot.visible = false
 		//start.position.visible = false
 		start.position.translation.x = 0f
-		start.position.translation.y = 0.5f
 
 		val stop = getBezierPoint(curve.pointCount - 1)
 		//stop.position.visible = false
 		stop.right_dot.visible = false
 		stop.position.translation.x = 1f
-		stop.position.translation.y = 0.5f
 
 		offset = getOffset()
 	}
