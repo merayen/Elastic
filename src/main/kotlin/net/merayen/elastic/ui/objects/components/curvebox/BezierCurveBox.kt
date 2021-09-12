@@ -4,12 +4,20 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.Rect
 import net.merayen.elastic.ui.UIObject
+import net.merayen.elastic.ui.event.MouseEvent
 import net.merayen.elastic.ui.event.UIEvent
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenu
+import net.merayen.elastic.ui.objects.contextmenu.ContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.EmptyContextMenuItem
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.util.Movable
 import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.Point
+import net.merayen.elastic.util.logWarning
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 
 // TODO make more generic, UI-wise
@@ -31,6 +39,10 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 	val pointCount: Int
 		get() = points.size
+
+	val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
+	val contextMenuItemAdd = TextContextMenuItem("Add")
+	val contextMenuItemRemove = TextContextMenuItem("Remove")
 
 	/**
 	 * Gets all points as a flat list of floats in this format: [p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, ...]
@@ -69,12 +81,24 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		 * When user clicks
 		 */
 		fun onSelect(dot: BezierDotDragable)
+
+		/**
+		 * User wants to add a new point at position x and y
+		 */
+		fun onAdd(x: Float, y: Float)
+
+		/**
+		 * User wants to remove a point
+		 *
+		 * Return true if point should be removed.
+		 */
+		fun onRemove(point: BezierDot)
 	}
 
 	inner class BezierDot : UIObject() {
-		var position = BezierDotDragable(this)
-		var left_dot = BezierDotDragable(this)
-		var right_dot = BezierDotDragable(this)
+		var position = BezierDotDragable(this, false)
+		var left_dot = BezierDotDragable(this, true)
+		var right_dot = BezierDotDragable(this, true)
 
 		init {
 			add(position)
@@ -94,21 +118,28 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		}
 	}
 
-	inner class BezierDotDragable internal constructor(private val point: BezierDot) : UIObject() {
+	inner class BezierDotDragable internal constructor(
+		private val point: BezierDot,
+		private val isHandle: Boolean
+	) : UIObject() {
 		val color = MutableColor(255, 200, 0)
 		var radius = 0.05f
 
 		lateinit var movable: Movable
 		var visible = true // Set to false to hide the dot (not possible to move it)
 
+		val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
+
+		private val contextMenuItemRemove = TextContextMenuItem("Remove")
+
 		override fun onInit() {
 			val self = this
 
-			movable = Movable(this, this)
+			movable = Movable(this, this, MouseEvent.Button.LEFT)
 			movable.setHandler(object : Movable.IMoveable {
 				override fun onMove() {
-					translation.x = Math.max(0f, Math.min(1f, translation.x))
-					translation.y = Math.max(0f, Math.min(1f, translation.y))
+					translation.x = max(0f, min(1f, translation.x))
+					translation.y = max(0f, min(1f, translation.y))
 					handler?.onMove(point)
 				}
 
@@ -120,11 +151,24 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 					handler?.onChange()
 				}
 			})
+
+			if (!isHandle) {
+				for (i in 0 until 4)
+					contextMenu.addMenuItem(EmptyContextMenuItem())
+
+				contextMenu.addMenuItem(contextMenuItemRemove)
+				contextMenu.handler = object : ContextMenu.Handler {
+					override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
+						handler?.onRemove(point)
+					}
+
+					override fun onMouseDown(position: MutablePoint) {}
+				}
+			}
 		}
 
 		override fun onDraw(draw: Draw) {
 			if (visible) {
-				//val radius = max(layoutWidth / layoutHeight, layoutHeight / layoutWidth) * 0.05f
 				val rY = radius * (layoutWidth / layoutHeight).pow(0.5f)
 				val rX = radius * (layoutHeight / layoutWidth).pow(0.5f)
 				draw.setColor(color.red, color.green, color.blue)
@@ -133,8 +177,10 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		}
 
 		override fun onEvent(event: UIEvent) {
-			if (visible)
+			if (visible) {
 				movable.handle(event)
+				contextMenu.handle(event)
+			}
 		}
 	}
 
@@ -144,6 +190,24 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 	override fun onInit() {
 		add(background, 0)
+
+		contextMenu.addMenuItem(contextMenuItemAdd)
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(EmptyContextMenuItem())
+		contextMenu.addMenuItem(contextMenuItemRemove)
+		contextMenu.handler = object : ContextMenu.Handler {
+			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
+				when (item) {
+					// Figure out where to insert the point
+					contextMenuItemAdd -> {
+						handler?.onAdd(position.x, position.y)
+					}
+				}
+			}
+
+			override fun onMouseDown(position: MutablePoint) {}
+		}
 	}
 
 	private fun initPoints() {  // FIXME This should perhaps not be here? Could allow whatever bezier...?
@@ -203,13 +267,22 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		//drawDiagnostics();
 	}
 
+	override fun onEvent(event: UIEvent) {
+		contextMenu.handle(event)
+	}
+
 	private fun drawDotLines(draw: Draw) {
 		draw.setStroke(1 / (layoutWidth + layoutHeight))
 		draw.setColor(200, 180, 0)
 
 		for (bp in points) {
 			if (bp.left_dot.visible)
-				draw.line(bp.position.translation.x, bp.position.translation.y, bp.left_dot.translation.x, bp.left_dot.translation.y)
+				draw.line(
+					bp.position.translation.x,
+					bp.position.translation.y,
+					bp.left_dot.translation.x,
+					bp.left_dot.translation.y
+				)
 
 			if (bp.right_dot.visible)
 				draw.line(bp.position.translation.x, bp.position.translation.y, bp.right_dot.translation.x, bp.right_dot.translation.y)
@@ -229,6 +302,18 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		add(bpa)
 
 		return bpa
+	}
+
+	fun removePoint(index: Int) {
+		val point = points.removeAt(index)
+		point.parent?.remove(point)
+	}
+
+	fun removePoint(point: BezierDot) {
+		val index = points.indexOf(point)
+		if (index > -1) {
+			removePoint(index)
+		} else logWarning("Could not find point")
 	}
 
 	fun getBezierPoint(index: Int): BezierDot {

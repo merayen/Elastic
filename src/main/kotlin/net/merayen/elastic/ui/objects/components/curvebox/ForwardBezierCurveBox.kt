@@ -4,9 +4,12 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDot
 import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierDotDragable
+import net.merayen.elastic.util.ImmutablePoint
 import net.merayen.elastic.util.MutablePoint
+import net.merayen.elastic.util.logWarning
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
+import kotlin.math.max
 
 /**
  * Bézier curve that can not point backwards (in e.g time).
@@ -81,18 +84,65 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 				constrainPoint(point)
 				offset = getOffset()
 
-				if (handler != null)
-					handler!!.onMove()
+					handler?.onMove()
 			}
 
 			override fun onChange() {
 				moving = false
-				if (handler != null)
-					handler!!.onChange()
+				handler?.onChange()
+
+				constrainAllPoints()
 			}
 
 			override fun onSelect(dot: BezierDotDragable) {
 				dot.color.red = 0.15f
+			}
+
+			override fun onAdd(x: Float, y: Float) {
+				val before = curve.bezierPoints.indexOfLast { it.position.translation.x <= x }
+				val after = curve.bezierPoints.indexOfFirst { it.position.translation.x > x }
+				val points = curve.bezierPoints
+
+				if (after == 0) {
+					logWarning("Should never place a point before first point")
+					return
+				}
+
+				if (before == points.size - 1) {
+					logWarning("Should never place a point after the last point")
+					return
+				}
+
+				val beforePosition = if (before > -1) {
+					ImmutablePoint(points[before].position.translation.x, points[before].position.translation.y)
+				} else {
+					ImmutablePoint(0f, 1f)
+				}
+
+				val afterPosition = if (after > -1) {
+					ImmutablePoint(points[after].position.translation.x, points[after].position.translation.y)
+				} else {
+					ImmutablePoint(1f, 0f)
+				}
+
+				val point = curve.insertPoint(max(0, after))
+
+				// FIXME maybe place the left and right handles according to the existing curvature?
+				point.position.translation.x = (afterPosition.x - beforePosition.x) / 2 + beforePosition.x
+				point.position.translation.y = (afterPosition.y - beforePosition.y) / 2 + beforePosition.y
+				point.left_dot.translation.x = beforePosition.x + (afterPosition.x - beforePosition.x) / 4
+				point.left_dot.translation.y = beforePosition.y + (afterPosition.y - beforePosition.y) / 4
+				point.right_dot.translation.x = afterPosition.x - (afterPosition.x - beforePosition.x) / 4
+				point.right_dot.translation.y = afterPosition.y - (afterPosition.y - beforePosition.y) / 4
+
+				constrainAllPoints()
+
+				handler?.onChange()
+			}
+
+			override fun onRemove(point: BezierDot) {
+				curve.removePoint(point)
+				handler?.onChange()
 			}
 		}
 
