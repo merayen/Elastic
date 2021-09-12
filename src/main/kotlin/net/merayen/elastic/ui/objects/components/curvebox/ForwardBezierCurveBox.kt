@@ -7,14 +7,11 @@ import net.merayen.elastic.ui.objects.components.curvebox.BezierCurveBox.BezierD
 import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
-import kotlin.math.min
 
 /**
- * Bezier curve for shaping signals.
- * It limits how the curve can be managed.
+ * Bézier curve that can not point backwards (in e.g time).
  */
-class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out from test_100
-
+class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	var layoutWidth = 100f
 	var layoutHeight = 100f
 
@@ -214,7 +211,6 @@ class SignalBezierCurveBox : UIObject(), BezierCurveBoxInterface { // Move out f
 	}
 
 	companion object {
-
 		private const val OFFSET_LINE_RESOLUTION = 100
 	}
 }

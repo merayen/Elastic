@@ -3,7 +3,9 @@ package net.merayen.elastic.uinodes.list.xy_map_1
 import net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.MapBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.node.Resizable
 import net.merayen.elastic.ui.objects.node.UINode
@@ -13,15 +15,16 @@ import kotlin.math.min
 
 class UI : UINode() {
 	private val curve = SignalBezierCurveBoxControlFrame()
+	private val bezierGraph = MapBezierCurveBox()
 
 	override fun onInit() {
 		super.onInit()
 		layoutWidth = 200f
-		layoutHeight = 160f
+		layoutHeight = 300f
 
 		titlebar.title = "XY Map"
 
-		curve.bezier.setHandler(object : SignalBezierCurveBox.Handler {
+		curve.bezier.handler = object : ACSignalBezierCurveBox.Handler {
 			override fun onChange() {
 				send(Properties(curve = curve.bezier.floats))
 			}
@@ -31,11 +34,15 @@ class UI : UINode() {
 			}
 
 			override fun onDotClick() {}
-		})
+		}
 
 		curve.translation.x = 10f
 		curve.translation.y = 20f
 		add(curve)
+
+		bezierGraph.translation.x = 10f
+		bezierGraph.translation.y = 160f
+		add(bezierGraph)
 
 		add(
 			Resizable(
@@ -84,6 +91,9 @@ class UI : UINode() {
 		getPort("out")?.translation?.x = layoutWidth
 		getPort("fac")?.translation?.y = layoutHeight - 20f
 		curve.layoutWidth = layoutWidth - 20f
-		curve.layoutHeight = layoutHeight - 60f
+		curve.layoutHeight = layoutHeight / 2f - 60f
+
+		bezierGraph.layoutWidth = layoutWidth - 20f
+		bezierGraph.layoutHeight = layoutHeight - 60f - 160f
 	}
 }

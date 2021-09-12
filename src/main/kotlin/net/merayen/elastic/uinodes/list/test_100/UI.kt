@@ -3,7 +3,7 @@ package net.merayen.elastic.uinodes.list.test_100
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
 
@@ -21,7 +21,7 @@ class UI : UINode() {
 
 	override fun onInit() {
 		super.onInit()
-		val bwb = SignalBezierCurveBox()
+		val bwb = ForwardBezierCurveBox()
 		bwb.translation.x = 20f
 		bwb.translation.y = 30f
 		add(bwb)

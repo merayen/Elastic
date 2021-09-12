@@ -8,7 +8,8 @@ import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.components.autolayout.AutoLayout
 import net.merayen.elastic.ui.objects.components.autolayout.LayoutMethods
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.nodeeditor.NodeEditor
 
@@ -58,7 +59,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 		bwb.layoutWidth = 160f
 		bwb.layoutHeight = 100f
 
-		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
+		bwb.bezier.handler = object : ACSignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() = send()
 
@@ -70,7 +71,7 @@ class Editor(nodeId: String) : NodeEditor(nodeId) {
 			override fun onDotClick() {}
 
 			private fun send() = sendMessage(NodePropertyMessage(nodeId, Properties(curve = bwb.bezier.floats)))
-		})
+		}
 
 		return bwb
 	}

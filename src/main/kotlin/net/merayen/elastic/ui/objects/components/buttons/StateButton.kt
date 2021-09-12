@@ -3,6 +3,9 @@ package net.merayen.elastic.ui.objects.components.buttons
 import net.merayen.elastic.ui.MutableColor
 import net.merayen.elastic.ui.UIObject
 
+/**
+ * A button that toggles
+ */
 open class StateButton : UIObject() {
 	interface Handler {
 		fun onClick(value: Boolean)

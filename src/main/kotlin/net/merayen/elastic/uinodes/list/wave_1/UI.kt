@@ -6,7 +6,8 @@ import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
 import net.merayen.elastic.ui.objects.components.PopupParameter1D
-import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
+import net.merayen.elastic.ui.objects.components.curvebox.ForwardBezierCurveBox
 import net.merayen.elastic.ui.objects.components.curvebox.SignalBezierCurveBoxControlFrame
 import net.merayen.elastic.ui.objects.components.framework.PortParameter
 import net.merayen.elastic.ui.objects.node.INodeEditable
@@ -109,7 +110,7 @@ class UI : UINode(), INodeEditable {
 		add(bwb)
 		curve = bwb
 
-		bwb.bezier.setHandler(object : SignalBezierCurveBox.Handler {
+		bwb.bezier.handler = object : ACSignalBezierCurveBox.Handler {
 			var i: Int = 0
 			override fun onChange() {
 				send(Properties(curve = bwb.bezier.floats))
@@ -121,7 +122,7 @@ class UI : UINode(), INodeEditable {
 			}
 
 			override fun onDotClick() {}
-		})
+		}
 	}
 
 	override fun onData(message: NodeDataMessage) {}

@@ -10,7 +10,6 @@ import net.merayen.elastic.util.MutablePoint
 import net.merayen.elastic.util.Point
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
-import java.util.*
 import kotlin.math.pow
 
 // TODO make more generic, UI-wise
@@ -147,7 +146,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		add(background, 0)
 	}
 
-	private fun initPoints() {
+	private fun initPoints() {  // FIXME This should perhaps not be here? Could allow whatever bezier...?
 		val start = BezierDot()
 		start.position.translation.y = 0.5f
 		start.right_dot.translation.x = 0.5f
@@ -218,10 +217,10 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	}
 
 	override fun insertPoint(before_index: Int): BezierDot {
-		if (before_index < 1)
+		if (before_index < 1)  // FIXME Maybe not here, as we should support circular beziers
 			throw RuntimeException("Can not insert before the first point as it is fixed")
 
-		if (before_index > points.size - 1)
+		if (before_index > points.size - 1)  // FIXME Maybe not here, as we should support circular beziers
 			throw RuntimeException("Can not add after the last point as it is fixed")
 
 		val bpa = BezierDot()
