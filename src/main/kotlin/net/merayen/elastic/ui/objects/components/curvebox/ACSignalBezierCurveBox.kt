@@ -48,8 +48,26 @@ class ACSignalBezierCurveBox : UIObject(), BezierCurveBoxInterface, FlexibleDime
 	}
 
 	override fun insertPoint(before_index: Int): BezierCurveBox.BezierDot {
-		return curve.insertPoint(before_index)
+		val point = curve.insertPoint(before_index)
+		constrainPoints()
+		return point
 	}
 
-	fun setPoints(new_points: List<Float>) = curve.setPoints(new_points)
+	fun setPoints(new_points: List<Float>) {
+		curve.setPoints(new_points)
+		constrainPoints()
+	}
+
+	private fun constrainPoints() {
+		val first = curve.getBezierPoint(0)
+		val last = curve.getBezierPoint(curve.pointCount - 1)
+
+		first.position.visible = false
+		first.position.translation.x = 0f
+		first.position.translation.y = 0.5f
+
+		last.position.visible = false
+		last.position.translation.x = 1f
+		last.position.translation.y = 0.5f
+	}
 }

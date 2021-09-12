@@ -48,5 +48,8 @@ class MapBezierCurveBox : UIObject(), BezierCurveBoxInterface, FlexibleDimension
 
 	fun setPoints(points: List<Float>) {
 		curve.setPoints(points)
+
+		val first = curve.getBezierPoint(0)
+		val last = curve.getBezierPoint(curve.pointCount - 1)
 	}
 }

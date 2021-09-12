@@ -13,6 +13,8 @@ import kotlin.math.max
 
 /**
  * Bézier curve that can not point backwards (in e.g time).
+ *
+ * First point is fixed at the left side (0.0f), and the last point is fixed at the right side (1f)
  */
 class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	var layoutWidth = 100f
@@ -45,6 +47,9 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	val floats: List<Float>
 		get() = curve.floats
 
+	val pointCount: Int
+		get() = curve.pointCount
+
 	interface Handler {
 		/**
 		 * Called when user has changed the curve.
@@ -72,8 +77,8 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 	init {
 		// We do not allow user moving the start and stop point
-		curve.getBezierPoint(0).position.visible = false
-		curve.getBezierPoint(1).position.visible = false
+		getBezierPoint(0).position.visible = false
+		getBezierPoint(1).position.visible = false
 	}
 
 	override fun onInit() {
@@ -158,8 +163,8 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	}
 
 	override fun insertPoint(index: Int): BezierDot {
-		val before = curve.getBezierPoint(index - 1)
-		val after = curve.getBezierPoint(index)
+		val before = getBezierPoint(index - 1)
+		val after = getBezierPoint(index)
 
 		val bpa = curve.insertPoint(1)
 
@@ -192,7 +197,7 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 		// Constrain X-axis for both handles on the point, to the points around
 		if (index > 0) {
-			val before = curve.getBezierPoint(index - 1)
+			val before = getBezierPoint(index - 1)
 			if (point.left_dot.translation.x < before.position.translation.x)
 				point.left_dot.translation.x = before.position.translation.x
 
@@ -204,7 +209,7 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		}
 
 		if (index < curve.pointCount - 1) {
-			val after = curve.getBezierPoint(index + 1)
+			val after = getBezierPoint(index + 1)
 
 			if (point.right_dot.translation.x > after.position.translation.x)
 				point.right_dot.translation.x = after.position.translation.x
@@ -245,20 +250,22 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 		curve.setPoints(new_points)
 
-		val start = curve.getBezierPoint(0)
+		val start = getBezierPoint(0)
 		start.left_dot.visible = false
-		start.position.visible = false
+		//start.position.visible = false
 		start.position.translation.x = 0f
 		start.position.translation.y = 0.5f
 
-		val stop = curve.getBezierPoint(curve.pointCount - 1)
-		stop.position.visible = false
+		val stop = getBezierPoint(curve.pointCount - 1)
+		//stop.position.visible = false
 		stop.right_dot.visible = false
 		stop.position.translation.x = 1f
 		stop.position.translation.y = 0.5f
 
 		offset = getOffset()
 	}
+
+	fun getBezierPoint(index: Int) = curve.getBezierPoint(index)
 
 	companion object {
 		private const val OFFSET_LINE_RESOLUTION = 100
