@@ -1,4 +1,4 @@
-package net.merayen.elastic.backend.logicnodes.list.xy_map_1
+package net.merayen.elastic.backend.logicnodes.list.xmap_1
 
 import net.merayen.elastic.system.intercom.NodeDataMessage
 

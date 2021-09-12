@@ -3,15 +3,15 @@ package net.merayen.elastic.backend.architectures.llvm.nodes
 import net.merayen.elastic.backend.architectures.llvm.cmethods.clamp
 import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.logicnodes.Format
-import net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties
-import net.merayen.elastic.backend.logicnodes.list.xy_map_1.StateUpdateData
+import net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties
+import net.merayen.elastic.backend.logicnodes.list.xmap_1.StateUpdateData
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.system.intercom.NodePropertyMessage
 import net.merayen.elastic.util.math.BezierCurve
 import net.merayen.elastic.util.math.SignalBezierCurve
 import java.nio.ByteBuffer
 
-class XYMap(nodeId: String) : TranspilerNode(nodeId) {
+class XMap(nodeId: String) : TranspilerNode(nodeId) {
 	private val curveFloats = FloatArray(256)
 
 	override val nodeClass = object : NodeClass() {

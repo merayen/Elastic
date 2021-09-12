@@ -31,7 +31,7 @@ val nodeRegistry = mapOf(
 	"to_audio" to ToAudio::class,
 	"value" to Value::class,
 	"wave" to Wave::class,
-	"xy_map" to XYMap::class,
+	"xmap" to XMap::class,
 	//"elapsed" to Elapsed::class,
 	//"multiply" to Multiply::class,
 	//"sine" to Sine::class,

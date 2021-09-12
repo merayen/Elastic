@@ -1,9 +1,8 @@
-package net.merayen.elastic.uinodes.list.xy_map_1
+package net.merayen.elastic.uinodes.list.xmap_1
 
-import net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties
+import net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
-import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
 import net.merayen.elastic.ui.objects.components.curvebox.MapBezierCurveBox
 import net.merayen.elastic.ui.objects.node.Resizable
 import net.merayen.elastic.ui.objects.node.UINode
@@ -17,9 +16,9 @@ class UI : UINode() {
 	override fun onInit() {
 		super.onInit()
 		layoutWidth = 200f
-		layoutHeight = 300f
+		layoutHeight = 200f
 
-		titlebar.title = "XY Map"
+		titlebar.title = "X Map"
 
 		bezierGraph.handler = object : MapBezierCurveBox.Handler {
 			override fun onChange() {

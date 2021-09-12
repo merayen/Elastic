@@ -1,4 +1,4 @@
-package net.merayen.elastic.uinodes.list.xy_map_1
+package net.merayen.elastic.uinodes.list.xmap_1
 
 import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.FlexibleDimension

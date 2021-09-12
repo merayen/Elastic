@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.math.abs
 
-internal class XYMapTest : LLVMNodeTest() {
+internal class XMapTest : LLVMNodeTest() {
 	@Test
 	fun `fac input`() {
 		val supervisor = init()
@@ -17,7 +17,7 @@ internal class XYMapTest : LLVMNodeTest() {
 				NodeConnectMessage("signal1", "out", "xy_map", "fac"),
 				NodePropertyMessage(
 					"signal1",
-					net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties(
+					net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties(
 						(0 until 11).map { it.toFloat() }.toList(),
 					)
 				),
@@ -57,13 +57,13 @@ internal class XYMapTest : LLVMNodeTest() {
 
 				NodePropertyMessage(
 					"signal0",
-					net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties(
+					net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties(
 						(0 until 11).map { it.toFloat() }.toList()
 					),
 				),
 				NodePropertyMessage(
 					"signal1",
-					net.merayen.elastic.backend.logicnodes.list.xy_map_1.Properties(
+					net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties(
 						(0 until 11).map { it.toFloat() }.toList()
 					),
 				),
