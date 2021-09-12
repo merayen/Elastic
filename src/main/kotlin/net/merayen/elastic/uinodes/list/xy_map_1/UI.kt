@@ -12,7 +12,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 class UI : UINode() {
-	private val curve = ACSignalBezierCurveBox()
 	private val bezierGraph = MapBezierCurveBox()
 
 	override fun onInit() {
@@ -22,24 +21,18 @@ class UI : UINode() {
 
 		titlebar.title = "XY Map"
 
-		curve.handler = object : ACSignalBezierCurveBox.Handler {
+		bezierGraph.handler = object : MapBezierCurveBox.Handler {
 			override fun onChange() {
-				send(Properties(curve = curve.floats))
+				send(Properties(curve = bezierGraph.floats))
 			}
 
 			override fun onMove() {
-				send(Properties(curve = curve.floats))
+				send(Properties(curve = bezierGraph.floats))
 			}
-
-			override fun onDotClick() {}
 		}
 
-		curve.translation.x = 10f
-		curve.translation.y = 20f
-		add(curve)
-
 		bezierGraph.translation.x = 10f
-		bezierGraph.translation.y = 160f
+		bezierGraph.translation.y = 20f
 		add(bezierGraph)
 
 		add(
@@ -80,7 +73,7 @@ class UI : UINode() {
 
 		val curve = properties.curve
 		if (curve != null)
-			this.curve.setPoints(curve)
+			this.bezierGraph.setPoints(curve)
 	}
 
 	override fun onData(message: NodeDataMessage) {}
@@ -88,10 +81,7 @@ class UI : UINode() {
 	private fun updateLayout() {
 		getPort("out")?.translation?.x = layoutWidth
 		getPort("fac")?.translation?.y = layoutHeight - 20f
-		curve.layoutWidth = layoutWidth - 20f
-		curve.layoutHeight = layoutHeight / 2f - 60f
-
 		bezierGraph.layoutWidth = layoutWidth - 20f
-		bezierGraph.layoutHeight = layoutHeight - 60f - 160f
+		bezierGraph.layoutHeight = layoutHeight - 60f
 	}
 }

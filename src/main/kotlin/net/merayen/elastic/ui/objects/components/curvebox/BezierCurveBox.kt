@@ -42,7 +42,6 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 
 	val contextMenu = ContextMenu(this, MouseEvent.Button.RIGHT)
 	val contextMenuItemAdd = TextContextMenuItem("Add")
-	val contextMenuItemRemove = TextContextMenuItem("Remove")
 
 	/**
 	 * Gets all points as a flat list of floats in this format: [p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, ...]
@@ -159,7 +158,9 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 				contextMenu.addMenuItem(contextMenuItemRemove)
 				contextMenu.handler = object : ContextMenu.Handler {
 					override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
-						handler?.onRemove(point)
+						if (item == contextMenuItemRemove) {
+							handler?.onRemove(point)
+						}
 					}
 
 					override fun onMouseDown(position: MutablePoint) {}
@@ -195,7 +196,7 @@ class BezierCurveBox : UIObject(), BezierCurveBoxInterface {
 		contextMenu.addMenuItem(EmptyContextMenuItem())
 		contextMenu.addMenuItem(EmptyContextMenuItem())
 		contextMenu.addMenuItem(EmptyContextMenuItem())
-		contextMenu.addMenuItem(contextMenuItemRemove)
+		contextMenu.addMenuItem(EmptyContextMenuItem())
 		contextMenu.handler = object : ContextMenu.Handler {
 			override fun onSelect(item: ContextMenuItem?, position: MutablePoint) {
 				when (item) {

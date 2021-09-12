@@ -13,10 +13,24 @@ class MapBezierCurveBox : UIObject(), BezierCurveBoxInterface, FlexibleDimension
 
 	private val curve = ForwardBezierCurveBox()
 
+	interface Handler {
+		fun onChange()
+		fun onMove()
+	}
+
+	var handler: Handler? = null
+
+	val floats: List<Float>
+		get() = curve.floats
+
 	override fun onInit() {
 		curve.setHandler(object : ForwardBezierCurveBox.Handler {
-			override fun onChange() {}
-			override fun onMove() {}
+			override fun onChange() {
+				handler?.onChange()
+			}
+			override fun onMove() {
+				handler?.onMove()
+			}
 			override fun onDotClick() {}
 		})
 
@@ -30,5 +44,9 @@ class MapBezierCurveBox : UIObject(), BezierCurveBoxInterface, FlexibleDimension
 	override fun onUpdate() {
 		curve.layoutWidth = layoutWidth
 		curve.layoutHeight = layoutHeight
+	}
+
+	fun setPoints(points: List<Float>) {
+		curve.setPoints(points)
 	}
 }
