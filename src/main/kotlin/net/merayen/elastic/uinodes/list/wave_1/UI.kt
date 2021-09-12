@@ -38,7 +38,7 @@ class UI : UINode(), INodeEditable {
 			port.translation.x = layoutWidth
 
 		draw.setColor(0f, 0f, 0f)
-		draw.fillRect(20f, 80f, 160f, 80f)
+		draw.fillRect(10f, 50f, layoutWidth - 20f, layoutHeight - 50f - 10f)
 	}
 
 	override fun onProperties(properties: BaseNodeProperties) {
@@ -73,7 +73,7 @@ class UI : UINode(), INodeEditable {
 				)
 			}
 			frequencyPortParameter = PortParameter(this, getPort("frequency")!!, PopupParameter1D(), isp)
-			frequencyPortParameter!!.translation.x = 20f
+			frequencyPortParameter!!.translation.x = 10f
 			frequencyPortParameter!!.translation.y = 20f
 			add(frequencyPortParameter!!)
 
@@ -101,10 +101,10 @@ class UI : UINode(), INodeEditable {
 
 	private fun createBezierWave() {
 		val bwb = ACSignalBezierCurveBox()
-		bwb.translation.x = 20f
-		bwb.translation.y = 60f
-		bwb.layoutWidth = 160f
-		bwb.layoutHeight = 100f
+		bwb.translation.x = 10f
+		bwb.translation.y = 50f
+		bwb.layoutWidth = layoutWidth - 20f
+		bwb.layoutHeight = layoutHeight - 50f - 10f
 		add(bwb)
 		curve = bwb
 
