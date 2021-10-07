@@ -14,7 +14,7 @@ import kotlin.reflect.full.primaryConstructor
 
 class LLVMDSPModule : DSPModule() {
 	var nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry
-	var debug: Boolean = true
+	var debug: Boolean = false
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null
 	private var upcomingNetList: NetList? = null

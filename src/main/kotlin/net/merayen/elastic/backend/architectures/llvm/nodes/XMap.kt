@@ -76,6 +76,13 @@ class XMap(nodeId: String) : TranspilerNode(nodeId) {
 					sendDataToBackend(codeWriter, "1 + ${shared.voiceCount} * 4") {
 						Statement("*(char *)$it = 0")
 						Member("float*", "positions = (float *)($it + 1)")
+
+						// Set all voices to -1.0 that will not be shown
+						For("int i = 0", "i < ${shared.voiceCount}", "i++") {
+							Statement("positions[i] = -1.0f")
+						}
+
+						// Then write the last sample position into it
 						writeForEachVoice(codeWriter) {
 							Statement("positions[voice_index] = ${writeInlet("fac")}.signal[${frameSize - 1}]")
 						}

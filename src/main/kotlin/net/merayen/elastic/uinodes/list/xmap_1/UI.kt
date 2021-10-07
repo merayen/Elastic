@@ -4,6 +4,7 @@ import net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties
 import net.merayen.elastic.backend.logicnodes.list.xmap_1.StateUpdateData
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
+import net.merayen.elastic.ui.Draw
 import net.merayen.elastic.ui.objects.components.curvebox.MapBezierCurveBox
 import net.merayen.elastic.ui.objects.node.Resizable
 import net.merayen.elastic.ui.objects.node.UINode
@@ -13,6 +14,7 @@ import kotlin.math.min
 
 class UI : UINode() {
 	private val bezierGraph = MapBezierCurveBox()
+	private var xPositions = FloatArray(0)
 
 	override fun onInit() {
 		super.onInit()
@@ -64,6 +66,20 @@ class UI : UINode() {
 
 	override fun onRemovePort(port: UIPort) {}
 
+	override fun onDraw(draw: Draw) {
+		super.onDraw(draw)
+		draw.setColor(0f, 1f, 0f)
+		draw.setStroke(2f)
+		draw.disableOutline()
+		for (pos in xPositions) {
+			if (pos >= 0f) {
+				val x = bezierGraph.translation.x + max(0f, min(1f, pos)) * (bezierGraph.layoutWidth)
+				draw.line(x, bezierGraph.translation.y, x, bezierGraph.translation.y + bezierGraph.layoutHeight)
+			}
+		}
+		draw.enableOutline()
+	}
+
 	override fun onProperties(properties: BaseNodeProperties) {
 		properties as Properties
 
@@ -78,7 +94,7 @@ class UI : UINode() {
 
 	override fun onData(message: NodeDataMessage) {
 		if (message is StateUpdateData) {
-			// TODO draw into ui
+			xPositions = message.positions.copyOf()
 		}
 	}
 
