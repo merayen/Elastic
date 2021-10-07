@@ -37,6 +37,7 @@ class XMap(nodeId: String) : TranspilerNode(nodeId) {
 			with(codeWriter) {
 				If("this->parameters.curve == NULL || this->parameters.curve_length <= 0") {
 					writePanic(codeWriter, "No curve set")
+					//Return()
 				}
 
 				if (fac == Format.SIGNAL) {
@@ -71,7 +72,6 @@ class XMap(nodeId: String) : TranspilerNode(nodeId) {
 
 		override fun onWriteDataSender(codeWriter: CodeWriter) {
 			with(codeWriter) {
-				// TODO only send positions if any nodes are actively showing them
 				if (getInletType("fac") == Format.SIGNAL) {
 					sendDataToBackend(codeWriter, "1 + ${shared.voiceCount} * 4") {
 						Statement("*(char *)$it = 0")

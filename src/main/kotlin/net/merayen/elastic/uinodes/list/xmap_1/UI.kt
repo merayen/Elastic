@@ -1,6 +1,7 @@
 package net.merayen.elastic.uinodes.list.xmap_1
 
 import net.merayen.elastic.backend.logicnodes.list.xmap_1.Properties
+import net.merayen.elastic.backend.logicnodes.list.xmap_1.StateUpdateData
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.objects.components.curvebox.MapBezierCurveBox
@@ -75,7 +76,11 @@ class UI : UINode() {
 			this.bezierGraph.setPoints(curve)
 	}
 
-	override fun onData(message: NodeDataMessage) {}
+	override fun onData(message: NodeDataMessage) {
+		if (message is StateUpdateData) {
+			// TODO draw into ui
+		}
+	}
 
 	private fun updateLayout() {
 		getPort("out")?.translation?.x = layoutWidth

@@ -14,7 +14,7 @@ import kotlin.reflect.full.primaryConstructor
 
 class LLVMDSPModule : DSPModule() {
 	var nodeRegistrySource: Map<String, KClass<out TranspilerNode>> = nodeRegistry
-	var debug: Boolean = false
+	var debug: Boolean = true
 	private val transpiler: KClass<out Transpiler> = Transpiler::class
 	private var currentTranspiler: Transpiler? = null
 	private var upcomingNetList: NetList? = null
@@ -34,11 +34,6 @@ class LLVMDSPModule : DSPModule() {
 	private val processDuration = AverageStat<Double>(1000)
 
 	/**
-	 * Messages queued that will be sent after the DSP backend (C program) has been started
-	 */
-	private val queuedMessages = ArrayList<NodeMessage>()
-
-	/**
 	 * Only for debugging. Peek at generated C code.
 	 */
 	var listenCodeGen: ((code: String) -> Unit)? = null
@@ -53,12 +48,8 @@ class LLVMDSPModule : DSPModule() {
 
 					NetListMessages.apply(upcomingNetList!!, message)
 				}
-				is NodePropertyMessage -> {
-					queueMessage(message)
-				}
-				is NodeDataMessage -> {
-					queueMessage(message)
-				}
+				is NodePropertyMessage -> queueMessage(message)
+				is NodeDataMessage -> queueMessage(message)
 				is ProcessRequestMessage -> {
 					val upcomingNetList = upcomingNetList
 					if (upcomingNetList != null) { // Begin compiling, but continue to use old backend
@@ -68,8 +59,8 @@ class LLVMDSPModule : DSPModule() {
 						currentNetList = upcomingNetList
 						this.upcomingNetList = null
 
-						// Send messages that got queued when we were rebuilding the netlist
-						for (x in queuedMessages)
+						// Send all property messages
+						for (x in NetListMessages.disassemble(upcomingNetList).filterIsInstance<NodePropertyMessage>())
 							sendNodeMessage(x)
 
 						println("LLVM: recompiling took ${System.currentTimeMillis() - t}ms")
@@ -96,10 +87,14 @@ class LLVMDSPModule : DSPModule() {
 	}
 
 	private fun queueMessage(message: NodeMessage) {
-		if (upcomingNetList == null) // If we are to recompile soon, we ignore the message as the new backend will have it
+		val upcomingNetList = upcomingNetList
+
+		if (upcomingNetList == null) {
+			NetListMessages.apply(currentNetList, message)
 			sendNodeMessage(message)
-		else // We are replacing the netlist, so we need to queue the property-message
-			queuedMessages.add(message)
+		} else {
+			NetListMessages.apply(upcomingNetList, message)
+		}
 	}
 
 	// TODO synchronize? currentTranspiler could be null
