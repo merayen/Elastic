@@ -16,6 +16,8 @@ open class CodeWriter {
 	 */
 	private var noExitLevel = -1
 
+	fun Insert(text: String) = internalAdd(text)
+
 	fun Include(value: String) = internalAdd("#include <$value>")
 
 	fun IncludeLocal(value: String) = internalAdd("#include \"$value\"")

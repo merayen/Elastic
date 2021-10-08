@@ -9,6 +9,7 @@ import net.merayen.elastic.backend.architectures.llvm.templating.CodeWriter
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.*
 import net.merayen.elastic.backend.architectures.llvm.transpilercode.QueueComponent
 import net.merayen.elastic.netlist.NetList
+import java.io.File
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
@@ -97,6 +98,9 @@ class Transpiler(
 				Include("stdarg.h")
 				Include("errno.h")
 				Include("signal.h")
+
+				// TODO only include if actually needed, adds 200ms of compilation time
+				Insert(File("lib/compiler/libresample.c").readText())
 
 				Method("void", "exit_failure")
 
@@ -205,6 +209,7 @@ class Transpiler(
 		for (node in nodes.values)
 			node.writeStruct(codeWriter)
 	}
+
 
 	private fun writeNodeCreators(codeWriter: CodeWriter) {
 		for (node in nodes.values)

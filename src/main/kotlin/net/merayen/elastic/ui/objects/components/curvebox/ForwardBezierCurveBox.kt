@@ -21,7 +21,7 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 	var layoutHeight = 100f
 
 	private val curve = BezierCurveBox()
-	private var offset: Float = 0.toFloat()
+	private var offset: Float = 0f
 	private var handler: Handler? = null
 
 	private var moving: Boolean = false // Don't accept new points when user is interacting with us
@@ -89,7 +89,7 @@ class ForwardBezierCurveBox : UIObject(), BezierCurveBoxInterface {
 				constrainPoint(point)
 				offset = getOffset()
 
-					handler?.onMove()
+				handler?.onMove()
 			}
 
 			override fun onChange() {
