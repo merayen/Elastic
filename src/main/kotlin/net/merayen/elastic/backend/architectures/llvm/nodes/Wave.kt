@@ -13,7 +13,10 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 	private enum class Operation {
 		CHANGE_MODE,
 		SET_FREQUENCY,
+		SET_CURVE,
 	}
+
+	private val waveSize = 256
 
 	override val nodeClass = object : NodeClass() {
 		override fun onWriteParameters(codeWriter: CodeWriter) {
@@ -21,6 +24,7 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 				Member("char", "type")
 				Member("double", "frequency")
 				Member("double", "position[${shared.voiceCount}]") // In cycles
+				Member("float", "wave[$waveSize]")
 			}
 		}
 
@@ -50,6 +54,15 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 				}
 				ElseIf("*((char *)data) == ${Operation.SET_FREQUENCY.ordinal} && length == 5") {
 					Statement("this->parameters.frequency = (double)*((float *)(data + 1))")
+				}
+				ElseIf("*((char *)data) == ${Operation.SET_CURVE.ordinal} && length > 1") {
+					If("(length - 1) % (4*6) != 0") {
+						writePanic(codeWriter, "Invalid curve length")
+					}
+					Call(
+						"b2f_calc_curve",
+						"(struct b2f_Dot *)(data + 1), (length - 1) / sizeof(struct b2f_Dot), this->parameters.wave, $waveSize, 2"
+					)
 				}
 				Else {
 					writePanic(codeWriter, "Invalid operation")
@@ -102,6 +115,7 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 
 		val type = instance.type
 		val frequency = instance.frequency
+		val curve = instance.curve
 
 		if (type != null) {
 			sendDataToDSP(1 + 1) {
@@ -114,6 +128,14 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 			sendDataToDSP(1 + 4) {
 				it.put(Operation.SET_FREQUENCY.ordinal.toByte())
 				it.putFloat(frequency)
+			}
+		}
+
+		if (curve != null) {
+			sendDataToDSP(1 + 4 * curve.size) {
+				it.put(Operation.SET_CURVE.ordinal.toByte())
+				for (x in curve)
+					it.putFloat(x)
 			}
 		}
 	}

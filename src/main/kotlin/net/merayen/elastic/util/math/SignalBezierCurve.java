@@ -9,18 +9,6 @@ public class SignalBezierCurve {
 	private SignalBezierCurve() {} // Just a utility class for now
 
 	/**
-	 * Calculates the values
-	 * @return
-	 */
-	/*public static float[] getValues(Point[] points) {
-
-	}*/
-
-	private static void no() {
-		throw new RuntimeException("Nope");
-	}
-
-	/**
 	 * Calculate values into a float-array.
 	 * @param result Results are stored in here. Its length decides how many samples that are to be done
 	 */
@@ -89,7 +77,12 @@ public class SignalBezierCurve {
 		//System.out.println(start + "\t" + pos + "\t" + length + "\t" + x);
 	}
 
-	private static void getValuesFromSegment2(Dot dot0, Dot dot1, final float[] result, int start, int length) {
+	/**
+	 * This method follows the bezier curve. Unfortunately.
+	 *
+	 * It should rather access the Bézier curve by X-axis and give the corresponding Y-axis value.
+	 */
+	static void getValuesFromSegment2(Dot dot0, Dot dot1, final float[] result, int start, int length) {
 		int last = 0;
 		float last_value = 0;
 

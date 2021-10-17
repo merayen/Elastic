@@ -12,7 +12,7 @@ struct b2f_Dot {
 	float right_y;
 };
 
-double bezier_to_float_get_axis(double p0, double p1, double p2, double p3, double t) {
+double b2f_get_value(double p0, double p1, double p2, double p3, double t) {
 	return (
 		pow(1 - t, 3) * p0 +
 		3 * pow(1 - t, 2) * t * p1 +
@@ -57,7 +57,7 @@ void b2f_calc_segment(
 		double v = i / (double)result_length;
 		total_iterations++;
 
-		double x = bezier_to_float_get_axis(
+		double x = b2f_get_value(
 			x_axis_p0,
 			x_axis_p1,
 			x_axis_p2,
@@ -89,7 +89,7 @@ void b2f_calc_segment(
 			//fprintf(stderr, "\n");
 		}
 
-		double y = bezier_to_float_get_axis(
+		double y = b2f_get_value(
 			y_axis_p0,
 			y_axis_p1,
 			y_axis_p2,
@@ -133,6 +133,10 @@ void b2f_calc_curve(
 	int interpolate
 ) {
 	// Sanity check
+	if (sizeof(struct b2f_Dot) != 4*6) {
+		fprintf(stderr, "b2f_Dot has an unexpected size\n");
+		exit(EXIT_FAILURE);
+	}
 	for (int i = 0; i < dots_length; i++) {
 		if (
 			dots[i].left_x < 0 ||

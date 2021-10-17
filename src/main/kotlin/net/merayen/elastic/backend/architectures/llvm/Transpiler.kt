@@ -101,6 +101,7 @@ class Transpiler(
 
 				// TODO only include if actually needed, adds 200ms of compilation time
 				Insert(File("lib/compiler/libresample.c").readText())
+				Insert(File("lib/compiler/b2f/b2f.c").readText())
 
 				Method("void", "exit_failure")
 
