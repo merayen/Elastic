@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Dot {
-	double left_x;
-	double left_y;
-	double x;
-	double y;
-	double right_x;
-	double right_y;
+struct b2f_Dot {
+	float left_x;
+	float left_y;
+	float x;
+	float y;
+	float right_x;
+	float right_y;
 };
 
 double bezier_to_float_get_axis(double p0, double p1, double p2, double p3, double t) {
@@ -22,8 +22,8 @@ double bezier_to_float_get_axis(double p0, double p1, double p2, double p3, doub
 }
 
 void b2f_calc_segment(
-	struct Dot dot0,
-	struct Dot dot1,
+	struct b2f_Dot dot0,
+	struct b2f_Dot dot1,
 	float* result,
 	int result_length,
 	char interpolate
@@ -70,7 +70,6 @@ void b2f_calc_segment(
 
 		pos = round(result_length * x);
 		if (pos < 0) pos = 0;
-		//if (pos > result_length -1) pos = result_length - 1;
 
 		if (interpolate == 2) {
 			double diff = (x * result_length) - expected_pos;
@@ -104,13 +103,16 @@ void b2f_calc_segment(
 			for(int j = last + 1; j < pos; j++) {
 				double k = (j - last) / (double)(pos - last);
 				if (j < result_length)
-					result[j] = (float)((1 - k) * last_value + k * y);
+					result[j] = (double)((1 - k) * last_value + k * y);
 			}
 		} 
 
-		if (pos >= result_length)
+		if (pos >= result_length) {
+			result[result_length-1] = y;
 			break;
+		}
 
+		if (pos > result_length -1) pos = result_length - 1;
 		result[pos] = y;
 
 		last = pos;
@@ -124,7 +126,7 @@ void b2f_calc_segment(
 }
 
 void b2f_calc_curve(
-	struct Dot* dots,
+	struct b2f_Dot* dots,
 	int dots_length,
 	float *result,
 	int result_length,
@@ -145,8 +147,8 @@ void b2f_calc_curve(
 		}
 	}
 
-	struct Dot dot0;
-	struct Dot dot1;
+	struct b2f_Dot dot0;
+	struct b2f_Dot dot1;
 	for (int i = 0; i < dots_length - 1; i++) {
 		dot0 = dots[i];
 		dot1 = dots[i+1];
@@ -167,14 +169,18 @@ void b2f_calc_curve(
 
 		float* output = result + (int)(offset_x * result_length);
 
-		fprintf(stderr, "%f, %f, %f, %ld\n", offset_x, width, offset_x*result_length, (void*)output-(void*)result);
-		fflush(stderr);
+		// Calculate output length to make sure to fill end up buffer (maybe we need it between segments too...)
+		int output_length = (i==dots_length-2) ? (result_length - (output - result)) : (width * result_length);
+
+		//fprintf(stderr, "%f, %f, %f, %ld\n", offset_x, width, offset_x*result_length, (void*)output-(void*)result);
+		//fflush(stderr);
+
 
 		b2f_calc_segment(
 			dot0,
 			dot1,
 			output,
-			(width) * result_length,
+			output_length,
 			2
 		);
 	}
