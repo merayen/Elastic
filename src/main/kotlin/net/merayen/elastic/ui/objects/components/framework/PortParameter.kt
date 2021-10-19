@@ -1,5 +1,6 @@
 package net.merayen.elastic.ui.objects.components.framework
 
+import net.merayen.elastic.ui.FlexibleDimension
 import net.merayen.elastic.ui.UIObject
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -8,7 +9,9 @@ import net.merayen.elastic.ui.objects.node.UIPort
  * Defines a port, and shows one view if that port is not connected, and shows another one if it is.
  * Doesn't show any UI itself, but add it to your UIObject to make it work.
  */
-class PortParameter(private val node: UINode, val port: UIPort, val notConnected: UIObject, val connected: UIObject) : UIObject() {
+class PortParameter(private val node: UINode, val port: UIPort, val notConnected: UIObject, val connected: UIObject) : UIObject(), FlexibleDimension {
+	override var layoutWidth = 100f
+	override var layoutHeight = 20f
 
 	private var last_port_check: Long = 0
 
@@ -25,6 +28,14 @@ class PortParameter(private val node: UINode, val port: UIPort, val notConnected
 					remove(connected)
 				if (notConnected.parent == null)
 					add(notConnected)
+			}
+			if (connected is FlexibleDimension) {
+				connected.layoutWidth = layoutWidth
+				connected.layoutHeight = layoutHeight
+			}
+			if (notConnected is FlexibleDimension) {
+				notConnected.layoutWidth = layoutWidth
+				notConnected.layoutHeight = layoutHeight
 			}
 		}
 	}

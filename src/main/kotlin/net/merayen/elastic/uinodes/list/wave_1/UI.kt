@@ -4,10 +4,13 @@ import net.merayen.elastic.backend.logicnodes.list.wave_1.Properties
 import net.merayen.elastic.backend.nodes.BaseNodeProperties
 import net.merayen.elastic.system.intercom.NodeDataMessage
 import net.merayen.elastic.ui.Draw
+import net.merayen.elastic.ui.objects.components.DropDown
 import net.merayen.elastic.ui.objects.components.InputSignalParameters
+import net.merayen.elastic.ui.objects.components.Label
 import net.merayen.elastic.ui.objects.components.PopupParameter1D
 import net.merayen.elastic.ui.objects.components.curvebox.ACSignalBezierCurveBox
 import net.merayen.elastic.ui.objects.components.framework.PortParameter
+import net.merayen.elastic.ui.objects.contextmenu.TextContextMenuItem
 import net.merayen.elastic.ui.objects.node.INodeEditable
 import net.merayen.elastic.ui.objects.node.UINode
 import net.merayen.elastic.ui.objects.node.UIPort
@@ -17,9 +20,13 @@ class UI : UINode(), INodeEditable {
 	private var frequencyPortParameter: PortParameter? = null
 	private lateinit var curve: ACSignalBezierCurveBox
 
+	private val typeSelect: DropDown
+
 	private val frequency: Float
 		get() = ((frequencyPortParameter!!.notConnected as PopupParameter1D).value * 10).toDouble().pow(4.301029995663981)
 			.toFloat()
+
+	private class DropDownItem(val type: Properties.Type) : DropDown.Item(Label(type.name), TextContextMenuItem(type.name))
 
 	init {
 		layoutWidth = 200f
@@ -27,7 +34,25 @@ class UI : UINode(), INodeEditable {
 
 		titlebar.title = "Signal generator"
 
+		typeSelect = DropDown(handler = object : DropDown.Handler {
+			override fun onChange(selected: DropDown.Item) {
+				selected as DropDownItem
+				send(Properties(type = selected.type.name))
+			}
+		})
+
+		for (x in Properties.Type.values())
+			typeSelect.addMenuItem(DropDownItem(x))
+
 		createBezierWave()
+	}
+
+	override fun onInit() {
+		super.onInit()
+
+		typeSelect.translation.x = 10f
+		typeSelect.translation.y = 50f
+		add(typeSelect)
 	}
 
 	override fun onDraw(draw: Draw) {
@@ -38,13 +63,30 @@ class UI : UINode(), INodeEditable {
 			port.translation.x = layoutWidth
 
 		draw.setColor(0f, 0f, 0f)
-		draw.fillRect(10f, 50f, layoutWidth - 20f, layoutHeight - 50f - 10f)
+		draw.fillRect(10f, 80f, layoutWidth - 20f, layoutHeight - 80f - 10f)
+	}
+
+	override fun onUpdate() {
+		super.onUpdate()
+		frequencyPortParameter?.layoutWidth = layoutWidth - 20f
 	}
 
 	override fun onProperties(properties: BaseNodeProperties) {
 		if (properties is Properties) {
+			val type = properties.type
 			val frequencyData = properties.frequency
 			val curveData = properties.curve
+
+			if (type != null) {
+				for (x in typeSelect.getItems()) {
+					val item = x as DropDownItem
+					if (item.type.name == type) {
+						typeSelect.setViewItem(item)
+						updateBezierWaveVisibility(item.type)
+						break
+					}
+				}
+			}
 
 			if (frequencyData != null) {
 				(frequencyPortParameter!!.notConnected as PopupParameter1D).value = (frequencyData.toDouble()
@@ -102,10 +144,9 @@ class UI : UINode(), INodeEditable {
 	private fun createBezierWave() {
 		val bwb = ACSignalBezierCurveBox()
 		bwb.translation.x = 10f
-		bwb.translation.y = 50f
+		bwb.translation.y = 80f
 		bwb.layoutWidth = layoutWidth - 20f
-		bwb.layoutHeight = layoutHeight - 50f - 10f
-		add(bwb)
+		bwb.layoutHeight = layoutHeight - 80f - 10f
 		curve = bwb
 
 		bwb.handler = object : ACSignalBezierCurveBox.Handler {
@@ -120,6 +161,17 @@ class UI : UINode(), INodeEditable {
 			}
 
 			override fun onDotClick() {}
+		}
+	}
+
+	private fun updateBezierWaveVisibility(typeSelected: Properties.Type) {
+		// This is so bullshitzy, but it works. Should rather page.
+		if (typeSelected == Properties.Type.CURVE && curve.parent == null) {
+			add(curve)
+			layoutHeight = 170f
+		} else if (typeSelected != Properties.Type.CURVE && curve.parent != null) {
+			remove(curve)
+			layoutHeight = 100f
 		}
 	}
 

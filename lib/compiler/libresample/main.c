@@ -7,8 +7,8 @@ int main() {
 	int srclen = 50;
 	int srcused = 0;
 
-	double factor = 1;
-	int dstlen = (int)(srclen*factor);
+	double factor = 3;
+	int dstlen = (int)(srclen * factor);
 
 	float *src = (float *)malloc((srclen+100) * sizeof(float));
 	float *dst = (float *)malloc((dstlen+100) * sizeof(float));

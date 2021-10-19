@@ -14,7 +14,8 @@ data class Properties(
 		TRIANGLE,
 		SQUARE,
 		NOISE,
-		SAW
+		SAW,
+		CURVE,
 	}
 
 	init {

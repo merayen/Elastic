@@ -39,7 +39,8 @@ public class InputSignalParameters extends UIObject {
 		amplitude.drag_scale = 1f;
 		add(amplitude);
 
-		offset.getTranslation().y = 20;
+		offset.getTranslation().x = 100;
+		offset.getTranslation().y = 0;
 		offset.drag_scale = 1f;
 		add(offset);
 

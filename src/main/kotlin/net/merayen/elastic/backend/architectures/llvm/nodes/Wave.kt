@@ -25,6 +25,7 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 				Member("double", "frequency")
 				Member("double", "position[${shared.voiceCount}]") // In cycles
 				Member("float", "wave[$waveSize]")
+				Member("void*", "resamplers[${shared.voiceCount}]")
 			}
 		}
 
@@ -40,7 +41,22 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 		override fun onWriteCreateVoice(codeWriter: CodeWriter) {
 			super.onWriteCreateVoice(codeWriter)
 
-			codeWriter.Statement("this->parameters.position[voice_index] = 0")
+			with(codeWriter) {
+				Statement("this->parameters.position[voice_index] = 0")
+
+				// TODO if Type.CURVE is not set, don't allocate?
+				val sampleRatio = shared.sampleRate / waveSize
+				val minFactor = (sampleRatio / (shared.sampleRate / 4f)).toInt()
+				val maxFactor = sampleRatio / 4
+				Statement("this->parameters.resamplers[voice_index] = resample_open(1, $minFactor, $maxFactor)")
+			}
+		}
+
+		override fun onWriteDestroyVoice(codeWriter: CodeWriter) {
+			super.onWriteDestroyVoice(codeWriter)
+			with(codeWriter) {
+				Call("resample_close", "this->parameters.resamplers[voice_index]")
+			}
 		}
 
 		override fun onWriteDataReceiver(codeWriter: CodeWriter) {
@@ -99,6 +115,8 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 								}
 								Statement("this->parameters.position[voice_index] = position")
 							}
+						}
+						ElseIf("this->parameters.type == ${Properties.Type.CURVE.ordinal}") {
 						}
 						Else {
 							writePanic(codeWriter, "Unknown operation %i", "(int)this->parameters.type")
