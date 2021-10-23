@@ -101,63 +101,16 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 			when (getInletType("frequency")) {
 				Format.SIGNAL -> {
 					with(codeWriter) {
-						writeForEachVoice(codeWriter) {
-							If("this->parameters.type == ${Properties.Type.SINE.ordinal}") {
+						If("this->parameters.type == ${Properties.Type.SINE.ordinal}") {
+							writeForEachVoice(codeWriter) {
 								writeForEachSample(codeWriter) {
 									Statement("${writeOutlet("out")}.signal[sample_index] = (float)sin(this->parameters.position[voice_index] * 2 * M_PI)")
 									Statement("this->parameters.position[voice_index] += ${writeInlet("frequency")}.signal[sample_index] / 44100.0")
 								}
 							}
-							ElseIf("this->parameters.type == ${Properties.Type.CURVE.ordinal}") {
-								Statement("int inBufferUsed = 0")
-
-								// TODO the factor should probably change more often in the frame, to have it more evenly change
-								if (getInletType("frequency") == Format.SIGNAL)
-									Statement("double factor = ${shared.sampleRate / waveSize} / ${writeInlet("frequency")}.signal[0]") // TODO Sample input? Average?
-								else
-									Statement("double factor = 1") // TODO implement frequency from setting
-
-								// Clamp factor value
-								If("factor < $minFactor") {
-									Statement("factor = $minFactor")
-								}
-								ElseIf("factor > $maxFactor") {
-									Statement("factor = $maxFactor")
-								}
-
-								Statement("int output_samples_processed = 0")
-
-								Statement("int i = 0")
-								For("", "output_samples_processed < ${shared.frameSize} && i < 10000", "i++") {
-									Statement(
-										"""
-										int resample_result = resample_process( 
-											this->parameters.resampler[voice_index],
-											factor,
-											this->parameters.wave + this->parameters.resampler_wave_position[voice_index],
-											$waveSize - this->parameters.resampler_wave_position[voice_index],
-											0,
-											&inBufferUsed,
-											${writeOutlet("out")}.signal + output_samples_processed,
-											${shared.frameSize} - output_samples_processed
-										)
-									""".trimIndent()
-									)
-
-									If("resample_result < 0") {
-										writePanic(codeWriter, "libresample returned %i", "resample_result")
-									}
-
-									Statement("output_samples_processed += resample_result")
-
-									// Loop the input wave buffer
-									Statement("this->parameters.resampler_wave_position[voice_index] += inBufferUsed")
-									Statement("this->parameters.resampler_wave_position[voice_index] %= $waveSize")
-								}
-								If("i >= 10000") {
-									writePanic(codeWriter, "Endless loop protection")
-								}
-							}
+						}
+						ElseIf("this->parameters.type == ${Properties.Type.CURVE.ordinal}") {
+							writeCurveResampler(codeWriter, 1)
 						}
 					}
 				}
@@ -186,6 +139,62 @@ class Wave(nodeId: String) : TranspilerNode(nodeId) {
 				else -> {} // Whatever, we are silent
 			}
 		}
+
+		private fun writeCurveResampler(codeWriter: CodeWriter, chunks: Int) {
+			// TODO implement chunking, makes less harsh frequency jumps
+			with(codeWriter) {
+				writeForEachVoice(codeWriter) {
+					Statement("int inBufferUsed = 0")
+
+					if (getInletType("frequency") == Format.SIGNAL)
+						Statement("double factor = ${shared.sampleRate / waveSize.toFloat()} / ${writeInlet("frequency")}.signal[0]") // TODO Sample input? Average?
+					else
+						Statement("double factor = 1") // TODO implement frequency from setting
+
+					// Clamp factor value
+					If("factor < $minFactor") {
+						Statement("factor = $minFactor")
+					}
+					ElseIf("factor > $maxFactor") {
+						Statement("factor = $maxFactor")
+					}
+
+					Statement("int output_samples_processed = 0")
+
+					Statement("int i = 0")
+					For("", "output_samples_processed < ${shared.frameSize} && i < 10000", "i++") {
+						Statement(
+							"""
+							int resample_result = resample_process(
+								this->parameters.resampler[voice_index],
+								factor,
+								this->parameters.wave + this->parameters.resampler_wave_position[voice_index],
+								$waveSize - this->parameters.resampler_wave_position[voice_index],
+								0,
+								&inBufferUsed,
+								${writeOutlet("out")}.signal + output_samples_processed,
+								${shared.frameSize} - output_samples_processed
+							)
+							""".trimIndent()
+						)
+
+						If("resample_result < 0") {
+							writePanic(codeWriter, "libresample returned %i", "resample_result")
+						}
+
+						Statement("output_samples_processed += resample_result")
+
+						// Loop the input wave buffer
+						Statement("this->parameters.resampler_wave_position[voice_index] += inBufferUsed")
+						Statement("this->parameters.resampler_wave_position[voice_index] %= $waveSize")
+					}
+					If("i >= 10000") {
+						writePanic(codeWriter, "Endless loop protection")
+					}
+				}
+			}
+		}
+
 	}
 
 	override fun onMessage(message: NodePropertyMessage) {
