@@ -587,6 +587,16 @@ abstract class TranspilerNode(val nodeId: String) {
 		writePanic(codeWriter, "[node_name=${shared.nodeProperties.getName(node)}, node_id=$nodeId] $message", args, debug)
 	}
 
+	protected fun writeDebug(codeWriter: CodeWriter) {
+		with(codeWriter) {
+			log?.write(codeWriter, "*** Waiting for debugger ***")
+			Statement("volatile int D = 0")
+			While ("D == 0") {
+				Call("usleep", "100000")
+			}
+		}
+	}
+
 	protected fun writeLog(codeWriter: CodeWriter, message: String, args: String = "") {
 		log?.write(codeWriter, "[node_name=${shared.nodeProperties.getName(node)}, node_id=$nodeId] $message", args)
 	}
